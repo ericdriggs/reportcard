@@ -1,0 +1,26 @@
+buildscript {
+    ext {
+        javaVersion = JavaVersion.VERSION_11
+    }
+}
+
+plugins {
+    id 'java'
+    id 'idea'
+    id 'scala'
+}
+
+group 'com.github.ericdriggs'
+version '0.0.1-SNAPSHOT'
+
+sourceCompatibility = javaVersion
+targetCompatibility = javaVersion
+
+test {
+    systemProperties System.properties
+    outputs.upToDateWhen { false }
+}
+
+clean {
+    delete 'target'
+}
