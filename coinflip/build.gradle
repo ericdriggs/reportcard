@@ -2,6 +2,7 @@ buildscript {
     ext {
         javaVersion = JavaVersion.VERSION_11
         karateVersion = '0.9.6.RC3'
+        masterThoughtVersion = '4.7.0'
     }
 }
 
@@ -24,6 +25,7 @@ test {
 dependencies {
     testCompile "com.intuit.karate:karate-junit5:${karateVersion}"
     testCompile "com.intuit.karate:karate-apache:${karateVersion}"
+    compile "net.masterthought:cucumber-reporting:${masterThoughtVersion}"
 }
 
 repositories {
