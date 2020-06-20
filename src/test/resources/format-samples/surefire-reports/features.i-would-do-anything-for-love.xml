@@ -1,0 +1,18 @@
+<testsuite failures="1" name="features/i-would-do-anything-for-love.feature" skipped="0" tests="3" time="0.010104">
+  <testcase classname="features.i-would-do-anything-for-love" name="I'd run right into hell and back" time="0.00083">
+    <system-out>* match true == Coin.flip(1) .............................................. passed</system-out>
+  </testcase>
+  <testcase classname="features.i-would-do-anything-for-love" name="I'd never lie to you" time="0.003132">
+    <system-out>* match true == Coin.flip(1) .............................................. passed
+* match true == Coin.flip(1) .............................................. passed</system-out>
+  </testcase>
+  <testcase classname="features.i-would-do-anything-for-love" name="I'd do that" time="0.006142">
+    <failure message="i-would-do-anything-for-love.feature:15 - path: $, actual: true, expected: false, reason: not equal (Boolean)">* match true == Coin.flip(1) .............................................. passed
+* match true == Coin.flip(1) .............................................. passed
+* match true == Coin.flip(0) .............................................. failed
+
+Stack Trace:
+com.intuit.karate.exception.KarateException: i-would-do-anything-for-love.feature:15 - path: $, actual: true, expected: false, reason: not equal (Boolean)
+	at ✽.* match true == Coin.flip(0) (i-would-do-anything-for-love.feature:15)</failure>
+  </testcase>
+</testsuite>
