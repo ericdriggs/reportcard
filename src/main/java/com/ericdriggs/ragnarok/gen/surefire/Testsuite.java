@@ -18,9 +18,9 @@ import java.util.List;
 
 /**
  * <p>Java class for anonymous complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType&gt;
  *   &lt;complexContent&gt;
@@ -163,13 +163,11 @@ import java.util.List;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "properties",
-    "testcase"
+        "properties",
+        "testcase"
 })
 @XmlRootElement(name = "testsuite")
 @NoArgsConstructor
@@ -197,9 +195,9 @@ public class Testsuite {
 
     /**
      * <p>Java class for anonymous complex type.
-     * 
+     *
      * <p>The following schema fragment specifies the expected content contained within this class.
-     * 
+     *
      * <pre>
      * &lt;complexType&gt;
      *   &lt;complexContent&gt;
@@ -220,12 +218,10 @@ public class Testsuite {
      *   &lt;/complexContent&gt;
      * &lt;/complexType&gt;
      * </pre>
-     * 
-     * 
      */
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {
-        "property"
+            "property"
     })
     @NoArgsConstructor
     @AllArgsConstructor
@@ -235,41 +231,12 @@ public class Testsuite {
 
         protected List<Property> property;
 
-        /**
-         * Gets the value of the property property.
-         * 
-         * <p>
-         * This accessor method returns a reference to the live list,
-         * not a snapshot. Therefore any modification you make to the
-         * returned list will be present inside the JAXB object.
-         * This is why there is not a <CODE>set</CODE> method for the property property.
-         * 
-         * <p>
-         * For example, to add a new item, do as follows:
-         * <pre>
-         *    getProperty().add(newItem);
-         * </pre>
-         * 
-         * 
-         * <p>
-         * Objects of the following type(s) are allowed in the list
-         * {@link Property }
-         * 
-         * 
-         */
-        public List<Property> getProperty() {
-            if (property == null) {
-                property = new ArrayList<Property>();
-            }
-            return this.property;
-        }
-
 
         /**
          * <p>Java class for anonymous complex type.
-         * 
+         *
          * <p>The following schema fragment specifies the expected content contained within this class.
-         * 
+         *
          * <pre>
          * &lt;complexType&gt;
          *   &lt;complexContent&gt;
@@ -280,8 +247,6 @@ public class Testsuite {
          *   &lt;/complexContent&gt;
          * &lt;/complexType&gt;
          * </pre>
-         * 
-         * 
          */
         @XmlAccessorType(XmlAccessType.FIELD)
         @XmlType(name = "")
@@ -295,39 +260,15 @@ public class Testsuite {
             protected String name;
             @XmlAttribute(name = "value", required = true)
             protected String value;
-
-            /**
-             * Gets the value of the name property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getName() {
-                return name;
-            }
-
-            /**
-             * Gets the value of the value property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getValue() {
-                return value;
-            }
         }
     }
 
 
     /**
      * <p>Java class for anonymous complex type.
-     * 
+     *
      * <p>The following schema fragment specifies the expected content contained within this class.
-     * 
+     *
      * <pre>
      * &lt;complexType&gt;
      *   &lt;complexContent&gt;
@@ -433,28 +374,23 @@ public class Testsuite {
      *   &lt;/complexContent&gt;
      * &lt;/complexType&gt;
      * </pre>
-     * 
-     * 
      */
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {
-        "failure",
-        "rerunFailure",
-        "flakyFailure",
-        "skipped",
-        "error",
-        "rerunError",
-        "flakyError",
-        "systemOut",
-        "systemErr"
+            "failure",
+            "rerunFailure",
+            "flakyFailure",
+            "skipped",
+            "error",
+            "rerunError",
+            "flakyError",
+            "systemOut",
+            "systemErr"
     })
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder(builderMethodName = "builderForTestcase")
-
-
     @Data
-
     public static class Testcase {
 
         @XmlElement(nillable = true)
@@ -483,9 +419,9 @@ public class Testsuite {
 
         /**
          * <p>Java class for anonymous complex type.
-         * 
+         *
          * <p>The following schema fragment specifies the expected content contained within this class.
-         * 
+         *
          * <pre>
          * &lt;complexType&gt;
          *   &lt;simpleContent&gt;
@@ -496,12 +432,10 @@ public class Testsuite {
          *   &lt;/simpleContent&gt;
          * &lt;/complexType&gt;
          * </pre>
-         * 
-         * 
          */
         @XmlAccessorType(XmlAccessType.FIELD)
         @XmlType(name = "", propOrder = {
-            "value"
+                "value"
         })
         @NoArgsConstructor
         @AllArgsConstructor
@@ -521,9 +455,9 @@ public class Testsuite {
 
         /**
          * <p>Java class for anonymous complex type.
-         * 
+         *
          * <p>The following schema fragment specifies the expected content contained within this class.
-         * 
+         *
          * <pre>
          * &lt;complexType&gt;
          *   &lt;simpleContent&gt;
@@ -534,12 +468,10 @@ public class Testsuite {
          *   &lt;/simpleContent&gt;
          * &lt;/complexType&gt;
          * </pre>
-         * 
-         * 
          */
         @XmlAccessorType(XmlAccessType.FIELD)
         @XmlType(name = "", propOrder = {
-            "value"
+                "value"
         })
         @NoArgsConstructor
         @AllArgsConstructor
@@ -558,9 +490,9 @@ public class Testsuite {
 
         /**
          * <p>Java class for anonymous complex type.
-         * 
+         *
          * <p>The following schema fragment specifies the expected content contained within this class.
-         * 
+         *
          * <pre>
          * &lt;complexType&gt;
          *   &lt;complexContent&gt;
@@ -576,14 +508,12 @@ public class Testsuite {
          *   &lt;/complexContent&gt;
          * &lt;/complexType&gt;
          * </pre>
-         * 
-         * 
          */
         @XmlAccessorType(XmlAccessType.FIELD)
         @XmlType(name = "", propOrder = {
-            "stackTrace",
-            "systemOut",
-            "systemErr"
+                "stackTrace",
+                "systemOut",
+                "systemErr"
         })
         @NoArgsConstructor
         @AllArgsConstructor
@@ -606,9 +536,9 @@ public class Testsuite {
 
         /**
          * <p>Java class for anonymous complex type.
-         * 
+         *
          * <p>The following schema fragment specifies the expected content contained within this class.
-         * 
+         *
          * <pre>
          * &lt;complexType&gt;
          *   &lt;complexContent&gt;
@@ -624,14 +554,12 @@ public class Testsuite {
          *   &lt;/complexContent&gt;
          * &lt;/complexType&gt;
          * </pre>
-         * 
-         * 
          */
         @XmlAccessorType(XmlAccessType.FIELD)
         @XmlType(name = "", propOrder = {
-            "stackTrace",
-            "systemOut",
-            "systemErr"
+                "stackTrace",
+                "systemOut",
+                "systemErr"
         })
         @NoArgsConstructor
         @AllArgsConstructor
@@ -654,9 +582,9 @@ public class Testsuite {
 
         /**
          * <p>Java class for anonymous complex type.
-         * 
+         *
          * <p>The following schema fragment specifies the expected content contained within this class.
-         * 
+         *
          * <pre>
          * &lt;complexType&gt;
          *   &lt;complexContent&gt;
@@ -672,14 +600,12 @@ public class Testsuite {
          *   &lt;/complexContent&gt;
          * &lt;/complexType&gt;
          * </pre>
-         * 
-         * 
          */
         @XmlAccessorType(XmlAccessType.FIELD)
         @XmlType(name = "", propOrder = {
-            "stackTrace",
-            "systemOut",
-            "systemErr"
+                "stackTrace",
+                "systemOut",
+                "systemErr"
         })
         @NoArgsConstructor
         @AllArgsConstructor
@@ -702,9 +628,9 @@ public class Testsuite {
 
         /**
          * <p>Java class for anonymous complex type.
-         * 
+         *
          * <p>The following schema fragment specifies the expected content contained within this class.
-         * 
+         *
          * <pre>
          * &lt;complexType&gt;
          *   &lt;complexContent&gt;
@@ -720,14 +646,12 @@ public class Testsuite {
          *   &lt;/complexContent&gt;
          * &lt;/complexType&gt;
          * </pre>
-         * 
-         * 
          */
         @XmlAccessorType(XmlAccessType.FIELD)
         @XmlType(name = "", propOrder = {
-            "stackTrace",
-            "systemOut",
-            "systemErr"
+                "stackTrace",
+                "systemOut",
+                "systemErr"
         })
         @NoArgsConstructor
         @AllArgsConstructor
@@ -751,9 +675,9 @@ public class Testsuite {
 
         /**
          * <p>Java class for anonymous complex type.
-         * 
+         *
          * <p>The following schema fragment specifies the expected content contained within this class.
-         * 
+         *
          * <pre>
          * &lt;complexType&gt;
          *   &lt;simpleContent&gt;
@@ -763,12 +687,10 @@ public class Testsuite {
          *   &lt;/simpleContent&gt;
          * &lt;/complexType&gt;
          * </pre>
-         * 
-         * 
          */
         @XmlAccessorType(XmlAccessType.FIELD)
         @XmlType(name = "", propOrder = {
-            "value"
+                "value"
         })
         @NoArgsConstructor
         @AllArgsConstructor
