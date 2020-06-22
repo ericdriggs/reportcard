@@ -53,42 +53,10 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(builderMethodName = "builderForTestsuites")
-@Getter
-@Setter
-@EqualsAndHashCode
-@ToString
+@Data
 public class Testsuites {
 
     protected List<Testsuite> testsuite;
-
-    /**
-     * Gets the value of the testsuite property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the testsuite property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getTestsuite().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Testsuite }
-     * 
-     * 
-     */
-    public List<Testsuite> getTestsuite() {
-        if (testsuite == null) {
-            testsuite = new ArrayList<Testsuite>();
-        }
-        return this.testsuite;
-    }
 
 
     /**
@@ -113,11 +81,8 @@ public class Testsuites {
     @XmlType(name = "")
     @NoArgsConstructor
     @AllArgsConstructor
-    @Builder(builderMethodName = "builderForTestsuite")
-    @Getter
-    @Setter
-    @EqualsAndHashCode
-    @ToString
+//    @Builder(builderMethodName = "builderForTestsuite")
+    @Data
     public static class Testsuite
         extends com.ericdriggs.ragnarok.gen.junit.Testsuite
     {
@@ -128,27 +93,5 @@ public class Testsuites {
         protected String _package;
         @XmlAttribute(name = "id", required = true)
         protected int id;
-
-        /**
-         * Gets the value of the package property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
-         */
-        public String getPackage() {
-            return _package;
-        }
-
-        /**
-         * Gets the value of the id property.
-         * 
-         */
-        public int getId() {
-            return id;
-        }
-
     }
-
 }
