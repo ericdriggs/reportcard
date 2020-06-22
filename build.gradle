@@ -9,7 +9,9 @@ buildscript {
 plugins {
     id 'java'
     id 'idea'
+    id 'maven'
 }
+
 
 group 'com.github.ericdriggs'
 version '0.0.1-SNAPSHOT'
@@ -45,3 +47,22 @@ dependencies {
 
 }
 //sourceSets.main.java.srcDirs += myDir
+
+task createPom  {
+    pom {
+        project {
+            groupId 'com.ericdriggs'
+            artifactId 'ragnarok'
+            version '1.0.0-SNAPSHOT'
+
+            inceptionYear '2020'
+            licenses {
+                license {
+                    name 'The MIT License'
+                    url 'https://opensource.org/licenses/MIT'
+                    distribution 'repo'
+                }
+            }
+        }
+    }.writeTo("pom.xml")
+}
