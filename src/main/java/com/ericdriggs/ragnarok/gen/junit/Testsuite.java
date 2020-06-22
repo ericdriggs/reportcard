@@ -15,17 +15,16 @@ import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 
 /**
  * Contains the results of exexuting a testsuite
- * 
+ *
  * <p>Java class for testsuite complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType name="testsuite"&gt;
  *   &lt;complexContent&gt;
@@ -130,26 +129,21 @@ import java.util.List;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "testsuite", propOrder = {
-    "properties",
-    "testcase",
-    "systemOut",
-    "systemErr"
+        "properties",
+        "testcase",
+        "systemOut",
+        "systemErr"
 })
 @XmlSeeAlso({
-    Testsuites.Testsuite.class
+        Testsuites.Testsuite.class
 })
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(builderMethodName = "builderForTestsuite")
-@Getter
-@Setter
-@EqualsAndHashCode
-@ToString
+@Data
 public class Testsuite {
 
     @XmlElement(required = true)
@@ -178,161 +172,12 @@ public class Testsuite {
     @XmlAttribute(name = "time", required = true)
     protected BigDecimal time;
 
-    /**
-     * Gets the value of the properties property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Properties }
-     *     
-     */
-    public Properties getProperties() {
-        return properties;
-    }
-
-    /**
-     * Gets the value of the testcase property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the testcase property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getTestcase().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Testcase }
-     * 
-     * 
-     */
-    public List<Testcase> getTestcase() {
-        if (testcase == null) {
-            testcase = new ArrayList<Testcase>();
-        }
-        return this.testcase;
-    }
-
-    /**
-     * Gets the value of the systemOut property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getSystemOut() {
-        return systemOut;
-    }
-
-    /**
-     * Gets the value of the systemErr property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getSystemErr() {
-        return systemErr;
-    }
-
-    /**
-     * Gets the value of the name property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Gets the value of the timestamp property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link XMLGregorianCalendar }
-     *     
-     */
-    public XMLGregorianCalendar getTimestamp() {
-        return timestamp;
-    }
-
-    /**
-     * Gets the value of the hostname property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getHostname() {
-        return hostname;
-    }
-
-    /**
-     * Gets the value of the tests property.
-     * 
-     */
-    public int getTests() {
-        return tests;
-    }
-
-    /**
-     * Gets the value of the failures property.
-     * 
-     */
-    public int getFailures() {
-        return failures;
-    }
-
-    /**
-     * Gets the value of the errors property.
-     * 
-     */
-    public int getErrors() {
-        return errors;
-    }
-
-    /**
-     * Gets the value of the skipped property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Integer }
-     *     
-     */
-    public Integer getSkipped() {
-        return skipped;
-    }
-
-    /**
-     * Gets the value of the time property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link BigDecimal }
-     *     
-     */
-    public BigDecimal getTime() {
-        return time;
-    }
-
 
     /**
      * <p>Java class for anonymous complex type.
-     * 
+     *
      * <p>The following schema fragment specifies the expected content contained within this class.
-     * 
+     *
      * <pre>
      * &lt;complexType&gt;
      *   &lt;complexContent&gt;
@@ -359,59 +204,24 @@ public class Testsuite {
      *   &lt;/complexContent&gt;
      * &lt;/complexType&gt;
      * </pre>
-     * 
-     * 
      */
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {
-        "property"
+            "property"
     })
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder(builderMethodName = "builderForProperties")
-    @Getter
-    @Setter
-    @EqualsAndHashCode
-    @ToString
+    @Data
     public static class Properties {
 
         protected List<Property> property;
 
         /**
-         * Gets the value of the property property.
-         * 
-         * <p>
-         * This accessor method returns a reference to the live list,
-         * not a snapshot. Therefore any modification you make to the
-         * returned list will be present inside the JAXB object.
-         * This is why there is not a <CODE>set</CODE> method for the property property.
-         * 
-         * <p>
-         * For example, to add a new item, do as follows:
-         * <pre>
-         *    getProperty().add(newItem);
-         * </pre>
-         * 
-         * 
-         * <p>
-         * Objects of the following type(s) are allowed in the list
-         * {@link Property }
-         * 
-         * 
-         */
-        public List<Property> getProperty() {
-            if (property == null) {
-                property = new ArrayList<Property>();
-            }
-            return this.property;
-        }
-
-
-        /**
          * <p>Java class for anonymous complex type.
-         * 
+         *
          * <p>The following schema fragment specifies the expected content contained within this class.
-         * 
+         *
          * <pre>
          * &lt;complexType&gt;
          *   &lt;complexContent&gt;
@@ -428,18 +238,13 @@ public class Testsuite {
          *   &lt;/complexContent&gt;
          * &lt;/complexType&gt;
          * </pre>
-         * 
-         * 
          */
         @XmlAccessorType(XmlAccessType.FIELD)
         @XmlType(name = "")
         @NoArgsConstructor
         @AllArgsConstructor
         @Builder(builderMethodName = "builderForProperty")
-        @Getter
-        @Setter
-        @EqualsAndHashCode
-        @ToString
+        @Data
         public static class Property {
 
             @XmlAttribute(name = "name", required = true)
@@ -447,41 +252,15 @@ public class Testsuite {
             protected String name;
             @XmlAttribute(name = "value", required = true)
             protected String value;
-
-            /**
-             * Gets the value of the name property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getName() {
-                return name;
-            }
-
-            /**
-             * Gets the value of the value property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getValue() {
-                return value;
-            }
-
         }
-
     }
 
 
     /**
      * <p>Java class for anonymous complex type.
-     * 
+     *
      * <p>The following schema fragment specifies the expected content contained within this class.
-     * 
+     *
      * <pre>
      * &lt;complexType&gt;
      *   &lt;complexContent&gt;
@@ -516,22 +295,17 @@ public class Testsuite {
      *   &lt;/complexContent&gt;
      * &lt;/complexType&gt;
      * </pre>
-     * 
-     * 
      */
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {
-        "skipped",
-        "error",
-        "failure"
+            "skipped",
+            "error",
+            "failure"
     })
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder(builderMethodName = "builderForTestcase")
-    @Getter
-    @Setter
-    @EqualsAndHashCode
-    @ToString
+    @Data
     public static class Testcase {
 
         protected Object skipped;
@@ -549,83 +323,10 @@ public class Testsuite {
         protected BigDecimal time;
 
         /**
-         * Gets the value of the skipped property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link Object }
-         *     
-         */
-        public Object getSkipped() {
-            return skipped;
-        }
-
-        /**
-         * Gets the value of the error property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link Error }
-         *     
-         */
-        public Error getError() {
-            return error;
-        }
-
-        /**
-         * Gets the value of the failure property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link Failure }
-         *     
-         */
-        public Failure getFailure() {
-            return failure;
-        }
-
-        /**
-         * Gets the value of the name property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
-         */
-        public String getName() {
-            return name;
-        }
-
-        /**
-         * Gets the value of the classname property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
-         */
-        public String getClassname() {
-            return classname;
-        }
-
-        /**
-         * Gets the value of the time property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link BigDecimal }
-         *     
-         */
-        public BigDecimal getTime() {
-            return time;
-        }
-
-
-        /**
          * <p>Java class for anonymous complex type.
-         * 
+         *
          * <p>The following schema fragment specifies the expected content contained within this class.
-         * 
+         *
          * <pre>
          * &lt;complexType&gt;
          *   &lt;simpleContent&gt;
@@ -636,20 +337,15 @@ public class Testsuite {
          *   &lt;/simpleContent&gt;
          * &lt;/complexType&gt;
          * </pre>
-         * 
-         * 
          */
         @XmlAccessorType(XmlAccessType.FIELD)
         @XmlType(name = "", propOrder = {
-            "value"
+                "value"
         })
         @NoArgsConstructor
         @AllArgsConstructor
         @Builder(builderMethodName = "builderForError")
-        @Getter
-        @Setter
-        @EqualsAndHashCode
-        @ToString
+        @Data
         public static class Error {
 
             @XmlValue
@@ -658,51 +354,13 @@ public class Testsuite {
             protected String message;
             @XmlAttribute(name = "type", required = true)
             protected String type;
-
-            /**
-             * Gets the value of the value property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getValue() {
-                return value;
-            }
-
-            /**
-             * Gets the value of the message property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getMessage() {
-                return message;
-            }
-
-            /**
-             * Gets the value of the type property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getType() {
-                return type;
-            }
-
         }
-
 
         /**
          * <p>Java class for anonymous complex type.
-         * 
+         *
          * <p>The following schema fragment specifies the expected content contained within this class.
-         * 
+         *
          * <pre>
          * &lt;complexType&gt;
          *   &lt;simpleContent&gt;
@@ -713,20 +371,15 @@ public class Testsuite {
          *   &lt;/simpleContent&gt;
          * &lt;/complexType&gt;
          * </pre>
-         * 
-         * 
          */
         @XmlAccessorType(XmlAccessType.FIELD)
         @XmlType(name = "", propOrder = {
-            "value"
+                "value"
         })
         @NoArgsConstructor
         @AllArgsConstructor
         @Builder(builderMethodName = "builderForFailure")
-        @Getter
-        @Setter
-        @EqualsAndHashCode
-        @ToString
+        @Data
         public static class Failure {
 
             @XmlValue
@@ -736,44 +389,8 @@ public class Testsuite {
             @XmlAttribute(name = "type", required = true)
             protected String type;
 
-            /**
-             * Gets the value of the value property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getValue() {
-                return value;
-            }
-
-            /**
-             * Gets the value of the message property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getMessage() {
-                return message;
-            }
-
-            /**
-             * Gets the value of the type property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getType() {
-                return type;
-            }
 
         }
 
     }
-
 }
