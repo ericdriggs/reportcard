@@ -50,101 +50,101 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Testsuite.Testcase }
+     * Create an instance of {@link Testcase }
      * 
      */
-    public Testsuite.Testcase createTestsuiteTestcase() {
-        return new Testsuite.Testcase();
+    public Testcase createTestsuiteTestcase() {
+        return new Testcase();
     }
 
     /**
-     * Create an instance of {@link Testsuite.Properties }
+     * Create an instance of {@link Properties }
      * 
      */
-    public Testsuite.Properties createTestsuiteProperties() {
-        return new Testsuite.Properties();
+    public Properties createTestsuiteProperties() {
+        return new Properties();
     }
 
     /**
-     * Create an instance of {@link Testsuite.Testcase.Failure }
+     * Create an instance of {@link Failure }
      * 
      */
-    public Testsuite.Testcase.Failure createTestsuiteTestcaseFailure() {
-        return new Testsuite.Testcase.Failure();
+    public Failure createTestsuiteTestcaseFailure() {
+        return new Failure();
     }
 
     /**
-     * Create an instance of {@link Testsuite.Testcase.RerunFailure }
+     * Create an instance of {@link RerunFailure }
      * 
      */
-    public Testsuite.Testcase.RerunFailure createTestsuiteTestcaseRerunFailure() {
-        return new Testsuite.Testcase.RerunFailure();
+    public RerunFailure createTestsuiteTestcaseRerunFailure() {
+        return new RerunFailure();
     }
 
     /**
-     * Create an instance of {@link Testsuite.Testcase.FlakyFailure }
+     * Create an instance of {@link FlakyFailure }
      * 
      */
-    public Testsuite.Testcase.FlakyFailure createTestsuiteTestcaseFlakyFailure() {
-        return new Testsuite.Testcase.FlakyFailure();
+    public FlakyFailure createTestsuiteTestcaseFlakyFailure() {
+        return new FlakyFailure();
     }
 
     /**
-     * Create an instance of {@link Testsuite.Testcase.Skipped }
+     * Create an instance of {@link Skipped }
      * 
      */
-    public Testsuite.Testcase.Skipped createTestsuiteTestcaseSkipped() {
-        return new Testsuite.Testcase.Skipped();
+    public Skipped createTestsuiteTestcaseSkipped() {
+        return new Skipped();
     }
 
     /**
-     * Create an instance of {@link Testsuite.Testcase.Error }
+     * Create an instance of {@link Error }
      * 
      */
-    public Testsuite.Testcase.Error createTestsuiteTestcaseError() {
-        return new Testsuite.Testcase.Error();
+    public Error createTestsuiteTestcaseError() {
+        return new Error();
     }
 
     /**
-     * Create an instance of {@link Testsuite.Testcase.RerunError }
+     * Create an instance of {@link RerunError }
      * 
      */
-    public Testsuite.Testcase.RerunError createTestsuiteTestcaseRerunError() {
-        return new Testsuite.Testcase.RerunError();
+    public RerunError createTestsuiteTestcaseRerunError() {
+        return new RerunError();
     }
 
     /**
-     * Create an instance of {@link Testsuite.Testcase.FlakyError }
+     * Create an instance of {@link FlakyError }
      * 
      */
-    public Testsuite.Testcase.FlakyError createTestsuiteTestcaseFlakyError() {
-        return new Testsuite.Testcase.FlakyError();
+    public FlakyError createTestsuiteTestcaseFlakyError() {
+        return new FlakyError();
     }
 
     /**
-     * Create an instance of {@link Testsuite.Properties.Property }
+     * Create an instance of {@link Property }
      * 
      */
-    public Testsuite.Properties.Property createTestsuitePropertiesProperty() {
-        return new Testsuite.Properties.Property();
+    public Property createTestsuitePropertiesProperty() {
+        return new Property();
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Testsuite.Testcase.Skipped }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link Skipped }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "", name = "skipped", scope = Testsuite.Testcase.class)
-    public JAXBElement<Testsuite.Testcase.Skipped> createTestsuiteTestcaseSkipped(Testsuite.Testcase.Skipped value) {
-        return new JAXBElement<Testsuite.Testcase.Skipped>(_TestsuiteTestcaseSkipped_QNAME, Testsuite.Testcase.Skipped.class, Testsuite.Testcase.class, value);
+    @XmlElementDecl(namespace = "", name = "skipped", scope = Testcase.class)
+    public JAXBElement<Skipped> createTestsuiteTestcaseSkipped(Skipped value) {
+        return new JAXBElement<Skipped>(_TestsuiteTestcaseSkipped_QNAME, Skipped.class, Testcase.class, value);
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Testsuite.Testcase.Error }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link Error }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "", name = "error", scope = Testsuite.Testcase.class)
-    public JAXBElement<Testsuite.Testcase.Error> createTestsuiteTestcaseError(Testsuite.Testcase.Error value) {
-        return new JAXBElement<Testsuite.Testcase.Error>(_TestsuiteTestcaseError_QNAME, Testsuite.Testcase.Error.class, Testsuite.Testcase.class, value);
+    @XmlElementDecl(namespace = "", name = "error", scope = Testcase.class)
+    public JAXBElement<Error> createTestsuiteTestcaseError(Error value) {
+        return new JAXBElement<Error>(_TestsuiteTestcaseError_QNAME, Error.class, Testcase.class, value);
     }
 
 }
