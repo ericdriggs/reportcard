@@ -1,5 +1,5 @@
 --
--- PostgreSQL DDL generated from JUnit.xsd using xsd2pgschema
+-- PostgreSQL DDL generated from surefire-test-report-3.0.xsd using xsd2pgschema
 --  xsd2pgschema - Database replication tool based on XML Schema
 --  https://sourceforge.net/projects/xsd2pgschema/
 --
@@ -10,7 +10,7 @@
 --  realize simple bridge: false
 --  wild card extension: true
 --  case sensitive name: false
---  no name collision: false
+--  no name collision: true
 --  append document key: false
 --  append serial key: false
 --  append xpath key: false
@@ -23,262 +23,284 @@
 --  hash key type: unsigned long 64 bits
 --
 -- Statistics of schema:
---  Generated 10 tables (49 fields), 3 views (6 fields), 0 attr groups, 0 model groups in total
+--  Generated 12 tables (77 fields), 1 views (2 fields), 0 attr groups, 0 model groups in total
 --   Namespaces:
 --    http://www.w3.org/2001/XMLSchema (xs)
 --   Schema locations:
---    JUnit.xsd
+--    surefire-test-report-3.0.xsd
 --   Table types:
---    1 root, 1 root children, 2 admin roots, 9 admin children
+--    1 root, 11 root children, 1 admin roots, 0 admin children
 --   System keys:
---    13 primary keys (5 unique constraints), 7 foreign keys, 15 nested keys (2 as attribute, 0 as attribute group)
+--    13 primary keys (1 unique constraints), 11 foreign keys, 13 nested keys (3 as attribute, 0 as attribute group)
 --   User keys:
 --    0 document keys, 0 serial keys, 0 xpath keys
 --   Contents:
---    18 attributes (0 in-place document keys), 0 elements (0 in-place document keys), 2 simple contents (0 in-place document keys, 1 as attribute, 0 as conditional attribute)
+--    24 attributes (0 in-place document keys), 14 elements (0 in-place document keys), 4 simple contents (0 in-place document keys, 1 as attribute, 0 as conditional attribute)
 --   Wild cards:
 --    0 any elements, 0 any attributes
 --   Constraints:
 --    0 unique constraints from xs:key, 0 unique constraints from xs:unique, 0 foreign key constraints from xs:keyref
 --
 
---
--- JUnit test result schema for the Apache Ant JUnit and JUnitReport tasks Copyright © 2011, Windy Road Technology Pty. Limited The Apache Ant JUnit XML Schema is distributed under the terms of the Apache License Version 2.0 http://www.apache.org/licenses/ Permission to waive conditions of this license may be requested from Windy Road Support (http://windyroad.org/support).
---
-
-DROP TABLE IF EXISTS testsuites CASCADE;
-DROP TABLE IF EXISTS iso8601_datetime_pattern CASCADE;
 DROP TABLE IF EXISTS property CASCADE;
-DROP TABLE IF EXISTS skipped CASCADE;
-DROP TABLE IF EXISTS pre_string CASCADE;
-DROP TABLE IF EXISTS properties CASCADE;
-DROP TABLE IF EXISTS error CASCADE;
 DROP TABLE IF EXISTS failure CASCADE;
+DROP TABLE IF EXISTS rerunfailure CASCADE;
+DROP TABLE IF EXISTS flakyfailure CASCADE;
+DROP TABLE IF EXISTS skipped CASCADE;
+DROP TABLE IF EXISTS error CASCADE;
+DROP TABLE IF EXISTS rerunerror CASCADE;
+DROP TABLE IF EXISTS flakyerror CASCADE;
+DROP TABLE IF EXISTS surefire_time CASCADE;
+DROP TABLE IF EXISTS properties CASCADE;
 DROP TABLE IF EXISTS testcase CASCADE;
 DROP TABLE IF EXISTS testsuite CASCADE;
 
 --
--- Contains the results of exexuting a testsuite
--- xmlns: no namespace, schema location: JUnit.xsd
--- type: root child, content: true, list: true, bridge: false, virtual: false, name collision: true
+-- No annotation is available
+-- xmlns: no namespace, schema location: surefire-test-report-3.0.xsd
+-- type: root, content: true, list: true, bridge: false, virtual: false
 --
 CREATE TABLE testsuite (
-	testsuite_id BIGINT CHECK ( testsuite_id >= 0 ) ,
--- ATTRIBUTE
--- must not be NULL, but dismissed due to name collision
-	package TEXT ,
--- ATTRIBUTE
--- must not be NULL, but dismissed due to name collision
-	id INTEGER ,
+                           testsuite_id BIGINT CHECK ( testsuite_id >= 0 ) ,
 -- NESTED KEY : properties ( properties_id )
-	properties_id BIGINT CHECK ( properties_id >= 0 ) ,
+                           properties_id BIGINT CHECK ( properties_id >= 0 ) ,
 -- NESTED KEY : testcase ( testcase_id )
-	testcase_id BIGINT CHECK ( testcase_id >= 0 ) ,
--- NESTED KEY : system_out ( system_out_id, DELEGATED TO pre_string_id )
-	system_out_id BIGINT CHECK ( system_out_id >= 0 ) ,
--- NESTED KEY : system_err ( system_err_id, DELEGATED TO pre_string_id )
-	system_err_id BIGINT CHECK ( system_err_id >= 0 ) ,
+                           testcase_id BIGINT CHECK ( testcase_id >= 0 ) ,
 -- ATTRIBUTE
--- must not be NULL, but dismissed due to name collision
--- xs:restriction/xs:minLength="1"
-	name TEXT ,
--- NESTED KEY AS ATTRIBUTE : timestamp ( timestamp_id, DELEGATED TO iso8601_datetime_pattern_id )
-	timestamp_id BIGINT CHECK ( timestamp_id >= 0 ) ,
+                           name TEXT NOT NULL ,
+-- NESTED KEY AS ATTRIBUTE : time ( time_id, DELEGATED TO surefire_time_id )
+                           time_id BIGINT CHECK ( time_id >= 0 ) ,
 -- ATTRIBUTE
--- must not be NULL, but dismissed due to name collision
--- xs:restriction/xs:minLength="1"
-	hostname TEXT ,
+                           tests TEXT NOT NULL ,
 -- ATTRIBUTE
--- must not be NULL, but dismissed due to name collision
-	tests INTEGER ,
+                           errors TEXT NOT NULL ,
 -- ATTRIBUTE
--- must not be NULL, but dismissed due to name collision
-	failures INTEGER ,
+                           skipped TEXT NOT NULL ,
 -- ATTRIBUTE
--- must not be NULL, but dismissed due to name collision
-	errors INTEGER ,
+                           failures TEXT NOT NULL ,
 -- ATTRIBUTE
-	skipped INTEGER ,
--- ATTRIBUTE
--- must not be NULL, but dismissed due to name collision
-	time DECIMAL
-);
-
---
--- Properties (e.g., environment settings) set during test execution
--- xmlns: no namespace, schema location: JUnit.xsd
--- type: admin child, content: false, list: true, bridge: true, virtual: false
---
-CREATE TABLE properties (
-	properties_id BIGINT CHECK ( properties_id >= 0 ) ,
--- FOREIGN KEY : testsuite ( testsuite_id )
-	testsuite_id BIGINT CHECK ( testsuite_id >= 0 ) ,
--- NESTED KEY : property ( property_id )
-	property_id BIGINT CHECK ( property_id >= 0 )
-);
-
---
--- Indicates that the test errored. An errored test is one that had an unanticipated problem. e.g., an unchecked throwable; or a problem with the implementation of the test. Contains as a text node relevant data for the error, e.g., a stack trace
--- xmlns: no namespace, schema location: JUnit.xsd
--- type: admin child, content: true, list: false, bridge: true, virtual: false
---
-CREATE TABLE error (
--- PRIMARY KEY
-	error_id BIGINT CHECK ( error_id >= 0 ) PRIMARY KEY ,
--- NESTED KEY : pre_string ( pre_string_id )
-	pre_string_id BIGINT CHECK ( pre_string_id >= 0 ) ,
--- ATTRIBUTE
-	message TEXT ,
--- ATTRIBUTE
-	type TEXT NOT NULL
-);
-
---
--- Indicates that the test failed. A failure is a test which the code has explicitly failed by using the mechanisms for that purpose. e.g., via an assertEquals. Contains as a text node relevant data for the failure, e.g., a stack trace
--- xmlns: no namespace, schema location: JUnit.xsd
--- type: admin child, content: true, list: false, bridge: true, virtual: false
---
-CREATE TABLE failure (
--- PRIMARY KEY
-	failure_id BIGINT CHECK ( failure_id >= 0 ) PRIMARY KEY ,
--- NESTED KEY : pre_string ( pre_string_id )
-	pre_string_id BIGINT CHECK ( pre_string_id >= 0 ) ,
--- ATTRIBUTE
-	message TEXT ,
--- ATTRIBUTE
-	type TEXT NOT NULL
+                           "group" TEXT
 );
 
 --
 -- No annotation is available
--- xmlns: no namespace, schema location: JUnit.xsd
--- type: admin child, content: true, list: false, bridge: false, virtual: false
+-- xmlns: no namespace, schema location: surefire-test-report-3.0.xsd
+-- type: root child, content: true, list: true, bridge: false, virtual: false
 --
 CREATE TABLE testcase (
-	testcase_id BIGINT CHECK ( testcase_id >= 0 ) ,
+                          testcase_id BIGINT CHECK ( testcase_id >= 0 ) ,
 -- FOREIGN KEY : testsuite ( testsuite_id )
-	testsuite_id BIGINT CHECK ( testsuite_id >= 0 ) ,
+                          testsuite_id BIGINT CHECK ( testsuite_id >= 0 ) ,
+-- NESTED KEY : failure ( failure_id )
+                          failure_id BIGINT CHECK ( failure_id >= 0 ) ,
+-- NESTED KEY : rerunfailure ( rerunfailure_id )
+                          rerunfailure_id BIGINT CHECK ( rerunfailure_id >= 0 ) ,
+-- NESTED KEY : flakyfailure ( flakyfailure_id )
+                          flakyfailure_id BIGINT CHECK ( flakyfailure_id >= 0 ) ,
 -- NESTED KEY : skipped ( skipped_id )
-	skipped_id BIGINT CHECK ( skipped_id >= 0 ) ,
--- NESTED KEY : error ( error_id, DELEGATED TO pre_string_id )
-	error_id BIGINT CHECK ( error_id >= 0 ) ,
--- NESTED KEY : failure ( failure_id, DELEGATED TO pre_string_id )
-	failure_id BIGINT CHECK ( failure_id >= 0 ) ,
+                          skipped_id BIGINT CHECK ( skipped_id >= 0 ) ,
+-- NESTED KEY : error ( error_id )
+                          error_id BIGINT CHECK ( error_id >= 0 ) ,
+-- NESTED KEY : rerunerror ( rerunerror_id )
+                          rerunerror_id BIGINT CHECK ( rerunerror_id >= 0 ) ,
+-- NESTED KEY : flakyerror ( flakyerror_id )
+                          flakyerror_id BIGINT CHECK ( flakyerror_id >= 0 ) ,
+                          system_out TEXT ,
+                          system_err TEXT ,
 -- ATTRIBUTE
-	name TEXT NOT NULL ,
+                          name TEXT NOT NULL ,
 -- ATTRIBUTE
-	classname TEXT NOT NULL ,
+                          classname TEXT ,
 -- ATTRIBUTE
-	time DECIMAL NOT NULL
-);
-
---
--- Contains an aggregation of testsuite results
--- xmlns: no namespace, schema location: JUnit.xsd
--- type: root, content: false, list: true, bridge: true, virtual: false
---
-CREATE TABLE testsuites (
-	testsuites_id BIGINT CHECK ( testsuites_id >= 0 ) ,
--- NESTED KEY : testsuite ( testsuite_id )
-	testsuite_id BIGINT CHECK ( testsuite_id >= 0 )
-);
-
---
--- when the test was executed. Timezone may not be specified.
--- canonical name: ISO8601_DATETIME_PATTERN
--- xmlns: no namespace, schema location: JUnit.xsd
--- type: admin root, content: true, list: false, bridge: false, virtual: true
---
-CREATE TABLE iso8601_datetime_pattern (
--- PRIMARY KEY
-	iso8601_datetime_pattern_id BIGINT CHECK ( iso8601_datetime_pattern_id >= 0 ) PRIMARY KEY ,
--- SIMPLE CONTENT AS ATTRIBUTE, ATTRIBUTE NODE: timestamp
--- xs:restriction/xs:pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}"
-	content TIMESTAMP WITH TIME ZONE ,
--- FOREIGN KEY : timestamp ( timestamp_id )
-	timestamp_id BIGINT CHECK ( timestamp_id >= 0 )
+                          "group" TEXT ,
+-- NESTED KEY AS ATTRIBUTE : time ( time_id, DELEGATED TO surefire_time_id )
+                          time_id BIGINT CHECK ( time_id >= 0 )
 );
 
 --
 -- No annotation is available
--- xmlns: no namespace, schema location: JUnit.xsd
--- type: admin child, content: true, list: false, bridge: false, virtual: false
+-- xmlns: no namespace, schema location: surefire-test-report-3.0.xsd
+-- type: root child, content: false, list: true, bridge: true, virtual: false
+--
+CREATE TABLE properties (
+                            properties_id BIGINT CHECK ( properties_id >= 0 ) ,
+-- FOREIGN KEY : testsuite ( testsuite_id )
+                            testsuite_id BIGINT CHECK ( testsuite_id >= 0 ) ,
+-- NESTED KEY : property ( property_id )
+                            property_id BIGINT CHECK ( property_id >= 0 )
+);
+
+--
+-- No annotation is available
+-- xmlns: no namespace, schema location: surefire-test-report-3.0.xsd
+-- type: root child, content: true, list: false, bridge: false, virtual: false
 --
 CREATE TABLE property (
-	property_id BIGINT CHECK ( property_id >= 0 ) ,
+                          property_id BIGINT CHECK ( property_id >= 0 ) ,
 -- FOREIGN KEY : properties ( properties_id )
-	properties_id BIGINT CHECK ( properties_id >= 0 ) ,
+                          properties_id BIGINT CHECK ( properties_id >= 0 ) ,
 -- ATTRIBUTE
--- xs:restriction/xs:minLength="1"
-	name TEXT NOT NULL ,
+                          name TEXT NOT NULL ,
 -- ATTRIBUTE
-	value TEXT NOT NULL
+                          value TEXT NOT NULL
 );
 
 --
 -- No annotation is available
--- xmlns: no namespace, schema location: JUnit.xsd
--- type: admin child, content: false, list: false, bridge: false, virtual: false
+-- xmlns: no namespace, schema location: surefire-test-report-3.0.xsd
+-- type: root child, content: true, list: false, bridge: false, virtual: false
+--
+CREATE TABLE failure (
+                         failure_id BIGINT CHECK ( failure_id >= 0 ) ,
+-- FOREIGN KEY : testcase ( testcase_id )
+                         testcase_id BIGINT CHECK ( testcase_id >= 0 ) ,
+-- SIMPLE CONTENT
+                         content TEXT ,
+-- ATTRIBUTE
+                         message TEXT ,
+-- ATTRIBUTE
+                         type TEXT NOT NULL
+);
+
+--
+-- No annotation is available
+-- canonical name: rerunFailure
+-- xmlns: no namespace, schema location: surefire-test-report-3.0.xsd
+-- type: root child, content: true, list: false, bridge: false, virtual: false
+--
+CREATE TABLE rerunfailure (
+                              rerunfailure_id BIGINT CHECK ( rerunfailure_id >= 0 ) ,
+-- FOREIGN KEY : testcase ( testcase_id )
+                              testcase_id BIGINT CHECK ( testcase_id >= 0 ) ,
+                              stacktrace TEXT ,
+                              system_out TEXT ,
+                              system_err TEXT ,
+-- ATTRIBUTE
+                              message TEXT ,
+-- ATTRIBUTE
+                              type TEXT NOT NULL
+);
+
+--
+-- No annotation is available
+-- canonical name: flakyFailure
+-- xmlns: no namespace, schema location: surefire-test-report-3.0.xsd
+-- type: root child, content: true, list: false, bridge: false, virtual: false
+--
+CREATE TABLE flakyfailure (
+                              flakyfailure_id BIGINT CHECK ( flakyfailure_id >= 0 ) ,
+-- FOREIGN KEY : testcase ( testcase_id )
+                              testcase_id BIGINT CHECK ( testcase_id >= 0 ) ,
+                              stacktrace TEXT ,
+                              system_out TEXT ,
+                              system_err TEXT ,
+-- ATTRIBUTE
+                              message TEXT ,
+-- ATTRIBUTE
+                              type TEXT NOT NULL
+);
+
+--
+-- No annotation is available
+-- xmlns: no namespace, schema location: surefire-test-report-3.0.xsd
+-- type: root child, content: true, list: false, bridge: false, virtual: false
 --
 CREATE TABLE skipped (
--- PRIMARY KEY
-	skipped_id BIGINT CHECK ( skipped_id >= 0 ) PRIMARY KEY ,
+                         skipped_id BIGINT CHECK ( skipped_id >= 0 ) ,
 -- FOREIGN KEY : testcase ( testcase_id )
-	testcase_id BIGINT CHECK ( testcase_id >= 0 )
+                         testcase_id BIGINT CHECK ( testcase_id >= 0 ) ,
+-- SIMPLE CONTENT
+                         content TEXT ,
+-- ATTRIBUTE
+                         message TEXT
 );
 
 --
 -- No annotation is available
--- canonical name: pre-string
--- xmlns: no namespace, schema location: JUnit.xsd
--- type: admin root, content: true, list: false, bridge: false, virtual: true
+-- xmlns: no namespace, schema location: surefire-test-report-3.0.xsd
+-- type: root child, content: true, list: false, bridge: false, virtual: false
 --
-CREATE TABLE pre_string (
--- PRIMARY KEY
-	pre_string_id BIGINT CHECK ( pre_string_id >= 0 ) PRIMARY KEY ,
--- FOREIGN KEY : error ( error_id )
-	error_id BIGINT CHECK ( error_id >= 0 ) CONSTRAINT FK_pre_string_error REFERENCES error ( error_id ) ON DELETE CASCADE ,
--- FOREIGN KEY : failure ( failure_id )
-	failure_id BIGINT CHECK ( failure_id >= 0 ) CONSTRAINT FK_pre_string_failure REFERENCES failure ( failure_id ) ON DELETE CASCADE ,
+CREATE TABLE error (
+                       error_id BIGINT CHECK ( error_id >= 0 ) ,
+-- FOREIGN KEY : testcase ( testcase_id )
+                       testcase_id BIGINT CHECK ( testcase_id >= 0 ) ,
 -- SIMPLE CONTENT
-	content TEXT
+                       content TEXT ,
+-- ATTRIBUTE
+                       message TEXT ,
+-- ATTRIBUTE
+                       type TEXT NOT NULL
 );
 
 --
--- Data that was written to standard out while the test was executed
--- canonical name: system-out
--- xmlns: no namespace, schema location: JUnit.xsd
--- type: admin child (view), content: false, list: false, bridge: true, virtual: false
+-- No annotation is available
+-- canonical name: rerunError
+-- xmlns: no namespace, schema location: surefire-test-report-3.0.xsd
+-- type: root child, content: true, list: false, bridge: false, virtual: false
 --
-CREATE OR REPLACE VIEW system_out AS
-SELECT
-	system_out_id ,
--- NESTED KEY : pre_string ( pre_string_id )
-	system_out_id AS pre_string_id
-FROM testsuite WHERE system_out_id IS NOT NULL;
+CREATE TABLE rerunerror (
+                            rerunerror_id BIGINT CHECK ( rerunerror_id >= 0 ) ,
+-- FOREIGN KEY : testcase ( testcase_id )
+                            testcase_id BIGINT CHECK ( testcase_id >= 0 ) ,
+                            stacktrace TEXT ,
+                            system_out TEXT ,
+                            system_err TEXT ,
+-- ATTRIBUTE
+                            message TEXT ,
+-- ATTRIBUTE
+                            type TEXT NOT NULL
+);
 
 --
--- Data that was written to standard error while the test was executed
--- canonical name: system-err
--- xmlns: no namespace, schema location: JUnit.xsd
--- type: admin child (view), content: false, list: false, bridge: true, virtual: false
+-- No annotation is available
+-- canonical name: flakyError
+-- xmlns: no namespace, schema location: surefire-test-report-3.0.xsd
+-- type: root child, content: true, list: false, bridge: false, virtual: false
 --
-CREATE OR REPLACE VIEW system_err AS
-SELECT
-	system_err_id ,
--- NESTED KEY : pre_string ( pre_string_id )
-	system_err_id AS pre_string_id
-FROM testsuite WHERE system_err_id IS NOT NULL;
+CREATE TABLE flakyerror (
+                            flakyerror_id BIGINT CHECK ( flakyerror_id >= 0 ) ,
+-- FOREIGN KEY : testcase ( testcase_id )
+                            testcase_id BIGINT CHECK ( testcase_id >= 0 ) ,
+                            stacktrace TEXT ,
+                            system_out TEXT ,
+                            system_err TEXT ,
+-- ATTRIBUTE
+                            message TEXT ,
+-- ATTRIBUTE
+                            type TEXT NOT NULL
+);
 
 --
--- when the test was executed. Timezone may not be specified.
--- xmlns: no namespace, schema location: JUnit.xsd
--- type: admin child (view), content: false, list: false, bridge: true, virtual: false
+-- No annotation is available
+-- canonical name: SUREFIRE_TIME
+-- xmlns: no namespace, schema location: surefire-test-report-3.0.xsd
+-- type: admin root, content: true, list: false, bridge: false, virtual: true
 --
-CREATE OR REPLACE VIEW timestamp AS
+CREATE TABLE surefire_time (
+-- PRIMARY KEY
+                               surefire_time_id BIGINT CHECK ( surefire_time_id >= 0 ) PRIMARY KEY ,
+-- FOREIGN KEY : time ( time_id )
+                               time_id BIGINT CHECK ( time_id >= 0 ) ,
+-- SIMPLE CONTENT AS ATTRIBUTE, ATTRIBUTE NODE: time
+-- xs:restriction/xs:pattern="(([0-9]{0,3},)*[0-9]{3}|[0-9]{0,3})*(\.[0-9]{0,3})?"
+                               content TEXT
+);
+
+--
+-- No annotation is available
+-- xmlns: no namespace, schema location: surefire-test-report-3.0.xsd
+-- type: root child (view), content: false, list: false, bridge: true, virtual: false
+--
+CREATE OR REPLACE VIEW time AS
 SELECT
-	timestamp_id ,
--- NESTED KEY AS ATTRIBUTE : iso8601_datetime_pattern ( iso8601_datetime_pattern_id )
-	timestamp_id AS iso8601_datetime_pattern_id
-FROM testsuite WHERE timestamp_id IS NOT NULL;
+    time_id ,
+-- NESTED KEY AS ATTRIBUTE : surefire_time ( surefire_time_id )
+    time_id AS surefire_time_id
+FROM testcase WHERE time_id IS NOT NULL
+UNION ALL
+SELECT
+    time_id ,
+-- NESTED KEY AS ATTRIBUTE : surefire_time ( surefire_time_id )
+    time_id AS surefire_time_id
+FROM testsuite WHERE time_id IS NOT NULL;
 

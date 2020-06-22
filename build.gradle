@@ -1,6 +1,8 @@
 buildscript {
     ext {
         javaVersion = JavaVersion.VERSION_11
+//        jaxbApiVersion = '2.3.1'
+//        jaxbGlassfishVersion = '2.3.1'
     }
 }
 
@@ -24,3 +26,22 @@ clean {
     delete 'build'
     delete 'target'
 }
+repositories {
+    mavenLocal()
+    mavenCentral()
+    jcenter()
+}
+dependencies {
+    compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
+    runtime 'org.glassfish.jaxb:jaxb-runtime:2.3.1'
+    compile group: 'org.glassfish.jaxb', name: 'jaxb-xjc', version: '2.3.1'
+
+
+//    compile "javax.xml.bind:jaxb-api:${jaxbApiVersion}"
+//    compile "org.glassfish.jaxb:jaxb-runtime:${jaxbGlassfishVersion}"
+
+//    compile group: 'org.eclipse.persistence', name: 'org.eclipse.persistence.moxy', version: '2.7.7'
+//    compile group: 'org.eclipse.persistence', name: 'org.eclipse.persistence.moxy', version: '3.0.0-M1'
+
+}
+//sourceSets.main.java.srcDirs += myDir
