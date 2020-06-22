@@ -3,10 +3,7 @@ package com.ericdriggs.ragnarok.model;
 import com.ericdriggs.ragnarok.interfaces.HasNameId;
 import lombok.Data;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 /**
  * A Github repository.
@@ -19,5 +16,6 @@ public class Repo implements HasNameId {
     @Id
     @GeneratedValue(strategy= GenerationType.SEQUENCE, generator="seq_repo")
     private Long id;
-    private Long orgFk;
+    @ManyToOne
+    private Org org;
 }
