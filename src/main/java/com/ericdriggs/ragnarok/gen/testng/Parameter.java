@@ -37,10 +37,7 @@ import javax.xml.bind.annotation.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(builderMethodName = "builderForParameter")
-@Getter
-@Setter
-@EqualsAndHashCode
-@ToString
+@Data
 public class Parameter
     extends Any
 {
@@ -51,29 +48,5 @@ public class Parameter
     @XmlAttribute(name = "value", required = true)
     @XmlSchemaType(name = "anySimpleType")
     protected String value;
-
-    /**
-     * Gets the value of the name property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Gets the value of the value property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getValue() {
-        return value;
-    }
 
 }

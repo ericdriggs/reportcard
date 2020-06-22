@@ -38,10 +38,7 @@ import javax.xml.bind.annotation.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(builderMethodName = "builderForInclude")
-@Getter
-@Setter
-@EqualsAndHashCode
-@ToString
+@Data
 public class Include
     extends Any
 {
@@ -55,41 +52,5 @@ public class Include
     @XmlAttribute(name = "invocation-numbers")
     @XmlSchemaType(name = "anySimpleType")
     protected String invocationNumbers;
-
-    /**
-     * Gets the value of the name property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Gets the value of the description property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getDescription() {
-        return description;
-    }
-
-    /**
-     * Gets the value of the invocationNumbers property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getInvocationNumbers() {
-        return invocationNumbers;
-    }
 
 }

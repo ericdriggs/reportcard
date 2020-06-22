@@ -44,10 +44,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(builderMethodName = "builderForPackage")
-@Getter
-@Setter
-@EqualsAndHashCode
-@ToString
+@Data
 public class Package {
 
     @XmlElements({
@@ -58,47 +55,5 @@ public class Package {
     @XmlAttribute(name = "name", required = true)
     @XmlSchemaType(name = "anySimpleType")
     protected String name;
-
-    /**
-     * Gets the value of the includeAndExclude property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the includeAndExclude property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getIncludeAndExclude().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Include }
-     * {@link Exclude }
-     * 
-     * 
-     */
-    public List<Any> getIncludeAndExclude() {
-        if (includeAndExclude == null) {
-            includeAndExclude = new ArrayList<Any>();
-        }
-        return this.includeAndExclude;
-    }
-
-    /**
-     * Gets the value of the name property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getName() {
-        return name;
-    }
 
 }

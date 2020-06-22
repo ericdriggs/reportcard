@@ -37,10 +37,7 @@ import javax.xml.bind.annotation.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(builderMethodName = "builderForSelectorClass")
-@Getter
-@Setter
-@EqualsAndHashCode
-@ToString
+@Data
 public class SelectorClass
     extends Any
 {
@@ -51,29 +48,5 @@ public class SelectorClass
     @XmlAttribute(name = "priority")
     @XmlSchemaType(name = "anySimpleType")
     protected String priority;
-
-    /**
-     * Gets the value of the name property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Gets the value of the priority property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getPriority() {
-        return priority;
-    }
 
 }

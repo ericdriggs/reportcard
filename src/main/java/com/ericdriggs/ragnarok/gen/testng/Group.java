@@ -37,10 +37,7 @@ import javax.xml.bind.annotation.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(builderMethodName = "builderForGroup")
-@Getter
-@Setter
-@EqualsAndHashCode
-@ToString
+@Data
 public class Group
     extends Any
 {
@@ -51,29 +48,5 @@ public class Group
     @XmlAttribute(name = "depends-on", required = true)
     @XmlSchemaType(name = "anySimpleType")
     protected String dependsOn;
-
-    /**
-     * Gets the value of the name property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Gets the value of the dependsOn property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getDependsOn() {
-        return dependsOn;
-    }
 
 }

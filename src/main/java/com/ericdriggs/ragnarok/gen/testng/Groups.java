@@ -49,67 +49,11 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(builderMethodName = "builderForGroups")
-@Getter
-@Setter
-@EqualsAndHashCode
-@ToString
+@Data
 public class Groups {
 
     protected List<Define> define;
     protected Run run;
     protected Dependencies dependencies;
-
-    /**
-     * Gets the value of the define property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the define property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getDefine().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Define }
-     * 
-     * 
-     */
-    public List<Define> getDefine() {
-        if (define == null) {
-            define = new ArrayList<Define>();
-        }
-        return this.define;
-    }
-
-    /**
-     * Gets the value of the run property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Run }
-     *     
-     */
-    public Run getRun() {
-        return run;
-    }
-
-    /**
-     * Gets the value of the dependencies property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Dependencies }
-     *     
-     */
-    public Dependencies getDependencies() {
-        return dependencies;
-    }
 
 }

@@ -36,10 +36,7 @@ import javax.xml.bind.annotation.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(builderMethodName = "builderForSuiteFile")
-@Getter
-@Setter
-@EqualsAndHashCode
-@ToString
+@Data
 public class SuiteFile
     extends Any
 {
@@ -47,17 +44,5 @@ public class SuiteFile
     @XmlAttribute(name = "path", required = true)
     @XmlSchemaType(name = "anySimpleType")
     protected String path;
-
-    /**
-     * Gets the value of the path property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getPath() {
-        return path;
-    }
 
 }

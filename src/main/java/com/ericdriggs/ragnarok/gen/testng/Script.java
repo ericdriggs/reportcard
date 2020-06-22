@@ -36,10 +36,7 @@ import javax.xml.bind.annotation.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(builderMethodName = "builderForScript")
-@Getter
-@Setter
-@EqualsAndHashCode
-@ToString
+@Data
 public class Script
     extends Any
 {
@@ -47,17 +44,5 @@ public class Script
     @XmlAttribute(name = "language", required = true)
     @XmlSchemaType(name = "anySimpleType")
     protected String language;
-
-    /**
-     * Gets the value of the language property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getLanguage() {
-        return language;
-    }
 
 }

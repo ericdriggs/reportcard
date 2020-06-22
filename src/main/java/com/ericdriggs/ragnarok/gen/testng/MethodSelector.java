@@ -44,55 +44,11 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(builderMethodName = "builderForMethodSelector")
-@Getter
-@Setter
-@EqualsAndHashCode
-@ToString
+@Data
 public class MethodSelector {
 
     @XmlElement(name = "selector-class")
     protected List<SelectorClass> selectorClass;
     protected Script script;
-
-    /**
-     * Gets the value of the selectorClass property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the selectorClass property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getSelectorClass().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link SelectorClass }
-     * 
-     * 
-     */
-    public List<SelectorClass> getSelectorClass() {
-        if (selectorClass == null) {
-            selectorClass = new ArrayList<SelectorClass>();
-        }
-        return this.selectorClass;
-    }
-
-    /**
-     * Gets the value of the script property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Script }
-     *     
-     */
-    public Script getScript() {
-        return script;
-    }
 
 }

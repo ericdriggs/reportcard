@@ -36,10 +36,7 @@ import javax.xml.bind.annotation.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(builderMethodName = "builderForExclude")
-@Getter
-@Setter
-@EqualsAndHashCode
-@ToString
+@Data
 public class Exclude
     extends Any
 {
@@ -47,17 +44,5 @@ public class Exclude
     @XmlAttribute(name = "name", required = true)
     @XmlSchemaType(name = "anySimpleType")
     protected String name;
-
-    /**
-     * Gets the value of the name property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getName() {
-        return name;
-    }
 
 }

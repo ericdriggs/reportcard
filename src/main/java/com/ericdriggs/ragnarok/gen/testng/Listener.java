@@ -15,9 +15,9 @@ import javax.xml.bind.annotation.*;
 
 /**
  * <p>Java class for anonymous complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType&gt;
  *   &lt;complexContent&gt;
@@ -27,8 +27,6 @@ import javax.xml.bind.annotation.*;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
@@ -36,28 +34,13 @@ import javax.xml.bind.annotation.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(builderMethodName = "builderForListener")
-@Getter
-@Setter
-@EqualsAndHashCode
-@ToString
+@Data
 public class Listener
-    extends Any
-{
+        extends Any {
 
     @XmlAttribute(name = "class-name", required = true)
     @XmlSchemaType(name = "anySimpleType")
     protected String className;
 
-    /**
-     * Gets the value of the className property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getClassName() {
-        return className;
-    }
 
 }
