@@ -57,19 +57,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Testsuite.Testcase }
+     * Create an instance of {@link Testcase }
      * 
      */
-    public Testsuite.Testcase createTestsuiteTestcase() {
-        return new Testsuite.Testcase();
+    public Testcase createTestsuiteTestcase() {
+        return new Testcase();
     }
 
     /**
-     * Create an instance of {@link Testsuite.Properties }
+     * Create an instance of {@link Properties }
      * 
      */
-    public Testsuite.Properties createTestsuiteProperties() {
-        return new Testsuite.Properties();
+    public Properties createTestsuiteProperties() {
+        return new Properties();
     }
 
     /**
@@ -81,27 +81,27 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Testsuite.Testcase.Error }
+     * Create an instance of {@link Error }
      * 
      */
-    public Testsuite.Testcase.Error createTestsuiteTestcaseError() {
-        return new Testsuite.Testcase.Error();
+    public Error createTestsuiteTestcaseError() {
+        return new Error();
     }
 
     /**
-     * Create an instance of {@link Testsuite.Testcase.Failure }
+     * Create an instance of {@link Failure }
      * 
      */
-    public Testsuite.Testcase.Failure createTestsuiteTestcaseFailure() {
-        return new Testsuite.Testcase.Failure();
+    public Failure createTestsuiteTestcaseFailure() {
+        return new Failure();
     }
 
     /**
-     * Create an instance of {@link Testsuite.Properties.Property }
+     * Create an instance of {@link Property }
      * 
      */
-    public Testsuite.Properties.Property createTestsuitePropertiesProperty() {
-        return new Testsuite.Properties.Property();
+    public Property createTestsuitePropertiesProperty() {
+        return new Property();
     }
 
     /**

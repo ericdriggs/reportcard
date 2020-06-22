@@ -83,6 +83,7 @@ public class Testsuites {
     @AllArgsConstructor
 //    @Builder(builderMethodName = "builderForTestsuite")
     @Data
+    //TODO: don't extend just combine versions so no static class
     public static class Testsuite
         extends com.ericdriggs.ragnarok.gen.junit.Testsuite
     {
