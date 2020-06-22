@@ -4,6 +4,8 @@ import com.ericdriggs.ragnarok.interfaces.HasNameId;
 import lombok.Data;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 /**
@@ -15,6 +17,7 @@ import javax.persistence.Id;
 public class Repo implements HasNameId {
     private String name;
     @Id
+    @GeneratedValue(strategy= GenerationType.SEQUENCE, generator="seq_repo")
     private Long id;
     private Long orgFk;
 }
