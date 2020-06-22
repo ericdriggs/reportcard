@@ -175,10 +175,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(builderMethodName = "builderForTestsuite")
-@Getter
-@Setter
-@EqualsAndHashCode
-@ToString
+@Data
 public class Testsuite {
 
     protected List<Properties> properties;
@@ -197,149 +194,6 @@ public class Testsuite {
     protected String failures;
     @XmlAttribute(name = "group")
     protected String group;
-
-    /**
-     * Gets the value of the properties property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the properties property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getProperties().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Properties }
-     * 
-     * 
-     */
-    public List<Properties> getProperties() {
-        if (properties == null) {
-            properties = new ArrayList<Properties>();
-        }
-        return this.properties;
-    }
-
-    /**
-     * Gets the value of the testcase property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the testcase property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getTestcase().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Testcase }
-     * 
-     * 
-     */
-    public List<Testcase> getTestcase() {
-        if (testcase == null) {
-            testcase = new ArrayList<Testcase>();
-        }
-        return this.testcase;
-    }
-
-    /**
-     * Gets the value of the name property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Gets the value of the time property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getTime() {
-        return time;
-    }
-
-    /**
-     * Gets the value of the tests property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getTests() {
-        return tests;
-    }
-
-    /**
-     * Gets the value of the errors property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getErrors() {
-        return errors;
-    }
-
-    /**
-     * Gets the value of the skipped property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getSkipped() {
-        return skipped;
-    }
-
-    /**
-     * Gets the value of the failures property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getFailures() {
-        return failures;
-    }
-
-    /**
-     * Gets the value of the group property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getGroup() {
-        return group;
-    }
-
 
     /**
      * <p>Java class for anonymous complex type.
@@ -376,10 +230,7 @@ public class Testsuite {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder(builderMethodName = "builderForProperties")
-    @Getter
-    @Setter
-    @EqualsAndHashCode
-    @ToString
+    @Data
     public static class Properties {
 
         protected List<Property> property;
@@ -437,10 +288,7 @@ public class Testsuite {
         @NoArgsConstructor
         @AllArgsConstructor
         @Builder(builderMethodName = "builderForProperty")
-        @Getter
-        @Setter
-        @EqualsAndHashCode
-        @ToString
+        @Data
         public static class Property {
 
             @XmlAttribute(name = "name", required = true)
@@ -471,9 +319,7 @@ public class Testsuite {
             public String getValue() {
                 return value;
             }
-
         }
-
     }
 
 
@@ -605,10 +451,10 @@ public class Testsuite {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder(builderMethodName = "builderForTestcase")
-    @Getter
-    @Setter
-    @EqualsAndHashCode
-    @ToString
+
+
+    @Data
+
     public static class Testcase {
 
         @XmlElement(nillable = true)
@@ -633,247 +479,6 @@ public class Testsuite {
         protected String group;
         @XmlAttribute(name = "time", required = true)
         protected String time;
-
-        /**
-         * Gets the value of the failure property.
-         * 
-         * <p>
-         * This accessor method returns a reference to the live list,
-         * not a snapshot. Therefore any modification you make to the
-         * returned list will be present inside the JAXB object.
-         * This is why there is not a <CODE>set</CODE> method for the failure property.
-         * 
-         * <p>
-         * For example, to add a new item, do as follows:
-         * <pre>
-         *    getFailure().add(newItem);
-         * </pre>
-         * 
-         * 
-         * <p>
-         * Objects of the following type(s) are allowed in the list
-         * {@link Failure }
-         * 
-         * 
-         */
-        public List<Failure> getFailure() {
-            if (failure == null) {
-                failure = new ArrayList<Failure>();
-            }
-            return this.failure;
-        }
-
-        /**
-         * Gets the value of the rerunFailure property.
-         * 
-         * <p>
-         * This accessor method returns a reference to the live list,
-         * not a snapshot. Therefore any modification you make to the
-         * returned list will be present inside the JAXB object.
-         * This is why there is not a <CODE>set</CODE> method for the rerunFailure property.
-         * 
-         * <p>
-         * For example, to add a new item, do as follows:
-         * <pre>
-         *    getRerunFailure().add(newItem);
-         * </pre>
-         * 
-         * 
-         * <p>
-         * Objects of the following type(s) are allowed in the list
-         * {@link RerunFailure }
-         * 
-         * 
-         */
-        public List<RerunFailure> getRerunFailure() {
-            if (rerunFailure == null) {
-                rerunFailure = new ArrayList<RerunFailure>();
-            }
-            return this.rerunFailure;
-        }
-
-        /**
-         * Gets the value of the flakyFailure property.
-         * 
-         * <p>
-         * This accessor method returns a reference to the live list,
-         * not a snapshot. Therefore any modification you make to the
-         * returned list will be present inside the JAXB object.
-         * This is why there is not a <CODE>set</CODE> method for the flakyFailure property.
-         * 
-         * <p>
-         * For example, to add a new item, do as follows:
-         * <pre>
-         *    getFlakyFailure().add(newItem);
-         * </pre>
-         * 
-         * 
-         * <p>
-         * Objects of the following type(s) are allowed in the list
-         * {@link FlakyFailure }
-         * 
-         * 
-         */
-        public List<FlakyFailure> getFlakyFailure() {
-            if (flakyFailure == null) {
-                flakyFailure = new ArrayList<FlakyFailure>();
-            }
-            return this.flakyFailure;
-        }
-
-        /**
-         * Gets the value of the skipped property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link JAXBElement }{@code <}{@link Skipped }{@code >}
-         *     
-         */
-        public JAXBElement<Skipped> getSkipped() {
-            return skipped;
-        }
-
-        /**
-         * Gets the value of the error property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link JAXBElement }{@code <}{@link Error }{@code >}
-         *     
-         */
-        public JAXBElement<Error> getError() {
-            return error;
-        }
-
-        /**
-         * Gets the value of the rerunError property.
-         * 
-         * <p>
-         * This accessor method returns a reference to the live list,
-         * not a snapshot. Therefore any modification you make to the
-         * returned list will be present inside the JAXB object.
-         * This is why there is not a <CODE>set</CODE> method for the rerunError property.
-         * 
-         * <p>
-         * For example, to add a new item, do as follows:
-         * <pre>
-         *    getRerunError().add(newItem);
-         * </pre>
-         * 
-         * 
-         * <p>
-         * Objects of the following type(s) are allowed in the list
-         * {@link RerunError }
-         * 
-         * 
-         */
-        public List<RerunError> getRerunError() {
-            if (rerunError == null) {
-                rerunError = new ArrayList<RerunError>();
-            }
-            return this.rerunError;
-        }
-
-        /**
-         * Gets the value of the flakyError property.
-         * 
-         * <p>
-         * This accessor method returns a reference to the live list,
-         * not a snapshot. Therefore any modification you make to the
-         * returned list will be present inside the JAXB object.
-         * This is why there is not a <CODE>set</CODE> method for the flakyError property.
-         * 
-         * <p>
-         * For example, to add a new item, do as follows:
-         * <pre>
-         *    getFlakyError().add(newItem);
-         * </pre>
-         * 
-         * 
-         * <p>
-         * Objects of the following type(s) are allowed in the list
-         * {@link FlakyError }
-         * 
-         * 
-         */
-        public List<FlakyError> getFlakyError() {
-            if (flakyError == null) {
-                flakyError = new ArrayList<FlakyError>();
-            }
-            return this.flakyError;
-        }
-
-        /**
-         * Gets the value of the systemOut property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
-         */
-        public String getSystemOut() {
-            return systemOut;
-        }
-
-        /**
-         * Gets the value of the systemErr property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
-         */
-        public String getSystemErr() {
-            return systemErr;
-        }
-
-        /**
-         * Gets the value of the name property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
-         */
-        public String getName() {
-            return name;
-        }
-
-        /**
-         * Gets the value of the classname property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
-         */
-        public String getClassname() {
-            return classname;
-        }
-
-        /**
-         * Gets the value of the group property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
-         */
-        public String getGroup() {
-            return group;
-        }
-
-        /**
-         * Gets the value of the time property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
-         */
-        public String getTime() {
-            return time;
-        }
 
 
         /**
@@ -901,10 +506,7 @@ public class Testsuite {
         @NoArgsConstructor
         @AllArgsConstructor
         @Builder(builderMethodName = "builderForError")
-        @Getter
-        @Setter
-        @EqualsAndHashCode
-        @ToString
+        @Data
         public static class Error {
 
             @XmlValue
@@ -913,42 +515,6 @@ public class Testsuite {
             protected String message;
             @XmlAttribute(name = "type", required = true)
             protected String type;
-
-            /**
-             * Gets the value of the value property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getValue() {
-                return value;
-            }
-
-            /**
-             * Gets the value of the message property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getMessage() {
-                return message;
-            }
-
-            /**
-             * Gets the value of the type property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getType() {
-                return type;
-            }
 
         }
 
@@ -978,10 +544,7 @@ public class Testsuite {
         @NoArgsConstructor
         @AllArgsConstructor
         @Builder(builderMethodName = "builderForFailure")
-        @Getter
-        @Setter
-        @EqualsAndHashCode
-        @ToString
+        @Data
         public static class Failure {
 
             @XmlValue
@@ -990,43 +553,6 @@ public class Testsuite {
             protected String message;
             @XmlAttribute(name = "type", required = true)
             protected String type;
-
-            /**
-             * Gets the value of the value property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getValue() {
-                return value;
-            }
-
-            /**
-             * Gets the value of the message property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getMessage() {
-                return message;
-            }
-
-            /**
-             * Gets the value of the type property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getType() {
-                return type;
-            }
-
         }
 
 
@@ -1062,10 +588,7 @@ public class Testsuite {
         @NoArgsConstructor
         @AllArgsConstructor
         @Builder(builderMethodName = "builderForFlakyError")
-        @Getter
-        @Setter
-        @EqualsAndHashCode
-        @ToString
+        @Data
         public static class FlakyError {
 
             @XmlElement(required = true)
@@ -1078,67 +601,6 @@ public class Testsuite {
             protected String message;
             @XmlAttribute(name = "type", required = true)
             protected String type;
-
-            /**
-             * Gets the value of the stackTrace property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getStackTrace() {
-                return stackTrace;
-            }
-
-            /**
-             * Gets the value of the systemOut property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getSystemOut() {
-                return systemOut;
-            }
-
-            /**
-             * Gets the value of the systemErr property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getSystemErr() {
-                return systemErr;
-            }
-
-            /**
-             * Gets the value of the message property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getMessage() {
-                return message;
-            }
-
-            /**
-             * Gets the value of the type property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getType() {
-                return type;
-            }
-
         }
 
 
@@ -1174,10 +636,7 @@ public class Testsuite {
         @NoArgsConstructor
         @AllArgsConstructor
         @Builder(builderMethodName = "builderForFlakyFailure")
-        @Getter
-        @Setter
-        @EqualsAndHashCode
-        @ToString
+        @Data
         public static class FlakyFailure {
 
             @XmlElement(required = true)
@@ -1190,67 +649,6 @@ public class Testsuite {
             protected String message;
             @XmlAttribute(name = "type", required = true)
             protected String type;
-
-            /**
-             * Gets the value of the stackTrace property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getStackTrace() {
-                return stackTrace;
-            }
-
-            /**
-             * Gets the value of the systemOut property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getSystemOut() {
-                return systemOut;
-            }
-
-            /**
-             * Gets the value of the systemErr property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getSystemErr() {
-                return systemErr;
-            }
-
-            /**
-             * Gets the value of the message property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getMessage() {
-                return message;
-            }
-
-            /**
-             * Gets the value of the type property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getType() {
-                return type;
-            }
-
         }
 
 
@@ -1286,10 +684,7 @@ public class Testsuite {
         @NoArgsConstructor
         @AllArgsConstructor
         @Builder(builderMethodName = "builderForRerunError")
-        @Getter
-        @Setter
-        @EqualsAndHashCode
-        @ToString
+        @Data
         public static class RerunError {
 
             @XmlElement(required = true)
@@ -1302,67 +697,6 @@ public class Testsuite {
             protected String message;
             @XmlAttribute(name = "type", required = true)
             protected String type;
-
-            /**
-             * Gets the value of the stackTrace property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getStackTrace() {
-                return stackTrace;
-            }
-
-            /**
-             * Gets the value of the systemOut property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getSystemOut() {
-                return systemOut;
-            }
-
-            /**
-             * Gets the value of the systemErr property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getSystemErr() {
-                return systemErr;
-            }
-
-            /**
-             * Gets the value of the message property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getMessage() {
-                return message;
-            }
-
-            /**
-             * Gets the value of the type property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getType() {
-                return type;
-            }
-
         }
 
 
@@ -1398,10 +732,7 @@ public class Testsuite {
         @NoArgsConstructor
         @AllArgsConstructor
         @Builder(builderMethodName = "builderForRerunFailure")
-        @Getter
-        @Setter
-        @EqualsAndHashCode
-        @ToString
+        @Data
         public static class RerunFailure {
 
             @XmlElement(required = true)
@@ -1414,66 +745,6 @@ public class Testsuite {
             protected String message;
             @XmlAttribute(name = "type", required = true)
             protected String type;
-
-            /**
-             * Gets the value of the stackTrace property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getStackTrace() {
-                return stackTrace;
-            }
-
-            /**
-             * Gets the value of the systemOut property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getSystemOut() {
-                return systemOut;
-            }
-
-            /**
-             * Gets the value of the systemErr property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getSystemErr() {
-                return systemErr;
-            }
-
-            /**
-             * Gets the value of the message property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getMessage() {
-                return message;
-            }
-
-            /**
-             * Gets the value of the type property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getType() {
-                return type;
-            }
 
         }
 
@@ -1502,43 +773,13 @@ public class Testsuite {
         @NoArgsConstructor
         @AllArgsConstructor
         @Builder(builderMethodName = "builderForSkipped")
-        @Getter
-        @Setter
-        @EqualsAndHashCode
-        @ToString
+        @Data
         public static class Skipped {
 
             @XmlValue
             protected String value;
             @XmlAttribute(name = "message")
             protected String message;
-
-            /**
-             * Gets the value of the value property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getValue() {
-                return value;
-            }
-
-            /**
-             * Gets the value of the message property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getMessage() {
-                return message;
-            }
-
         }
-
     }
-
 }
