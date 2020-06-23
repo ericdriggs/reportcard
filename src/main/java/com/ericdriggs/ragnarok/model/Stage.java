@@ -1,19 +1,19 @@
 package com.ericdriggs.ragnarok.model;
 
 import com.ericdriggs.ragnarok.interfaces.HasId;
+import com.ericdriggs.ragnarok.interfaces.HasNameId;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.util.HashMap;
-import java.util.Map;
 
 @Data
 @Entity
-public class Build implements HasId
+public class Stage implements HasNameId
 {
     @Id
-    @GeneratedValue(strategy= GenerationType.SEQUENCE, generator="seq_build")
+    @GeneratedValue(strategy= GenerationType.SEQUENCE, generator="seq_stage")
     private Long id;
+    private String name;
     @ManyToOne
     private App app;
 
