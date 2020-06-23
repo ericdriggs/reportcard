@@ -17,9 +17,13 @@ public class Build implements HasId
     @ManyToOne
     private App app;
 
-    @ElementCollection
-    @MapKeyColumn(name = "key")
+
+//    @Column(name = "json_input", columnDefinition = "json")
+    @Column(    columnDefinition = "json")
+    private String metaDataJson;
+//    @ElementCollection
+//    @MapKeyColumn(name = "key")
 //    @Column(name = "value")
 //    @CollectionTable(name="build_metadata")
-    private Map<String, String> buildMetaDataMap = new HashMap<String, String>();
+//    private Sgr]] buildMetaDataMap = new HashMap<String, String>();
 }
