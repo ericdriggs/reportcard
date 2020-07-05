@@ -11,6 +11,8 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.StringReader;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 @SpringBootTest
 public class TestngUnmarshallTest {
 
@@ -23,13 +25,16 @@ public class TestngUnmarshallTest {
 
         JAXBContext jaxbContext;
         try {
-            jaxbContext = JAXBContext.newInstance(Testsuite.class);
+            jaxbContext = JAXBContext.newInstance(TestngResults.class);
             Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
             TestngResults testngResults = (TestngResults) jaxbUnmarshaller.unmarshal(new StringReader(xmlString));
             System.out.println(testngResults);
-            //TODO: add assertions
+            assertEquals(1, testngResults.suites.size());
+            assertEquals(1, testngResults.suites.get(0).listenersOrPackagesOrTest.size());
+            com.ericdriggs.ragnarok.xml.testng.Test test = (com.ericdriggs.ragnarok.xml.testng.Test)  testngResults.suites.get(0).listenersOrPackagesOrTest.get(0);
+            assertEquals("Ant test", test.getName() );
         } catch (JAXBException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
     }

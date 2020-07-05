@@ -10,6 +10,8 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.StringReader;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 @SpringBootTest
 public class JunitUnmarshallTest {
 
@@ -26,10 +28,12 @@ public class JunitUnmarshallTest {
             jaxbContext = JAXBContext.newInstance(Testsuites.class);
             Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
             Testsuites testsuites = (Testsuites) jaxbUnmarshaller.unmarshal(new StringReader(xmlString));
+            assertEquals(66, testsuites.testsuite.size());
+
             System.out.println(testsuites);
             //TODO: add assertions
         } catch (JAXBException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 }

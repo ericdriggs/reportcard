@@ -28,7 +28,7 @@ public class SurefireUnmarshallTest {
             System.out.println(testsuite);
             //TODO: add assertions
         } catch (JAXBException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
     }

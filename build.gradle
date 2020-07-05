@@ -47,6 +47,9 @@ dependencies {
 //    TODO: developmentOnly for devtools?
     compile 'org.springframework.boot:spring-boot-devtools'
 
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+
 
 
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
@@ -71,6 +74,7 @@ dependencies {
 }
 
 test {
+    useJUnitPlatform()
     systemProperties System.properties
     outputs.upToDateWhen { false }
 }

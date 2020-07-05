@@ -39,7 +39,7 @@ import java.util.List;
 @XmlType(name = "", propOrder = {
         "suites"
 })
-@XmlRootElement(name = "TestngResults")
+@XmlRootElement(name = "testng-results")
 @Data
 public class TestngResults {
 
