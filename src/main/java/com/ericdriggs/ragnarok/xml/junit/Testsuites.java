@@ -17,7 +17,7 @@ import java.util.List;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "testsuite"
+        "testsuite"
 })
 @XmlRootElement(name = "testsuites")
 @NoArgsConstructor
@@ -27,23 +27,4 @@ import java.util.List;
 public class Testsuites {
 
     protected List<Testsuite> testsuite;
-
-    @XmlAccessorType(XmlAccessType.FIELD)
-    @XmlType(name = "")
-    @NoArgsConstructor
-    @AllArgsConstructor
-//    @Builder(builderMethodName = "builderForTestsuite")
-    @Data
-    //TODO: don't extend just combine versions so no static class
-    public static class Testsuite
-        extends com.ericdriggs.ragnarok.xml.junit.Testsuite
-    {
-
-        @XmlAttribute(name = "package", required = true)
-        @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-        @XmlSchemaType(name = "token")
-        protected String _package;
-        @XmlAttribute(name = "id", required = true)
-        protected int id;
-    }
 }

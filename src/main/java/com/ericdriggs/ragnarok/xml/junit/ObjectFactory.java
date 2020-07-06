@@ -35,7 +35,7 @@ public class ObjectFactory {
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: com.ericdriggs.ragnarok.gen.junit
-     * 
+     *
      */
     public ObjectFactory() {
     }
@@ -73,11 +73,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Testsuites.Testsuite }
+     * Create an instance of {@link Testsuite }
      * 
      */
-    public Testsuites.Testsuite createTestsuitesTestsuite() {
-        return new Testsuites.Testsuite();
+    public Testsuite createTestsuitesTestsuite() {
+        return new Testsuite();
     }
 
     /**

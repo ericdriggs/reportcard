@@ -28,14 +28,18 @@ import java.util.List;
         "systemOut",
         "systemErr"
 })
-@XmlSeeAlso({
-        Testsuites.Testsuite.class
-})
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(builderMethodName = "builderForTestsuite")
 @Data
 public class Testsuite {
+
+    @XmlAttribute(name = "package", required = true)
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    @XmlSchemaType(name = "token")
+    protected String _package;
+    @XmlAttribute(name = "id", required = true)
+    protected int id;
 
     @XmlElement(required = true)
     protected Properties properties;
@@ -63,10 +67,5 @@ public class Testsuite {
     @XmlAttribute(name = "time", required = true)
     protected BigDecimal time;
 
-//    @XmlAttribute(name = "package", required = true)
-//    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-//    @XmlSchemaType(name = "token")
-//    protected String _package;
-//    @XmlAttribute(name = "id", required = true)
-//    protected int id;
+
 }
