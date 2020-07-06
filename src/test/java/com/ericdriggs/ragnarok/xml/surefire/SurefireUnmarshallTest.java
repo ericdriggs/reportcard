@@ -10,6 +10,8 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.StringReader;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 @SpringBootTest
 public class SurefireUnmarshallTest {
 
@@ -26,6 +28,7 @@ public class SurefireUnmarshallTest {
             Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
             Testsuite testsuite = (Testsuite) jaxbUnmarshaller.unmarshal(new StringReader(xmlString));
             System.out.println(testsuite);
+            assertEquals(2, testsuite.tests);
             //TODO: add assertions
         } catch (JAXBException e) {
             throw new RuntimeException(e);

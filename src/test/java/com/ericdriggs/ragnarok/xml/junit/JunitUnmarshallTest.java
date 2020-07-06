@@ -29,9 +29,12 @@ public class JunitUnmarshallTest {
             Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
             Testsuites testsuites = (Testsuites) jaxbUnmarshaller.unmarshal(new StringReader(xmlString));
             assertEquals(66, testsuites.testsuite.size());
+            int testCount = 0;
+            for (Testsuite t : testsuites.testsuite) {
+                testCount += t.tests;
+            }
+            assertEquals(685, testCount);
 
-            System.out.println(testsuites);
-            //TODO: add assertions
         } catch (JAXBException e) {
             throw new RuntimeException(e);
         }
