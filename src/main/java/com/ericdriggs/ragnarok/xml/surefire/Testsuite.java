@@ -10,6 +10,7 @@ package com.ericdriggs.ragnarok.xml.surefire;
 import lombok.*;
 
 import javax.xml.bind.annotation.*;
+import java.math.BigDecimal;
 import java.util.List;
 
 
@@ -30,15 +31,15 @@ public class Testsuite {
     @XmlAttribute(name = "name", required = true)
     protected String name;
     @XmlAttribute(name = "time")
-    protected String time;
+    protected BigDecimal time;
     @XmlAttribute(name = "tests", required = true)
-    protected String tests;
+    protected Integer tests;
     @XmlAttribute(name = "errors", required = true)
-    protected String errors;
+    protected Integer errors;
     @XmlAttribute(name = "skipped", required = true)
-    protected String skipped;
+    protected Integer skipped;
     @XmlAttribute(name = "failures", required = true)
-    protected String failures;
+    protected Integer failures;
     @XmlAttribute(name = "group")
     protected String group;
 
