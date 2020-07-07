@@ -3,6 +3,7 @@ buildscript {
         javaVersion = JavaVersion.VERSION_11
         jaxbVersion = '2.3.1'
         springBootVersion = '2.3.1.RELEASE'
+//        jooq.version = '3.13.2'
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
@@ -126,6 +127,7 @@ jooq {
                 }
             }
             generate {
+                daos = true
                 relations = true
                 deprecated = false
                 records = true
