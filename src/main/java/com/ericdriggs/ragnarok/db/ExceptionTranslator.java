@@ -1,4 +1,4 @@
-package com.ericdriggs.ragnarok.config;
+package com.ericdriggs.ragnarok.db;
 
 import org.jooq.ExecuteContext;
 import org.jooq.SQLDialect;

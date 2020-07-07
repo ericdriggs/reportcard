@@ -1,6 +1,5 @@
 package com.ericdriggs.ragnarok.db;
 
-import com.ericdriggs.ragnarok.config.ExceptionTranslator;
 import com.mysql.cj.jdbc.MysqlDataSource;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DataSourceConnectionProvider;

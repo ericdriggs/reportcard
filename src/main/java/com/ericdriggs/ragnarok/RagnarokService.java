@@ -1,16 +1,13 @@
 package com.ericdriggs.ragnarok;
 
-        import java.util.List;
-        import java.util.stream.Collectors;
+import java.util.List;
 
-        import com.ericdriggs.ragnarok.db.Tables;
-        import com.ericdriggs.ragnarok.model.Org;
-        import org.jooq.DSLContext;
-        import org.modelmapper.ModelMapper;
-        import org.springframework.beans.factory.annotation.Autowired;
-        import org.springframework.stereotype.Service;
-//        import com.ericdriggs.ragnarok.db.model.Tables;
-//        import co.cantina.springjooq.domain.Book;
+import com.ericdriggs.ragnarok.db.Tables;
+import com.ericdriggs.ragnarok.db.tables.pojos.Org;
+import org.jooq.DSLContext;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class RagnarokService {
@@ -25,8 +22,6 @@ public class RagnarokService {
         return dsl
                 .selectFrom(Tables.ORG)
                 .fetch()
-                .stream()
-                .map(e -> mapper.map(e, Org.class))
-                .collect(Collectors.toList());
+                .into(Org.class);
     }
 }
