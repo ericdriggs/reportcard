@@ -26,8 +26,6 @@ import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.UInteger;
-import org.jooq.types.ULong;
 
 
 /**
@@ -36,7 +34,7 @@ import org.jooq.types.ULong;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Storage extends TableImpl<StorageRecord> {
 
-    private static final long serialVersionUID = 1307568682;
+    private static final long serialVersionUID = 434928997;
 
     /**
      * The reference instance of <code>ragnarok.storage</code>
@@ -54,12 +52,12 @@ public class Storage extends TableImpl<StorageRecord> {
     /**
      * The column <code>ragnarok.storage.id</code>.
      */
-    public final TableField<StorageRecord, UInteger> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.INTEGERUNSIGNED.nullable(false).identity(true), this, "");
+    public final TableField<StorageRecord, Integer> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).identity(true), this, "");
 
     /**
      * The column <code>ragnarok.storage.build_stage_fk</code>.
      */
-    public final TableField<StorageRecord, ULong> BUILD_STAGE_FK = createField(DSL.name("build_stage_fk"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<StorageRecord, Long> BUILD_STAGE_FK = createField(DSL.name("build_stage_fk"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
 
     /**
      * The column <code>ragnarok.storage.label</code>.
@@ -135,7 +133,7 @@ public class Storage extends TableImpl<StorageRecord> {
     }
 
     @Override
-    public Identity<StorageRecord, UInteger> getIdentity() {
+    public Identity<StorageRecord, Integer> getIdentity() {
         return Keys.IDENTITY_STORAGE;
     }
 
@@ -189,7 +187,7 @@ public class Storage extends TableImpl<StorageRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row8<UInteger, ULong, String, Byte, String, String, String, String> fieldsRow() {
+    public Row8<Integer, Long, String, Byte, String, String, String, String> fieldsRow() {
         return (Row8) super.fieldsRow();
     }
 }

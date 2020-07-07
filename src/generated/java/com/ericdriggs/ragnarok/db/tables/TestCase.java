@@ -26,7 +26,6 @@ import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 
 
 /**
@@ -35,7 +34,7 @@ import org.jooq.types.ULong;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestCase extends TableImpl<TestCaseRecord> {
 
-    private static final long serialVersionUID = 994380597;
+    private static final long serialVersionUID = 1964570671;
 
     /**
      * The reference instance of <code>ragnarok.test_case</code>
@@ -53,12 +52,12 @@ public class TestCase extends TableImpl<TestCaseRecord> {
     /**
      * The column <code>ragnarok.test_case.id</code>.
      */
-    public final TableField<TestCaseRecord, ULong> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
+    public final TableField<TestCaseRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false).identity(true), this, "");
 
     /**
      * The column <code>ragnarok.test_case.test_suite_fk</code>.
      */
-    public final TableField<TestCaseRecord, ULong> TEST_SUITE_FK = createField(DSL.name("test_suite_fk"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<TestCaseRecord, Long> TEST_SUITE_FK = createField(DSL.name("test_suite_fk"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
 
     /**
      * The column <code>ragnarok.test_case.name</code>.
@@ -124,7 +123,7 @@ public class TestCase extends TableImpl<TestCaseRecord> {
     }
 
     @Override
-    public Identity<TestCaseRecord, ULong> getIdentity() {
+    public Identity<TestCaseRecord, Long> getIdentity() {
         return Keys.IDENTITY_TEST_CASE;
     }
 
@@ -182,7 +181,7 @@ public class TestCase extends TableImpl<TestCaseRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row6<ULong, ULong, String, String, Long, Byte> fieldsRow() {
+    public Row6<Long, Long, String, String, Long, Byte> fieldsRow() {
         return (Row6) super.fieldsRow();
     }
 }

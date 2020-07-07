@@ -26,7 +26,6 @@ import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.UInteger;
 
 
 /**
@@ -35,7 +34,7 @@ import org.jooq.types.UInteger;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Stage extends TableImpl<StageRecord> {
 
-    private static final long serialVersionUID = 1930473324;
+    private static final long serialVersionUID = 606385134;
 
     /**
      * The reference instance of <code>ragnarok.stage</code>
@@ -53,7 +52,7 @@ public class Stage extends TableImpl<StageRecord> {
     /**
      * The column <code>ragnarok.stage.id</code>.
      */
-    public final TableField<StageRecord, UInteger> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.INTEGERUNSIGNED.nullable(false).identity(true), this, "");
+    public final TableField<StageRecord, Integer> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).identity(true), this, "");
 
     /**
      * The column <code>ragnarok.stage.name</code>.
@@ -63,7 +62,7 @@ public class Stage extends TableImpl<StageRecord> {
     /**
      * The column <code>ragnarok.stage.app_fk</code>.
      */
-    public final TableField<StageRecord, UInteger> APP_FK = createField(DSL.name("app_fk"), org.jooq.impl.SQLDataType.INTEGERUNSIGNED.nullable(false), this, "");
+    public final TableField<StageRecord, Integer> APP_FK = createField(DSL.name("app_fk"), org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * Create a <code>ragnarok.stage</code> table reference
@@ -109,7 +108,7 @@ public class Stage extends TableImpl<StageRecord> {
     }
 
     @Override
-    public Identity<StageRecord, UInteger> getIdentity() {
+    public Identity<StageRecord, Integer> getIdentity() {
         return Keys.IDENTITY_STAGE;
     }
 
@@ -163,7 +162,7 @@ public class Stage extends TableImpl<StageRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row3<UInteger, String, UInteger> fieldsRow() {
+    public Row3<Integer, String, Integer> fieldsRow() {
         return (Row3) super.fieldsRow();
     }
 }

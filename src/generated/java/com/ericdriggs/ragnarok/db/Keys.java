@@ -36,8 +36,6 @@ import org.jooq.Identity;
 import org.jooq.TableField;
 import org.jooq.UniqueKey;
 import org.jooq.impl.Internal;
-import org.jooq.types.UInteger;
-import org.jooq.types.ULong;
 
 
 /**
@@ -51,19 +49,19 @@ public class Keys {
     // IDENTITY definitions
     // -------------------------------------------------------------------------
 
-    public static final Identity<AppRecord, UInteger> IDENTITY_APP = Identities0.IDENTITY_APP;
-    public static final Identity<BranchRecord, UInteger> IDENTITY_BRANCH = Identities0.IDENTITY_BRANCH;
-    public static final Identity<BuildRecord, ULong> IDENTITY_BUILD = Identities0.IDENTITY_BUILD;
-    public static final Identity<BuildStageRecord, ULong> IDENTITY_BUILD_STAGE = Identities0.IDENTITY_BUILD_STAGE;
-    public static final Identity<OrgRecord, UInteger> IDENTITY_ORG = Identities0.IDENTITY_ORG;
-    public static final Identity<RepoRecord, UInteger> IDENTITY_REPO = Identities0.IDENTITY_REPO;
-    public static final Identity<StageRecord, UInteger> IDENTITY_STAGE = Identities0.IDENTITY_STAGE;
-    public static final Identity<StorageRecord, UInteger> IDENTITY_STORAGE = Identities0.IDENTITY_STORAGE;
+    public static final Identity<AppRecord, Integer> IDENTITY_APP = Identities0.IDENTITY_APP;
+    public static final Identity<BranchRecord, Integer> IDENTITY_BRANCH = Identities0.IDENTITY_BRANCH;
+    public static final Identity<BuildRecord, Long> IDENTITY_BUILD = Identities0.IDENTITY_BUILD;
+    public static final Identity<BuildStageRecord, Long> IDENTITY_BUILD_STAGE = Identities0.IDENTITY_BUILD_STAGE;
+    public static final Identity<OrgRecord, Integer> IDENTITY_ORG = Identities0.IDENTITY_ORG;
+    public static final Identity<RepoRecord, Integer> IDENTITY_REPO = Identities0.IDENTITY_REPO;
+    public static final Identity<StageRecord, Integer> IDENTITY_STAGE = Identities0.IDENTITY_STAGE;
+    public static final Identity<StorageRecord, Integer> IDENTITY_STORAGE = Identities0.IDENTITY_STORAGE;
     public static final Identity<StorageTypeRecord, Byte> IDENTITY_STORAGE_TYPE = Identities0.IDENTITY_STORAGE_TYPE;
-    public static final Identity<TestCaseRecord, ULong> IDENTITY_TEST_CASE = Identities0.IDENTITY_TEST_CASE;
-    public static final Identity<TestResultRecord, ULong> IDENTITY_TEST_RESULT = Identities0.IDENTITY_TEST_RESULT;
+    public static final Identity<TestCaseRecord, Long> IDENTITY_TEST_CASE = Identities0.IDENTITY_TEST_CASE;
+    public static final Identity<TestResultRecord, Long> IDENTITY_TEST_RESULT = Identities0.IDENTITY_TEST_RESULT;
     public static final Identity<TestStatusRecord, Byte> IDENTITY_TEST_STATUS = Identities0.IDENTITY_TEST_STATUS;
-    public static final Identity<TestSuiteRecord, ULong> IDENTITY_TEST_SUITE = Identities0.IDENTITY_TEST_SUITE;
+    public static final Identity<TestSuiteRecord, Long> IDENTITY_TEST_SUITE = Identities0.IDENTITY_TEST_SUITE;
 
     // -------------------------------------------------------------------------
     // UNIQUE and PRIMARY KEY definitions
@@ -115,19 +113,19 @@ public class Keys {
     // -------------------------------------------------------------------------
 
     private static class Identities0 {
-        public static Identity<AppRecord, UInteger> IDENTITY_APP = Internal.createIdentity(App.APP, App.APP.ID);
-        public static Identity<BranchRecord, UInteger> IDENTITY_BRANCH = Internal.createIdentity(Branch.BRANCH, Branch.BRANCH.ID);
-        public static Identity<BuildRecord, ULong> IDENTITY_BUILD = Internal.createIdentity(Build.BUILD, Build.BUILD.ID);
-        public static Identity<BuildStageRecord, ULong> IDENTITY_BUILD_STAGE = Internal.createIdentity(BuildStage.BUILD_STAGE, BuildStage.BUILD_STAGE.ID);
-        public static Identity<OrgRecord, UInteger> IDENTITY_ORG = Internal.createIdentity(Org.ORG, Org.ORG.ID);
-        public static Identity<RepoRecord, UInteger> IDENTITY_REPO = Internal.createIdentity(Repo.REPO, Repo.REPO.ID);
-        public static Identity<StageRecord, UInteger> IDENTITY_STAGE = Internal.createIdentity(Stage.STAGE, Stage.STAGE.ID);
-        public static Identity<StorageRecord, UInteger> IDENTITY_STORAGE = Internal.createIdentity(Storage.STORAGE, Storage.STORAGE.ID);
+        public static Identity<AppRecord, Integer> IDENTITY_APP = Internal.createIdentity(App.APP, App.APP.ID);
+        public static Identity<BranchRecord, Integer> IDENTITY_BRANCH = Internal.createIdentity(Branch.BRANCH, Branch.BRANCH.ID);
+        public static Identity<BuildRecord, Long> IDENTITY_BUILD = Internal.createIdentity(Build.BUILD, Build.BUILD.ID);
+        public static Identity<BuildStageRecord, Long> IDENTITY_BUILD_STAGE = Internal.createIdentity(BuildStage.BUILD_STAGE, BuildStage.BUILD_STAGE.ID);
+        public static Identity<OrgRecord, Integer> IDENTITY_ORG = Internal.createIdentity(Org.ORG, Org.ORG.ID);
+        public static Identity<RepoRecord, Integer> IDENTITY_REPO = Internal.createIdentity(Repo.REPO, Repo.REPO.ID);
+        public static Identity<StageRecord, Integer> IDENTITY_STAGE = Internal.createIdentity(Stage.STAGE, Stage.STAGE.ID);
+        public static Identity<StorageRecord, Integer> IDENTITY_STORAGE = Internal.createIdentity(Storage.STORAGE, Storage.STORAGE.ID);
         public static Identity<StorageTypeRecord, Byte> IDENTITY_STORAGE_TYPE = Internal.createIdentity(StorageType.STORAGE_TYPE, StorageType.STORAGE_TYPE.ID);
-        public static Identity<TestCaseRecord, ULong> IDENTITY_TEST_CASE = Internal.createIdentity(TestCase.TEST_CASE, TestCase.TEST_CASE.ID);
-        public static Identity<TestResultRecord, ULong> IDENTITY_TEST_RESULT = Internal.createIdentity(TestResult.TEST_RESULT, TestResult.TEST_RESULT.ID);
+        public static Identity<TestCaseRecord, Long> IDENTITY_TEST_CASE = Internal.createIdentity(TestCase.TEST_CASE, TestCase.TEST_CASE.ID);
+        public static Identity<TestResultRecord, Long> IDENTITY_TEST_RESULT = Internal.createIdentity(TestResult.TEST_RESULT, TestResult.TEST_RESULT.ID);
         public static Identity<TestStatusRecord, Byte> IDENTITY_TEST_STATUS = Internal.createIdentity(TestStatus.TEST_STATUS, TestStatus.TEST_STATUS.ID);
-        public static Identity<TestSuiteRecord, ULong> IDENTITY_TEST_SUITE = Internal.createIdentity(TestSuite.TEST_SUITE, TestSuite.TEST_SUITE.ID);
+        public static Identity<TestSuiteRecord, Long> IDENTITY_TEST_SUITE = Internal.createIdentity(TestSuite.TEST_SUITE, TestSuite.TEST_SUITE.ID);
     }
 
     private static class UniqueKeys0 {

@@ -26,7 +26,6 @@ import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 
 
 /**
@@ -35,7 +34,7 @@ import org.jooq.types.ULong;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestSuite extends TableImpl<TestSuiteRecord> {
 
-    private static final long serialVersionUID = 1581395584;
+    private static final long serialVersionUID = -62072876;
 
     /**
      * The reference instance of <code>ragnarok.test_suite</code>
@@ -53,12 +52,12 @@ public class TestSuite extends TableImpl<TestSuiteRecord> {
     /**
      * The column <code>ragnarok.test_suite.id</code>.
      */
-    public final TableField<TestSuiteRecord, ULong> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
+    public final TableField<TestSuiteRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false).identity(true), this, "");
 
     /**
      * The column <code>ragnarok.test_suite.test_result_fk</code>.
      */
-    public final TableField<TestSuiteRecord, ULong> TEST_RESULT_FK = createField(DSL.name("test_result_fk"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<TestSuiteRecord, Long> TEST_RESULT_FK = createField(DSL.name("test_result_fk"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
 
     /**
      * The column <code>ragnarok.test_suite.package</code>.
@@ -144,7 +143,7 @@ public class TestSuite extends TableImpl<TestSuiteRecord> {
     }
 
     @Override
-    public Identity<TestSuiteRecord, ULong> getIdentity() {
+    public Identity<TestSuiteRecord, Long> getIdentity() {
         return Keys.IDENTITY_TEST_SUITE;
     }
 
@@ -198,7 +197,7 @@ public class TestSuite extends TableImpl<TestSuiteRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row10<ULong, ULong, String, Integer, Integer, Integer, Integer, Long, Byte, Byte> fieldsRow() {
+    public Row10<Long, Long, String, Integer, Integer, Integer, Integer, Long, Byte, Byte> fieldsRow() {
         return (Row10) super.fieldsRow();
     }
 }

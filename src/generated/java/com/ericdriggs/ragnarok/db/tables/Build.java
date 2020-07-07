@@ -27,8 +27,6 @@ import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.UInteger;
-import org.jooq.types.ULong;
 
 
 /**
@@ -37,7 +35,7 @@ import org.jooq.types.ULong;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Build extends TableImpl<BuildRecord> {
 
-    private static final long serialVersionUID = 567383021;
+    private static final long serialVersionUID = 1947296965;
 
     /**
      * The reference instance of <code>ragnarok.build</code>
@@ -55,12 +53,12 @@ public class Build extends TableImpl<BuildRecord> {
     /**
      * The column <code>ragnarok.build.id</code>.
      */
-    public final TableField<BuildRecord, ULong> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
+    public final TableField<BuildRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false).identity(true), this, "");
 
     /**
      * The column <code>ragnarok.build.app_fk</code>.
      */
-    public final TableField<BuildRecord, UInteger> APP_FK = createField(DSL.name("app_fk"), org.jooq.impl.SQLDataType.INTEGERUNSIGNED.nullable(false), this, "");
+    public final TableField<BuildRecord, Integer> APP_FK = createField(DSL.name("app_fk"), org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * The column <code>ragnarok.build.created</code>.
@@ -70,7 +68,7 @@ public class Build extends TableImpl<BuildRecord> {
     /**
      * The column <code>ragnarok.build.app_build_ordinal</code>.
      */
-    public final TableField<BuildRecord, UInteger> APP_BUILD_ORDINAL = createField(DSL.name("app_build_ordinal"), org.jooq.impl.SQLDataType.INTEGERUNSIGNED.nullable(false), this, "");
+    public final TableField<BuildRecord, Integer> APP_BUILD_ORDINAL = createField(DSL.name("app_build_ordinal"), org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * Create a <code>ragnarok.build</code> table reference
@@ -116,7 +114,7 @@ public class Build extends TableImpl<BuildRecord> {
     }
 
     @Override
-    public Identity<BuildRecord, ULong> getIdentity() {
+    public Identity<BuildRecord, Long> getIdentity() {
         return Keys.IDENTITY_BUILD;
     }
 
@@ -170,7 +168,7 @@ public class Build extends TableImpl<BuildRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row4<ULong, UInteger, LocalDateTime, UInteger> fieldsRow() {
+    public Row4<Long, Integer, LocalDateTime, Integer> fieldsRow() {
         return (Row4) super.fieldsRow();
     }
 }

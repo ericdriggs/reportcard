@@ -26,7 +26,6 @@ import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.UInteger;
 
 
 /**
@@ -35,7 +34,7 @@ import org.jooq.types.UInteger;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Repo extends TableImpl<RepoRecord> {
 
-    private static final long serialVersionUID = -1148478828;
+    private static final long serialVersionUID = 105699444;
 
     /**
      * The reference instance of <code>ragnarok.repo</code>
@@ -53,7 +52,7 @@ public class Repo extends TableImpl<RepoRecord> {
     /**
      * The column <code>ragnarok.repo.id</code>.
      */
-    public final TableField<RepoRecord, UInteger> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.INTEGERUNSIGNED.nullable(false).identity(true), this, "");
+    public final TableField<RepoRecord, Integer> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).identity(true), this, "");
 
     /**
      * The column <code>ragnarok.repo.name</code>.
@@ -63,7 +62,7 @@ public class Repo extends TableImpl<RepoRecord> {
     /**
      * The column <code>ragnarok.repo.org_fk</code>.
      */
-    public final TableField<RepoRecord, UInteger> ORG_FK = createField(DSL.name("org_fk"), org.jooq.impl.SQLDataType.INTEGERUNSIGNED.nullable(false), this, "");
+    public final TableField<RepoRecord, Integer> ORG_FK = createField(DSL.name("org_fk"), org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * Create a <code>ragnarok.repo</code> table reference
@@ -109,7 +108,7 @@ public class Repo extends TableImpl<RepoRecord> {
     }
 
     @Override
-    public Identity<RepoRecord, UInteger> getIdentity() {
+    public Identity<RepoRecord, Integer> getIdentity() {
         return Keys.IDENTITY_REPO;
     }
 
@@ -163,7 +162,7 @@ public class Repo extends TableImpl<RepoRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row3<UInteger, String, UInteger> fieldsRow() {
+    public Row3<Integer, String, Integer> fieldsRow() {
         return (Row3) super.fieldsRow();
     }
 }

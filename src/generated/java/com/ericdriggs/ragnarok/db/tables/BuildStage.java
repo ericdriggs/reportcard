@@ -26,8 +26,6 @@ import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.UInteger;
-import org.jooq.types.ULong;
 
 
 /**
@@ -36,7 +34,7 @@ import org.jooq.types.ULong;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BuildStage extends TableImpl<BuildStageRecord> {
 
-    private static final long serialVersionUID = 1909278869;
+    private static final long serialVersionUID = -1609016381;
 
     /**
      * The reference instance of <code>ragnarok.build_stage</code>
@@ -54,17 +52,17 @@ public class BuildStage extends TableImpl<BuildStageRecord> {
     /**
      * The column <code>ragnarok.build_stage.id</code>.
      */
-    public final TableField<BuildStageRecord, ULong> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
+    public final TableField<BuildStageRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false).identity(true), this, "");
 
     /**
      * The column <code>ragnarok.build_stage.build_fk</code>.
      */
-    public final TableField<BuildStageRecord, ULong> BUILD_FK = createField(DSL.name("build_fk"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<BuildStageRecord, Long> BUILD_FK = createField(DSL.name("build_fk"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
 
     /**
      * The column <code>ragnarok.build_stage.stage_fk</code>.
      */
-    public final TableField<BuildStageRecord, UInteger> STAGE_FK = createField(DSL.name("stage_fk"), org.jooq.impl.SQLDataType.INTEGERUNSIGNED.nullable(false), this, "");
+    public final TableField<BuildStageRecord, Integer> STAGE_FK = createField(DSL.name("stage_fk"), org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * Create a <code>ragnarok.build_stage</code> table reference
@@ -110,7 +108,7 @@ public class BuildStage extends TableImpl<BuildStageRecord> {
     }
 
     @Override
-    public Identity<BuildStageRecord, ULong> getIdentity() {
+    public Identity<BuildStageRecord, Long> getIdentity() {
         return Keys.IDENTITY_BUILD_STAGE;
     }
 
@@ -168,7 +166,7 @@ public class BuildStage extends TableImpl<BuildStageRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row3<ULong, ULong, UInteger> fieldsRow() {
+    public Row3<Long, Long, Integer> fieldsRow() {
         return (Row3) super.fieldsRow();
     }
 }

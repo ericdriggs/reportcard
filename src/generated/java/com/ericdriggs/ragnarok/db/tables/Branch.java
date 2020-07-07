@@ -26,7 +26,6 @@ import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.UInteger;
 
 
 /**
@@ -35,7 +34,7 @@ import org.jooq.types.UInteger;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Branch extends TableImpl<BranchRecord> {
 
-    private static final long serialVersionUID = 1870539046;
+    private static final long serialVersionUID = 296506782;
 
     /**
      * The reference instance of <code>ragnarok.branch</code>
@@ -53,7 +52,7 @@ public class Branch extends TableImpl<BranchRecord> {
     /**
      * The column <code>ragnarok.branch.id</code>.
      */
-    public final TableField<BranchRecord, UInteger> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.INTEGERUNSIGNED.nullable(false).identity(true), this, "");
+    public final TableField<BranchRecord, Integer> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).identity(true), this, "");
 
     /**
      * The column <code>ragnarok.branch.name</code>.
@@ -63,7 +62,7 @@ public class Branch extends TableImpl<BranchRecord> {
     /**
      * The column <code>ragnarok.branch.repo_fk</code>.
      */
-    public final TableField<BranchRecord, UInteger> REPO_FK = createField(DSL.name("repo_fk"), org.jooq.impl.SQLDataType.INTEGERUNSIGNED.nullable(false), this, "");
+    public final TableField<BranchRecord, Integer> REPO_FK = createField(DSL.name("repo_fk"), org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * Create a <code>ragnarok.branch</code> table reference
@@ -109,7 +108,7 @@ public class Branch extends TableImpl<BranchRecord> {
     }
 
     @Override
-    public Identity<BranchRecord, UInteger> getIdentity() {
+    public Identity<BranchRecord, Integer> getIdentity() {
         return Keys.IDENTITY_BRANCH;
     }
 
@@ -163,7 +162,7 @@ public class Branch extends TableImpl<BranchRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row3<UInteger, String, UInteger> fieldsRow() {
+    public Row3<Integer, String, Integer> fieldsRow() {
         return (Row3) super.fieldsRow();
     }
 }

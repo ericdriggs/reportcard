@@ -26,8 +26,6 @@ import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.UInteger;
-import org.jooq.types.ULong;
 
 
 /**
@@ -36,7 +34,7 @@ import org.jooq.types.ULong;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestResult extends TableImpl<TestResultRecord> {
 
-    private static final long serialVersionUID = 309192393;
+    private static final long serialVersionUID = -612313470;
 
     /**
      * The reference instance of <code>ragnarok.test_result</code>
@@ -54,32 +52,32 @@ public class TestResult extends TableImpl<TestResultRecord> {
     /**
      * The column <code>ragnarok.test_result.id</code>.
      */
-    public final TableField<TestResultRecord, ULong> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
+    public final TableField<TestResultRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false).identity(true), this, "");
 
     /**
      * The column <code>ragnarok.test_result.build_stage_fk</code>.
      */
-    public final TableField<TestResultRecord, ULong> BUILD_STAGE_FK = createField(DSL.name("build_stage_fk"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<TestResultRecord, Long> BUILD_STAGE_FK = createField(DSL.name("build_stage_fk"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
 
     /**
      * The column <code>ragnarok.test_result.tests</code>.
      */
-    public final TableField<TestResultRecord, UInteger> TESTS = createField(DSL.name("tests"), org.jooq.impl.SQLDataType.INTEGERUNSIGNED.nullable(false), this, "");
+    public final TableField<TestResultRecord, Integer> TESTS = createField(DSL.name("tests"), org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * The column <code>ragnarok.test_result.skipped</code>.
      */
-    public final TableField<TestResultRecord, UInteger> SKIPPED = createField(DSL.name("skipped"), org.jooq.impl.SQLDataType.INTEGERUNSIGNED.nullable(false), this, "");
+    public final TableField<TestResultRecord, Integer> SKIPPED = createField(DSL.name("skipped"), org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * The column <code>ragnarok.test_result.error</code>.
      */
-    public final TableField<TestResultRecord, UInteger> ERROR = createField(DSL.name("error"), org.jooq.impl.SQLDataType.INTEGERUNSIGNED.nullable(false), this, "");
+    public final TableField<TestResultRecord, Integer> ERROR = createField(DSL.name("error"), org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * The column <code>ragnarok.test_result.failure</code>.
      */
-    public final TableField<TestResultRecord, UInteger> FAILURE = createField(DSL.name("failure"), org.jooq.impl.SQLDataType.INTEGERUNSIGNED.nullable(false), this, "");
+    public final TableField<TestResultRecord, Integer> FAILURE = createField(DSL.name("failure"), org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * The column <code>ragnarok.test_result.time</code>.
@@ -140,7 +138,7 @@ public class TestResult extends TableImpl<TestResultRecord> {
     }
 
     @Override
-    public Identity<TestResultRecord, ULong> getIdentity() {
+    public Identity<TestResultRecord, Long> getIdentity() {
         return Keys.IDENTITY_TEST_RESULT;
     }
 
@@ -194,7 +192,7 @@ public class TestResult extends TableImpl<TestResultRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row9<ULong, ULong, UInteger, UInteger, UInteger, UInteger, Long, Byte, Byte> fieldsRow() {
+    public Row9<Long, Long, Integer, Integer, Integer, Integer, Long, Byte, Byte> fieldsRow() {
         return (Row9) super.fieldsRow();
     }
 }

@@ -24,7 +24,6 @@ import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.UInteger;
 
 
 /**
@@ -33,7 +32,7 @@ import org.jooq.types.UInteger;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Org extends TableImpl<OrgRecord> {
 
-    private static final long serialVersionUID = 884657305;
+    private static final long serialVersionUID = -2129442296;
 
     /**
      * The reference instance of <code>ragnarok.org</code>
@@ -51,7 +50,7 @@ public class Org extends TableImpl<OrgRecord> {
     /**
      * The column <code>ragnarok.org.id</code>.
      */
-    public final TableField<OrgRecord, UInteger> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.INTEGERUNSIGNED.nullable(false).identity(true), this, "");
+    public final TableField<OrgRecord, Integer> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).identity(true), this, "");
 
     /**
      * The column <code>ragnarok.org.name</code>.
@@ -97,7 +96,7 @@ public class Org extends TableImpl<OrgRecord> {
     }
 
     @Override
-    public Identity<OrgRecord, UInteger> getIdentity() {
+    public Identity<OrgRecord, Integer> getIdentity() {
         return Keys.IDENTITY_ORG;
     }
 
@@ -142,7 +141,7 @@ public class Org extends TableImpl<OrgRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row2<UInteger, String> fieldsRow() {
+    public Row2<Integer, String> fieldsRow() {
         return (Row2) super.fieldsRow();
     }
 }

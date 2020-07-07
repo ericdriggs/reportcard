@@ -113,6 +113,7 @@ jooq {
             database {
                 name = 'org.jooq.meta.mysql.MySQLDatabase'
                 inputSchema = 'ragnarok'
+                unsignedTypes = false
                 forcedTypes {
                     forcedType {
                         name = 'varchar'
