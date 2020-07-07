@@ -1,11 +1,8 @@
 buildscript {
     ext {
-//        javaVersion = JavaVersion.VERSION_1_8
         javaVersion = JavaVersion.VERSION_11
-//        lombokVersion = '1.18.10'
         jaxbVersion = '2.3.1'
         springBootVersion = '2.3.1.RELEASE'
-//        jooqVersion  = '3.13.2'
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
@@ -39,43 +36,55 @@ targetCompatibility = javaVersion
 
 
 dependencies {
+
+
+    //Lombok
+
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+
+    //Swagger
+    implementation 'io.springfox:springfox-swagger2:2.9.2'
+    implementation 'io.springfox:springfox-swagger-ui:2.9.2'
+
+    //XML
     implementation "javax.xml.bind:jaxb-api:${jaxbVersion}"
 
-
+    //Spring
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-//    implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-web'
-//    TODO: developmentOnly for devtools?
-    compile 'org.springframework.boot:spring-boot-devtools'
-
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
-
-
+    runtimeOnly 'org.springframework.boot:spring-boot-starter-logging'
+    runtimeOnly 'org.springframework.boot:spring-boot-devtools'
+    implementation 'org.springframework.boot:spring-boot-devtools'
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
 
-    compileOnly 'org.projectlombok:lombok'
-
-    runtimeOnly 'com.h2database:h2'
-    runtimeOnly 'mysql:mysql-connector-java'
-    annotationProcessor 'org.projectlombok:lombok'
-
-//    testImplementation 'org.springframework.security:spring-security-test'
-
-
-//    compile "com.h2database:h2:1.4.200"
-
-    implementation 'io.springfox:springfox-swagger2:2.9.2'
-    implementation 'io.springfox:springfox-swagger-ui:2.9.2'
-
+    //Database
+    implementation 'mysql:mysql-connector-java'
     implementation 'org.jooq:jooq'
-//    compile "org.jooq:jooq-meta:${jooqVersion}"
-//    compile "org.jooq:jooq-codegen:${jooqVersion}"
+    implementation 'org.springframework.boot:spring-boot-starter-jooq:2.3.1.RELEASE'
+
+    testImplementation 'com.wix:wix-embedded-mysql:4.6.1'
+
+
     jooqRuntime 'mysql:mysql-connector-java:8.0.20'
 
+    //Mapping
+    implementation 'org.modelmapper:modelmapper:2.3.0'
+    implementation 'org.modelmapper.extensions:modelmapper-jooq:2.3.0'
+
+    //Test
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+}
+
+test {
+    useJUnitPlatform()
+    systemProperties System.properties
+    outputs.upToDateWhen { false }
 }
 
 jooq {
@@ -85,7 +94,6 @@ jooq {
     sample(sourceSets.main) {
         jdbc {
             driver = 'com.mysql.cj.jdbc.Driver'
-//            url = 'jdbc:mysql://localhost:3306/ragnarok'
             url = 'jdbc:mysql://127.0.0.1:3306/ragnarok?serverTimezone=UTC'
             user = 'root'
             password = ''
@@ -100,7 +108,6 @@ jooq {
             name = 'org.jooq.codegen.DefaultGenerator'
             strategy {
                 name = 'org.jooq.codegen.DefaultGeneratorStrategy'
-                // ...
             }
             database {
                 name = 'org.jooq.meta.mysql.MySQLDatabase'
@@ -117,7 +124,6 @@ jooq {
                         types = 'INET'
                     }
                 }
-                // ...
             }
             generate {
                 relations = true
@@ -125,7 +131,6 @@ jooq {
                 records = true
                 immutablePojos = true
                 fluentSetters = true
-                // ...
             }
             target {
                 packageName = 'com.ericdriggs.ragnarok.db'
@@ -136,13 +141,3 @@ jooq {
 }
 sourceSets.main.java.srcDirs += ['src/generated/java']
 
-test {
-    useJUnitPlatform()
-    systemProperties System.properties
-    outputs.upToDateWhen { false }
-}
-
-clean {
-    delete 'build'
-    delete 'target'
-}

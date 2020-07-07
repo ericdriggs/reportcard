@@ -1,4 +1,4 @@
-package com.ericdriggs.ragnarok.model;
-
-public class MetaDataMap {
-}
+//package com.ericdriggs.ragnarok.model;
+//
+//public class MetaDataMap {
+//}
