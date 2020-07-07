@@ -20,17 +20,17 @@ import static com.wix.mysql.distribution.Version.v8_0_17;
 @Profile("test")
 @TestPropertySource(locations = "classpath:application-test.properties")
 public class MyEmbeddedMysql {
-    @Value("${spring.datasource.driverClassName}")
+    @Value("${db.driverClassName}")
     String driverClassName;
-    @Value("${spring.datasource.url}")
+    @Value("${db.url}")
     String url;
-    @Value("${spring.datasource.username}")
+    @Value("${db.username}")
     String username;
-    @Value("${spring.datasource.password}")
+    @Value("${db.password}")
     String password;
-    @Value("${schema}")
+    @Value("${db.schema}")
     String schema;
-    @Value("${ddlsql}")
+    @Value("${db.ddlsql}")
     String ddlsql;
 
 
