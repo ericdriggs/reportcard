@@ -14,8 +14,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api")
 public class OrgController {
 
+    private final RagnarokService ragnarokService;
+
     @Autowired
-    RagnarokService ragnarokService;
+    public OrgController(RagnarokService ragnarokService) {
+        this.ragnarokService = ragnarokService;
+    }
 
     @GetMapping(value ="/orgs", produces = "application/json")
     @ResponseBody

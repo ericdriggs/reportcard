@@ -8,7 +8,7 @@
 ///**
 // * An application.
 // * Belongs to a branch.
-// * Used to support multi-project repositories and kuberenetes multiple piplines.
+// * Used to support multi-project repositories and kuberenetes multiple pipelines.
 // * For single-project repositories, App.name == Repo.name
 // */
 //@Data
