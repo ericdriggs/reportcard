@@ -1,0 +1,38 @@
+package com.ericdriggs.reportcard.xml.surefire;
+
+import com.ericdriggs.reportcard.xml.ResourceReader;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import java.io.StringReader;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+@SpringBootTest
+public class SurefireUnmarshallTest {
+
+    @Autowired
+    ResourceReader resourceReader;
+
+    @Test
+    void unmarshallXml() {
+        String xmlString = resourceReader.resourceAsString("classpath:format-samples/sample-surefire.xml");
+
+        JAXBContext jaxbContext;
+        try {
+            jaxbContext = JAXBContext.newInstance(Testsuite.class);
+            Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+            Testsuite testsuite = (Testsuite) jaxbUnmarshaller.unmarshal(new StringReader(xmlString));
+            System.out.println(testsuite);
+            assertEquals(2, testsuite.tests);
+            //TODO: add assertions
+        } catch (JAXBException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+}

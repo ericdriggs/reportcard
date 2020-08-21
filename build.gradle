@@ -95,7 +95,7 @@ jooq {
     sample(sourceSets.main) {
         jdbc {
             driver = 'com.mysql.cj.jdbc.Driver'
-            url = 'jdbc:mysql://127.0.0.1:3306/ragnarok?serverTimezone=UTC'
+            url = 'jdbc:mysql://127.0.0.1:3306/reportcard?serverTimezone=UTC'
             user = 'root'
             password = ''
             properties {
@@ -112,7 +112,7 @@ jooq {
             }
             database {
                 name = 'org.jooq.meta.mysql.MySQLDatabase'
-                inputSchema = 'ragnarok'
+                inputSchema = 'reportcard'
                 unsignedTypes = false
                 forcedTypes {
                     forcedType {
@@ -136,7 +136,7 @@ jooq {
                 fluentSetters = true
             }
             target {
-                packageName = 'com.ericdriggs.ragnarok.db'
+                packageName = 'com.ericdriggs.reportcard.db'
                 directory = 'src/generated/java'
             }
         }

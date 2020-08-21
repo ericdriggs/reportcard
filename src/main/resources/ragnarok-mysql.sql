@@ -8,14 +8,14 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,N
 -- Schema mydb
 -- -----------------------------------------------------
 -- -----------------------------------------------------
--- Schema ragnarok
+-- Schema reportcard
 -- -----------------------------------------------------
 
 -- -----------------------------------------------------
--- Schema ragnarok
+-- Schema reportcard
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `ragnarok` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci ;
-USE `ragnarok` ;
+CREATE SCHEMA IF NOT EXISTS `reportcard` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci ;
+USE `reportcard` ;
 
 -- -----------------------------------------------------
 -- Table `org`
