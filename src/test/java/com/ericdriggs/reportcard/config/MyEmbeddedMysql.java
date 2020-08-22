@@ -20,29 +20,30 @@ import static com.wix.mysql.distribution.Version.v8_0_17;
 @Profile("test")
 @TestPropertySource(locations = "classpath:application-test.properties")
 public class MyEmbeddedMysql {
-    @Value("${db.driverClassName}")
-    String driverClassName;
-    @Value("${db.url}")
-    String url;
-    @Value("${db.username}")
-    String username;
-    @Value("${db.password}")
-    String password;
-    @Value("${db.schema}")
-    String schema;
-    @Value("${db.ddlsql}")
-    String ddlsql;
 
-
-//    private final static String schema = "reportcard";
-//    private final static String username = "test";
-//    private final static String password = "test";
+    final String driverClassName;
+    final String url;
+    final String username;
+    final String password;
+    final String schema;
+    final String ddlsql;
 
     private DriverManagerDataSource dataSource;
     EmbeddedMysql mysqld;
 
 
-    public MyEmbeddedMysql() {
+    public MyEmbeddedMysql(@Value("${db.driverClassName}") String driverClassName,
+                           @Value("${db.url}") String url,
+                           @Value("${db.username}") String username,
+                           @Value("${db.password}") String password,
+                           @Value("${db.schema}") String schema,
+                           @Value("${db.ddlsql}") String ddlsql) {
+        this.driverClassName = driverClassName;
+        this.url = url;
+        this.password = password;
+        this.username = username;
+        this.schema = schema;
+        this.ddlsql = ddlsql;
 
         System.out.println("##### LOADING TestEmbeddedMysql #######");
 
