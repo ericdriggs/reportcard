@@ -19,35 +19,35 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestStatusRecord extends UpdatableRecordImpl<TestStatusRecord> implements Record2<Byte, String> {
 
-    private static final long serialVersionUID = -747785768;
+    private static final long serialVersionUID = 1043327842;
 
     /**
-     * Setter for <code>reportcard.test_status.id</code>.
+     * Setter for <code>reportcard.test_status.test_status_id</code>.
      */
-    public TestStatusRecord setId(Byte value) {
+    public TestStatusRecord setTestStatusId(Byte value) {
         set(0, value);
         return this;
     }
 
     /**
-     * Getter for <code>reportcard.test_status.id</code>.
+     * Getter for <code>reportcard.test_status.test_status_id</code>.
      */
-    public Byte getId() {
+    public Byte getTestStatusId() {
         return (Byte) get(0);
     }
 
     /**
-     * Setter for <code>reportcard.test_status.name</code>.
+     * Setter for <code>reportcard.test_status.test_status_name</code>.
      */
-    public TestStatusRecord setName(String value) {
+    public TestStatusRecord setTestStatusName(String value) {
         set(1, value);
         return this;
     }
 
     /**
-     * Getter for <code>reportcard.test_status.name</code>.
+     * Getter for <code>reportcard.test_status.test_status_name</code>.
      */
-    public String getName() {
+    public String getTestStatusName() {
         return (String) get(1);
     }
 
@@ -76,43 +76,43 @@ public class TestStatusRecord extends UpdatableRecordImpl<TestStatusRecord> impl
 
     @Override
     public Field<Byte> field1() {
-        return TestStatus.TEST_STATUS.ID;
+        return TestStatus.TEST_STATUS.TEST_STATUS_ID;
     }
 
     @Override
     public Field<String> field2() {
-        return TestStatus.TEST_STATUS.NAME;
+        return TestStatus.TEST_STATUS.TEST_STATUS_NAME;
     }
 
     @Override
     public Byte component1() {
-        return getId();
+        return getTestStatusId();
     }
 
     @Override
     public String component2() {
-        return getName();
+        return getTestStatusName();
     }
 
     @Override
     public Byte value1() {
-        return getId();
+        return getTestStatusId();
     }
 
     @Override
     public String value2() {
-        return getName();
+        return getTestStatusName();
     }
 
     @Override
     public TestStatusRecord value1(Byte value) {
-        setId(value);
+        setTestStatusId(value);
         return this;
     }
 
     @Override
     public TestStatusRecord value2(String value) {
-        setName(value);
+        setTestStatusName(value);
         return this;
     }
 
@@ -137,10 +137,10 @@ public class TestStatusRecord extends UpdatableRecordImpl<TestStatusRecord> impl
     /**
      * Create a detached, initialised TestStatusRecord
      */
-    public TestStatusRecord(Byte id, String name) {
+    public TestStatusRecord(Byte testStatusId, String testStatusName) {
         super(TestStatus.TEST_STATUS);
 
-        set(0, id);
-        set(1, name);
+        set(0, testStatusId);
+        set(1, testStatusName);
     }
 }

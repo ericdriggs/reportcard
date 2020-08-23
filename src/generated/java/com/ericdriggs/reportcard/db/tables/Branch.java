@@ -34,7 +34,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Branch extends TableImpl<BranchRecord> {
 
-    private static final long serialVersionUID = 296506782;
+    private static final long serialVersionUID = 1099102401;
 
     /**
      * The reference instance of <code>reportcard.branch</code>
@@ -50,14 +50,14 @@ public class Branch extends TableImpl<BranchRecord> {
     }
 
     /**
-     * The column <code>reportcard.branch.id</code>.
+     * The column <code>reportcard.branch.branch_id</code>.
      */
-    public final TableField<BranchRecord, Integer> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).identity(true), this, "");
+    public final TableField<BranchRecord, Integer> BRANCH_ID = createField(DSL.name("branch_id"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).identity(true), this, "");
 
     /**
-     * The column <code>reportcard.branch.name</code>.
+     * The column <code>reportcard.branch.branch_name</code>.
      */
-    public final TableField<BranchRecord, String> NAME = createField(DSL.name("name"), org.jooq.impl.SQLDataType.VARCHAR(255).nullable(false), this, "");
+    public final TableField<BranchRecord, String> BRANCH_NAME = createField(DSL.name("branch_name"), org.jooq.impl.SQLDataType.VARCHAR(255).nullable(false), this, "");
 
     /**
      * The column <code>reportcard.branch.repo_fk</code>.
@@ -124,11 +124,11 @@ public class Branch extends TableImpl<BranchRecord> {
 
     @Override
     public List<ForeignKey<BranchRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<BranchRecord, ?>>asList(Keys.REPO_FK);
+        return Arrays.<ForeignKey<BranchRecord, ?>>asList(Keys.BRANCH_REPO_FK);
     }
 
     public Repo repo() {
-        return new Repo(this, Keys.REPO_FK);
+        return new Repo(this, Keys.BRANCH_REPO_FK);
     }
 
     @Override

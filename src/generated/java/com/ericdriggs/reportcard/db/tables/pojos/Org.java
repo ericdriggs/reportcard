@@ -13,38 +13,38 @@ import java.io.Serializable;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Org implements Serializable {
 
-    private static final long serialVersionUID = 1106863156;
+    private static final long serialVersionUID = 1713543053;
 
-    private final Integer id;
-    private final String  name;
+    private final Integer orgId;
+    private final String  orgName;
 
     public Org(Org value) {
-        this.id = value.id;
-        this.name = value.name;
+        this.orgId = value.orgId;
+        this.orgName = value.orgName;
     }
 
     public Org(
-        Integer id,
-        String  name
+        Integer orgId,
+        String  orgName
     ) {
-        this.id = id;
-        this.name = name;
+        this.orgId = orgId;
+        this.orgName = orgName;
     }
 
-    public Integer getId() {
-        return this.id;
+    public Integer getOrgId() {
+        return this.orgId;
     }
 
-    public String getName() {
-        return this.name;
+    public String getOrgName() {
+        return this.orgName;
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("Org (");
 
-        sb.append(id);
-        sb.append(", ").append(name);
+        sb.append(orgId);
+        sb.append(", ").append(orgName);
 
         sb.append(")");
         return sb.toString();

@@ -19,50 +19,50 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AppRecord extends UpdatableRecordImpl<AppRecord> implements Record3<Integer, String, Integer> {
 
-    private static final long serialVersionUID = 1388527410;
+    private static final long serialVersionUID = 818932184;
 
     /**
-     * Setter for <code>reportcard.app.id</code>.
+     * Setter for <code>reportcard.app.app_id</code>.
      */
-    public AppRecord setId(Integer value) {
+    public AppRecord setAppId(Integer value) {
         set(0, value);
         return this;
     }
 
     /**
-     * Getter for <code>reportcard.app.id</code>.
+     * Getter for <code>reportcard.app.app_id</code>.
      */
-    public Integer getId() {
+    public Integer getAppId() {
         return (Integer) get(0);
     }
 
     /**
-     * Setter for <code>reportcard.app.name</code>.
+     * Setter for <code>reportcard.app.app_name</code>.
      */
-    public AppRecord setName(String value) {
+    public AppRecord setAppName(String value) {
         set(1, value);
         return this;
     }
 
     /**
-     * Getter for <code>reportcard.app.name</code>.
+     * Getter for <code>reportcard.app.app_name</code>.
      */
-    public String getName() {
+    public String getAppName() {
         return (String) get(1);
     }
 
     /**
-     * Setter for <code>reportcard.app.branch_fk</code>.
+     * Setter for <code>reportcard.app.repo_fk</code>.
      */
-    public AppRecord setBranchFk(Integer value) {
+    public AppRecord setRepoFk(Integer value) {
         set(2, value);
         return this;
     }
 
     /**
-     * Getter for <code>reportcard.app.branch_fk</code>.
+     * Getter for <code>reportcard.app.repo_fk</code>.
      */
-    public Integer getBranchFk() {
+    public Integer getRepoFk() {
         return (Integer) get(2);
     }
 
@@ -91,64 +91,64 @@ public class AppRecord extends UpdatableRecordImpl<AppRecord> implements Record3
 
     @Override
     public Field<Integer> field1() {
-        return App.APP.ID;
+        return App.APP.APP_ID;
     }
 
     @Override
     public Field<String> field2() {
-        return App.APP.NAME;
+        return App.APP.APP_NAME;
     }
 
     @Override
     public Field<Integer> field3() {
-        return App.APP.BRANCH_FK;
+        return App.APP.REPO_FK;
     }
 
     @Override
     public Integer component1() {
-        return getId();
+        return getAppId();
     }
 
     @Override
     public String component2() {
-        return getName();
+        return getAppName();
     }
 
     @Override
     public Integer component3() {
-        return getBranchFk();
+        return getRepoFk();
     }
 
     @Override
     public Integer value1() {
-        return getId();
+        return getAppId();
     }
 
     @Override
     public String value2() {
-        return getName();
+        return getAppName();
     }
 
     @Override
     public Integer value3() {
-        return getBranchFk();
+        return getRepoFk();
     }
 
     @Override
     public AppRecord value1(Integer value) {
-        setId(value);
+        setAppId(value);
         return this;
     }
 
     @Override
     public AppRecord value2(String value) {
-        setName(value);
+        setAppName(value);
         return this;
     }
 
     @Override
     public AppRecord value3(Integer value) {
-        setBranchFk(value);
+        setRepoFk(value);
         return this;
     }
 
@@ -174,11 +174,11 @@ public class AppRecord extends UpdatableRecordImpl<AppRecord> implements Record3
     /**
      * Create a detached, initialised AppRecord
      */
-    public AppRecord(Integer id, String name, Integer branchFk) {
+    public AppRecord(Integer appId, String appName, Integer repoFk) {
         super(App.APP);
 
-        set(0, id);
-        set(1, name);
-        set(2, branchFk);
+        set(0, appId);
+        set(1, appName);
+        set(2, repoFk);
     }
 }

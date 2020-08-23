@@ -13,74 +13,74 @@ import java.io.Serializable;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestCase implements Serializable {
 
-    private static final long serialVersionUID = -1903003315;
+    private static final long serialVersionUID = -692470080;
 
-    private final Long   id;
+    private final Long   testCaseId;
     private final Long   testSuiteFk;
-    private final String name;
+    private final String testCaseName;
     private final String className;
-    private final Long   time;
-    private final Byte   statusFk;
+    private final Long   testCaseTime;
+    private final Byte   testStatusFk;
 
     public TestCase(TestCase value) {
-        this.id = value.id;
+        this.testCaseId = value.testCaseId;
         this.testSuiteFk = value.testSuiteFk;
-        this.name = value.name;
+        this.testCaseName = value.testCaseName;
         this.className = value.className;
-        this.time = value.time;
-        this.statusFk = value.statusFk;
+        this.testCaseTime = value.testCaseTime;
+        this.testStatusFk = value.testStatusFk;
     }
 
     public TestCase(
-        Long   id,
+        Long   testCaseId,
         Long   testSuiteFk,
-        String name,
+        String testCaseName,
         String className,
-        Long   time,
-        Byte   statusFk
+        Long   testCaseTime,
+        Byte   testStatusFk
     ) {
-        this.id = id;
+        this.testCaseId = testCaseId;
         this.testSuiteFk = testSuiteFk;
-        this.name = name;
+        this.testCaseName = testCaseName;
         this.className = className;
-        this.time = time;
-        this.statusFk = statusFk;
+        this.testCaseTime = testCaseTime;
+        this.testStatusFk = testStatusFk;
     }
 
-    public Long getId() {
-        return this.id;
+    public Long getTestCaseId() {
+        return this.testCaseId;
     }
 
     public Long getTestSuiteFk() {
         return this.testSuiteFk;
     }
 
-    public String getName() {
-        return this.name;
+    public String getTestCaseName() {
+        return this.testCaseName;
     }
 
     public String getClassName() {
         return this.className;
     }
 
-    public Long getTime() {
-        return this.time;
+    public Long getTestCaseTime() {
+        return this.testCaseTime;
     }
 
-    public Byte getStatusFk() {
-        return this.statusFk;
+    public Byte getTestStatusFk() {
+        return this.testStatusFk;
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("TestCase (");
 
-        sb.append(id);
+        sb.append(testCaseId);
         sb.append(", ").append(testSuiteFk);
-        sb.append(", ").append(name);
+        sb.append(", ").append(testCaseName);
         sb.append(", ").append(className);
-        sb.append(", ").append(time);
-        sb.append(", ").append(statusFk);
+        sb.append(", ").append(testCaseTime);
+        sb.append(", ").append(testStatusFk);
 
         sb.append(")");
         return sb.toString();

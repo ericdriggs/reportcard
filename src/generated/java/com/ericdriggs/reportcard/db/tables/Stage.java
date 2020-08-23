@@ -34,7 +34,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Stage extends TableImpl<StageRecord> {
 
-    private static final long serialVersionUID = 606385134;
+    private static final long serialVersionUID = 2031701203;
 
     /**
      * The reference instance of <code>reportcard.stage</code>
@@ -50,19 +50,19 @@ public class Stage extends TableImpl<StageRecord> {
     }
 
     /**
-     * The column <code>reportcard.stage.id</code>.
+     * The column <code>reportcard.stage.stage_id</code>.
      */
-    public final TableField<StageRecord, Integer> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).identity(true), this, "");
+    public final TableField<StageRecord, Integer> STAGE_ID = createField(DSL.name("stage_id"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).identity(true), this, "");
 
     /**
-     * The column <code>reportcard.stage.name</code>.
+     * The column <code>reportcard.stage.stage_name</code>.
      */
-    public final TableField<StageRecord, String> NAME = createField(DSL.name("name"), org.jooq.impl.SQLDataType.VARCHAR(255).nullable(false), this, "");
+    public final TableField<StageRecord, String> STAGE_NAME = createField(DSL.name("stage_name"), org.jooq.impl.SQLDataType.VARCHAR(255).nullable(false), this, "");
 
     /**
-     * The column <code>reportcard.stage.app_fk</code>.
+     * The column <code>reportcard.stage.app_branch_fk</code>.
      */
-    public final TableField<StageRecord, Integer> APP_FK = createField(DSL.name("app_fk"), org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+    public final TableField<StageRecord, Integer> APP_BRANCH_FK = createField(DSL.name("app_branch_fk"), org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * Create a <code>reportcard.stage</code> table reference
@@ -119,16 +119,16 @@ public class Stage extends TableImpl<StageRecord> {
 
     @Override
     public List<UniqueKey<StageRecord>> getKeys() {
-        return Arrays.<UniqueKey<StageRecord>>asList(Keys.KEY_STAGE_PRIMARY, Keys.KEY_STAGE_APP_STAGE_IDX, Keys.KEY_STAGE_NAME_UNIQUE);
+        return Arrays.<UniqueKey<StageRecord>>asList(Keys.KEY_STAGE_PRIMARY, Keys.KEY_STAGE_NAME_UNIQUE);
     }
 
     @Override
     public List<ForeignKey<StageRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<StageRecord, ?>>asList(Keys.STAGE_APP_FK);
+        return Arrays.<ForeignKey<StageRecord, ?>>asList(Keys.STAGE_APP_BRANCH_FK);
     }
 
-    public App app() {
-        return new App(this, Keys.STAGE_APP_FK);
+    public AppBranch appBranch() {
+        return new AppBranch(this, Keys.STAGE_APP_BRANCH_FK);
     }
 
     @Override

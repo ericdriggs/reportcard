@@ -14,56 +14,56 @@ import java.time.LocalDateTime;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Build implements Serializable {
 
-    private static final long serialVersionUID = 1501937007;
+    private static final long serialVersionUID = 429504732;
 
-    private final Long          id;
-    private final Integer       appFk;
-    private final LocalDateTime created;
-    private final Integer       appBuildOrdinal;
+    private final Long          buildId;
+    private final Integer       appBranchFk;
+    private final Integer       appBranchBuildOrdinal;
+    private final LocalDateTime buildCreated;
 
     public Build(Build value) {
-        this.id = value.id;
-        this.appFk = value.appFk;
-        this.created = value.created;
-        this.appBuildOrdinal = value.appBuildOrdinal;
+        this.buildId = value.buildId;
+        this.appBranchFk = value.appBranchFk;
+        this.appBranchBuildOrdinal = value.appBranchBuildOrdinal;
+        this.buildCreated = value.buildCreated;
     }
 
     public Build(
-        Long          id,
-        Integer       appFk,
-        LocalDateTime created,
-        Integer       appBuildOrdinal
+        Long          buildId,
+        Integer       appBranchFk,
+        Integer       appBranchBuildOrdinal,
+        LocalDateTime buildCreated
     ) {
-        this.id = id;
-        this.appFk = appFk;
-        this.created = created;
-        this.appBuildOrdinal = appBuildOrdinal;
+        this.buildId = buildId;
+        this.appBranchFk = appBranchFk;
+        this.appBranchBuildOrdinal = appBranchBuildOrdinal;
+        this.buildCreated = buildCreated;
     }
 
-    public Long getId() {
-        return this.id;
+    public Long getBuildId() {
+        return this.buildId;
     }
 
-    public Integer getAppFk() {
-        return this.appFk;
+    public Integer getAppBranchFk() {
+        return this.appBranchFk;
     }
 
-    public LocalDateTime getCreated() {
-        return this.created;
+    public Integer getAppBranchBuildOrdinal() {
+        return this.appBranchBuildOrdinal;
     }
 
-    public Integer getAppBuildOrdinal() {
-        return this.appBuildOrdinal;
+    public LocalDateTime getBuildCreated() {
+        return this.buildCreated;
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("Build (");
 
-        sb.append(id);
-        sb.append(", ").append(appFk);
-        sb.append(", ").append(created);
-        sb.append(", ").append(appBuildOrdinal);
+        sb.append(buildId);
+        sb.append(", ").append(appBranchFk);
+        sb.append(", ").append(appBranchBuildOrdinal);
+        sb.append(", ").append(buildCreated);
 
         sb.append(")");
         return sb.toString();

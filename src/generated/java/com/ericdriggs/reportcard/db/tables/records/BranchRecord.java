@@ -19,35 +19,35 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BranchRecord extends UpdatableRecordImpl<BranchRecord> implements Record3<Integer, String, Integer> {
 
-    private static final long serialVersionUID = -1589490484;
+    private static final long serialVersionUID = 354108854;
 
     /**
-     * Setter for <code>reportcard.branch.id</code>.
+     * Setter for <code>reportcard.branch.branch_id</code>.
      */
-    public BranchRecord setId(Integer value) {
+    public BranchRecord setBranchId(Integer value) {
         set(0, value);
         return this;
     }
 
     /**
-     * Getter for <code>reportcard.branch.id</code>.
+     * Getter for <code>reportcard.branch.branch_id</code>.
      */
-    public Integer getId() {
+    public Integer getBranchId() {
         return (Integer) get(0);
     }
 
     /**
-     * Setter for <code>reportcard.branch.name</code>.
+     * Setter for <code>reportcard.branch.branch_name</code>.
      */
-    public BranchRecord setName(String value) {
+    public BranchRecord setBranchName(String value) {
         set(1, value);
         return this;
     }
 
     /**
-     * Getter for <code>reportcard.branch.name</code>.
+     * Getter for <code>reportcard.branch.branch_name</code>.
      */
-    public String getName() {
+    public String getBranchName() {
         return (String) get(1);
     }
 
@@ -91,12 +91,12 @@ public class BranchRecord extends UpdatableRecordImpl<BranchRecord> implements R
 
     @Override
     public Field<Integer> field1() {
-        return Branch.BRANCH.ID;
+        return Branch.BRANCH.BRANCH_ID;
     }
 
     @Override
     public Field<String> field2() {
-        return Branch.BRANCH.NAME;
+        return Branch.BRANCH.BRANCH_NAME;
     }
 
     @Override
@@ -106,12 +106,12 @@ public class BranchRecord extends UpdatableRecordImpl<BranchRecord> implements R
 
     @Override
     public Integer component1() {
-        return getId();
+        return getBranchId();
     }
 
     @Override
     public String component2() {
-        return getName();
+        return getBranchName();
     }
 
     @Override
@@ -121,12 +121,12 @@ public class BranchRecord extends UpdatableRecordImpl<BranchRecord> implements R
 
     @Override
     public Integer value1() {
-        return getId();
+        return getBranchId();
     }
 
     @Override
     public String value2() {
-        return getName();
+        return getBranchName();
     }
 
     @Override
@@ -136,13 +136,13 @@ public class BranchRecord extends UpdatableRecordImpl<BranchRecord> implements R
 
     @Override
     public BranchRecord value1(Integer value) {
-        setId(value);
+        setBranchId(value);
         return this;
     }
 
     @Override
     public BranchRecord value2(String value) {
-        setName(value);
+        setBranchName(value);
         return this;
     }
 
@@ -174,11 +174,11 @@ public class BranchRecord extends UpdatableRecordImpl<BranchRecord> implements R
     /**
      * Create a detached, initialised BranchRecord
      */
-    public BranchRecord(Integer id, String name, Integer repoFk) {
+    public BranchRecord(Integer branchId, String branchName, Integer repoFk) {
         super(Branch.BRANCH);
 
-        set(0, id);
-        set(1, name);
+        set(0, branchId);
+        set(1, branchName);
         set(2, repoFk);
     }
 }

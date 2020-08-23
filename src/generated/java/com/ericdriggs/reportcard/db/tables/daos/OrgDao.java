@@ -35,48 +35,48 @@ public class OrgDao extends DAOImpl<OrgRecord, com.ericdriggs.reportcard.db.tabl
 
     @Override
     public Integer getId(com.ericdriggs.reportcard.db.tables.pojos.Org object) {
-        return object.getId();
+        return object.getOrgId();
     }
 
     /**
-     * Fetch records that have <code>id BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>org_id BETWEEN lowerInclusive AND upperInclusive</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.Org> fetchRangeOfId(Integer lowerInclusive, Integer upperInclusive) {
-        return fetchRange(Org.ORG.ID, lowerInclusive, upperInclusive);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.Org> fetchRangeOfOrgId(Integer lowerInclusive, Integer upperInclusive) {
+        return fetchRange(Org.ORG.ORG_ID, lowerInclusive, upperInclusive);
     }
 
     /**
-     * Fetch records that have <code>id IN (values)</code>
+     * Fetch records that have <code>org_id IN (values)</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.Org> fetchById(Integer... values) {
-        return fetch(Org.ORG.ID, values);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.Org> fetchByOrgId(Integer... values) {
+        return fetch(Org.ORG.ORG_ID, values);
     }
 
     /**
-     * Fetch a unique record that has <code>id = value</code>
+     * Fetch a unique record that has <code>org_id = value</code>
      */
-    public com.ericdriggs.reportcard.db.tables.pojos.Org fetchOneById(Integer value) {
-        return fetchOne(Org.ORG.ID, value);
+    public com.ericdriggs.reportcard.db.tables.pojos.Org fetchOneByOrgId(Integer value) {
+        return fetchOne(Org.ORG.ORG_ID, value);
     }
 
     /**
-     * Fetch records that have <code>name BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>org_name BETWEEN lowerInclusive AND upperInclusive</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.Org> fetchRangeOfName(String lowerInclusive, String upperInclusive) {
-        return fetchRange(Org.ORG.NAME, lowerInclusive, upperInclusive);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.Org> fetchRangeOfOrgName(String lowerInclusive, String upperInclusive) {
+        return fetchRange(Org.ORG.ORG_NAME, lowerInclusive, upperInclusive);
     }
 
     /**
-     * Fetch records that have <code>name IN (values)</code>
+     * Fetch records that have <code>org_name IN (values)</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.Org> fetchByName(String... values) {
-        return fetch(Org.ORG.NAME, values);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.Org> fetchByOrgName(String... values) {
+        return fetch(Org.ORG.ORG_NAME, values);
     }
 
     /**
-     * Fetch a unique record that has <code>name = value</code>
+     * Fetch a unique record that has <code>org_name = value</code>
      */
-    public com.ericdriggs.reportcard.db.tables.pojos.Org fetchOneByName(String value) {
-        return fetchOne(Org.ORG.NAME, value);
+    public com.ericdriggs.reportcard.db.tables.pojos.Org fetchOneByOrgName(String value) {
+        return fetchOne(Org.ORG.ORG_NAME, value);
     }
 }

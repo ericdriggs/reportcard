@@ -13,11 +13,11 @@ import java.io.Serializable;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Storage implements Serializable {
 
-    private static final long serialVersionUID = 1100660479;
+    private static final long serialVersionUID = 101210140;
 
-    private final Integer id;
+    private final Integer storageId;
     private final Long    buildStageFk;
-    private final String  label;
+    private final String  storageLabel;
     private final Byte    storageTypeFk;
     private final String  s3Bucket;
     private final String  s3FolderPath;
@@ -25,9 +25,9 @@ public class Storage implements Serializable {
     private final String  s3FileMatcher;
 
     public Storage(Storage value) {
-        this.id = value.id;
+        this.storageId = value.storageId;
         this.buildStageFk = value.buildStageFk;
-        this.label = value.label;
+        this.storageLabel = value.storageLabel;
         this.storageTypeFk = value.storageTypeFk;
         this.s3Bucket = value.s3Bucket;
         this.s3FolderPath = value.s3FolderPath;
@@ -36,18 +36,18 @@ public class Storage implements Serializable {
     }
 
     public Storage(
-        Integer id,
+        Integer storageId,
         Long    buildStageFk,
-        String  label,
+        String  storageLabel,
         Byte    storageTypeFk,
         String  s3Bucket,
         String  s3FolderPath,
         String  s3FileName,
         String  s3FileMatcher
     ) {
-        this.id = id;
+        this.storageId = storageId;
         this.buildStageFk = buildStageFk;
-        this.label = label;
+        this.storageLabel = storageLabel;
         this.storageTypeFk = storageTypeFk;
         this.s3Bucket = s3Bucket;
         this.s3FolderPath = s3FolderPath;
@@ -55,16 +55,16 @@ public class Storage implements Serializable {
         this.s3FileMatcher = s3FileMatcher;
     }
 
-    public Integer getId() {
-        return this.id;
+    public Integer getStorageId() {
+        return this.storageId;
     }
 
     public Long getBuildStageFk() {
         return this.buildStageFk;
     }
 
-    public String getLabel() {
-        return this.label;
+    public String getStorageLabel() {
+        return this.storageLabel;
     }
 
     public Byte getStorageTypeFk() {
@@ -91,9 +91,9 @@ public class Storage implements Serializable {
     public String toString() {
         StringBuilder sb = new StringBuilder("Storage (");
 
-        sb.append(id);
+        sb.append(storageId);
         sb.append(", ").append(buildStageFk);
-        sb.append(", ").append(label);
+        sb.append(", ").append(storageLabel);
         sb.append(", ").append(storageTypeFk);
         sb.append(", ").append(s3Bucket);
         sb.append(", ").append(s3FolderPath);

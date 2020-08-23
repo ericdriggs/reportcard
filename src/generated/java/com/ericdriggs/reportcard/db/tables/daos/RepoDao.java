@@ -35,49 +35,49 @@ public class RepoDao extends DAOImpl<RepoRecord, com.ericdriggs.reportcard.db.ta
 
     @Override
     public Integer getId(com.ericdriggs.reportcard.db.tables.pojos.Repo object) {
-        return object.getId();
+        return object.getRepoId();
     }
 
     /**
-     * Fetch records that have <code>id BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>repo_id BETWEEN lowerInclusive AND upperInclusive</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.Repo> fetchRangeOfId(Integer lowerInclusive, Integer upperInclusive) {
-        return fetchRange(Repo.REPO.ID, lowerInclusive, upperInclusive);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.Repo> fetchRangeOfRepoId(Integer lowerInclusive, Integer upperInclusive) {
+        return fetchRange(Repo.REPO.REPO_ID, lowerInclusive, upperInclusive);
     }
 
     /**
-     * Fetch records that have <code>id IN (values)</code>
+     * Fetch records that have <code>repo_id IN (values)</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.Repo> fetchById(Integer... values) {
-        return fetch(Repo.REPO.ID, values);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.Repo> fetchByRepoId(Integer... values) {
+        return fetch(Repo.REPO.REPO_ID, values);
     }
 
     /**
-     * Fetch a unique record that has <code>id = value</code>
+     * Fetch a unique record that has <code>repo_id = value</code>
      */
-    public com.ericdriggs.reportcard.db.tables.pojos.Repo fetchOneById(Integer value) {
-        return fetchOne(Repo.REPO.ID, value);
+    public com.ericdriggs.reportcard.db.tables.pojos.Repo fetchOneByRepoId(Integer value) {
+        return fetchOne(Repo.REPO.REPO_ID, value);
     }
 
     /**
-     * Fetch records that have <code>name BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>repo_name BETWEEN lowerInclusive AND upperInclusive</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.Repo> fetchRangeOfName(String lowerInclusive, String upperInclusive) {
-        return fetchRange(Repo.REPO.NAME, lowerInclusive, upperInclusive);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.Repo> fetchRangeOfRepoName(String lowerInclusive, String upperInclusive) {
+        return fetchRange(Repo.REPO.REPO_NAME, lowerInclusive, upperInclusive);
     }
 
     /**
-     * Fetch records that have <code>name IN (values)</code>
+     * Fetch records that have <code>repo_name IN (values)</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.Repo> fetchByName(String... values) {
-        return fetch(Repo.REPO.NAME, values);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.Repo> fetchByRepoName(String... values) {
+        return fetch(Repo.REPO.REPO_NAME, values);
     }
 
     /**
-     * Fetch a unique record that has <code>name = value</code>
+     * Fetch a unique record that has <code>repo_name = value</code>
      */
-    public com.ericdriggs.reportcard.db.tables.pojos.Repo fetchOneByName(String value) {
-        return fetchOne(Repo.REPO.NAME, value);
+    public com.ericdriggs.reportcard.db.tables.pojos.Repo fetchOneByRepoName(String value) {
+        return fetchOne(Repo.REPO.REPO_NAME, value);
     }
 
     /**

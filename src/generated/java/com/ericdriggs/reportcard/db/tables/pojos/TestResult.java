@@ -13,9 +13,9 @@ import java.io.Serializable;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestResult implements Serializable {
 
-    private static final long serialVersionUID = 1084438082;
+    private static final long serialVersionUID = -1280242606;
 
-    private final Long    id;
+    private final Long    testResultId;
     private final Long    buildStageFk;
     private final Integer tests;
     private final Integer skipped;
@@ -26,7 +26,7 @@ public class TestResult implements Serializable {
     private final Byte    hasSkip;
 
     public TestResult(TestResult value) {
-        this.id = value.id;
+        this.testResultId = value.testResultId;
         this.buildStageFk = value.buildStageFk;
         this.tests = value.tests;
         this.skipped = value.skipped;
@@ -38,7 +38,7 @@ public class TestResult implements Serializable {
     }
 
     public TestResult(
-        Long    id,
+        Long    testResultId,
         Long    buildStageFk,
         Integer tests,
         Integer skipped,
@@ -48,7 +48,7 @@ public class TestResult implements Serializable {
         Byte    isSuccess,
         Byte    hasSkip
     ) {
-        this.id = id;
+        this.testResultId = testResultId;
         this.buildStageFk = buildStageFk;
         this.tests = tests;
         this.skipped = skipped;
@@ -59,8 +59,8 @@ public class TestResult implements Serializable {
         this.hasSkip = hasSkip;
     }
 
-    public Long getId() {
-        return this.id;
+    public Long getTestResultId() {
+        return this.testResultId;
     }
 
     public Long getBuildStageFk() {
@@ -99,7 +99,7 @@ public class TestResult implements Serializable {
     public String toString() {
         StringBuilder sb = new StringBuilder("TestResult (");
 
-        sb.append(id);
+        sb.append(testResultId);
         sb.append(", ").append(buildStageFk);
         sb.append(", ").append(tests);
         sb.append(", ").append(skipped);

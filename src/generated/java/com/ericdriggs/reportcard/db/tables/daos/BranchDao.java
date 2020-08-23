@@ -35,49 +35,49 @@ public class BranchDao extends DAOImpl<BranchRecord, com.ericdriggs.reportcard.d
 
     @Override
     public Integer getId(com.ericdriggs.reportcard.db.tables.pojos.Branch object) {
-        return object.getId();
+        return object.getBranchId();
     }
 
     /**
-     * Fetch records that have <code>id BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>branch_id BETWEEN lowerInclusive AND upperInclusive</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.Branch> fetchRangeOfId(Integer lowerInclusive, Integer upperInclusive) {
-        return fetchRange(Branch.BRANCH.ID, lowerInclusive, upperInclusive);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.Branch> fetchRangeOfBranchId(Integer lowerInclusive, Integer upperInclusive) {
+        return fetchRange(Branch.BRANCH.BRANCH_ID, lowerInclusive, upperInclusive);
     }
 
     /**
-     * Fetch records that have <code>id IN (values)</code>
+     * Fetch records that have <code>branch_id IN (values)</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.Branch> fetchById(Integer... values) {
-        return fetch(Branch.BRANCH.ID, values);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.Branch> fetchByBranchId(Integer... values) {
+        return fetch(Branch.BRANCH.BRANCH_ID, values);
     }
 
     /**
-     * Fetch a unique record that has <code>id = value</code>
+     * Fetch a unique record that has <code>branch_id = value</code>
      */
-    public com.ericdriggs.reportcard.db.tables.pojos.Branch fetchOneById(Integer value) {
-        return fetchOne(Branch.BRANCH.ID, value);
+    public com.ericdriggs.reportcard.db.tables.pojos.Branch fetchOneByBranchId(Integer value) {
+        return fetchOne(Branch.BRANCH.BRANCH_ID, value);
     }
 
     /**
-     * Fetch records that have <code>name BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>branch_name BETWEEN lowerInclusive AND upperInclusive</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.Branch> fetchRangeOfName(String lowerInclusive, String upperInclusive) {
-        return fetchRange(Branch.BRANCH.NAME, lowerInclusive, upperInclusive);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.Branch> fetchRangeOfBranchName(String lowerInclusive, String upperInclusive) {
+        return fetchRange(Branch.BRANCH.BRANCH_NAME, lowerInclusive, upperInclusive);
     }
 
     /**
-     * Fetch records that have <code>name IN (values)</code>
+     * Fetch records that have <code>branch_name IN (values)</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.Branch> fetchByName(String... values) {
-        return fetch(Branch.BRANCH.NAME, values);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.Branch> fetchByBranchName(String... values) {
+        return fetch(Branch.BRANCH.BRANCH_NAME, values);
     }
 
     /**
-     * Fetch a unique record that has <code>name = value</code>
+     * Fetch a unique record that has <code>branch_name = value</code>
      */
-    public com.ericdriggs.reportcard.db.tables.pojos.Branch fetchOneByName(String value) {
-        return fetchOne(Branch.BRANCH.NAME, value);
+    public com.ericdriggs.reportcard.db.tables.pojos.Branch fetchOneByBranchName(String value) {
+        return fetchOne(Branch.BRANCH.BRANCH_NAME, value);
     }
 
     /**

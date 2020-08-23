@@ -19,20 +19,20 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> implements Record9<Long, Long, Integer, Integer, Integer, Integer, Long, Byte, Byte> {
 
-    private static final long serialVersionUID = 649467194;
+    private static final long serialVersionUID = 2109572980;
 
     /**
-     * Setter for <code>reportcard.test_result.id</code>.
+     * Setter for <code>reportcard.test_result.test_result_id</code>.
      */
-    public TestResultRecord setId(Long value) {
+    public TestResultRecord setTestResultId(Long value) {
         set(0, value);
         return this;
     }
 
     /**
-     * Getter for <code>reportcard.test_result.id</code>.
+     * Getter for <code>reportcard.test_result.test_result_id</code>.
      */
-    public Long getId() {
+    public Long getTestResultId() {
         return (Long) get(0);
     }
 
@@ -181,7 +181,7 @@ public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> impl
 
     @Override
     public Field<Long> field1() {
-        return TestResult.TEST_RESULT.ID;
+        return TestResult.TEST_RESULT.TEST_RESULT_ID;
     }
 
     @Override
@@ -226,7 +226,7 @@ public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> impl
 
     @Override
     public Long component1() {
-        return getId();
+        return getTestResultId();
     }
 
     @Override
@@ -271,7 +271,7 @@ public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> impl
 
     @Override
     public Long value1() {
-        return getId();
+        return getTestResultId();
     }
 
     @Override
@@ -316,7 +316,7 @@ public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> impl
 
     @Override
     public TestResultRecord value1(Long value) {
-        setId(value);
+        setTestResultId(value);
         return this;
     }
 
@@ -396,10 +396,10 @@ public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> impl
     /**
      * Create a detached, initialised TestResultRecord
      */
-    public TestResultRecord(Long id, Long buildStageFk, Integer tests, Integer skipped, Integer error, Integer failure, Long time, Byte isSuccess, Byte hasSkip) {
+    public TestResultRecord(Long testResultId, Long buildStageFk, Integer tests, Integer skipped, Integer error, Integer failure, Long time, Byte isSuccess, Byte hasSkip) {
         super(TestResult.TEST_RESULT);
 
-        set(0, id);
+        set(0, testResultId);
         set(1, buildStageFk);
         set(2, tests);
         set(3, skipped);

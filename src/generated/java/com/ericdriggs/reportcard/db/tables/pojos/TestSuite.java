@@ -13,66 +13,66 @@ import java.io.Serializable;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestSuite implements Serializable {
 
-    private static final long serialVersionUID = -689888457;
+    private static final long serialVersionUID = 1924261148;
 
-    private final Long    id;
+    private final Long    testSuiteId;
     private final Long    testResultFk;
-    private final String  package_;
+    private final String  testSuitePackage;
     private final Integer tests;
     private final Integer skipped;
     private final Integer error;
     private final Integer failure;
-    private final Long    time;
-    private final Byte    isSuccess;
+    private final Long    testSuiteTime;
+    private final Byte    testSuiteIsSuccess;
     private final Byte    hasSkip;
 
     public TestSuite(TestSuite value) {
-        this.id = value.id;
+        this.testSuiteId = value.testSuiteId;
         this.testResultFk = value.testResultFk;
-        this.package_ = value.package_;
+        this.testSuitePackage = value.testSuitePackage;
         this.tests = value.tests;
         this.skipped = value.skipped;
         this.error = value.error;
         this.failure = value.failure;
-        this.time = value.time;
-        this.isSuccess = value.isSuccess;
+        this.testSuiteTime = value.testSuiteTime;
+        this.testSuiteIsSuccess = value.testSuiteIsSuccess;
         this.hasSkip = value.hasSkip;
     }
 
     public TestSuite(
-        Long    id,
+        Long    testSuiteId,
         Long    testResultFk,
-        String  package_,
+        String  testSuitePackage,
         Integer tests,
         Integer skipped,
         Integer error,
         Integer failure,
-        Long    time,
-        Byte    isSuccess,
+        Long    testSuiteTime,
+        Byte    testSuiteIsSuccess,
         Byte    hasSkip
     ) {
-        this.id = id;
+        this.testSuiteId = testSuiteId;
         this.testResultFk = testResultFk;
-        this.package_ = package_;
+        this.testSuitePackage = testSuitePackage;
         this.tests = tests;
         this.skipped = skipped;
         this.error = error;
         this.failure = failure;
-        this.time = time;
-        this.isSuccess = isSuccess;
+        this.testSuiteTime = testSuiteTime;
+        this.testSuiteIsSuccess = testSuiteIsSuccess;
         this.hasSkip = hasSkip;
     }
 
-    public Long getId() {
-        return this.id;
+    public Long getTestSuiteId() {
+        return this.testSuiteId;
     }
 
     public Long getTestResultFk() {
         return this.testResultFk;
     }
 
-    public String getPackage() {
-        return this.package_;
+    public String getTestSuitePackage() {
+        return this.testSuitePackage;
     }
 
     public Integer getTests() {
@@ -91,12 +91,12 @@ public class TestSuite implements Serializable {
         return this.failure;
     }
 
-    public Long getTime() {
-        return this.time;
+    public Long getTestSuiteTime() {
+        return this.testSuiteTime;
     }
 
-    public Byte getIsSuccess() {
-        return this.isSuccess;
+    public Byte getTestSuiteIsSuccess() {
+        return this.testSuiteIsSuccess;
     }
 
     public Byte getHasSkip() {
@@ -107,15 +107,15 @@ public class TestSuite implements Serializable {
     public String toString() {
         StringBuilder sb = new StringBuilder("TestSuite (");
 
-        sb.append(id);
+        sb.append(testSuiteId);
         sb.append(", ").append(testResultFk);
-        sb.append(", ").append(package_);
+        sb.append(", ").append(testSuitePackage);
         sb.append(", ").append(tests);
         sb.append(", ").append(skipped);
         sb.append(", ").append(error);
         sb.append(", ").append(failure);
-        sb.append(", ").append(time);
-        sb.append(", ").append(isSuccess);
+        sb.append(", ").append(testSuiteTime);
+        sb.append(", ").append(testSuiteIsSuccess);
         sb.append(", ").append(hasSkip);
 
         sb.append(")");

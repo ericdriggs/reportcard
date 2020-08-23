@@ -19,50 +19,50 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class StageRecord extends UpdatableRecordImpl<StageRecord> implements Record3<Integer, String, Integer> {
 
-    private static final long serialVersionUID = 235335452;
+    private static final long serialVersionUID = -1166025207;
 
     /**
-     * Setter for <code>reportcard.stage.id</code>.
+     * Setter for <code>reportcard.stage.stage_id</code>.
      */
-    public StageRecord setId(Integer value) {
+    public StageRecord setStageId(Integer value) {
         set(0, value);
         return this;
     }
 
     /**
-     * Getter for <code>reportcard.stage.id</code>.
+     * Getter for <code>reportcard.stage.stage_id</code>.
      */
-    public Integer getId() {
+    public Integer getStageId() {
         return (Integer) get(0);
     }
 
     /**
-     * Setter for <code>reportcard.stage.name</code>.
+     * Setter for <code>reportcard.stage.stage_name</code>.
      */
-    public StageRecord setName(String value) {
+    public StageRecord setStageName(String value) {
         set(1, value);
         return this;
     }
 
     /**
-     * Getter for <code>reportcard.stage.name</code>.
+     * Getter for <code>reportcard.stage.stage_name</code>.
      */
-    public String getName() {
+    public String getStageName() {
         return (String) get(1);
     }
 
     /**
-     * Setter for <code>reportcard.stage.app_fk</code>.
+     * Setter for <code>reportcard.stage.app_branch_fk</code>.
      */
-    public StageRecord setAppFk(Integer value) {
+    public StageRecord setAppBranchFk(Integer value) {
         set(2, value);
         return this;
     }
 
     /**
-     * Getter for <code>reportcard.stage.app_fk</code>.
+     * Getter for <code>reportcard.stage.app_branch_fk</code>.
      */
-    public Integer getAppFk() {
+    public Integer getAppBranchFk() {
         return (Integer) get(2);
     }
 
@@ -91,64 +91,64 @@ public class StageRecord extends UpdatableRecordImpl<StageRecord> implements Rec
 
     @Override
     public Field<Integer> field1() {
-        return Stage.STAGE.ID;
+        return Stage.STAGE.STAGE_ID;
     }
 
     @Override
     public Field<String> field2() {
-        return Stage.STAGE.NAME;
+        return Stage.STAGE.STAGE_NAME;
     }
 
     @Override
     public Field<Integer> field3() {
-        return Stage.STAGE.APP_FK;
+        return Stage.STAGE.APP_BRANCH_FK;
     }
 
     @Override
     public Integer component1() {
-        return getId();
+        return getStageId();
     }
 
     @Override
     public String component2() {
-        return getName();
+        return getStageName();
     }
 
     @Override
     public Integer component3() {
-        return getAppFk();
+        return getAppBranchFk();
     }
 
     @Override
     public Integer value1() {
-        return getId();
+        return getStageId();
     }
 
     @Override
     public String value2() {
-        return getName();
+        return getStageName();
     }
 
     @Override
     public Integer value3() {
-        return getAppFk();
+        return getAppBranchFk();
     }
 
     @Override
     public StageRecord value1(Integer value) {
-        setId(value);
+        setStageId(value);
         return this;
     }
 
     @Override
     public StageRecord value2(String value) {
-        setName(value);
+        setStageName(value);
         return this;
     }
 
     @Override
     public StageRecord value3(Integer value) {
-        setAppFk(value);
+        setAppBranchFk(value);
         return this;
     }
 
@@ -174,11 +174,11 @@ public class StageRecord extends UpdatableRecordImpl<StageRecord> implements Rec
     /**
      * Create a detached, initialised StageRecord
      */
-    public StageRecord(Integer id, String name, Integer appFk) {
+    public StageRecord(Integer stageId, String stageName, Integer appBranchFk) {
         super(Stage.STAGE);
 
-        set(0, id);
-        set(1, name);
-        set(2, appFk);
+        set(0, stageId);
+        set(1, stageName);
+        set(2, appBranchFk);
     }
 }

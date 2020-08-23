@@ -35,28 +35,28 @@ public class TestCaseDao extends DAOImpl<TestCaseRecord, com.ericdriggs.reportca
 
     @Override
     public Long getId(com.ericdriggs.reportcard.db.tables.pojos.TestCase object) {
-        return object.getId();
+        return object.getTestCaseId();
     }
 
     /**
-     * Fetch records that have <code>id BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>test_case_id BETWEEN lowerInclusive AND upperInclusive</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.TestCase> fetchRangeOfId(Long lowerInclusive, Long upperInclusive) {
-        return fetchRange(TestCase.TEST_CASE.ID, lowerInclusive, upperInclusive);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.TestCase> fetchRangeOfTestCaseId(Long lowerInclusive, Long upperInclusive) {
+        return fetchRange(TestCase.TEST_CASE.TEST_CASE_ID, lowerInclusive, upperInclusive);
     }
 
     /**
-     * Fetch records that have <code>id IN (values)</code>
+     * Fetch records that have <code>test_case_id IN (values)</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.TestCase> fetchById(Long... values) {
-        return fetch(TestCase.TEST_CASE.ID, values);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.TestCase> fetchByTestCaseId(Long... values) {
+        return fetch(TestCase.TEST_CASE.TEST_CASE_ID, values);
     }
 
     /**
-     * Fetch a unique record that has <code>id = value</code>
+     * Fetch a unique record that has <code>test_case_id = value</code>
      */
-    public com.ericdriggs.reportcard.db.tables.pojos.TestCase fetchOneById(Long value) {
-        return fetchOne(TestCase.TEST_CASE.ID, value);
+    public com.ericdriggs.reportcard.db.tables.pojos.TestCase fetchOneByTestCaseId(Long value) {
+        return fetchOne(TestCase.TEST_CASE.TEST_CASE_ID, value);
     }
 
     /**
@@ -74,17 +74,17 @@ public class TestCaseDao extends DAOImpl<TestCaseRecord, com.ericdriggs.reportca
     }
 
     /**
-     * Fetch records that have <code>name BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>test_case_name BETWEEN lowerInclusive AND upperInclusive</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.TestCase> fetchRangeOfName(String lowerInclusive, String upperInclusive) {
-        return fetchRange(TestCase.TEST_CASE.NAME, lowerInclusive, upperInclusive);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.TestCase> fetchRangeOfTestCaseName(String lowerInclusive, String upperInclusive) {
+        return fetchRange(TestCase.TEST_CASE.TEST_CASE_NAME, lowerInclusive, upperInclusive);
     }
 
     /**
-     * Fetch records that have <code>name IN (values)</code>
+     * Fetch records that have <code>test_case_name IN (values)</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.TestCase> fetchByName(String... values) {
-        return fetch(TestCase.TEST_CASE.NAME, values);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.TestCase> fetchByTestCaseName(String... values) {
+        return fetch(TestCase.TEST_CASE.TEST_CASE_NAME, values);
     }
 
     /**
@@ -102,30 +102,30 @@ public class TestCaseDao extends DAOImpl<TestCaseRecord, com.ericdriggs.reportca
     }
 
     /**
-     * Fetch records that have <code>time BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>test_case_time BETWEEN lowerInclusive AND upperInclusive</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.TestCase> fetchRangeOfTime(Long lowerInclusive, Long upperInclusive) {
-        return fetchRange(TestCase.TEST_CASE.TIME, lowerInclusive, upperInclusive);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.TestCase> fetchRangeOfTestCaseTime(Long lowerInclusive, Long upperInclusive) {
+        return fetchRange(TestCase.TEST_CASE.TEST_CASE_TIME, lowerInclusive, upperInclusive);
     }
 
     /**
-     * Fetch records that have <code>time IN (values)</code>
+     * Fetch records that have <code>test_case_time IN (values)</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.TestCase> fetchByTime(Long... values) {
-        return fetch(TestCase.TEST_CASE.TIME, values);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.TestCase> fetchByTestCaseTime(Long... values) {
+        return fetch(TestCase.TEST_CASE.TEST_CASE_TIME, values);
     }
 
     /**
-     * Fetch records that have <code>status_fk BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>test_status_fk BETWEEN lowerInclusive AND upperInclusive</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.TestCase> fetchRangeOfStatusFk(Byte lowerInclusive, Byte upperInclusive) {
-        return fetchRange(TestCase.TEST_CASE.STATUS_FK, lowerInclusive, upperInclusive);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.TestCase> fetchRangeOfTestStatusFk(Byte lowerInclusive, Byte upperInclusive) {
+        return fetchRange(TestCase.TEST_CASE.TEST_STATUS_FK, lowerInclusive, upperInclusive);
     }
 
     /**
-     * Fetch records that have <code>status_fk IN (values)</code>
+     * Fetch records that have <code>test_status_fk IN (values)</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.TestCase> fetchByStatusFk(Byte... values) {
-        return fetch(TestCase.TEST_CASE.STATUS_FK, values);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.TestCase> fetchByTestStatusFk(Byte... values) {
+        return fetch(TestCase.TEST_CASE.TEST_STATUS_FK, values);
     }
 }

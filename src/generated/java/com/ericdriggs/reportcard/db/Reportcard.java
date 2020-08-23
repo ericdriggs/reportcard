@@ -5,6 +5,7 @@ package com.ericdriggs.reportcard.db;
 
 
 import com.ericdriggs.reportcard.db.tables.App;
+import com.ericdriggs.reportcard.db.tables.AppBranch;
 import com.ericdriggs.reportcard.db.tables.Branch;
 import com.ericdriggs.reportcard.db.tables.Build;
 import com.ericdriggs.reportcard.db.tables.BuildStage;
@@ -32,7 +33,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Reportcard extends SchemaImpl {
 
-    private static final long serialVersionUID = 1183103590;
+    private static final long serialVersionUID = -808672036;
 
     /**
      * The reference instance of <code>reportcard</code>
@@ -43,6 +44,11 @@ public class Reportcard extends SchemaImpl {
      * The table <code>reportcard.app</code>.
      */
     public final App APP = App.APP;
+
+    /**
+     * The table <code>reportcard.app_branch</code>.
+     */
+    public final AppBranch APP_BRANCH = AppBranch.APP_BRANCH;
 
     /**
      * The table <code>reportcard.branch</code>.
@@ -121,6 +127,7 @@ public class Reportcard extends SchemaImpl {
     public final List<Table<?>> getTables() {
         return Arrays.<Table<?>>asList(
             App.APP,
+            AppBranch.APP_BRANCH,
             Branch.BRANCH,
             Build.BUILD,
             BuildStage.BUILD_STAGE,

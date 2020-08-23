@@ -13,34 +13,34 @@ import java.io.Serializable;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Branch implements Serializable {
 
-    private static final long serialVersionUID = -1374243677;
+    private static final long serialVersionUID = 688333064;
 
-    private final Integer id;
-    private final String  name;
+    private final Integer branchId;
+    private final String  branchName;
     private final Integer repoFk;
 
     public Branch(Branch value) {
-        this.id = value.id;
-        this.name = value.name;
+        this.branchId = value.branchId;
+        this.branchName = value.branchName;
         this.repoFk = value.repoFk;
     }
 
     public Branch(
-        Integer id,
-        String  name,
+        Integer branchId,
+        String  branchName,
         Integer repoFk
     ) {
-        this.id = id;
-        this.name = name;
+        this.branchId = branchId;
+        this.branchName = branchName;
         this.repoFk = repoFk;
     }
 
-    public Integer getId() {
-        return this.id;
+    public Integer getBranchId() {
+        return this.branchId;
     }
 
-    public String getName() {
-        return this.name;
+    public String getBranchName() {
+        return this.branchName;
     }
 
     public Integer getRepoFk() {
@@ -51,8 +51,8 @@ public class Branch implements Serializable {
     public String toString() {
         StringBuilder sb = new StringBuilder("Branch (");
 
-        sb.append(id);
-        sb.append(", ").append(name);
+        sb.append(branchId);
+        sb.append(", ").append(branchName);
         sb.append(", ").append(repoFk);
 
         sb.append(")");

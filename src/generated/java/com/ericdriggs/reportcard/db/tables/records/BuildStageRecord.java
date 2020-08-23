@@ -19,7 +19,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BuildStageRecord extends UpdatableRecordImpl<BuildStageRecord> implements Record3<Long, Long, Integer> {
 
-    private static final long serialVersionUID = -108977236;
+    private static final long serialVersionUID = -1555837584;
 
     /**
      * Setter for <code>reportcard.build_stage.id</code>.

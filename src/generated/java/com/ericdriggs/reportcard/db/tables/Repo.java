@@ -34,7 +34,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Repo extends TableImpl<RepoRecord> {
 
-    private static final long serialVersionUID = 105699444;
+    private static final long serialVersionUID = 1424780545;
 
     /**
      * The reference instance of <code>reportcard.repo</code>
@@ -50,14 +50,14 @@ public class Repo extends TableImpl<RepoRecord> {
     }
 
     /**
-     * The column <code>reportcard.repo.id</code>.
+     * The column <code>reportcard.repo.repo_id</code>.
      */
-    public final TableField<RepoRecord, Integer> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).identity(true), this, "");
+    public final TableField<RepoRecord, Integer> REPO_ID = createField(DSL.name("repo_id"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).identity(true), this, "");
 
     /**
-     * The column <code>reportcard.repo.name</code>.
+     * The column <code>reportcard.repo.repo_name</code>.
      */
-    public final TableField<RepoRecord, String> NAME = createField(DSL.name("name"), org.jooq.impl.SQLDataType.VARCHAR(255).nullable(false), this, "");
+    public final TableField<RepoRecord, String> REPO_NAME = createField(DSL.name("repo_name"), org.jooq.impl.SQLDataType.VARCHAR(255).nullable(false), this, "");
 
     /**
      * The column <code>reportcard.repo.org_fk</code>.
@@ -124,11 +124,11 @@ public class Repo extends TableImpl<RepoRecord> {
 
     @Override
     public List<ForeignKey<RepoRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<RepoRecord, ?>>asList(Keys.ORG_FK);
+        return Arrays.<ForeignKey<RepoRecord, ?>>asList(Keys.REPO_ORG_FK);
     }
 
     public Org org() {
-        return new Org(this, Keys.ORG_FK);
+        return new Org(this, Keys.REPO_ORG_FK);
     }
 
     @Override

@@ -34,7 +34,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BuildStage extends TableImpl<BuildStageRecord> {
 
-    private static final long serialVersionUID = -1609016381;
+    private static final long serialVersionUID = 1679787042;
 
     /**
      * The reference instance of <code>reportcard.build_stage</code>

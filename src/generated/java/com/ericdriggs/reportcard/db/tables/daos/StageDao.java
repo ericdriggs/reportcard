@@ -35,62 +35,62 @@ public class StageDao extends DAOImpl<StageRecord, com.ericdriggs.reportcard.db.
 
     @Override
     public Integer getId(com.ericdriggs.reportcard.db.tables.pojos.Stage object) {
-        return object.getId();
+        return object.getStageId();
     }
 
     /**
-     * Fetch records that have <code>id BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>stage_id BETWEEN lowerInclusive AND upperInclusive</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.Stage> fetchRangeOfId(Integer lowerInclusive, Integer upperInclusive) {
-        return fetchRange(Stage.STAGE.ID, lowerInclusive, upperInclusive);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.Stage> fetchRangeOfStageId(Integer lowerInclusive, Integer upperInclusive) {
+        return fetchRange(Stage.STAGE.STAGE_ID, lowerInclusive, upperInclusive);
     }
 
     /**
-     * Fetch records that have <code>id IN (values)</code>
+     * Fetch records that have <code>stage_id IN (values)</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.Stage> fetchById(Integer... values) {
-        return fetch(Stage.STAGE.ID, values);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.Stage> fetchByStageId(Integer... values) {
+        return fetch(Stage.STAGE.STAGE_ID, values);
     }
 
     /**
-     * Fetch a unique record that has <code>id = value</code>
+     * Fetch a unique record that has <code>stage_id = value</code>
      */
-    public com.ericdriggs.reportcard.db.tables.pojos.Stage fetchOneById(Integer value) {
-        return fetchOne(Stage.STAGE.ID, value);
+    public com.ericdriggs.reportcard.db.tables.pojos.Stage fetchOneByStageId(Integer value) {
+        return fetchOne(Stage.STAGE.STAGE_ID, value);
     }
 
     /**
-     * Fetch records that have <code>name BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>stage_name BETWEEN lowerInclusive AND upperInclusive</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.Stage> fetchRangeOfName(String lowerInclusive, String upperInclusive) {
-        return fetchRange(Stage.STAGE.NAME, lowerInclusive, upperInclusive);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.Stage> fetchRangeOfStageName(String lowerInclusive, String upperInclusive) {
+        return fetchRange(Stage.STAGE.STAGE_NAME, lowerInclusive, upperInclusive);
     }
 
     /**
-     * Fetch records that have <code>name IN (values)</code>
+     * Fetch records that have <code>stage_name IN (values)</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.Stage> fetchByName(String... values) {
-        return fetch(Stage.STAGE.NAME, values);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.Stage> fetchByStageName(String... values) {
+        return fetch(Stage.STAGE.STAGE_NAME, values);
     }
 
     /**
-     * Fetch a unique record that has <code>name = value</code>
+     * Fetch a unique record that has <code>stage_name = value</code>
      */
-    public com.ericdriggs.reportcard.db.tables.pojos.Stage fetchOneByName(String value) {
-        return fetchOne(Stage.STAGE.NAME, value);
+    public com.ericdriggs.reportcard.db.tables.pojos.Stage fetchOneByStageName(String value) {
+        return fetchOne(Stage.STAGE.STAGE_NAME, value);
     }
 
     /**
-     * Fetch records that have <code>app_fk BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>app_branch_fk BETWEEN lowerInclusive AND upperInclusive</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.Stage> fetchRangeOfAppFk(Integer lowerInclusive, Integer upperInclusive) {
-        return fetchRange(Stage.STAGE.APP_FK, lowerInclusive, upperInclusive);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.Stage> fetchRangeOfAppBranchFk(Integer lowerInclusive, Integer upperInclusive) {
+        return fetchRange(Stage.STAGE.APP_BRANCH_FK, lowerInclusive, upperInclusive);
     }
 
     /**
-     * Fetch records that have <code>app_fk IN (values)</code>
+     * Fetch records that have <code>app_branch_fk IN (values)</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.Stage> fetchByAppFk(Integer... values) {
-        return fetch(Stage.STAGE.APP_FK, values);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.Stage> fetchByAppBranchFk(Integer... values) {
+        return fetch(Stage.STAGE.APP_BRANCH_FK, values);
     }
 }

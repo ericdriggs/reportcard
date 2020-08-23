@@ -19,35 +19,35 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class OrgRecord extends UpdatableRecordImpl<OrgRecord> implements Record2<Integer, String> {
 
-    private static final long serialVersionUID = 638180242;
+    private static final long serialVersionUID = 1258176298;
 
     /**
-     * Setter for <code>reportcard.org.id</code>.
+     * Setter for <code>reportcard.org.org_id</code>.
      */
-    public OrgRecord setId(Integer value) {
+    public OrgRecord setOrgId(Integer value) {
         set(0, value);
         return this;
     }
 
     /**
-     * Getter for <code>reportcard.org.id</code>.
+     * Getter for <code>reportcard.org.org_id</code>.
      */
-    public Integer getId() {
+    public Integer getOrgId() {
         return (Integer) get(0);
     }
 
     /**
-     * Setter for <code>reportcard.org.name</code>.
+     * Setter for <code>reportcard.org.org_name</code>.
      */
-    public OrgRecord setName(String value) {
+    public OrgRecord setOrgName(String value) {
         set(1, value);
         return this;
     }
 
     /**
-     * Getter for <code>reportcard.org.name</code>.
+     * Getter for <code>reportcard.org.org_name</code>.
      */
-    public String getName() {
+    public String getOrgName() {
         return (String) get(1);
     }
 
@@ -76,43 +76,43 @@ public class OrgRecord extends UpdatableRecordImpl<OrgRecord> implements Record2
 
     @Override
     public Field<Integer> field1() {
-        return Org.ORG.ID;
+        return Org.ORG.ORG_ID;
     }
 
     @Override
     public Field<String> field2() {
-        return Org.ORG.NAME;
+        return Org.ORG.ORG_NAME;
     }
 
     @Override
     public Integer component1() {
-        return getId();
+        return getOrgId();
     }
 
     @Override
     public String component2() {
-        return getName();
+        return getOrgName();
     }
 
     @Override
     public Integer value1() {
-        return getId();
+        return getOrgId();
     }
 
     @Override
     public String value2() {
-        return getName();
+        return getOrgName();
     }
 
     @Override
     public OrgRecord value1(Integer value) {
-        setId(value);
+        setOrgId(value);
         return this;
     }
 
     @Override
     public OrgRecord value2(String value) {
-        setName(value);
+        setOrgName(value);
         return this;
     }
 
@@ -137,10 +137,10 @@ public class OrgRecord extends UpdatableRecordImpl<OrgRecord> implements Record2
     /**
      * Create a detached, initialised OrgRecord
      */
-    public OrgRecord(Integer id, String name) {
+    public OrgRecord(Integer orgId, String orgName) {
         super(Org.ORG);
 
-        set(0, id);
-        set(1, name);
+        set(0, orgId);
+        set(1, orgName);
     }
 }

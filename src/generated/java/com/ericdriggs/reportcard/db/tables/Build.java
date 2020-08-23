@@ -35,7 +35,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Build extends TableImpl<BuildRecord> {
 
-    private static final long serialVersionUID = 1947296965;
+    private static final long serialVersionUID = 1911983512;
 
     /**
      * The reference instance of <code>reportcard.build</code>
@@ -51,24 +51,24 @@ public class Build extends TableImpl<BuildRecord> {
     }
 
     /**
-     * The column <code>reportcard.build.id</code>.
+     * The column <code>reportcard.build.build_id</code>.
      */
-    public final TableField<BuildRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false).identity(true), this, "");
+    public final TableField<BuildRecord, Long> BUILD_ID = createField(DSL.name("build_id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false).identity(true), this, "");
 
     /**
-     * The column <code>reportcard.build.app_fk</code>.
+     * The column <code>reportcard.build.app_branch_fk</code>.
      */
-    public final TableField<BuildRecord, Integer> APP_FK = createField(DSL.name("app_fk"), org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+    public final TableField<BuildRecord, Integer> APP_BRANCH_FK = createField(DSL.name("app_branch_fk"), org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
-     * The column <code>reportcard.build.created</code>.
+     * The column <code>reportcard.build.app_branch_build_ordinal</code>.
      */
-    public final TableField<BuildRecord, LocalDateTime> CREATED = createField(DSL.name("created"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false).defaultValue(org.jooq.impl.DSL.field("CURRENT_TIMESTAMP", org.jooq.impl.SQLDataType.LOCALDATETIME)), this, "");
+    public final TableField<BuildRecord, Integer> APP_BRANCH_BUILD_ORDINAL = createField(DSL.name("app_branch_build_ordinal"), org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
-     * The column <code>reportcard.build.app_build_ordinal</code>.
+     * The column <code>reportcard.build.build_created</code>.
      */
-    public final TableField<BuildRecord, Integer> APP_BUILD_ORDINAL = createField(DSL.name("app_build_ordinal"), org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+    public final TableField<BuildRecord, LocalDateTime> BUILD_CREATED = createField(DSL.name("build_created"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false).defaultValue(org.jooq.impl.DSL.field("CURRENT_TIMESTAMP", org.jooq.impl.SQLDataType.LOCALDATETIME)), this, "");
 
     /**
      * Create a <code>reportcard.build</code> table reference
@@ -125,16 +125,16 @@ public class Build extends TableImpl<BuildRecord> {
 
     @Override
     public List<UniqueKey<BuildRecord>> getKeys() {
-        return Arrays.<UniqueKey<BuildRecord>>asList(Keys.KEY_BUILD_PRIMARY, Keys.KEY_BUILD_APP_BUILD_IDX);
+        return Arrays.<UniqueKey<BuildRecord>>asList(Keys.KEY_BUILD_PRIMARY);
     }
 
     @Override
     public List<ForeignKey<BuildRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<BuildRecord, ?>>asList(Keys.APP_FK);
+        return Arrays.<ForeignKey<BuildRecord, ?>>asList(Keys.BUILD_APP_BRANCH_FK);
     }
 
-    public App app() {
-        return new App(this, Keys.APP_FK);
+    public AppBranch appBranch() {
+        return new AppBranch(this, Keys.BUILD_APP_BRANCH_FK);
     }
 
     @Override
@@ -168,7 +168,7 @@ public class Build extends TableImpl<BuildRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row4<Long, Integer, LocalDateTime, Integer> fieldsRow() {
+    public Row4<Long, Integer, Integer, LocalDateTime> fieldsRow() {
         return (Row4) super.fieldsRow();
     }
 }

@@ -19,20 +19,20 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestCaseRecord extends UpdatableRecordImpl<TestCaseRecord> implements Record6<Long, Long, String, String, Long, Byte> {
 
-    private static final long serialVersionUID = -533971006;
+    private static final long serialVersionUID = 382351561;
 
     /**
-     * Setter for <code>reportcard.test_case.id</code>.
+     * Setter for <code>reportcard.test_case.test_case_id</code>.
      */
-    public TestCaseRecord setId(Long value) {
+    public TestCaseRecord setTestCaseId(Long value) {
         set(0, value);
         return this;
     }
 
     /**
-     * Getter for <code>reportcard.test_case.id</code>.
+     * Getter for <code>reportcard.test_case.test_case_id</code>.
      */
-    public Long getId() {
+    public Long getTestCaseId() {
         return (Long) get(0);
     }
 
@@ -52,17 +52,17 @@ public class TestCaseRecord extends UpdatableRecordImpl<TestCaseRecord> implemen
     }
 
     /**
-     * Setter for <code>reportcard.test_case.name</code>.
+     * Setter for <code>reportcard.test_case.test_case_name</code>.
      */
-    public TestCaseRecord setName(String value) {
+    public TestCaseRecord setTestCaseName(String value) {
         set(2, value);
         return this;
     }
 
     /**
-     * Getter for <code>reportcard.test_case.name</code>.
+     * Getter for <code>reportcard.test_case.test_case_name</code>.
      */
-    public String getName() {
+    public String getTestCaseName() {
         return (String) get(2);
     }
 
@@ -82,32 +82,32 @@ public class TestCaseRecord extends UpdatableRecordImpl<TestCaseRecord> implemen
     }
 
     /**
-     * Setter for <code>reportcard.test_case.time</code>.
+     * Setter for <code>reportcard.test_case.test_case_time</code>.
      */
-    public TestCaseRecord setTime(Long value) {
+    public TestCaseRecord setTestCaseTime(Long value) {
         set(4, value);
         return this;
     }
 
     /**
-     * Getter for <code>reportcard.test_case.time</code>.
+     * Getter for <code>reportcard.test_case.test_case_time</code>.
      */
-    public Long getTime() {
+    public Long getTestCaseTime() {
         return (Long) get(4);
     }
 
     /**
-     * Setter for <code>reportcard.test_case.status_fk</code>.
+     * Setter for <code>reportcard.test_case.test_status_fk</code>.
      */
-    public TestCaseRecord setStatusFk(Byte value) {
+    public TestCaseRecord setTestStatusFk(Byte value) {
         set(5, value);
         return this;
     }
 
     /**
-     * Getter for <code>reportcard.test_case.status_fk</code>.
+     * Getter for <code>reportcard.test_case.test_status_fk</code>.
      */
-    public Byte getStatusFk() {
+    public Byte getTestStatusFk() {
         return (Byte) get(5);
     }
 
@@ -136,7 +136,7 @@ public class TestCaseRecord extends UpdatableRecordImpl<TestCaseRecord> implemen
 
     @Override
     public Field<Long> field1() {
-        return TestCase.TEST_CASE.ID;
+        return TestCase.TEST_CASE.TEST_CASE_ID;
     }
 
     @Override
@@ -146,7 +146,7 @@ public class TestCaseRecord extends UpdatableRecordImpl<TestCaseRecord> implemen
 
     @Override
     public Field<String> field3() {
-        return TestCase.TEST_CASE.NAME;
+        return TestCase.TEST_CASE.TEST_CASE_NAME;
     }
 
     @Override
@@ -156,17 +156,17 @@ public class TestCaseRecord extends UpdatableRecordImpl<TestCaseRecord> implemen
 
     @Override
     public Field<Long> field5() {
-        return TestCase.TEST_CASE.TIME;
+        return TestCase.TEST_CASE.TEST_CASE_TIME;
     }
 
     @Override
     public Field<Byte> field6() {
-        return TestCase.TEST_CASE.STATUS_FK;
+        return TestCase.TEST_CASE.TEST_STATUS_FK;
     }
 
     @Override
     public Long component1() {
-        return getId();
+        return getTestCaseId();
     }
 
     @Override
@@ -176,7 +176,7 @@ public class TestCaseRecord extends UpdatableRecordImpl<TestCaseRecord> implemen
 
     @Override
     public String component3() {
-        return getName();
+        return getTestCaseName();
     }
 
     @Override
@@ -186,17 +186,17 @@ public class TestCaseRecord extends UpdatableRecordImpl<TestCaseRecord> implemen
 
     @Override
     public Long component5() {
-        return getTime();
+        return getTestCaseTime();
     }
 
     @Override
     public Byte component6() {
-        return getStatusFk();
+        return getTestStatusFk();
     }
 
     @Override
     public Long value1() {
-        return getId();
+        return getTestCaseId();
     }
 
     @Override
@@ -206,7 +206,7 @@ public class TestCaseRecord extends UpdatableRecordImpl<TestCaseRecord> implemen
 
     @Override
     public String value3() {
-        return getName();
+        return getTestCaseName();
     }
 
     @Override
@@ -216,17 +216,17 @@ public class TestCaseRecord extends UpdatableRecordImpl<TestCaseRecord> implemen
 
     @Override
     public Long value5() {
-        return getTime();
+        return getTestCaseTime();
     }
 
     @Override
     public Byte value6() {
-        return getStatusFk();
+        return getTestStatusFk();
     }
 
     @Override
     public TestCaseRecord value1(Long value) {
-        setId(value);
+        setTestCaseId(value);
         return this;
     }
 
@@ -238,7 +238,7 @@ public class TestCaseRecord extends UpdatableRecordImpl<TestCaseRecord> implemen
 
     @Override
     public TestCaseRecord value3(String value) {
-        setName(value);
+        setTestCaseName(value);
         return this;
     }
 
@@ -250,13 +250,13 @@ public class TestCaseRecord extends UpdatableRecordImpl<TestCaseRecord> implemen
 
     @Override
     public TestCaseRecord value5(Long value) {
-        setTime(value);
+        setTestCaseTime(value);
         return this;
     }
 
     @Override
     public TestCaseRecord value6(Byte value) {
-        setStatusFk(value);
+        setTestStatusFk(value);
         return this;
     }
 
@@ -285,14 +285,14 @@ public class TestCaseRecord extends UpdatableRecordImpl<TestCaseRecord> implemen
     /**
      * Create a detached, initialised TestCaseRecord
      */
-    public TestCaseRecord(Long id, Long testSuiteFk, String name, String className, Long time, Byte statusFk) {
+    public TestCaseRecord(Long testCaseId, Long testSuiteFk, String testCaseName, String className, Long testCaseTime, Byte testStatusFk) {
         super(TestCase.TEST_CASE);
 
-        set(0, id);
+        set(0, testCaseId);
         set(1, testSuiteFk);
-        set(2, name);
+        set(2, testCaseName);
         set(3, className);
-        set(4, time);
-        set(5, statusFk);
+        set(4, testCaseTime);
+        set(5, testStatusFk);
     }
 }

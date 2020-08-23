@@ -19,35 +19,35 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RepoRecord extends UpdatableRecordImpl<RepoRecord> implements Record3<Integer, String, Integer> {
 
-    private static final long serialVersionUID = 569637124;
+    private static final long serialVersionUID = 1268136238;
 
     /**
-     * Setter for <code>reportcard.repo.id</code>.
+     * Setter for <code>reportcard.repo.repo_id</code>.
      */
-    public RepoRecord setId(Integer value) {
+    public RepoRecord setRepoId(Integer value) {
         set(0, value);
         return this;
     }
 
     /**
-     * Getter for <code>reportcard.repo.id</code>.
+     * Getter for <code>reportcard.repo.repo_id</code>.
      */
-    public Integer getId() {
+    public Integer getRepoId() {
         return (Integer) get(0);
     }
 
     /**
-     * Setter for <code>reportcard.repo.name</code>.
+     * Setter for <code>reportcard.repo.repo_name</code>.
      */
-    public RepoRecord setName(String value) {
+    public RepoRecord setRepoName(String value) {
         set(1, value);
         return this;
     }
 
     /**
-     * Getter for <code>reportcard.repo.name</code>.
+     * Getter for <code>reportcard.repo.repo_name</code>.
      */
-    public String getName() {
+    public String getRepoName() {
         return (String) get(1);
     }
 
@@ -91,12 +91,12 @@ public class RepoRecord extends UpdatableRecordImpl<RepoRecord> implements Recor
 
     @Override
     public Field<Integer> field1() {
-        return Repo.REPO.ID;
+        return Repo.REPO.REPO_ID;
     }
 
     @Override
     public Field<String> field2() {
-        return Repo.REPO.NAME;
+        return Repo.REPO.REPO_NAME;
     }
 
     @Override
@@ -106,12 +106,12 @@ public class RepoRecord extends UpdatableRecordImpl<RepoRecord> implements Recor
 
     @Override
     public Integer component1() {
-        return getId();
+        return getRepoId();
     }
 
     @Override
     public String component2() {
-        return getName();
+        return getRepoName();
     }
 
     @Override
@@ -121,12 +121,12 @@ public class RepoRecord extends UpdatableRecordImpl<RepoRecord> implements Recor
 
     @Override
     public Integer value1() {
-        return getId();
+        return getRepoId();
     }
 
     @Override
     public String value2() {
-        return getName();
+        return getRepoName();
     }
 
     @Override
@@ -136,13 +136,13 @@ public class RepoRecord extends UpdatableRecordImpl<RepoRecord> implements Recor
 
     @Override
     public RepoRecord value1(Integer value) {
-        setId(value);
+        setRepoId(value);
         return this;
     }
 
     @Override
     public RepoRecord value2(String value) {
-        setName(value);
+        setRepoName(value);
         return this;
     }
 
@@ -174,11 +174,11 @@ public class RepoRecord extends UpdatableRecordImpl<RepoRecord> implements Recor
     /**
      * Create a detached, initialised RepoRecord
      */
-    public RepoRecord(Integer id, String name, Integer orgFk) {
+    public RepoRecord(Integer repoId, String repoName, Integer orgFk) {
         super(Repo.REPO);
 
-        set(0, id);
-        set(1, name);
+        set(0, repoId);
+        set(1, repoName);
         set(2, orgFk);
     }
 }

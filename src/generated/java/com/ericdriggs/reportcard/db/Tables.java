@@ -5,6 +5,7 @@ package com.ericdriggs.reportcard.db;
 
 
 import com.ericdriggs.reportcard.db.tables.App;
+import com.ericdriggs.reportcard.db.tables.AppBranch;
 import com.ericdriggs.reportcard.db.tables.Branch;
 import com.ericdriggs.reportcard.db.tables.Build;
 import com.ericdriggs.reportcard.db.tables.BuildStage;
@@ -29,6 +30,11 @@ public class Tables {
      * The table <code>reportcard.app</code>.
      */
     public static final App APP = App.APP;
+
+    /**
+     * The table <code>reportcard.app_branch</code>.
+     */
+    public static final AppBranch APP_BRANCH = AppBranch.APP_BRANCH;
 
     /**
      * The table <code>reportcard.branch</code>.

@@ -35,41 +35,41 @@ public class TestStatusDao extends DAOImpl<TestStatusRecord, com.ericdriggs.repo
 
     @Override
     public Byte getId(com.ericdriggs.reportcard.db.tables.pojos.TestStatus object) {
-        return object.getId();
+        return object.getTestStatusId();
     }
 
     /**
-     * Fetch records that have <code>id BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>test_status_id BETWEEN lowerInclusive AND upperInclusive</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.TestStatus> fetchRangeOfId(Byte lowerInclusive, Byte upperInclusive) {
-        return fetchRange(TestStatus.TEST_STATUS.ID, lowerInclusive, upperInclusive);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.TestStatus> fetchRangeOfTestStatusId(Byte lowerInclusive, Byte upperInclusive) {
+        return fetchRange(TestStatus.TEST_STATUS.TEST_STATUS_ID, lowerInclusive, upperInclusive);
     }
 
     /**
-     * Fetch records that have <code>id IN (values)</code>
+     * Fetch records that have <code>test_status_id IN (values)</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.TestStatus> fetchById(Byte... values) {
-        return fetch(TestStatus.TEST_STATUS.ID, values);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.TestStatus> fetchByTestStatusId(Byte... values) {
+        return fetch(TestStatus.TEST_STATUS.TEST_STATUS_ID, values);
     }
 
     /**
-     * Fetch a unique record that has <code>id = value</code>
+     * Fetch a unique record that has <code>test_status_id = value</code>
      */
-    public com.ericdriggs.reportcard.db.tables.pojos.TestStatus fetchOneById(Byte value) {
-        return fetchOne(TestStatus.TEST_STATUS.ID, value);
+    public com.ericdriggs.reportcard.db.tables.pojos.TestStatus fetchOneByTestStatusId(Byte value) {
+        return fetchOne(TestStatus.TEST_STATUS.TEST_STATUS_ID, value);
     }
 
     /**
-     * Fetch records that have <code>name BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>test_status_name BETWEEN lowerInclusive AND upperInclusive</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.TestStatus> fetchRangeOfName(String lowerInclusive, String upperInclusive) {
-        return fetchRange(TestStatus.TEST_STATUS.NAME, lowerInclusive, upperInclusive);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.TestStatus> fetchRangeOfTestStatusName(String lowerInclusive, String upperInclusive) {
+        return fetchRange(TestStatus.TEST_STATUS.TEST_STATUS_NAME, lowerInclusive, upperInclusive);
     }
 
     /**
-     * Fetch records that have <code>name IN (values)</code>
+     * Fetch records that have <code>test_status_name IN (values)</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.TestStatus> fetchByName(String... values) {
-        return fetch(TestStatus.TEST_STATUS.NAME, values);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.TestStatus> fetchByTestStatusName(String... values) {
+        return fetch(TestStatus.TEST_STATUS.TEST_STATUS_NAME, values);
     }
 }

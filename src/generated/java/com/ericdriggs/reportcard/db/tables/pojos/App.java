@@ -13,47 +13,47 @@ import java.io.Serializable;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class App implements Serializable {
 
-    private static final long serialVersionUID = 738224348;
+    private static final long serialVersionUID = -509361187;
 
-    private final Integer id;
-    private final String  name;
-    private final Integer branchFk;
+    private final Integer appId;
+    private final String  appName;
+    private final Integer repoFk;
 
     public App(App value) {
-        this.id = value.id;
-        this.name = value.name;
-        this.branchFk = value.branchFk;
+        this.appId = value.appId;
+        this.appName = value.appName;
+        this.repoFk = value.repoFk;
     }
 
     public App(
-        Integer id,
-        String  name,
-        Integer branchFk
+        Integer appId,
+        String  appName,
+        Integer repoFk
     ) {
-        this.id = id;
-        this.name = name;
-        this.branchFk = branchFk;
+        this.appId = appId;
+        this.appName = appName;
+        this.repoFk = repoFk;
     }
 
-    public Integer getId() {
-        return this.id;
+    public Integer getAppId() {
+        return this.appId;
     }
 
-    public String getName() {
-        return this.name;
+    public String getAppName() {
+        return this.appName;
     }
 
-    public Integer getBranchFk() {
-        return this.branchFk;
+    public Integer getRepoFk() {
+        return this.repoFk;
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("App (");
 
-        sb.append(id);
-        sb.append(", ").append(name);
-        sb.append(", ").append(branchFk);
+        sb.append(appId);
+        sb.append(", ").append(appName);
+        sb.append(", ").append(repoFk);
 
         sb.append(")");
         return sb.toString();

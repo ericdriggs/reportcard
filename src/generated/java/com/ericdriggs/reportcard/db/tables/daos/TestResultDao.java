@@ -35,28 +35,28 @@ public class TestResultDao extends DAOImpl<TestResultRecord, com.ericdriggs.repo
 
     @Override
     public Long getId(com.ericdriggs.reportcard.db.tables.pojos.TestResult object) {
-        return object.getId();
+        return object.getTestResultId();
     }
 
     /**
-     * Fetch records that have <code>id BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>test_result_id BETWEEN lowerInclusive AND upperInclusive</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.TestResult> fetchRangeOfId(Long lowerInclusive, Long upperInclusive) {
-        return fetchRange(TestResult.TEST_RESULT.ID, lowerInclusive, upperInclusive);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.TestResult> fetchRangeOfTestResultId(Long lowerInclusive, Long upperInclusive) {
+        return fetchRange(TestResult.TEST_RESULT.TEST_RESULT_ID, lowerInclusive, upperInclusive);
     }
 
     /**
-     * Fetch records that have <code>id IN (values)</code>
+     * Fetch records that have <code>test_result_id IN (values)</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.TestResult> fetchById(Long... values) {
-        return fetch(TestResult.TEST_RESULT.ID, values);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.TestResult> fetchByTestResultId(Long... values) {
+        return fetch(TestResult.TEST_RESULT.TEST_RESULT_ID, values);
     }
 
     /**
-     * Fetch a unique record that has <code>id = value</code>
+     * Fetch a unique record that has <code>test_result_id = value</code>
      */
-    public com.ericdriggs.reportcard.db.tables.pojos.TestResult fetchOneById(Long value) {
-        return fetchOne(TestResult.TEST_RESULT.ID, value);
+    public com.ericdriggs.reportcard.db.tables.pojos.TestResult fetchOneByTestResultId(Long value) {
+        return fetchOne(TestResult.TEST_RESULT.TEST_RESULT_ID, value);
     }
 
     /**

@@ -13,7 +13,7 @@ import java.io.Serializable;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BuildStage implements Serializable {
 
-    private static final long serialVersionUID = -937263654;
+    private static final long serialVersionUID = 1520321433;
 
     private final Long    id;
     private final Long    buildFk;

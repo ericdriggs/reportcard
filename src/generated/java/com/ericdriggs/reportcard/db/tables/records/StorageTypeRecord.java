@@ -19,7 +19,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class StorageTypeRecord extends UpdatableRecordImpl<StorageTypeRecord> implements Record2<Byte, String> {
 
-    private static final long serialVersionUID = 465819690;
+    private static final long serialVersionUID = -1215246996;
 
     /**
      * Setter for <code>reportcard.storage_type.id</code>.

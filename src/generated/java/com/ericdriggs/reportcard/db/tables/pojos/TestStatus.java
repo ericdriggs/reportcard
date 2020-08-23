@@ -13,38 +13,38 @@ import java.io.Serializable;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestStatus implements Serializable {
 
-    private static final long serialVersionUID = -326666010;
+    private static final long serialVersionUID = -1196301267;
 
-    private final Byte   id;
-    private final String name;
+    private final Byte   testStatusId;
+    private final String testStatusName;
 
     public TestStatus(TestStatus value) {
-        this.id = value.id;
-        this.name = value.name;
+        this.testStatusId = value.testStatusId;
+        this.testStatusName = value.testStatusName;
     }
 
     public TestStatus(
-        Byte   id,
-        String name
+        Byte   testStatusId,
+        String testStatusName
     ) {
-        this.id = id;
-        this.name = name;
+        this.testStatusId = testStatusId;
+        this.testStatusName = testStatusName;
     }
 
-    public Byte getId() {
-        return this.id;
+    public Byte getTestStatusId() {
+        return this.testStatusId;
     }
 
-    public String getName() {
-        return this.name;
+    public String getTestStatusName() {
+        return this.testStatusName;
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("TestStatus (");
 
-        sb.append(id);
-        sb.append(", ").append(name);
+        sb.append(testStatusId);
+        sb.append(", ").append(testStatusName);
 
         sb.append(")");
         return sb.toString();

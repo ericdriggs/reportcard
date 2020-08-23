@@ -32,7 +32,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestStatus extends TableImpl<TestStatusRecord> {
 
-    private static final long serialVersionUID = -2097641230;
+    private static final long serialVersionUID = -1520839879;
 
     /**
      * The reference instance of <code>reportcard.test_status</code>
@@ -48,14 +48,14 @@ public class TestStatus extends TableImpl<TestStatusRecord> {
     }
 
     /**
-     * The column <code>reportcard.test_status.id</code>.
+     * The column <code>reportcard.test_status.test_status_id</code>.
      */
-    public final TableField<TestStatusRecord, Byte> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.TINYINT.nullable(false).identity(true), this, "");
+    public final TableField<TestStatusRecord, Byte> TEST_STATUS_ID = createField(DSL.name("test_status_id"), org.jooq.impl.SQLDataType.TINYINT.nullable(false).identity(true), this, "");
 
     /**
-     * The column <code>reportcard.test_status.name</code>.
+     * The column <code>reportcard.test_status.test_status_name</code>.
      */
-    public final TableField<TestStatusRecord, String> NAME = createField(DSL.name("name"), org.jooq.impl.SQLDataType.CHAR(8).nullable(false), this, "");
+    public final TableField<TestStatusRecord, String> TEST_STATUS_NAME = createField(DSL.name("test_status_name"), org.jooq.impl.SQLDataType.CHAR(8).nullable(false), this, "");
 
     /**
      * Create a <code>reportcard.test_status</code> table reference

@@ -34,7 +34,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Storage extends TableImpl<StorageRecord> {
 
-    private static final long serialVersionUID = 434928997;
+    private static final long serialVersionUID = -41867871;
 
     /**
      * The reference instance of <code>reportcard.storage</code>
@@ -50,9 +50,9 @@ public class Storage extends TableImpl<StorageRecord> {
     }
 
     /**
-     * The column <code>reportcard.storage.id</code>.
+     * The column <code>reportcard.storage.storage_id</code>.
      */
-    public final TableField<StorageRecord, Integer> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).identity(true), this, "");
+    public final TableField<StorageRecord, Integer> STORAGE_ID = createField(DSL.name("storage_id"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).identity(true), this, "");
 
     /**
      * The column <code>reportcard.storage.build_stage_fk</code>.
@@ -60,9 +60,9 @@ public class Storage extends TableImpl<StorageRecord> {
     public final TableField<StorageRecord, Long> BUILD_STAGE_FK = createField(DSL.name("build_stage_fk"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
 
     /**
-     * The column <code>reportcard.storage.label</code>.
+     * The column <code>reportcard.storage.storage_label</code>.
      */
-    public final TableField<StorageRecord, String> LABEL = createField(DSL.name("label"), org.jooq.impl.SQLDataType.VARCHAR(255).nullable(false), this, "");
+    public final TableField<StorageRecord, String> STORAGE_LABEL = createField(DSL.name("storage_label"), org.jooq.impl.SQLDataType.VARCHAR(255).nullable(false), this, "");
 
     /**
      * The column <code>reportcard.storage.storage_type_fk</code>.

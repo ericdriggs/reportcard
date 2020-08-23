@@ -32,7 +32,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class StorageType extends TableImpl<StorageTypeRecord> {
 
-    private static final long serialVersionUID = -1871688142;
+    private static final long serialVersionUID = -377512369;
 
     /**
      * The reference instance of <code>reportcard.storage_type</code>

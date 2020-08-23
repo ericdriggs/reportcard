@@ -19,20 +19,20 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements Record8<Integer, Long, String, Byte, String, String, String, String> {
 
-    private static final long serialVersionUID = -429425081;
+    private static final long serialVersionUID = 1670804973;
 
     /**
-     * Setter for <code>reportcard.storage.id</code>.
+     * Setter for <code>reportcard.storage.storage_id</code>.
      */
-    public StorageRecord setId(Integer value) {
+    public StorageRecord setStorageId(Integer value) {
         set(0, value);
         return this;
     }
 
     /**
-     * Getter for <code>reportcard.storage.id</code>.
+     * Getter for <code>reportcard.storage.storage_id</code>.
      */
-    public Integer getId() {
+    public Integer getStorageId() {
         return (Integer) get(0);
     }
 
@@ -52,17 +52,17 @@ public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements
     }
 
     /**
-     * Setter for <code>reportcard.storage.label</code>.
+     * Setter for <code>reportcard.storage.storage_label</code>.
      */
-    public StorageRecord setLabel(String value) {
+    public StorageRecord setStorageLabel(String value) {
         set(2, value);
         return this;
     }
 
     /**
-     * Getter for <code>reportcard.storage.label</code>.
+     * Getter for <code>reportcard.storage.storage_label</code>.
      */
-    public String getLabel() {
+    public String getStorageLabel() {
         return (String) get(2);
     }
 
@@ -166,7 +166,7 @@ public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements
 
     @Override
     public Field<Integer> field1() {
-        return Storage.STORAGE.ID;
+        return Storage.STORAGE.STORAGE_ID;
     }
 
     @Override
@@ -176,7 +176,7 @@ public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements
 
     @Override
     public Field<String> field3() {
-        return Storage.STORAGE.LABEL;
+        return Storage.STORAGE.STORAGE_LABEL;
     }
 
     @Override
@@ -206,7 +206,7 @@ public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements
 
     @Override
     public Integer component1() {
-        return getId();
+        return getStorageId();
     }
 
     @Override
@@ -216,7 +216,7 @@ public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements
 
     @Override
     public String component3() {
-        return getLabel();
+        return getStorageLabel();
     }
 
     @Override
@@ -246,7 +246,7 @@ public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements
 
     @Override
     public Integer value1() {
-        return getId();
+        return getStorageId();
     }
 
     @Override
@@ -256,7 +256,7 @@ public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements
 
     @Override
     public String value3() {
-        return getLabel();
+        return getStorageLabel();
     }
 
     @Override
@@ -286,7 +286,7 @@ public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements
 
     @Override
     public StorageRecord value1(Integer value) {
-        setId(value);
+        setStorageId(value);
         return this;
     }
 
@@ -298,7 +298,7 @@ public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements
 
     @Override
     public StorageRecord value3(String value) {
-        setLabel(value);
+        setStorageLabel(value);
         return this;
     }
 
@@ -359,12 +359,12 @@ public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements
     /**
      * Create a detached, initialised StorageRecord
      */
-    public StorageRecord(Integer id, Long buildStageFk, String label, Byte storageTypeFk, String s3Bucket, String s3FolderPath, String s3FileName, String s3FileMatcher) {
+    public StorageRecord(Integer storageId, Long buildStageFk, String storageLabel, Byte storageTypeFk, String s3Bucket, String s3FolderPath, String s3FileName, String s3FileMatcher) {
         super(Storage.STORAGE);
 
-        set(0, id);
+        set(0, storageId);
         set(1, buildStageFk);
-        set(2, label);
+        set(2, storageLabel);
         set(3, storageTypeFk);
         set(4, s3Bucket);
         set(5, s3FolderPath);

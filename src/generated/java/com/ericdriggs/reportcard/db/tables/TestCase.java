@@ -34,7 +34,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestCase extends TableImpl<TestCaseRecord> {
 
-    private static final long serialVersionUID = 1964570671;
+    private static final long serialVersionUID = 1697208480;
 
     /**
      * The reference instance of <code>reportcard.test_case</code>
@@ -50,9 +50,9 @@ public class TestCase extends TableImpl<TestCaseRecord> {
     }
 
     /**
-     * The column <code>reportcard.test_case.id</code>.
+     * The column <code>reportcard.test_case.test_case_id</code>.
      */
-    public final TableField<TestCaseRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false).identity(true), this, "");
+    public final TableField<TestCaseRecord, Long> TEST_CASE_ID = createField(DSL.name("test_case_id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false).identity(true), this, "");
 
     /**
      * The column <code>reportcard.test_case.test_suite_fk</code>.
@@ -60,9 +60,9 @@ public class TestCase extends TableImpl<TestCaseRecord> {
     public final TableField<TestCaseRecord, Long> TEST_SUITE_FK = createField(DSL.name("test_suite_fk"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
 
     /**
-     * The column <code>reportcard.test_case.name</code>.
+     * The column <code>reportcard.test_case.test_case_name</code>.
      */
-    public final TableField<TestCaseRecord, String> NAME = createField(DSL.name("name"), org.jooq.impl.SQLDataType.VARCHAR(1024).nullable(false), this, "");
+    public final TableField<TestCaseRecord, String> TEST_CASE_NAME = createField(DSL.name("test_case_name"), org.jooq.impl.SQLDataType.VARCHAR(1024).nullable(false), this, "");
 
     /**
      * The column <code>reportcard.test_case.class_name</code>.
@@ -70,14 +70,14 @@ public class TestCase extends TableImpl<TestCaseRecord> {
     public final TableField<TestCaseRecord, String> CLASS_NAME = createField(DSL.name("class_name"), org.jooq.impl.SQLDataType.VARCHAR(8096).nullable(false), this, "");
 
     /**
-     * The column <code>reportcard.test_case.time</code>.
+     * The column <code>reportcard.test_case.test_case_time</code>.
      */
-    public final TableField<TestCaseRecord, Long> TIME = createField(DSL.name("time"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
+    public final TableField<TestCaseRecord, Long> TEST_CASE_TIME = createField(DSL.name("test_case_time"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
 
     /**
-     * The column <code>reportcard.test_case.status_fk</code>.
+     * The column <code>reportcard.test_case.test_status_fk</code>.
      */
-    public final TableField<TestCaseRecord, Byte> STATUS_FK = createField(DSL.name("status_fk"), org.jooq.impl.SQLDataType.TINYINT.nullable(false), this, "");
+    public final TableField<TestCaseRecord, Byte> TEST_STATUS_FK = createField(DSL.name("test_status_fk"), org.jooq.impl.SQLDataType.TINYINT.nullable(false), this, "");
 
     /**
      * Create a <code>reportcard.test_case</code> table reference

@@ -34,7 +34,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class App extends TableImpl<AppRecord> {
 
-    private static final long serialVersionUID = -246030460;
+    private static final long serialVersionUID = 410916125;
 
     /**
      * The reference instance of <code>reportcard.app</code>
@@ -50,19 +50,19 @@ public class App extends TableImpl<AppRecord> {
     }
 
     /**
-     * The column <code>reportcard.app.id</code>.
+     * The column <code>reportcard.app.app_id</code>.
      */
-    public final TableField<AppRecord, Integer> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).identity(true), this, "");
+    public final TableField<AppRecord, Integer> APP_ID = createField(DSL.name("app_id"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).identity(true), this, "");
 
     /**
-     * The column <code>reportcard.app.name</code>.
+     * The column <code>reportcard.app.app_name</code>.
      */
-    public final TableField<AppRecord, String> NAME = createField(DSL.name("name"), org.jooq.impl.SQLDataType.VARCHAR(255).nullable(false), this, "");
+    public final TableField<AppRecord, String> APP_NAME = createField(DSL.name("app_name"), org.jooq.impl.SQLDataType.VARCHAR(255).nullable(false), this, "");
 
     /**
-     * The column <code>reportcard.app.branch_fk</code>.
+     * The column <code>reportcard.app.repo_fk</code>.
      */
-    public final TableField<AppRecord, Integer> BRANCH_FK = createField(DSL.name("branch_fk"), org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+    public final TableField<AppRecord, Integer> REPO_FK = createField(DSL.name("repo_fk"), org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * Create a <code>reportcard.app</code> table reference
@@ -119,16 +119,16 @@ public class App extends TableImpl<AppRecord> {
 
     @Override
     public List<UniqueKey<AppRecord>> getKeys() {
-        return Arrays.<UniqueKey<AppRecord>>asList(Keys.KEY_APP_PRIMARY, Keys.KEY_APP_BRANCH_APP_IDX, Keys.KEY_APP_NAME_UNIQUE);
+        return Arrays.<UniqueKey<AppRecord>>asList(Keys.KEY_APP_PRIMARY, Keys.KEY_APP_NAME_UNIQUE);
     }
 
     @Override
     public List<ForeignKey<AppRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<AppRecord, ?>>asList(Keys.BRANCH_FK);
+        return Arrays.<ForeignKey<AppRecord, ?>>asList(Keys.APP_REPO_FK);
     }
 
-    public Branch branch() {
-        return new Branch(this, Keys.BRANCH_FK);
+    public Repo repo() {
+        return new Repo(this, Keys.APP_REPO_FK);
     }
 
     @Override

@@ -32,7 +32,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Org extends TableImpl<OrgRecord> {
 
-    private static final long serialVersionUID = -2129442296;
+    private static final long serialVersionUID = -470832349;
 
     /**
      * The reference instance of <code>reportcard.org</code>
@@ -48,14 +48,14 @@ public class Org extends TableImpl<OrgRecord> {
     }
 
     /**
-     * The column <code>reportcard.org.id</code>.
+     * The column <code>reportcard.org.org_id</code>.
      */
-    public final TableField<OrgRecord, Integer> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).identity(true), this, "");
+    public final TableField<OrgRecord, Integer> ORG_ID = createField(DSL.name("org_id"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).identity(true), this, "");
 
     /**
-     * The column <code>reportcard.org.name</code>.
+     * The column <code>reportcard.org.org_name</code>.
      */
-    public final TableField<OrgRecord, String> NAME = createField(DSL.name("name"), org.jooq.impl.SQLDataType.VARCHAR(255).nullable(false).defaultValue(org.jooq.impl.DSL.inline("", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
+    public final TableField<OrgRecord, String> ORG_NAME = createField(DSL.name("org_name"), org.jooq.impl.SQLDataType.VARCHAR(255).nullable(false).defaultValue(org.jooq.impl.DSL.inline("", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
 
     /**
      * Create a <code>reportcard.org</code> table reference

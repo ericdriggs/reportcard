@@ -13,47 +13,47 @@ import java.io.Serializable;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Stage implements Serializable {
 
-    private static final long serialVersionUID = 498193646;
+    private static final long serialVersionUID = -1534581549;
 
-    private final Integer id;
-    private final String  name;
-    private final Integer appFk;
+    private final Integer stageId;
+    private final String  stageName;
+    private final Integer appBranchFk;
 
     public Stage(Stage value) {
-        this.id = value.id;
-        this.name = value.name;
-        this.appFk = value.appFk;
+        this.stageId = value.stageId;
+        this.stageName = value.stageName;
+        this.appBranchFk = value.appBranchFk;
     }
 
     public Stage(
-        Integer id,
-        String  name,
-        Integer appFk
+        Integer stageId,
+        String  stageName,
+        Integer appBranchFk
     ) {
-        this.id = id;
-        this.name = name;
-        this.appFk = appFk;
+        this.stageId = stageId;
+        this.stageName = stageName;
+        this.appBranchFk = appBranchFk;
     }
 
-    public Integer getId() {
-        return this.id;
+    public Integer getStageId() {
+        return this.stageId;
     }
 
-    public String getName() {
-        return this.name;
+    public String getStageName() {
+        return this.stageName;
     }
 
-    public Integer getAppFk() {
-        return this.appFk;
+    public Integer getAppBranchFk() {
+        return this.appBranchFk;
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("Stage (");
 
-        sb.append(id);
-        sb.append(", ").append(name);
-        sb.append(", ").append(appFk);
+        sb.append(stageId);
+        sb.append(", ").append(stageName);
+        sb.append(", ").append(appBranchFk);
 
         sb.append(")");
         return sb.toString();

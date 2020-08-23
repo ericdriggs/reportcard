@@ -13,34 +13,34 @@ import java.io.Serializable;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Repo implements Serializable {
 
-    private static final long serialVersionUID = 52805651;
+    private static final long serialVersionUID = -1359423066;
 
-    private final Integer id;
-    private final String  name;
+    private final Integer repoId;
+    private final String  repoName;
     private final Integer orgFk;
 
     public Repo(Repo value) {
-        this.id = value.id;
-        this.name = value.name;
+        this.repoId = value.repoId;
+        this.repoName = value.repoName;
         this.orgFk = value.orgFk;
     }
 
     public Repo(
-        Integer id,
-        String  name,
+        Integer repoId,
+        String  repoName,
         Integer orgFk
     ) {
-        this.id = id;
-        this.name = name;
+        this.repoId = repoId;
+        this.repoName = repoName;
         this.orgFk = orgFk;
     }
 
-    public Integer getId() {
-        return this.id;
+    public Integer getRepoId() {
+        return this.repoId;
     }
 
-    public String getName() {
-        return this.name;
+    public String getRepoName() {
+        return this.repoName;
     }
 
     public Integer getOrgFk() {
@@ -51,8 +51,8 @@ public class Repo implements Serializable {
     public String toString() {
         StringBuilder sb = new StringBuilder("Repo (");
 
-        sb.append(id);
-        sb.append(", ").append(name);
+        sb.append(repoId);
+        sb.append(", ").append(repoName);
         sb.append(", ").append(orgFk);
 
         sb.append(")");

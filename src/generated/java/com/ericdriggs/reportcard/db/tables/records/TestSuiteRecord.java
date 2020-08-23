@@ -19,20 +19,20 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestSuiteRecord extends UpdatableRecordImpl<TestSuiteRecord> implements Record10<Long, Long, String, Integer, Integer, Integer, Integer, Long, Byte, Byte> {
 
-    private static final long serialVersionUID = -1564249549;
+    private static final long serialVersionUID = -1229976349;
 
     /**
-     * Setter for <code>reportcard.test_suite.id</code>.
+     * Setter for <code>reportcard.test_suite.test_suite_id</code>.
      */
-    public TestSuiteRecord setId(Long value) {
+    public TestSuiteRecord setTestSuiteId(Long value) {
         set(0, value);
         return this;
     }
 
     /**
-     * Getter for <code>reportcard.test_suite.id</code>.
+     * Getter for <code>reportcard.test_suite.test_suite_id</code>.
      */
-    public Long getId() {
+    public Long getTestSuiteId() {
         return (Long) get(0);
     }
 
@@ -52,17 +52,17 @@ public class TestSuiteRecord extends UpdatableRecordImpl<TestSuiteRecord> implem
     }
 
     /**
-     * Setter for <code>reportcard.test_suite.package</code>.
+     * Setter for <code>reportcard.test_suite.test_suite_package</code>.
      */
-    public TestSuiteRecord setPackage(String value) {
+    public TestSuiteRecord setTestSuitePackage(String value) {
         set(2, value);
         return this;
     }
 
     /**
-     * Getter for <code>reportcard.test_suite.package</code>.
+     * Getter for <code>reportcard.test_suite.test_suite_package</code>.
      */
-    public String getPackage() {
+    public String getTestSuitePackage() {
         return (String) get(2);
     }
 
@@ -127,32 +127,32 @@ public class TestSuiteRecord extends UpdatableRecordImpl<TestSuiteRecord> implem
     }
 
     /**
-     * Setter for <code>reportcard.test_suite.time</code>.
+     * Setter for <code>reportcard.test_suite.test_suite_time</code>.
      */
-    public TestSuiteRecord setTime(Long value) {
+    public TestSuiteRecord setTestSuiteTime(Long value) {
         set(7, value);
         return this;
     }
 
     /**
-     * Getter for <code>reportcard.test_suite.time</code>.
+     * Getter for <code>reportcard.test_suite.test_suite_time</code>.
      */
-    public Long getTime() {
+    public Long getTestSuiteTime() {
         return (Long) get(7);
     }
 
     /**
-     * Setter for <code>reportcard.test_suite.is_success</code>.
+     * Setter for <code>reportcard.test_suite.test_suite_is_success</code>.
      */
-    public TestSuiteRecord setIsSuccess(Byte value) {
+    public TestSuiteRecord setTestSuiteIsSuccess(Byte value) {
         set(8, value);
         return this;
     }
 
     /**
-     * Getter for <code>reportcard.test_suite.is_success</code>.
+     * Getter for <code>reportcard.test_suite.test_suite_is_success</code>.
      */
-    public Byte getIsSuccess() {
+    public Byte getTestSuiteIsSuccess() {
         return (Byte) get(8);
     }
 
@@ -196,7 +196,7 @@ public class TestSuiteRecord extends UpdatableRecordImpl<TestSuiteRecord> implem
 
     @Override
     public Field<Long> field1() {
-        return TestSuite.TEST_SUITE.ID;
+        return TestSuite.TEST_SUITE.TEST_SUITE_ID;
     }
 
     @Override
@@ -206,7 +206,7 @@ public class TestSuiteRecord extends UpdatableRecordImpl<TestSuiteRecord> implem
 
     @Override
     public Field<String> field3() {
-        return TestSuite.TEST_SUITE.PACKAGE;
+        return TestSuite.TEST_SUITE.TEST_SUITE_PACKAGE;
     }
 
     @Override
@@ -231,12 +231,12 @@ public class TestSuiteRecord extends UpdatableRecordImpl<TestSuiteRecord> implem
 
     @Override
     public Field<Long> field8() {
-        return TestSuite.TEST_SUITE.TIME;
+        return TestSuite.TEST_SUITE.TEST_SUITE_TIME;
     }
 
     @Override
     public Field<Byte> field9() {
-        return TestSuite.TEST_SUITE.IS_SUCCESS;
+        return TestSuite.TEST_SUITE.TEST_SUITE_IS_SUCCESS;
     }
 
     @Override
@@ -246,7 +246,7 @@ public class TestSuiteRecord extends UpdatableRecordImpl<TestSuiteRecord> implem
 
     @Override
     public Long component1() {
-        return getId();
+        return getTestSuiteId();
     }
 
     @Override
@@ -256,7 +256,7 @@ public class TestSuiteRecord extends UpdatableRecordImpl<TestSuiteRecord> implem
 
     @Override
     public String component3() {
-        return getPackage();
+        return getTestSuitePackage();
     }
 
     @Override
@@ -281,12 +281,12 @@ public class TestSuiteRecord extends UpdatableRecordImpl<TestSuiteRecord> implem
 
     @Override
     public Long component8() {
-        return getTime();
+        return getTestSuiteTime();
     }
 
     @Override
     public Byte component9() {
-        return getIsSuccess();
+        return getTestSuiteIsSuccess();
     }
 
     @Override
@@ -296,7 +296,7 @@ public class TestSuiteRecord extends UpdatableRecordImpl<TestSuiteRecord> implem
 
     @Override
     public Long value1() {
-        return getId();
+        return getTestSuiteId();
     }
 
     @Override
@@ -306,7 +306,7 @@ public class TestSuiteRecord extends UpdatableRecordImpl<TestSuiteRecord> implem
 
     @Override
     public String value3() {
-        return getPackage();
+        return getTestSuitePackage();
     }
 
     @Override
@@ -331,12 +331,12 @@ public class TestSuiteRecord extends UpdatableRecordImpl<TestSuiteRecord> implem
 
     @Override
     public Long value8() {
-        return getTime();
+        return getTestSuiteTime();
     }
 
     @Override
     public Byte value9() {
-        return getIsSuccess();
+        return getTestSuiteIsSuccess();
     }
 
     @Override
@@ -346,7 +346,7 @@ public class TestSuiteRecord extends UpdatableRecordImpl<TestSuiteRecord> implem
 
     @Override
     public TestSuiteRecord value1(Long value) {
-        setId(value);
+        setTestSuiteId(value);
         return this;
     }
 
@@ -358,7 +358,7 @@ public class TestSuiteRecord extends UpdatableRecordImpl<TestSuiteRecord> implem
 
     @Override
     public TestSuiteRecord value3(String value) {
-        setPackage(value);
+        setTestSuitePackage(value);
         return this;
     }
 
@@ -388,13 +388,13 @@ public class TestSuiteRecord extends UpdatableRecordImpl<TestSuiteRecord> implem
 
     @Override
     public TestSuiteRecord value8(Long value) {
-        setTime(value);
+        setTestSuiteTime(value);
         return this;
     }
 
     @Override
     public TestSuiteRecord value9(Byte value) {
-        setIsSuccess(value);
+        setTestSuiteIsSuccess(value);
         return this;
     }
 
@@ -433,18 +433,18 @@ public class TestSuiteRecord extends UpdatableRecordImpl<TestSuiteRecord> implem
     /**
      * Create a detached, initialised TestSuiteRecord
      */
-    public TestSuiteRecord(Long id, Long testResultFk, String package_, Integer tests, Integer skipped, Integer error, Integer failure, Long time, Byte isSuccess, Byte hasSkip) {
+    public TestSuiteRecord(Long testSuiteId, Long testResultFk, String testSuitePackage, Integer tests, Integer skipped, Integer error, Integer failure, Long testSuiteTime, Byte testSuiteIsSuccess, Byte hasSkip) {
         super(TestSuite.TEST_SUITE);
 
-        set(0, id);
+        set(0, testSuiteId);
         set(1, testResultFk);
-        set(2, package_);
+        set(2, testSuitePackage);
         set(3, tests);
         set(4, skipped);
         set(5, error);
         set(6, failure);
-        set(7, time);
-        set(8, isSuccess);
+        set(7, testSuiteTime);
+        set(8, testSuiteIsSuccess);
         set(9, hasSkip);
     }
 }

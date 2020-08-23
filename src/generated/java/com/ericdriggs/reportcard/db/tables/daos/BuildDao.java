@@ -36,69 +36,69 @@ public class BuildDao extends DAOImpl<BuildRecord, com.ericdriggs.reportcard.db.
 
     @Override
     public Long getId(com.ericdriggs.reportcard.db.tables.pojos.Build object) {
-        return object.getId();
+        return object.getBuildId();
     }
 
     /**
-     * Fetch records that have <code>id BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>build_id BETWEEN lowerInclusive AND upperInclusive</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.Build> fetchRangeOfId(Long lowerInclusive, Long upperInclusive) {
-        return fetchRange(Build.BUILD.ID, lowerInclusive, upperInclusive);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.Build> fetchRangeOfBuildId(Long lowerInclusive, Long upperInclusive) {
+        return fetchRange(Build.BUILD.BUILD_ID, lowerInclusive, upperInclusive);
     }
 
     /**
-     * Fetch records that have <code>id IN (values)</code>
+     * Fetch records that have <code>build_id IN (values)</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.Build> fetchById(Long... values) {
-        return fetch(Build.BUILD.ID, values);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.Build> fetchByBuildId(Long... values) {
+        return fetch(Build.BUILD.BUILD_ID, values);
     }
 
     /**
-     * Fetch a unique record that has <code>id = value</code>
+     * Fetch a unique record that has <code>build_id = value</code>
      */
-    public com.ericdriggs.reportcard.db.tables.pojos.Build fetchOneById(Long value) {
-        return fetchOne(Build.BUILD.ID, value);
+    public com.ericdriggs.reportcard.db.tables.pojos.Build fetchOneByBuildId(Long value) {
+        return fetchOne(Build.BUILD.BUILD_ID, value);
     }
 
     /**
-     * Fetch records that have <code>app_fk BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>app_branch_fk BETWEEN lowerInclusive AND upperInclusive</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.Build> fetchRangeOfAppFk(Integer lowerInclusive, Integer upperInclusive) {
-        return fetchRange(Build.BUILD.APP_FK, lowerInclusive, upperInclusive);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.Build> fetchRangeOfAppBranchFk(Integer lowerInclusive, Integer upperInclusive) {
+        return fetchRange(Build.BUILD.APP_BRANCH_FK, lowerInclusive, upperInclusive);
     }
 
     /**
-     * Fetch records that have <code>app_fk IN (values)</code>
+     * Fetch records that have <code>app_branch_fk IN (values)</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.Build> fetchByAppFk(Integer... values) {
-        return fetch(Build.BUILD.APP_FK, values);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.Build> fetchByAppBranchFk(Integer... values) {
+        return fetch(Build.BUILD.APP_BRANCH_FK, values);
     }
 
     /**
-     * Fetch records that have <code>created BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>app_branch_build_ordinal BETWEEN lowerInclusive AND upperInclusive</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.Build> fetchRangeOfCreated(LocalDateTime lowerInclusive, LocalDateTime upperInclusive) {
-        return fetchRange(Build.BUILD.CREATED, lowerInclusive, upperInclusive);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.Build> fetchRangeOfAppBranchBuildOrdinal(Integer lowerInclusive, Integer upperInclusive) {
+        return fetchRange(Build.BUILD.APP_BRANCH_BUILD_ORDINAL, lowerInclusive, upperInclusive);
     }
 
     /**
-     * Fetch records that have <code>created IN (values)</code>
+     * Fetch records that have <code>app_branch_build_ordinal IN (values)</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.Build> fetchByCreated(LocalDateTime... values) {
-        return fetch(Build.BUILD.CREATED, values);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.Build> fetchByAppBranchBuildOrdinal(Integer... values) {
+        return fetch(Build.BUILD.APP_BRANCH_BUILD_ORDINAL, values);
     }
 
     /**
-     * Fetch records that have <code>app_build_ordinal BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>build_created BETWEEN lowerInclusive AND upperInclusive</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.Build> fetchRangeOfAppBuildOrdinal(Integer lowerInclusive, Integer upperInclusive) {
-        return fetchRange(Build.BUILD.APP_BUILD_ORDINAL, lowerInclusive, upperInclusive);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.Build> fetchRangeOfBuildCreated(LocalDateTime lowerInclusive, LocalDateTime upperInclusive) {
+        return fetchRange(Build.BUILD.BUILD_CREATED, lowerInclusive, upperInclusive);
     }
 
     /**
-     * Fetch records that have <code>app_build_ordinal IN (values)</code>
+     * Fetch records that have <code>build_created IN (values)</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.Build> fetchByAppBuildOrdinal(Integer... values) {
-        return fetch(Build.BUILD.APP_BUILD_ORDINAL, values);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.Build> fetchByBuildCreated(LocalDateTime... values) {
+        return fetch(Build.BUILD.BUILD_CREATED, values);
     }
 }

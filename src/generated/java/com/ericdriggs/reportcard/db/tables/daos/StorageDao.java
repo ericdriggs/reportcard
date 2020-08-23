@@ -35,28 +35,28 @@ public class StorageDao extends DAOImpl<StorageRecord, com.ericdriggs.reportcard
 
     @Override
     public Integer getId(com.ericdriggs.reportcard.db.tables.pojos.Storage object) {
-        return object.getId();
+        return object.getStorageId();
     }
 
     /**
-     * Fetch records that have <code>id BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>storage_id BETWEEN lowerInclusive AND upperInclusive</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.Storage> fetchRangeOfId(Integer lowerInclusive, Integer upperInclusive) {
-        return fetchRange(Storage.STORAGE.ID, lowerInclusive, upperInclusive);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.Storage> fetchRangeOfStorageId(Integer lowerInclusive, Integer upperInclusive) {
+        return fetchRange(Storage.STORAGE.STORAGE_ID, lowerInclusive, upperInclusive);
     }
 
     /**
-     * Fetch records that have <code>id IN (values)</code>
+     * Fetch records that have <code>storage_id IN (values)</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.Storage> fetchById(Integer... values) {
-        return fetch(Storage.STORAGE.ID, values);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.Storage> fetchByStorageId(Integer... values) {
+        return fetch(Storage.STORAGE.STORAGE_ID, values);
     }
 
     /**
-     * Fetch a unique record that has <code>id = value</code>
+     * Fetch a unique record that has <code>storage_id = value</code>
      */
-    public com.ericdriggs.reportcard.db.tables.pojos.Storage fetchOneById(Integer value) {
-        return fetchOne(Storage.STORAGE.ID, value);
+    public com.ericdriggs.reportcard.db.tables.pojos.Storage fetchOneByStorageId(Integer value) {
+        return fetchOne(Storage.STORAGE.STORAGE_ID, value);
     }
 
     /**
@@ -74,17 +74,17 @@ public class StorageDao extends DAOImpl<StorageRecord, com.ericdriggs.reportcard
     }
 
     /**
-     * Fetch records that have <code>label BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>storage_label BETWEEN lowerInclusive AND upperInclusive</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.Storage> fetchRangeOfLabel(String lowerInclusive, String upperInclusive) {
-        return fetchRange(Storage.STORAGE.LABEL, lowerInclusive, upperInclusive);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.Storage> fetchRangeOfStorageLabel(String lowerInclusive, String upperInclusive) {
+        return fetchRange(Storage.STORAGE.STORAGE_LABEL, lowerInclusive, upperInclusive);
     }
 
     /**
-     * Fetch records that have <code>label IN (values)</code>
+     * Fetch records that have <code>storage_label IN (values)</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.Storage> fetchByLabel(String... values) {
-        return fetch(Storage.STORAGE.LABEL, values);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.Storage> fetchByStorageLabel(String... values) {
+        return fetch(Storage.STORAGE.STORAGE_LABEL, values);
     }
 
     /**

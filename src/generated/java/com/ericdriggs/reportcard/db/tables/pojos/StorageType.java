@@ -13,7 +13,7 @@ import java.io.Serializable;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class StorageType implements Serializable {
 
-    private static final long serialVersionUID = 724312717;
+    private static final long serialVersionUID = 779631086;
 
     private final Byte   id;
     private final String name;
