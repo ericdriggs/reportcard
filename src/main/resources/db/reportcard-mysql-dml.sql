@@ -7,7 +7,7 @@ INSERT INTO `reportcard`.`repo`
 VALUES (1, 'default', 1);
 
 INSERT INTO `reportcard`.`app`
-(`id`, `name`, `branch_fk`)
+(`id`, `name`, `repo_fk`)
 VALUES (1, 'app1', 1);
 
 INSERT INTO `reportcard`.`branch`
@@ -16,16 +16,22 @@ VALUES (1, 'master', '1');
 
 INSERT INTO `reportcard`.`app_branch`
 (`app_branch_id`, `app_fk`, `branch_fk`)
-VALUES (1, 1, 1)
+VALUES (1, 1, 1);
+
+INSERT INTO `reportcard`.`build`
+(`id`, `app_fk`, `app_branch_build_ordinal`)
+VALUES
+(1, 1, 1);
+
+INSERT INTO `reportcard`.`stage`
+(`id`, `name`, `app_fk`)
+VALUES (1, 'unit', 1);
+
+INSERT INTO `reportcard`.`build_stage`
+(`id`, `build_fk`, `stage_fk`)
+VALUES (1, 1, 1);
 
 
-# INSERT INTO `reportcard`.`stage`
-# (`id`, `name`, `app_fk`)
-# VALUES (1, 'unit', 1);
-#
-# INSERT INTO `reportcard`.`build`
-# (`id`, `app_fk`, `app_build_ordinal`)
-# VALUES
-# (1, 1, 1);
+
 #
 #
