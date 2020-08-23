@@ -27,6 +27,7 @@ public class MyEmbeddedMysql {
     final String password;
     final String schema;
     final String ddlsql;
+    final String dmlsql;
 
     private DriverManagerDataSource dataSource;
     EmbeddedMysql mysqld;
@@ -37,13 +38,16 @@ public class MyEmbeddedMysql {
                            @Value("${db.username}") String username,
                            @Value("${db.password}") String password,
                            @Value("${db.schema}") String schema,
-                           @Value("${db.ddlsql}") String ddlsql) {
+                           @Value("${db.ddlsql}") String ddlsql,
+                           @Value("${db.ddlsql}") String dmlsql
+    ) {
         this.driverClassName = driverClassName;
         this.url = url;
         this.password = password;
         this.username = username;
         this.schema = schema;
         this.ddlsql = ddlsql;
+        this.dmlsql = dmlsql;
 
         System.out.println("##### LOADING TestEmbeddedMysql #######");
 
@@ -60,7 +64,8 @@ public class MyEmbeddedMysql {
 
         mysqld = anEmbeddedMysql(config)
                 .addSchema(schema,
-                        classPathScript(ddlsql)
+                        classPathScript(ddlsql),
+                        classPathScript(dmlsql)
                 ).start();
 
         dataSource = new DriverManagerDataSource();
@@ -77,7 +82,8 @@ public class MyEmbeddedMysql {
 
     public void reloadSchema() {
         mysqld.reloadSchema(schema,
-                classPathScript("reportcard-mysql.sql")
+                classPathScript(ddlsql),
+                classPathScript(dmlsql)
         );
     }
 

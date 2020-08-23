@@ -1,7 +1,7 @@
 # Reportcard
 Test XML reporting publishing, aggregation and querying
 
-TODO:
+TODO PROTOTYPE:
 * make org and repo case-insensitive collations (DONE?)
 * implement endpoint for publishing suefire xml repots
 * implement reportcard-scanner with reportcard-scanner.properties file format and read env
@@ -10,3 +10,6 @@ TODO:
 * implement UI GET endpoints for hierarchy after POST
 * add dml sql for test setup with data for all tables
 
+TODO MVP:
+* secure secrets
+* db migration tool
