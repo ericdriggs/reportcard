@@ -162,4 +162,110 @@ public class ReportCardService {
         return ret;
     }
 
+    public List<Build> getBuilds(String org, String repo, String app, String branch) {
+        final com.ericdriggs.reportcard.db.tables.Repo REPO2 = REPO.as("REPO2");
+
+        List<Build> ret = dsl.
+                select(BUILD.fields())
+                .from(BUILD
+                        .join(APP_BRANCH).on(BUILD.APP_BRANCH_FK.eq(APP_BRANCH.APP_BRANCH_ID))
+                        .join(APP).on(APP_BRANCH.APP_FK.eq(APP.APP_ID))
+                        .join(BRANCH).on(APP_BRANCH.BRANCH_FK.eq(BRANCH.BRANCH_ID))
+                        .join(REPO).on(APP.REPO_FK.eq(REPO.REPO_ID))
+                        .join(REPO2).on(BRANCH.REPO_FK.eq(REPO2.REPO_ID))
+                        .join(ORG).on(REPO.ORG_FK.eq(ORG.ORG_ID))
+                )
+                .where(ORG.ORG_NAME.eq(org))
+                .and(REPO.REPO_NAME.eq(repo))
+                .and(APP.APP_NAME.eq(app))
+                .and(BRANCH.BRANCH_NAME.eq(branch))
+                .fetch()
+                .into(Build.class);
+        return ret;
+    }
+
+
+    public Build getBuild(String org, String repo, String app, String branch, Integer appBranchBuildOrdinal) {
+        final com.ericdriggs.reportcard.db.tables.Repo REPO2 = REPO.as("REPO2");
+
+        Build ret = dsl.
+                select(BUILD.fields())
+                .from(BUILD
+                        .join(APP_BRANCH).on(BUILD.APP_BRANCH_FK.eq(APP_BRANCH.APP_BRANCH_ID))
+                        .join(APP).on(APP_BRANCH.APP_FK.eq(APP.APP_ID))
+                        .join(BRANCH).on(APP_BRANCH.BRANCH_FK.eq(BRANCH.BRANCH_ID))
+                        .join(REPO).on(APP.REPO_FK.eq(REPO.REPO_ID))
+                        .join(REPO2).on(BRANCH.REPO_FK.eq(REPO2.REPO_ID))
+                        .join(ORG).on(REPO.ORG_FK.eq(ORG.ORG_ID))
+                )
+                .where(ORG.ORG_NAME.eq(org))
+                .and(REPO.REPO_NAME.eq(repo))
+                .and(APP.APP_NAME.eq(app))
+                .and(BRANCH.BRANCH_NAME.eq(branch))
+                .and(BUILD.APP_BRANCH_BUILD_ORDINAL.eq(appBranchBuildOrdinal))
+                .fetchOne()
+                .into(Build.class);
+        if (ret == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "Unable to find org:" + org + ", repo: " + repo +
+                            ", app: " + app+ ", branch: " + branch +
+                            ", appBranchBuildOrdinal: " + appBranchBuildOrdinal);
+        }
+        return ret;
+    }
+
+    public List<Stage> getStages(String org, String repo, String app, String branch) {
+        final com.ericdriggs.reportcard.db.tables.Repo REPO2 = REPO.as("REPO2");
+
+        List<Stage> ret = dsl.
+                select(STAGE.fields())
+                .from(STAGE
+                        .join(APP_BRANCH).on(STAGE.APP_BRANCH_FK.eq(APP_BRANCH.APP_BRANCH_ID))
+                        .join(APP).on(APP_BRANCH.APP_FK.eq(APP.APP_ID))
+                        .join(BRANCH).on(APP_BRANCH.BRANCH_FK.eq(BRANCH.BRANCH_ID))
+                        .join(REPO).on(APP.REPO_FK.eq(REPO.REPO_ID))
+                        .join(REPO2).on(BRANCH.REPO_FK.eq(REPO2.REPO_ID))
+                        .join(ORG).on(REPO.ORG_FK.eq(ORG.ORG_ID))
+                )
+                .where(ORG.ORG_NAME.eq(org))
+                .and(REPO.REPO_NAME.eq(repo))
+                .and(APP.APP_NAME.eq(app))
+                .and(BRANCH.BRANCH_NAME.eq(branch))
+                .fetch()
+                .into(Stage.class);
+        return ret;
+    }
+
+
+    public Stage getStage(String org, String repo, String app, String branch, String stage) {
+        final com.ericdriggs.reportcard.db.tables.Repo REPO2 = REPO.as("REPO2");
+
+        Stage ret = dsl.
+                select(STAGE.fields())
+                .from(STAGE
+                        .join(APP_BRANCH).on(STAGE.APP_BRANCH_FK.eq(APP_BRANCH.APP_BRANCH_ID))
+                        .join(APP).on(APP_BRANCH.APP_FK.eq(APP.APP_ID))
+                        .join(BRANCH).on(APP_BRANCH.BRANCH_FK.eq(BRANCH.BRANCH_ID))
+                        .join(REPO).on(APP.REPO_FK.eq(REPO.REPO_ID))
+                        .join(REPO2).on(BRANCH.REPO_FK.eq(REPO2.REPO_ID))
+                        .join(ORG).on(REPO.ORG_FK.eq(ORG.ORG_ID))
+                )
+                .where(ORG.ORG_NAME.eq(org))
+                .and(REPO.REPO_NAME.eq(repo))
+                .and(APP.APP_NAME.eq(app))
+                .and(BRANCH.BRANCH_NAME.eq(branch))
+                .and(STAGE.STAGE_NAME.eq(stage))
+                .fetchOne()
+                .into(Stage.class);
+        if (ret == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "Unable to find org:" + org + ", repo: " + repo +
+                            ", app: " + app+ ", branch: " + branch +
+                            ", stage: " + stage);
+        }
+        return ret;
+    }
+
+
+
 }

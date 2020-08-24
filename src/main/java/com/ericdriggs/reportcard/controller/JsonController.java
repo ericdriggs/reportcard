@@ -20,7 +20,7 @@ public class JsonController {
         this.reportCardService = reportCardService;
     }
 
-    @GetMapping(path ="/orgs", produces = "application/json")
+    @GetMapping(path = "/orgs", produces = "application/json")
     public ResponseEntity<List<Org>> getOrgs(@PathVariable String org) {
         return new ResponseEntity<List<Org>>(reportCardService.getOrgs(), HttpStatus.OK);
     }
@@ -30,43 +30,89 @@ public class JsonController {
         return new ResponseEntity<>(reportCardService.getOrg(org), HttpStatus.OK);
     }
 
-    @GetMapping(path ="/orgs/{org}/repos", produces = "application/json")
+    @GetMapping(path = "/orgs/{org}/repos", produces = "application/json")
     public ResponseEntity<List<Repo>> getRepos(@PathVariable String org) {
         return new ResponseEntity<>(reportCardService.getRepos(org), HttpStatus.OK);
     }
 
-    @GetMapping(path ="/orgs/{org}/repos/{repo}", produces = "application/json")
+    @GetMapping(path = "/orgs/{org}/repos/{repo}", produces = "application/json")
     public ResponseEntity<Repo> getRepo(@PathVariable String org, @PathVariable String repo) {
         return new ResponseEntity<>(reportCardService.getRepo(org, repo), HttpStatus.OK);
     }
 
-    @GetMapping(path ="/orgs/{org}/repos/{repo}/apps", produces = "application/json")
+    @GetMapping(path = "/orgs/{org}/repos/{repo}/apps", produces = "application/json")
     public ResponseEntity<List<App>> getApps(@PathVariable String org, @PathVariable String repo) {
         return new ResponseEntity<>(reportCardService.getApps(org, repo), HttpStatus.OK);
     }
 
-    @GetMapping(path ="/orgs/{org}/repos/{repo}/apps/{app}", produces = "application/json")
+    @GetMapping(path = "/orgs/{org}/repos/{repo}/apps/{app}", produces = "application/json")
     public ResponseEntity<App> getApp(
             @PathVariable String org, @PathVariable String repo, @PathVariable String app) {
         return new ResponseEntity<>(reportCardService.getApp(org, repo, app), HttpStatus.OK);
     }
 
 
-    @GetMapping(path ="/orgs/{org}/repos/{repo}/branches", produces = "application/json")
+    @GetMapping(path = "/orgs/{org}/repos/{repo}/branches", produces = "application/json")
     public ResponseEntity<List<Branch>> getBranches(@PathVariable String org, @PathVariable String repo) {
         return new ResponseEntity<>(reportCardService.getBranches(org, repo), HttpStatus.OK);
     }
 
-    @GetMapping(path ="/orgs/{org}/repos/{repo}/branches/{branch}", produces = "application/json")
+    @GetMapping(path = "/orgs/{org}/repos/{repo}/branches/{branch}", produces = "application/json")
     public ResponseEntity<Branch> getBranch(
             @PathVariable String org, @PathVariable String repo, @PathVariable String branch) {
         return new ResponseEntity<>(reportCardService.getBranch(org, repo, branch), HttpStatus.OK);
     }
 
-    @GetMapping(path ="/orgs/{org}/repos/{repo}/apps/{app}/branches/{branch}", produces = "application/json")
+    @GetMapping(path = "/orgs/{org}/repos/{repo}/apps/{app}/branches/{branch}", produces = "application/json")
     public ResponseEntity<AppBranch> getAppBranch(
             @PathVariable String org, @PathVariable String repo, @PathVariable String app, @PathVariable String branch) {
         return new ResponseEntity<AppBranch>(reportCardService.getAppBranch(org, repo, app, branch), HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/orgs/{org}/repos/{repo}/apps/{app}/branches/{branch}/builds", produces = "application/json")
+    public ResponseEntity<List<Build>> getBuilds(
+            @PathVariable String org,
+            @PathVariable String repo,
+            @PathVariable String app,
+            @PathVariable String branch
+    ) {
+        return new ResponseEntity<>(reportCardService.getBuilds(org, repo, app, branch), HttpStatus.OK);
+    }
+
+    //http://localhost:8080/api/orgs/default/repos/default/apps/app1/branches/master/builds/1/
+    @GetMapping(path = "/orgs/{org}/repos/{repo}/apps/{app}/branches/{branch}/builds/{buildOrdinal}", produces = "application/json")
+    public ResponseEntity<Build> getBuild(
+            @PathVariable String org,
+            @PathVariable String repo,
+            @PathVariable String app,
+            @PathVariable String branch,
+            @PathVariable Integer buildOrdinal
+
+    ) {
+        return new ResponseEntity<>(reportCardService.getBuild(org, repo, app, branch, buildOrdinal), HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/orgs/{org}/repos/{repo}/apps/{app}/branches/{branch}/stages", produces = "application/json")
+    public ResponseEntity<List<Stage>> getStages(
+            @PathVariable String org,
+            @PathVariable String repo,
+            @PathVariable String app,
+            @PathVariable String branch
+    ) {
+        return new ResponseEntity<>(reportCardService.getStages(org, repo, app, branch), HttpStatus.OK);
+    }
+
+    //http://localhost:8080/api/orgs/default/repos/default/apps/app1/branches/master/builds/1/
+    @GetMapping(path = "/orgs/{org}/repos/{repo}/apps/{app}/branches/{branch}/stages/{stage}", produces = "application/json")
+    public ResponseEntity<Stage> getStage(
+            @PathVariable String org,
+            @PathVariable String repo,
+            @PathVariable String app,
+            @PathVariable String branch,
+            @PathVariable String stage
+
+    ) {
+        return new ResponseEntity<>(reportCardService.getStage(org, repo, app, branch, stage), HttpStatus.OK);
     }
 
 }

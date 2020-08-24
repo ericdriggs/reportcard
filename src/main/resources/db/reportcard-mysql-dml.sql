@@ -31,7 +31,11 @@ INSERT INTO `reportcard`.`build_stage`
 (`id`, `build_fk`, `stage_fk`)
 VALUES (1, 1, 1);
 
-
-
+# INSERT INTO `reportcard`.`stage`
+# (`id`,
+#  `name`,
+#  `app_fk`)
+# VALUES
+# (1, 'unit', 1);
 #
 #
