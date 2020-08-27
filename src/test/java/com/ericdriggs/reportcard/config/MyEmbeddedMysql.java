@@ -39,7 +39,7 @@ public class MyEmbeddedMysql {
                            @Value("${db.password}") String password,
                            @Value("${db.schema}") String schema,
                            @Value("${db.ddlsql}") String ddlsql,
-                           @Value("${db.ddlsql}") String dmlsql
+                           @Value("${db.dmlsql}") String dmlsql
     ) {
         this.driverClassName = driverClassName;
         this.url = url;
