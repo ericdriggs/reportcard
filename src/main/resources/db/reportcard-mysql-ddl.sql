@@ -168,10 +168,10 @@ CREATE TABLE IF NOT EXISTS `stage` (
 -- Table `build_stage`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `build_stage` (
-                                             `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+                                             `build_stage_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
                                              `build_fk` BIGINT UNSIGNED NOT NULL,
                                              `stage_fk` INT UNSIGNED NOT NULL,
-                                             PRIMARY KEY (`id`),
+                                             PRIMARY KEY (`build_stage_id`),
                                              INDEX `build_idx` (`build_fk` ASC) VISIBLE,
                                              INDEX `stage_fk_idx` (`stage_fk` ASC) VISIBLE,
                                              CONSTRAINT `fk_build`
@@ -187,42 +187,6 @@ CREATE TABLE IF NOT EXISTS `build_stage` (
     ENGINE = InnoDB
     DEFAULT CHARACTER SET = utf8mb4
     COLLATE = utf8mb4_0900_ai_ci;
-
-
--- -----------------------------------------------------
--- Table `storage`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `storage` (
-                                         `storage_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-                                         `build_stage_fk` BIGINT UNSIGNED NOT NULL,
-                                         `storage_label` VARCHAR(255) NOT NULL,
-                                         `storage_type_fk` TINYINT NOT NULL,
-                                         `s3_bucket` VARCHAR(63) NOT NULL,
-                                         `s3_folder_path` VARCHAR(2048) NOT NULL,
-                                         `s3_file_name` VARCHAR(8096) NULL DEFAULT NULL,
-                                         `s3_file_matcher` VARCHAR(256) NULL DEFAULT NULL,
-                                         PRIMARY KEY (`storage_id`),
-                                         INDEX `build_stage_idx` (`build_stage_fk` ASC) VISIBLE,
-                                         CONSTRAINT `fk_report_build_stage`
-                                             FOREIGN KEY (`build_stage_fk`)
-                                                 REFERENCES `build_stage` (`id`))
-    ENGINE = InnoDB
-    DEFAULT CHARACTER SET = utf8mb4
-    COLLATE = utf8mb4_0900_ai_ci;
-
-
--- -----------------------------------------------------
--- Table `storage_type`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `storage_type` (
-                                              `id` TINYINT NOT NULL AUTO_INCREMENT,
-                                              `name` CHAR(16) NULL DEFAULT NULL,
-                                              PRIMARY KEY (`id`))
-    ENGINE = InnoDB
-    AUTO_INCREMENT = 13
-    DEFAULT CHARACTER SET = utf8mb4
-    COLLATE = utf8mb4_0900_ai_ci;
-
 
 -- -----------------------------------------------------
 -- Table `test_status`
@@ -254,7 +218,7 @@ CREATE TABLE IF NOT EXISTS `test_result` (
                                              INDEX `fk_test_result_build_stage_idx` (`build_stage_fk` ASC) VISIBLE,
                                              CONSTRAINT `fk_test_result_build_stage`
                                                  FOREIGN KEY (`build_stage_fk`)
-                                                     REFERENCES `build_stage` (`id`)
+                                                     REFERENCES `build_stage` (`build_stage_id`)
                                                      ON DELETE CASCADE
                                                      ON UPDATE CASCADE)
     ENGINE = InnoDB

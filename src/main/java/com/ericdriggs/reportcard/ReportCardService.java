@@ -326,17 +326,16 @@ public class ReportCardService {
                 .from(ORG
                         .leftJoin(REPO).on(ORG.ORG_ID.eq(REPO.ORG_FK))
                         .leftJoin(APP).on(APP.REPO_FK.eq(REPO.REPO_ID))
-                        .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO2.REPO_ID))
+                        .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID))
                         .leftJoin(APP_BRANCH).on(APP_BRANCH.APP_FK.eq(APP.APP_ID).and(APP_BRANCH.BRANCH_FK.eq(BRANCH.BRANCH_ID)))
                         .leftJoin(BUILD).on(BUILD.APP_BRANCH_FK.eq(APP_BRANCH.APP_BRANCH_ID))
                         .leftJoin(STAGE).on(STAGE.APP_BRANCH_FK.eq(APP_BRANCH.APP_BRANCH_ID))
                         .leftJoin(BUILD_STAGE).on(BUILD_STAGE.BUILD_FK.eq(BUILD.BUILD_ID).and(BUILD_STAGE.STAGE_FK.eq(STAGE.STAGE_ID)))
-                        .where(ORG.ORG_NAME.eq(org)
-                                .and(REPO.REPO_NAME.eq(repo))
-                                .and(BRANCH.BRANCH_NAME.eq(branch))
-                                .and(BUILD.APP_BRANCH_BUILD_ORDINAL.eq(buildOrdinal))
-                                .and(STAGE.STAGE_NAME.eq(stage))
-                        )
+                ).where(ORG.ORG_NAME.eq(org)
+                        .and(REPO.REPO_NAME.eq(repo))
+                        .and(BRANCH.BRANCH_NAME.eq(branch))
+                        .and(BUILD.APP_BRANCH_BUILD_ORDINAL.eq(buildOrdinal))
+                        .and(STAGE.STAGE_NAME.eq(stage))
                 )
                 .fetchOne();
 
@@ -351,14 +350,39 @@ public class ReportCardService {
 
         BuildStagePath buildStagePath = new BuildStagePath();
         {
-            //TODO: may have to wrap intos with try / catch if throws instead of null
-            Org _org = record.into(Org.class);
-            Repo _repo = record.into(Repo.class);
-            Branch _branch = record.into(Branch.class);
-            App _app = record.into(App.class);
-            Build _build = record.into(Build.class);
-            Stage _stage = record.into(Stage.class);
-
+            Org _org = null;
+            Repo _repo = null;
+            Branch _branch = null;
+            App _app = null;
+            Build _build = null;
+            Stage _stage = null;
+            try {
+                _org = record.into(Org.class);
+                _repo = record.into(Repo.class);
+            } catch (Exception ex) {
+                //TODO: noop instead of print after done debugging
+                ex.printStackTrace();
+            }
+            try {
+                _app = record.into(App.class);
+            } catch (Exception ex) {//TODO: noop instead of print after done debugging
+                ex.printStackTrace();
+            }
+            try {
+                _branch = record.into(Branch.class);
+            } catch (Exception ex) {//TODO: noop instead of print after done debugging
+                ex.printStackTrace();
+            }
+            try {
+                _build = record.into(Build.class);
+            } catch (Exception ex) {//TODO: noop instead of print after done debugging
+                ex.printStackTrace();
+            }
+            try {
+                _stage = record.into(Stage.class);
+            } catch (Exception ex) {//TODO: noop instead of print after done debugging
+                ex.printStackTrace();
+            }
             buildStagePath.setOrg(_org);
             buildStagePath.setRepo(_repo);
             buildStagePath.setApp(_app);
