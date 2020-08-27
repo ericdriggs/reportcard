@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS `org` (
                                      PRIMARY KEY (`org_id`),
                                      UNIQUE INDEX `idx_org_name` (`org_name` ASC) VISIBLE)
     ENGINE = InnoDB
-    AUTO_INCREMENT = 2
+    AUTO_INCREMENT = 3
     DEFAULT CHARACTER SET = utf8mb4
     COLLATE = utf8mb4_0900_ai_ci;
 
@@ -130,6 +130,8 @@ CREATE TABLE IF NOT EXISTS `build` (
                                        `app_branch_fk` INT UNSIGNED NOT NULL,
                                        `app_branch_build_ordinal` INT UNSIGNED NOT NULL,
                                        `build_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                                       `build_external_identifier` VARCHAR(45) NULL DEFAULT NULL,
+                                       `build_sha` VARCHAR(45) NULL DEFAULT NULL,
                                        PRIMARY KEY (`build_id`),
                                        INDEX `app_idx` (`app_branch_fk` ASC) VISIBLE,
                                        CONSTRAINT `build_app_branch_fk`
@@ -185,8 +187,10 @@ CREATE TABLE IF NOT EXISTS `build_stage` (
                                                      ON DELETE CASCADE
                                                      ON UPDATE CASCADE)
     ENGINE = InnoDB
+    AUTO_INCREMENT = 2
     DEFAULT CHARACTER SET = utf8mb4
     COLLATE = utf8mb4_0900_ai_ci;
+
 
 -- -----------------------------------------------------
 -- Table `test_status`
