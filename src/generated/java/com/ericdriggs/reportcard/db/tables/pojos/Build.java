@@ -14,13 +14,14 @@ import java.time.LocalDateTime;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Build implements Serializable {
 
-    private static final long serialVersionUID = -659820937;
+    private static final long serialVersionUID = -1367665922;
 
     private final Long          buildId;
     private final Integer       appBranchFk;
     private final Integer       appBranchBuildOrdinal;
     private final LocalDateTime buildCreated;
     private final String        buildExternalIdentifier;
+    private final String        buildSha;
 
     public Build(Build value) {
         this.buildId = value.buildId;
@@ -28,6 +29,7 @@ public class Build implements Serializable {
         this.appBranchBuildOrdinal = value.appBranchBuildOrdinal;
         this.buildCreated = value.buildCreated;
         this.buildExternalIdentifier = value.buildExternalIdentifier;
+        this.buildSha = value.buildSha;
     }
 
     public Build(
@@ -35,13 +37,15 @@ public class Build implements Serializable {
         Integer       appBranchFk,
         Integer       appBranchBuildOrdinal,
         LocalDateTime buildCreated,
-        String        buildExternalIdentifier
+        String        buildExternalIdentifier,
+        String        buildSha
     ) {
         this.buildId = buildId;
         this.appBranchFk = appBranchFk;
         this.appBranchBuildOrdinal = appBranchBuildOrdinal;
         this.buildCreated = buildCreated;
         this.buildExternalIdentifier = buildExternalIdentifier;
+        this.buildSha = buildSha;
     }
 
     public Long getBuildId() {
@@ -64,6 +68,10 @@ public class Build implements Serializable {
         return this.buildExternalIdentifier;
     }
 
+    public String getBuildSha() {
+        return this.buildSha;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("Build (");
@@ -73,6 +81,7 @@ public class Build implements Serializable {
         sb.append(", ").append(appBranchBuildOrdinal);
         sb.append(", ").append(buildCreated);
         sb.append(", ").append(buildExternalIdentifier);
+        sb.append(", ").append(buildSha);
 
         sb.append(")");
         return sb.toString();

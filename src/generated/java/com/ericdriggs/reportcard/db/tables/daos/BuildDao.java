@@ -115,4 +115,18 @@ public class BuildDao extends DAOImpl<BuildRecord, com.ericdriggs.reportcard.db.
     public List<com.ericdriggs.reportcard.db.tables.pojos.Build> fetchByBuildExternalIdentifier(String... values) {
         return fetch(Build.BUILD.BUILD_EXTERNAL_IDENTIFIER, values);
     }
+
+    /**
+     * Fetch records that have <code>build_sha BETWEEN lowerInclusive AND upperInclusive</code>
+     */
+    public List<com.ericdriggs.reportcard.db.tables.pojos.Build> fetchRangeOfBuildSha(String lowerInclusive, String upperInclusive) {
+        return fetchRange(Build.BUILD.BUILD_SHA, lowerInclusive, upperInclusive);
+    }
+
+    /**
+     * Fetch records that have <code>build_sha IN (values)</code>
+     */
+    public List<com.ericdriggs.reportcard.db.tables.pojos.Build> fetchByBuildSha(String... values) {
+        return fetch(Build.BUILD.BUILD_SHA, values);
+    }
 }
