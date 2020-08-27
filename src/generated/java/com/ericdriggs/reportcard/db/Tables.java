@@ -12,8 +12,6 @@ import com.ericdriggs.reportcard.db.tables.BuildStage;
 import com.ericdriggs.reportcard.db.tables.Org;
 import com.ericdriggs.reportcard.db.tables.Repo;
 import com.ericdriggs.reportcard.db.tables.Stage;
-import com.ericdriggs.reportcard.db.tables.Storage;
-import com.ericdriggs.reportcard.db.tables.StorageType;
 import com.ericdriggs.reportcard.db.tables.TestCase;
 import com.ericdriggs.reportcard.db.tables.TestResult;
 import com.ericdriggs.reportcard.db.tables.TestStatus;
@@ -65,16 +63,6 @@ public class Tables {
      * The table <code>reportcard.stage</code>.
      */
     public static final Stage STAGE = Stage.STAGE;
-
-    /**
-     * The table <code>reportcard.storage</code>.
-     */
-    public static final Storage STORAGE = Storage.STORAGE;
-
-    /**
-     * The table <code>reportcard.storage_type</code>.
-     */
-    public static final StorageType STORAGE_TYPE = StorageType.STORAGE_TYPE;
 
     /**
      * The table <code>reportcard.test_case</code>.

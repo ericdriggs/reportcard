@@ -14,30 +14,34 @@ import java.time.LocalDateTime;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Build implements Serializable {
 
-    private static final long serialVersionUID = 429504732;
+    private static final long serialVersionUID = -659820937;
 
     private final Long          buildId;
     private final Integer       appBranchFk;
     private final Integer       appBranchBuildOrdinal;
     private final LocalDateTime buildCreated;
+    private final String        buildExternalIdentifier;
 
     public Build(Build value) {
         this.buildId = value.buildId;
         this.appBranchFk = value.appBranchFk;
         this.appBranchBuildOrdinal = value.appBranchBuildOrdinal;
         this.buildCreated = value.buildCreated;
+        this.buildExternalIdentifier = value.buildExternalIdentifier;
     }
 
     public Build(
         Long          buildId,
         Integer       appBranchFk,
         Integer       appBranchBuildOrdinal,
-        LocalDateTime buildCreated
+        LocalDateTime buildCreated,
+        String        buildExternalIdentifier
     ) {
         this.buildId = buildId;
         this.appBranchFk = appBranchFk;
         this.appBranchBuildOrdinal = appBranchBuildOrdinal;
         this.buildCreated = buildCreated;
+        this.buildExternalIdentifier = buildExternalIdentifier;
     }
 
     public Long getBuildId() {
@@ -56,6 +60,10 @@ public class Build implements Serializable {
         return this.buildCreated;
     }
 
+    public String getBuildExternalIdentifier() {
+        return this.buildExternalIdentifier;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("Build (");
@@ -64,6 +72,7 @@ public class Build implements Serializable {
         sb.append(", ").append(appBranchFk);
         sb.append(", ").append(appBranchBuildOrdinal);
         sb.append(", ").append(buildCreated);
+        sb.append(", ").append(buildExternalIdentifier);
 
         sb.append(")");
         return sb.toString();

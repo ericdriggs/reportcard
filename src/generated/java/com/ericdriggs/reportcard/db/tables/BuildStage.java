@@ -34,7 +34,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BuildStage extends TableImpl<BuildStageRecord> {
 
-    private static final long serialVersionUID = 1679787042;
+    private static final long serialVersionUID = 1430932176;
 
     /**
      * The reference instance of <code>reportcard.build_stage</code>
@@ -50,9 +50,9 @@ public class BuildStage extends TableImpl<BuildStageRecord> {
     }
 
     /**
-     * The column <code>reportcard.build_stage.id</code>.
+     * The column <code>reportcard.build_stage.build_stage_id</code>.
      */
-    public final TableField<BuildStageRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false).identity(true), this, "");
+    public final TableField<BuildStageRecord, Long> BUILD_STAGE_ID = createField(DSL.name("build_stage_id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false).identity(true), this, "");
 
     /**
      * The column <code>reportcard.build_stage.build_fk</code>.

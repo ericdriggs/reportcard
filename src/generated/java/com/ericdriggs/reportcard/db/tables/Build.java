@@ -19,7 +19,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row4;
+import org.jooq.Row5;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -35,7 +35,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Build extends TableImpl<BuildRecord> {
 
-    private static final long serialVersionUID = 1911983512;
+    private static final long serialVersionUID = 337792556;
 
     /**
      * The reference instance of <code>reportcard.build</code>
@@ -69,6 +69,11 @@ public class Build extends TableImpl<BuildRecord> {
      * The column <code>reportcard.build.build_created</code>.
      */
     public final TableField<BuildRecord, LocalDateTime> BUILD_CREATED = createField(DSL.name("build_created"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false).defaultValue(org.jooq.impl.DSL.field("CURRENT_TIMESTAMP", org.jooq.impl.SQLDataType.LOCALDATETIME)), this, "");
+
+    /**
+     * The column <code>reportcard.build.build_external_identifier</code>.
+     */
+    public final TableField<BuildRecord, String> BUILD_EXTERNAL_IDENTIFIER = createField(DSL.name("build_external_identifier"), org.jooq.impl.SQLDataType.VARCHAR(45), this, "");
 
     /**
      * Create a <code>reportcard.build</code> table reference
@@ -164,11 +169,11 @@ public class Build extends TableImpl<BuildRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row4 type methods
+    // Row5 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row4<Long, Integer, Integer, LocalDateTime> fieldsRow() {
-        return (Row4) super.fieldsRow();
+    public Row5<Long, Integer, Integer, LocalDateTime, String> fieldsRow() {
+        return (Row5) super.fieldsRow();
     }
 }

@@ -19,20 +19,20 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BuildStageRecord extends UpdatableRecordImpl<BuildStageRecord> implements Record3<Long, Long, Integer> {
 
-    private static final long serialVersionUID = -1555837584;
+    private static final long serialVersionUID = 1002124718;
 
     /**
-     * Setter for <code>reportcard.build_stage.id</code>.
+     * Setter for <code>reportcard.build_stage.build_stage_id</code>.
      */
-    public BuildStageRecord setId(Long value) {
+    public BuildStageRecord setBuildStageId(Long value) {
         set(0, value);
         return this;
     }
 
     /**
-     * Getter for <code>reportcard.build_stage.id</code>.
+     * Getter for <code>reportcard.build_stage.build_stage_id</code>.
      */
-    public Long getId() {
+    public Long getBuildStageId() {
         return (Long) get(0);
     }
 
@@ -91,7 +91,7 @@ public class BuildStageRecord extends UpdatableRecordImpl<BuildStageRecord> impl
 
     @Override
     public Field<Long> field1() {
-        return BuildStage.BUILD_STAGE.ID;
+        return BuildStage.BUILD_STAGE.BUILD_STAGE_ID;
     }
 
     @Override
@@ -106,7 +106,7 @@ public class BuildStageRecord extends UpdatableRecordImpl<BuildStageRecord> impl
 
     @Override
     public Long component1() {
-        return getId();
+        return getBuildStageId();
     }
 
     @Override
@@ -121,7 +121,7 @@ public class BuildStageRecord extends UpdatableRecordImpl<BuildStageRecord> impl
 
     @Override
     public Long value1() {
-        return getId();
+        return getBuildStageId();
     }
 
     @Override
@@ -136,7 +136,7 @@ public class BuildStageRecord extends UpdatableRecordImpl<BuildStageRecord> impl
 
     @Override
     public BuildStageRecord value1(Long value) {
-        setId(value);
+        setBuildStageId(value);
         return this;
     }
 
@@ -174,10 +174,10 @@ public class BuildStageRecord extends UpdatableRecordImpl<BuildStageRecord> impl
     /**
      * Create a detached, initialised BuildStageRecord
      */
-    public BuildStageRecord(Long id, Long buildFk, Integer stageFk) {
+    public BuildStageRecord(Long buildStageId, Long buildFk, Integer stageFk) {
         super(BuildStage.BUILD_STAGE);
 
-        set(0, id);
+        set(0, buildStageId);
         set(1, buildFk);
         set(2, stageFk);
     }

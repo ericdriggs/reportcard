@@ -13,30 +13,30 @@ import java.io.Serializable;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BuildStage implements Serializable {
 
-    private static final long serialVersionUID = 1520321433;
+    private static final long serialVersionUID = 2123780713;
 
-    private final Long    id;
+    private final Long    buildStageId;
     private final Long    buildFk;
     private final Integer stageFk;
 
     public BuildStage(BuildStage value) {
-        this.id = value.id;
+        this.buildStageId = value.buildStageId;
         this.buildFk = value.buildFk;
         this.stageFk = value.stageFk;
     }
 
     public BuildStage(
-        Long    id,
+        Long    buildStageId,
         Long    buildFk,
         Integer stageFk
     ) {
-        this.id = id;
+        this.buildStageId = buildStageId;
         this.buildFk = buildFk;
         this.stageFk = stageFk;
     }
 
-    public Long getId() {
-        return this.id;
+    public Long getBuildStageId() {
+        return this.buildStageId;
     }
 
     public Long getBuildFk() {
@@ -51,7 +51,7 @@ public class BuildStage implements Serializable {
     public String toString() {
         StringBuilder sb = new StringBuilder("BuildStage (");
 
-        sb.append(id);
+        sb.append(buildStageId);
         sb.append(", ").append(buildFk);
         sb.append(", ").append(stageFk);
 

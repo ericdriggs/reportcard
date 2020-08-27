@@ -35,28 +35,28 @@ public class BuildStageDao extends DAOImpl<BuildStageRecord, com.ericdriggs.repo
 
     @Override
     public Long getId(com.ericdriggs.reportcard.db.tables.pojos.BuildStage object) {
-        return object.getId();
+        return object.getBuildStageId();
     }
 
     /**
-     * Fetch records that have <code>id BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>build_stage_id BETWEEN lowerInclusive AND upperInclusive</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.BuildStage> fetchRangeOfId(Long lowerInclusive, Long upperInclusive) {
-        return fetchRange(BuildStage.BUILD_STAGE.ID, lowerInclusive, upperInclusive);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.BuildStage> fetchRangeOfBuildStageId(Long lowerInclusive, Long upperInclusive) {
+        return fetchRange(BuildStage.BUILD_STAGE.BUILD_STAGE_ID, lowerInclusive, upperInclusive);
     }
 
     /**
-     * Fetch records that have <code>id IN (values)</code>
+     * Fetch records that have <code>build_stage_id IN (values)</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.BuildStage> fetchById(Long... values) {
-        return fetch(BuildStage.BUILD_STAGE.ID, values);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.BuildStage> fetchByBuildStageId(Long... values) {
+        return fetch(BuildStage.BUILD_STAGE.BUILD_STAGE_ID, values);
     }
 
     /**
-     * Fetch a unique record that has <code>id = value</code>
+     * Fetch a unique record that has <code>build_stage_id = value</code>
      */
-    public com.ericdriggs.reportcard.db.tables.pojos.BuildStage fetchOneById(Long value) {
-        return fetchOne(BuildStage.BUILD_STAGE.ID, value);
+    public com.ericdriggs.reportcard.db.tables.pojos.BuildStage fetchOneByBuildStageId(Long value) {
+        return fetchOne(BuildStage.BUILD_STAGE.BUILD_STAGE_ID, value);
     }
 
     /**
