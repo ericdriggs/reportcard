@@ -3,6 +3,8 @@ package com.ericdriggs.reportcard;
 import java.util.List;
 
 import com.ericdriggs.reportcard.db.tables.pojos.*;
+import com.ericdriggs.reportcard.db.tables.records.*;
+import com.ericdriggs.reportcard.model.BuildStagePath;
 import lombok.Data;
 import org.jooq.DSLContext;
 import org.jooq.Record;
@@ -56,6 +58,17 @@ public class ReportCardService {
                 .where(ORG.ORG_NAME.eq(org))
                 .fetch()
                 .into(Repo.class);
+    }
+
+    //Works
+    public Repo getRepoFromRepoRecord(String org, String repo) {
+        Record record = dsl.
+                select().from(REPO).leftJoin(ORG)
+                .on(REPO.ORG_FK.eq(ORG.ORG_ID))
+                .where(ORG.ORG_NAME.eq(org))
+                .and(REPO.REPO_NAME.eq(repo))
+                .fetchOne();
+        return record.into(RepoRecord.class).into(Repo.class);
     }
 
     public Repo getRepo(String org, String repo) {
@@ -301,7 +314,6 @@ public class ReportCardService {
     }
 
     public BuildStagePath getBuildStagePath(String org, String repo, String app, String branch, Integer buildOrdinal, String stage) {
-        final com.ericdriggs.reportcard.db.tables.Repo REPO2 = REPO.as("REPO2");
 
         /**
          * USE REPORTCARD;
@@ -356,33 +368,26 @@ public class ReportCardService {
             App _app = null;
             Build _build = null;
             Stage _stage = null;
-            try {
-                _org = record.into(Org.class);
-                _repo = record.into(Repo.class);
-            } catch (Exception ex) {
-                //TODO: noop instead of print after done debugging
-                ex.printStackTrace();
+
+            if (record.get(ORG.ORG_ID.getName()) != null) {
+                _org = record.into(OrgRecord.class).into(Org.class);
             }
-            try {
-                _app = record.into(App.class);
-            } catch (Exception ex) {//TODO: noop instead of print after done debugging
-                ex.printStackTrace();
+            if (record.get(REPO.REPO_ID.getName()) != null) {
+                _repo = record.into(RepoRecord.class).into(Repo.class);
             }
-            try {
-                _branch = record.into(Branch.class);
-            } catch (Exception ex) {//TODO: noop instead of print after done debugging
-                ex.printStackTrace();
+            if (record.get(APP.APP_ID.getName()) != null) {
+                _app = record.into(AppRecord.class).into(App.class);
             }
-            try {
-                _build = record.into(Build.class);
-            } catch (Exception ex) {//TODO: noop instead of print after done debugging
-                ex.printStackTrace();
+            if (record.get(BRANCH.BRANCH_ID.getName()) != null) {
+                _branch = record.into(BranchRecord.class).into(Branch.class);
             }
-            try {
-                _stage = record.into(Stage.class);
-            } catch (Exception ex) {//TODO: noop instead of print after done debugging
-                ex.printStackTrace();
+            if (record.get(BUILD.BUILD_ID.getName()) != null) {
+                _build = record.into(BuildRecord.class).into(Build.class);
             }
+            if (record.get(STAGE.STAGE_ID.getName()) != null) {
+                _stage = record.into(StageRecord.class).into(Stage.class);
+            }
+
             buildStagePath.setOrg(_org);
             buildStagePath.setRepo(_repo);
             buildStagePath.setApp(_app);
@@ -393,16 +398,6 @@ public class ReportCardService {
         return buildStagePath;
     }
 
-    @Data
-    public static class BuildStagePath {
-        private Org org;
-        private Repo repo;
-        private App app;
-        private Branch branch;
-        private Build build;
-        private Stage stage;
-
-    }
 
 
 }

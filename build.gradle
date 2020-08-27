@@ -89,7 +89,7 @@ test {
 }
 
 jooq {
-    version = '3.13.2'
+    version = '3.13.4'
     edition = 'OSS'
     generateSchemaSourceOnCompilation = false
     sample(sourceSets.main) {
@@ -132,7 +132,7 @@ jooq {
                 relations = true
                 deprecated = false
                 records = true
-                immutablePojos = true
+                immutablePojos = false
                 fluentSetters = true
             }
             target {
