@@ -13,18 +13,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @Profile("test")
 //@EnableConfigurationProperties
-public class EmbeddedMysqlTest extends AbstractDbTest {
+public class GetBuildStagePathTest extends AbstractDbTest {
 
     @Autowired
-    public EmbeddedMysqlTest(ReportCardService reportCardService ) {
+    public GetBuildStagePathTest(ReportCardService reportCardService ) {
         super(reportCardService);
     }
 
-    @Test
-    public void getRepoFromRepoRecord() {
-        Repo repo = reportCardService.getRepoFromRepoRecord("default", "default");
-        assertNotNull(repo);
-    }
 
     @Test
     public void getBuildStagePathAllFound() {

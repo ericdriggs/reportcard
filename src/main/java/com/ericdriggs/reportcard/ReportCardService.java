@@ -5,7 +5,6 @@ import java.util.List;
 import com.ericdriggs.reportcard.db.tables.pojos.*;
 import com.ericdriggs.reportcard.db.tables.records.*;
 import com.ericdriggs.reportcard.model.BuildStagePath;
-import lombok.Data;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.modelmapper.ModelMapper;
@@ -58,17 +57,6 @@ public class ReportCardService {
                 .where(ORG.ORG_NAME.eq(org))
                 .fetch()
                 .into(Repo.class);
-    }
-
-    //Works
-    public Repo getRepoFromRepoRecord(String org, String repo) {
-        Record record = dsl.
-                select().from(REPO).leftJoin(ORG)
-                .on(REPO.ORG_FK.eq(ORG.ORG_ID))
-                .where(ORG.ORG_NAME.eq(org))
-                .and(REPO.REPO_NAME.eq(repo))
-                .fetchOne();
-        return record.into(RepoRecord.class).into(Repo.class);
     }
 
     public Repo getRepo(String org, String repo) {
@@ -336,21 +324,16 @@ public class ReportCardService {
         Record record = dsl.
                 select()
                 .from(ORG
-                        .leftJoin(REPO).on(ORG.ORG_ID.eq(REPO.ORG_FK))
-                        .leftJoin(APP).on(APP.REPO_FK.eq(REPO.REPO_ID))
-                        .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID))
+                        .leftJoin(REPO).on(ORG.ORG_ID.eq(REPO.ORG_FK)).and(REPO.REPO_NAME.eq(repo))
+                        .leftJoin(APP).on(APP.REPO_FK.eq(REPO.REPO_ID)).and(APP.APP_NAME.eq(app))
+                        .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)).and(BRANCH.BRANCH_NAME.eq(branch))
                         .leftJoin(APP_BRANCH).on(APP_BRANCH.APP_FK.eq(APP.APP_ID).and(APP_BRANCH.BRANCH_FK.eq(BRANCH.BRANCH_ID)))
-                        .leftJoin(BUILD).on(BUILD.APP_BRANCH_FK.eq(APP_BRANCH.APP_BRANCH_ID))
-                        .leftJoin(STAGE).on(STAGE.APP_BRANCH_FK.eq(APP_BRANCH.APP_BRANCH_ID))
-                        .leftJoin(BUILD_STAGE).on(BUILD_STAGE.BUILD_FK.eq(BUILD.BUILD_ID).and(BUILD_STAGE.STAGE_FK.eq(STAGE.STAGE_ID)))
-                ).where(ORG.ORG_NAME.eq(org)
-                        .and(REPO.REPO_NAME.eq(repo))
-                        .and(BRANCH.BRANCH_NAME.eq(branch))
-                        .and(BUILD.APP_BRANCH_BUILD_ORDINAL.eq(buildOrdinal))
-                        .and(STAGE.STAGE_NAME.eq(stage))
-                )
-                .fetchOne();
+                        .leftJoin(BUILD).on(BUILD.APP_BRANCH_FK.eq(APP_BRANCH.APP_BRANCH_ID)).and(BUILD.APP_BRANCH_BUILD_ORDINAL.eq(buildOrdinal))
+                        .leftJoin(STAGE).on(STAGE.APP_BRANCH_FK.eq(APP_BRANCH.APP_BRANCH_ID)).and(STAGE.STAGE_NAME.eq(stage))
 
+                        .leftJoin(BUILD_STAGE).on(BUILD_STAGE.BUILD_FK.eq(BUILD.BUILD_ID).and(BUILD_STAGE.STAGE_FK.eq(STAGE.STAGE_ID)))
+                ).where(ORG.ORG_NAME.eq(org))
+                .fetchOne();
 
         if (record == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
@@ -397,7 +380,6 @@ public class ReportCardService {
         }
         return buildStagePath;
     }
-
 
 
 }
