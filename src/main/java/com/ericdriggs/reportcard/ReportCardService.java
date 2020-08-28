@@ -2,9 +2,11 @@ package com.ericdriggs.reportcard;
 
 import java.util.List;
 
+import com.ericdriggs.reportcard.db.tables.daos.*;
 import com.ericdriggs.reportcard.db.tables.pojos.*;
 import com.ericdriggs.reportcard.db.tables.records.*;
 import com.ericdriggs.reportcard.model.BuildStagePath;
+import com.ericdriggs.reportcard.model.BuildStagePathRequest;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.modelmapper.ModelMapper;
@@ -24,6 +26,17 @@ import static com.ericdriggs.reportcard.db.Tables.*;
  */
 public class ReportCardService {
 
+    //TODO: use constructor wiring
+    
+    OrgDao orgDao = new OrgDao();
+    RepoDao repoDao = new RepoDao();
+    AppDao appDao = new AppDao();
+    BranchDao branchDao = new BranchDao();
+    AppBranchDao appBranchDao = new AppBranchDao();
+    BuildDao buildDao = new BuildDao();
+    StageDao stageDao = new StageDao();
+    BuildStageDao buildStageDao = new BuildStageDao();
+    
     @Autowired
     private ModelMapper mapper;
 
@@ -301,46 +314,25 @@ public class ReportCardService {
         return ret;
     }
 
-    public BuildStagePath getBuildStagePath(String org, String repo, String app, String branch, Integer buildOrdinal, String stage) {
+    public BuildStagePath getBuildStagePath(BuildStagePathRequest request) {
 
-        /**
-         * USE REPORTCARD;
-         * SELECT *
-         * FROM ORG
-         * LEFT JOIN REPO ON ORG.ORG_ID = REPO.ORG_FK
-         * LEFT JOIN APP on APP.REPO_FK = REPO.REPO_ID
-         * LEFT JOIN BRANCH on BRANCH.REPO_FK = REPO.REPO_ID
-         * LEFT JOIN APP_BRANCH on (APP_BRANCH.APP_FK = APP.APP_ID) and (APP_BRANCH.BRANCH_FK = BRANCH.BRANCH_ID)
-         * LEFT JOIN BUILD ON BUILD.APP_BRANCH_FK = APP_BRANCH.APP_BRANCH_ID
-         * LEFT JOIN STAGE ON STAGE.APP_BRANCH_FK = APP_BRANCH.APP_BRANCH_ID
-         * LEFT JOIN BUILD_STAGE on (BUILD_STAGE.BUILD_FK = BUILD.BUILD_ID) and (BUILD_STAGE.STAGE_FK = STAGE.STAGE_ID)
-         * WHERE ORG_NAME = 'default'
-         * AND REPO_NAME = 'default'
-         * AND APP_NAME = 'app1'
-         * AND BRANCH_NAME = 'master'
-         * AND APP_BRANCH_BUILD_ORDINAL = 1
-         * AND STAGE_NAME = 'unit'
-         */
+        //String org, String repo, String app, String branch, Integer buildOrdinal, String stage
+
         Record record = dsl.
                 select()
                 .from(ORG
-                        .leftJoin(REPO).on(ORG.ORG_ID.eq(REPO.ORG_FK)).and(REPO.REPO_NAME.eq(repo))
-                        .leftJoin(APP).on(APP.REPO_FK.eq(REPO.REPO_ID)).and(APP.APP_NAME.eq(app))
-                        .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)).and(BRANCH.BRANCH_NAME.eq(branch))
+                        .leftJoin(REPO).on(ORG.ORG_ID.eq(REPO.ORG_FK)).and(REPO.REPO_NAME.eq(request.getRepoName()))
+                        .leftJoin(APP).on(APP.REPO_FK.eq(REPO.REPO_ID)).and(APP.APP_NAME.eq(request.getAppName()))
+                        .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)).and(BRANCH.BRANCH_NAME.eq(request.getBranchName()))
                         .leftJoin(APP_BRANCH).on(APP_BRANCH.APP_FK.eq(APP.APP_ID).and(APP_BRANCH.BRANCH_FK.eq(BRANCH.BRANCH_ID)))
-                        .leftJoin(BUILD).on(BUILD.APP_BRANCH_FK.eq(APP_BRANCH.APP_BRANCH_ID)).and(BUILD.APP_BRANCH_BUILD_ORDINAL.eq(buildOrdinal))
-                        .leftJoin(STAGE).on(STAGE.APP_BRANCH_FK.eq(APP_BRANCH.APP_BRANCH_ID)).and(STAGE.STAGE_NAME.eq(stage))
-
+                        .leftJoin(BUILD).on(BUILD.APP_BRANCH_FK.eq(APP_BRANCH.APP_BRANCH_ID)).and(BUILD.APP_BRANCH_BUILD_ORDINAL.eq(request.getBuildOrdinal()))
+                        .leftJoin(STAGE).on(STAGE.APP_BRANCH_FK.eq(APP_BRANCH.APP_BRANCH_ID)).and(STAGE.STAGE_NAME.eq(request.getStageName()))
                         .leftJoin(BUILD_STAGE).on(BUILD_STAGE.BUILD_FK.eq(BUILD.BUILD_ID).and(BUILD_STAGE.STAGE_FK.eq(STAGE.STAGE_ID)))
-                ).where(ORG.ORG_NAME.eq(org))
+                ).where(ORG.ORG_NAME.eq(request.getOrgName()))
                 .fetchOne();
 
         if (record == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                    "Unable to find org:" + org + ", repo: " + repo +
-                            ", app: " + app + ", branch: " + branch +
-                            ", buildOrdinal: " + buildOrdinal +
-                            ", stage: " + stage);
+            return null;
         }
 
         BuildStagePath buildStagePath = new BuildStagePath();
@@ -349,8 +341,10 @@ public class ReportCardService {
             Repo _repo = null;
             Branch _branch = null;
             App _app = null;
+            AppBranch _appBranch = null;
             Build _build = null;
             Stage _stage = null;
+            BuildStage _buildStage = null;
 
             if (record.get(ORG.ORG_ID.getName()) != null) {
                 _org = record.into(OrgRecord.class).into(Org.class);
@@ -364,21 +358,66 @@ public class ReportCardService {
             if (record.get(BRANCH.BRANCH_ID.getName()) != null) {
                 _branch = record.into(BranchRecord.class).into(Branch.class);
             }
+            if (record.get(APP_BRANCH.APP_BRANCH_ID.getName()) != null) {
+                _appBranch = record.into(AppBranchRecord.class).into(AppBranch.class);
+            }
             if (record.get(BUILD.BUILD_ID.getName()) != null) {
                 _build = record.into(BuildRecord.class).into(Build.class);
             }
             if (record.get(STAGE.STAGE_ID.getName()) != null) {
                 _stage = record.into(StageRecord.class).into(Stage.class);
             }
+            if (record.get(BUILD_STAGE.BUILD_STAGE_ID.getName()) != null) {
+                _buildStage = record.into(BuildStageRecord.class).into(BuildStage.class);
+            }
 
             buildStagePath.setOrg(_org);
             buildStagePath.setRepo(_repo);
             buildStagePath.setApp(_app);
             buildStagePath.setBranch(_branch);
+            buildStagePath.setAppBranch(_appBranch);
             buildStagePath.setBuild(_build);
             buildStagePath.setStage(_stage);
+            buildStagePath.setBuildStage(_buildStage);
+
         }
         return buildStagePath;
+    }
+
+    public BuildStagePath getOrInsertBuildStagePath(BuildStagePathRequest request) {
+        BuildStagePath path = getBuildStagePath(request);
+
+        if (path.getOrg() == null) {
+            Org org = new Org().setOrgName(request.getOrgName());
+            orgDao.insert(org);
+            path.setOrg(org);
+        }
+
+        if (path.getRepo() == null) {
+            Repo repo = new Repo()
+                    .setRepoName(request.getOrgName())
+                    .setOrgFk(path.getOrg().getOrgId());
+            repoDao.insert(repo);
+            path.setRepo(repo);
+        }
+
+        if (path.getApp() == null) {
+            App app = new App()
+                    .setAppName(request.getAppName())
+                    .setRepoFk(path.getRepo().getRepoId());
+            appDao.insert(app);
+            path.setApp(app);
+        }
+
+        if (path.getBranch() == null) {
+            Branch branch = new Branch()
+                    .setBranchName(request.getBranchName())
+                    .setRepoFk(path.getRepo().getRepoId());
+            branchDao.insert(branch);
+            path.setBranch(branch);
+        }
+
+        return path;
     }
 
 

@@ -5,6 +5,7 @@ import com.ericdriggs.reportcard.db.tables.pojos.Org;
 import com.ericdriggs.reportcard.db.tables.pojos.Repo;
 import com.ericdriggs.reportcard.db.tables.records.RepoRecord;
 import com.ericdriggs.reportcard.model.BuildStagePath;
+import com.ericdriggs.reportcard.model.BuildStagePathRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -23,111 +24,133 @@ public class GetBuildStagePathTest extends AbstractDbTest {
 
     @Test
     public void getBuildStagePathAllFound() {
-        final String org = "default";
-        final String repo = "default";
-        final String app = "app1";
-        final String branch = "master";
-        final Integer buildOrdinal = 1;
-        final String stage = "unit";
+        BuildStagePathRequest request =
+                new BuildStagePathRequest()
+                        .setOrgName("default")
+                .setRepoName("default")
+                .setAppName("app1")
+                .setBranchName("master")
+                .setBuildOrdinal(1)
+                .setStageName("unit");
 
-        BuildStagePath bsp = reportCardService.getBuildStagePath(org, repo, app, branch, buildOrdinal, stage);
+        BuildStagePath bsp = reportCardService.getBuildStagePath(request);
         assertNotNull(bsp);
         assertNotNull(bsp.getOrg());
         assertNotNull(bsp.getRepo());
         assertNotNull(bsp.getApp());
         assertNotNull(bsp.getBranch());
+        assertNotNull(bsp.getAppBranch());
         assertNotNull(bsp.getBuild());
         assertNotNull(bsp.getStage());
+        assertNotNull(bsp.getBuildStage());
 
-        assertEquals(bsp.getOrg().getOrgName(), org);
-        assertEquals(bsp.getRepo().getRepoName(), repo);
-        assertEquals(bsp.getApp().getAppName(), app);
-        assertEquals(bsp.getBranch().getBranchName(), branch);
-        assertEquals(bsp.getBuild().getAppBranchBuildOrdinal(), buildOrdinal);
-        assertEquals(bsp.getStage().getStageName(), stage);
+        assertEquals(bsp.getOrg().getOrgName(), request.getOrgName());
+        assertEquals(bsp.getRepo().getRepoName(), request.getRepoName());
+        assertEquals(bsp.getApp().getAppName(), request.getAppName());
+        assertEquals(bsp.getBranch().getBranchName(), request.getBranchName());
+        assertNotNull(bsp.getAppBranch().getAppBranchId());
+        assertEquals(bsp.getBuild().getAppBranchBuildOrdinal(), request.getBuildOrdinal());
+        assertEquals(bsp.getStage().getStageName(), request.getStageName());
+        assertNotNull(bsp.getBuildStage().getBuildStageId());
     }
 
     @Test
     public void getBuildStagePath_Missing_build() {
-        final String org = "default";
-        final String repo = "default";
-        final String app = "app1";
-        final String branch = "master";
-        final Integer buildOrdinal = -1;
-        final String stage = "unit";
 
-        BuildStagePath bsp = reportCardService.getBuildStagePath(org, repo, app, branch, buildOrdinal, stage);
+        BuildStagePathRequest request =
+                new BuildStagePathRequest()
+                        .setOrgName("default")
+                        .setRepoName("default")
+                        .setAppName("app1")
+                        .setBranchName("master")
+                        .setBuildOrdinal(-1)
+                        .setStageName("unit");
+
+        BuildStagePath bsp = reportCardService.getBuildStagePath(request);
         assertNotNull(bsp);
-
         assertNotNull(bsp.getOrg());
         assertNotNull(bsp.getRepo());
         assertNotNull(bsp.getApp());
         assertNotNull(bsp.getBranch());
+        assertNotNull(bsp.getAppBranch());
         assertNull(bsp.getBuild());
         assertNotNull(bsp.getStage());
+        assertNull(bsp.getBuildStage());
 
-        assertEquals(bsp.getOrg().getOrgName(), org);
-        assertEquals(bsp.getRepo().getRepoName(), repo);
-        assertEquals(bsp.getApp().getAppName(), app);
-        assertEquals(bsp.getBranch().getBranchName(), branch);
-        //build is null
-        assertEquals(bsp.getStage().getStageName(), stage);
+        assertEquals(bsp.getOrg().getOrgName(), request.getOrgName());
+        assertEquals(bsp.getRepo().getRepoName(), request.getRepoName());
+        assertEquals(bsp.getApp().getAppName(), request.getAppName());
+        assertEquals(bsp.getBranch().getBranchName(), request.getBranchName());
+        assertNotNull(bsp.getAppBranch().getAppBranchId());
+        //assertEquals(bsp.getBuild().getAppBranchBuildOrdinal(), request.getBuildOrdinal());
+        assertEquals(bsp.getStage().getStageName(), request.getStageName());
+        //assertNotNull(bsp.getBuildStage().getBuildStageId());
     }
 
     @Test
     public void getBuildStagePath_Missing_app_build_stage() {
-        final String org = "default";
-        final String repo = "default";
-        final String app = "not_found";
-        final String branch = "master";
-        final Integer buildOrdinal = -1;
-        final String stage = "not_found";
 
-        BuildStagePath bsp = reportCardService.getBuildStagePath(org, repo, app, branch, buildOrdinal, stage);
+        BuildStagePathRequest request =
+                new BuildStagePathRequest()
+                        .setOrgName("default")
+                        .setRepoName("default")
+                        .setAppName("not_found")
+                        .setBranchName("master")
+                        .setBuildOrdinal(-1)
+                        .setStageName("not_found");
 
+        BuildStagePath bsp = reportCardService.getBuildStagePath(request);
         assertNotNull(bsp);
-
         assertNotNull(bsp.getOrg());
         assertNotNull(bsp.getRepo());
         assertNull(bsp.getApp());
         assertNotNull(bsp.getBranch());
+        assertNull(bsp.getAppBranch());
         assertNull(bsp.getBuild());
         assertNull(bsp.getStage());
+        assertNull(bsp.getBuildStage());
 
-        assertEquals(bsp.getOrg().getOrgName(), org);
-        assertEquals(bsp.getRepo().getRepoName(), repo);
-        //app is null
-        assertEquals(bsp.getBranch().getBranchName(), branch);
-        //build is null
-        //stage is null
+        assertEquals(bsp.getOrg().getOrgName(), request.getOrgName());
+        assertEquals(bsp.getRepo().getRepoName(), request.getRepoName());
+        //assertEquals(bsp.getApp().getAppName(), request.getAppName());
+        assertEquals(bsp.getBranch().getBranchName(), request.getBranchName());
+        //assertNotNull(bsp.getAppBranch().getAppBranchId());
+        //assertEquals(bsp.getBuild().getAppBranchBuildOrdinal(), request.getBuildOrdinal());
+        //assertEquals(bsp.getStage().getStageName(), request.getStageName());
+        //assertNotNull(bsp.getBuildStage().getBuildStageId());
 
     }
 
     @Test
     public void getBuildStagePath_Missing_branch_build_stage() {
-        final String org = "default";
-        final String repo = "default";
-        final String app = "app1";
-        final String branch = "not_found";
-        final Integer buildOrdinal = -1;
-        final String stage = "not_found";
 
-        BuildStagePath bsp = reportCardService.getBuildStagePath(org, repo, app, branch, buildOrdinal, stage);
+        BuildStagePathRequest request =
+                new BuildStagePathRequest()
+                        .setOrgName("default")
+                        .setRepoName("default")
+                        .setAppName("app1")
+                        .setBranchName("not_found")
+                        .setBuildOrdinal(-1)
+                        .setStageName("not_found");
 
+        BuildStagePath bsp = reportCardService.getBuildStagePath(request);
         assertNotNull(bsp);
         assertNotNull(bsp.getOrg());
         assertNotNull(bsp.getRepo());
         assertNotNull(bsp.getApp());
         assertNull(bsp.getBranch());
+        assertNull(bsp.getAppBranch());
         assertNull(bsp.getBuild());
         assertNull(bsp.getStage());
+        assertNull(bsp.getBuildStage());
 
-
-        assertEquals(bsp.getOrg().getOrgName(), org);
-        assertEquals(bsp.getRepo().getRepoName(), repo);
-        assertEquals(bsp.getApp().getAppName(), app);
-        //branch is null
-        //build is null
-        //stage is null
+        assertEquals(bsp.getOrg().getOrgName(), request.getOrgName());
+        assertEquals(bsp.getRepo().getRepoName(), request.getRepoName());
+        assertEquals(bsp.getApp().getAppName(), request.getAppName());
+        //assertEquals(bsp.getBranch().getBranchName(), request.getBranchName());
+        //assertNotNull(bsp.getAppBranch().getAppBranchId());
+        //assertEquals(bsp.getBuild().getAppBranchBuildOrdinal(), request.getBuildOrdinal());
+        //assertEquals(bsp.getStage().getStageName(), request.getStageName());
+        //assertNotNull(bsp.getBuildStage().getBuildStageId());
     }
 }
