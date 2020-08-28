@@ -13,11 +13,13 @@ import java.io.Serializable;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BuildStage implements Serializable {
 
-    private static final long serialVersionUID = 2123780713;
+    private static final long serialVersionUID = 261959810;
 
-    private final Long    buildStageId;
-    private final Long    buildFk;
-    private final Integer stageFk;
+    private Long    buildStageId;
+    private Long    buildFk;
+    private Integer stageFk;
+
+    public BuildStage() {}
 
     public BuildStage(BuildStage value) {
         this.buildStageId = value.buildStageId;
@@ -39,12 +41,27 @@ public class BuildStage implements Serializable {
         return this.buildStageId;
     }
 
+    public BuildStage setBuildStageId(Long buildStageId) {
+        this.buildStageId = buildStageId;
+        return this;
+    }
+
     public Long getBuildFk() {
         return this.buildFk;
     }
 
+    public BuildStage setBuildFk(Long buildFk) {
+        this.buildFk = buildFk;
+        return this;
+    }
+
     public Integer getStageFk() {
         return this.stageFk;
+    }
+
+    public BuildStage setStageFk(Integer stageFk) {
+        this.stageFk = stageFk;
+        return this;
     }
 
     @Override

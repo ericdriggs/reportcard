@@ -13,11 +13,13 @@ import java.io.Serializable;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AppBranch implements Serializable {
 
-    private static final long serialVersionUID = -212545678;
+    private static final long serialVersionUID = -780623329;
 
-    private final Integer appBranchId;
-    private final Integer appFk;
-    private final Integer branchFk;
+    private Integer appBranchId;
+    private Integer appFk;
+    private Integer branchFk;
+
+    public AppBranch() {}
 
     public AppBranch(AppBranch value) {
         this.appBranchId = value.appBranchId;
@@ -39,12 +41,27 @@ public class AppBranch implements Serializable {
         return this.appBranchId;
     }
 
+    public AppBranch setAppBranchId(Integer appBranchId) {
+        this.appBranchId = appBranchId;
+        return this;
+    }
+
     public Integer getAppFk() {
         return this.appFk;
     }
 
+    public AppBranch setAppFk(Integer appFk) {
+        this.appFk = appFk;
+        return this;
+    }
+
     public Integer getBranchFk() {
         return this.branchFk;
+    }
+
+    public AppBranch setBranchFk(Integer branchFk) {
+        this.branchFk = branchFk;
+        return this;
     }
 
     @Override

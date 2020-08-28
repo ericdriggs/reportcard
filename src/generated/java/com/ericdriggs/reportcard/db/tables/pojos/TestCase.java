@@ -13,14 +13,16 @@ import java.io.Serializable;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestCase implements Serializable {
 
-    private static final long serialVersionUID = -692470080;
+    private static final long serialVersionUID = 406158122;
 
-    private final Long   testCaseId;
-    private final Long   testSuiteFk;
-    private final String testCaseName;
-    private final String className;
-    private final Long   testCaseTime;
-    private final Byte   testStatusFk;
+    private Long   testCaseId;
+    private Long   testSuiteFk;
+    private String testCaseName;
+    private String className;
+    private Long   testCaseTime;
+    private Byte   testStatusFk;
+
+    public TestCase() {}
 
     public TestCase(TestCase value) {
         this.testCaseId = value.testCaseId;
@@ -51,24 +53,54 @@ public class TestCase implements Serializable {
         return this.testCaseId;
     }
 
+    public TestCase setTestCaseId(Long testCaseId) {
+        this.testCaseId = testCaseId;
+        return this;
+    }
+
     public Long getTestSuiteFk() {
         return this.testSuiteFk;
+    }
+
+    public TestCase setTestSuiteFk(Long testSuiteFk) {
+        this.testSuiteFk = testSuiteFk;
+        return this;
     }
 
     public String getTestCaseName() {
         return this.testCaseName;
     }
 
+    public TestCase setTestCaseName(String testCaseName) {
+        this.testCaseName = testCaseName;
+        return this;
+    }
+
     public String getClassName() {
         return this.className;
+    }
+
+    public TestCase setClassName(String className) {
+        this.className = className;
+        return this;
     }
 
     public Long getTestCaseTime() {
         return this.testCaseTime;
     }
 
+    public TestCase setTestCaseTime(Long testCaseTime) {
+        this.testCaseTime = testCaseTime;
+        return this;
+    }
+
     public Byte getTestStatusFk() {
         return this.testStatusFk;
+    }
+
+    public TestCase setTestStatusFk(Byte testStatusFk) {
+        this.testStatusFk = testStatusFk;
+        return this;
     }
 
     @Override

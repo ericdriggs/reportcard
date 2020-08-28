@@ -13,11 +13,13 @@ import java.io.Serializable;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class App implements Serializable {
 
-    private static final long serialVersionUID = -509361187;
+    private static final long serialVersionUID = 1667371999;
 
-    private final Integer appId;
-    private final String  appName;
-    private final Integer repoFk;
+    private Integer appId;
+    private String  appName;
+    private Integer repoFk;
+
+    public App() {}
 
     public App(App value) {
         this.appId = value.appId;
@@ -39,12 +41,27 @@ public class App implements Serializable {
         return this.appId;
     }
 
+    public App setAppId(Integer appId) {
+        this.appId = appId;
+        return this;
+    }
+
     public String getAppName() {
         return this.appName;
     }
 
+    public App setAppName(String appName) {
+        this.appName = appName;
+        return this;
+    }
+
     public Integer getRepoFk() {
         return this.repoFk;
+    }
+
+    public App setRepoFk(Integer repoFk) {
+        this.repoFk = repoFk;
+        return this;
     }
 
     @Override

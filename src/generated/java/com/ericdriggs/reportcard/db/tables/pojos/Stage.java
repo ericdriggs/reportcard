@@ -13,11 +13,13 @@ import java.io.Serializable;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Stage implements Serializable {
 
-    private static final long serialVersionUID = -1534581549;
+    private static final long serialVersionUID = 1349020717;
 
-    private final Integer stageId;
-    private final String  stageName;
-    private final Integer appBranchFk;
+    private Integer stageId;
+    private String  stageName;
+    private Integer appBranchFk;
+
+    public Stage() {}
 
     public Stage(Stage value) {
         this.stageId = value.stageId;
@@ -39,12 +41,27 @@ public class Stage implements Serializable {
         return this.stageId;
     }
 
+    public Stage setStageId(Integer stageId) {
+        this.stageId = stageId;
+        return this;
+    }
+
     public String getStageName() {
         return this.stageName;
     }
 
+    public Stage setStageName(String stageName) {
+        this.stageName = stageName;
+        return this;
+    }
+
     public Integer getAppBranchFk() {
         return this.appBranchFk;
+    }
+
+    public Stage setAppBranchFk(Integer appBranchFk) {
+        this.appBranchFk = appBranchFk;
+        return this;
     }
 
     @Override

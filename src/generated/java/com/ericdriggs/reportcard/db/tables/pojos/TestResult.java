@@ -13,17 +13,19 @@ import java.io.Serializable;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestResult implements Serializable {
 
-    private static final long serialVersionUID = -1280242606;
+    private static final long serialVersionUID = 308128451;
 
-    private final Long    testResultId;
-    private final Long    buildStageFk;
-    private final Integer tests;
-    private final Integer skipped;
-    private final Integer error;
-    private final Integer failure;
-    private final Long    time;
-    private final Byte    isSuccess;
-    private final Byte    hasSkip;
+    private Long    testResultId;
+    private Long    buildStageFk;
+    private Integer tests;
+    private Integer skipped;
+    private Integer error;
+    private Integer failure;
+    private Long    time;
+    private Byte    isSuccess;
+    private Byte    hasSkip;
+
+    public TestResult() {}
 
     public TestResult(TestResult value) {
         this.testResultId = value.testResultId;
@@ -63,36 +65,81 @@ public class TestResult implements Serializable {
         return this.testResultId;
     }
 
+    public TestResult setTestResultId(Long testResultId) {
+        this.testResultId = testResultId;
+        return this;
+    }
+
     public Long getBuildStageFk() {
         return this.buildStageFk;
+    }
+
+    public TestResult setBuildStageFk(Long buildStageFk) {
+        this.buildStageFk = buildStageFk;
+        return this;
     }
 
     public Integer getTests() {
         return this.tests;
     }
 
+    public TestResult setTests(Integer tests) {
+        this.tests = tests;
+        return this;
+    }
+
     public Integer getSkipped() {
         return this.skipped;
+    }
+
+    public TestResult setSkipped(Integer skipped) {
+        this.skipped = skipped;
+        return this;
     }
 
     public Integer getError() {
         return this.error;
     }
 
+    public TestResult setError(Integer error) {
+        this.error = error;
+        return this;
+    }
+
     public Integer getFailure() {
         return this.failure;
+    }
+
+    public TestResult setFailure(Integer failure) {
+        this.failure = failure;
+        return this;
     }
 
     public Long getTime() {
         return this.time;
     }
 
+    public TestResult setTime(Long time) {
+        this.time = time;
+        return this;
+    }
+
     public Byte getIsSuccess() {
         return this.isSuccess;
     }
 
+    public TestResult setIsSuccess(Byte isSuccess) {
+        this.isSuccess = isSuccess;
+        return this;
+    }
+
     public Byte getHasSkip() {
         return this.hasSkip;
+    }
+
+    public TestResult setHasSkip(Byte hasSkip) {
+        this.hasSkip = hasSkip;
+        return this;
     }
 
     @Override

@@ -13,10 +13,12 @@ import java.io.Serializable;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Org implements Serializable {
 
-    private static final long serialVersionUID = 1713543053;
+    private static final long serialVersionUID = -1052076948;
 
-    private final Integer orgId;
-    private final String  orgName;
+    private Integer orgId;
+    private String  orgName;
+
+    public Org() {}
 
     public Org(Org value) {
         this.orgId = value.orgId;
@@ -35,8 +37,18 @@ public class Org implements Serializable {
         return this.orgId;
     }
 
+    public Org setOrgId(Integer orgId) {
+        this.orgId = orgId;
+        return this;
+    }
+
     public String getOrgName() {
         return this.orgName;
+    }
+
+    public Org setOrgName(String orgName) {
+        this.orgName = orgName;
+        return this;
     }
 
     @Override

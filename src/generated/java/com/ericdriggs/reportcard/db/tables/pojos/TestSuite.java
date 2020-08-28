@@ -13,18 +13,20 @@ import java.io.Serializable;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestSuite implements Serializable {
 
-    private static final long serialVersionUID = 1924261148;
+    private static final long serialVersionUID = -747646185;
 
-    private final Long    testSuiteId;
-    private final Long    testResultFk;
-    private final String  testSuitePackage;
-    private final Integer tests;
-    private final Integer skipped;
-    private final Integer error;
-    private final Integer failure;
-    private final Long    testSuiteTime;
-    private final Byte    testSuiteIsSuccess;
-    private final Byte    hasSkip;
+    private Long    testSuiteId;
+    private Long    testResultFk;
+    private String  testSuitePackage;
+    private Integer tests;
+    private Integer skipped;
+    private Integer error;
+    private Integer failure;
+    private Long    testSuiteTime;
+    private Byte    testSuiteIsSuccess;
+    private Byte    hasSkip;
+
+    public TestSuite() {}
 
     public TestSuite(TestSuite value) {
         this.testSuiteId = value.testSuiteId;
@@ -67,40 +69,90 @@ public class TestSuite implements Serializable {
         return this.testSuiteId;
     }
 
+    public TestSuite setTestSuiteId(Long testSuiteId) {
+        this.testSuiteId = testSuiteId;
+        return this;
+    }
+
     public Long getTestResultFk() {
         return this.testResultFk;
+    }
+
+    public TestSuite setTestResultFk(Long testResultFk) {
+        this.testResultFk = testResultFk;
+        return this;
     }
 
     public String getTestSuitePackage() {
         return this.testSuitePackage;
     }
 
+    public TestSuite setTestSuitePackage(String testSuitePackage) {
+        this.testSuitePackage = testSuitePackage;
+        return this;
+    }
+
     public Integer getTests() {
         return this.tests;
+    }
+
+    public TestSuite setTests(Integer tests) {
+        this.tests = tests;
+        return this;
     }
 
     public Integer getSkipped() {
         return this.skipped;
     }
 
+    public TestSuite setSkipped(Integer skipped) {
+        this.skipped = skipped;
+        return this;
+    }
+
     public Integer getError() {
         return this.error;
+    }
+
+    public TestSuite setError(Integer error) {
+        this.error = error;
+        return this;
     }
 
     public Integer getFailure() {
         return this.failure;
     }
 
+    public TestSuite setFailure(Integer failure) {
+        this.failure = failure;
+        return this;
+    }
+
     public Long getTestSuiteTime() {
         return this.testSuiteTime;
+    }
+
+    public TestSuite setTestSuiteTime(Long testSuiteTime) {
+        this.testSuiteTime = testSuiteTime;
+        return this;
     }
 
     public Byte getTestSuiteIsSuccess() {
         return this.testSuiteIsSuccess;
     }
 
+    public TestSuite setTestSuiteIsSuccess(Byte testSuiteIsSuccess) {
+        this.testSuiteIsSuccess = testSuiteIsSuccess;
+        return this;
+    }
+
     public Byte getHasSkip() {
         return this.hasSkip;
+    }
+
+    public TestSuite setHasSkip(Byte hasSkip) {
+        this.hasSkip = hasSkip;
+        return this;
     }
 
     @Override

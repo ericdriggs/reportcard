@@ -14,14 +14,16 @@ import java.time.LocalDateTime;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Build implements Serializable {
 
-    private static final long serialVersionUID = -1367665922;
+    private static final long serialVersionUID = -1088733834;
 
-    private final Long          buildId;
-    private final Integer       appBranchFk;
-    private final Integer       appBranchBuildOrdinal;
-    private final LocalDateTime buildCreated;
-    private final String        buildExternalIdentifier;
-    private final String        buildSha;
+    private Long          buildId;
+    private Integer       appBranchFk;
+    private Integer       appBranchBuildOrdinal;
+    private LocalDateTime buildCreated;
+    private String        buildExternalIdentifier;
+    private String        buildSha;
+
+    public Build() {}
 
     public Build(Build value) {
         this.buildId = value.buildId;
@@ -52,24 +54,54 @@ public class Build implements Serializable {
         return this.buildId;
     }
 
+    public Build setBuildId(Long buildId) {
+        this.buildId = buildId;
+        return this;
+    }
+
     public Integer getAppBranchFk() {
         return this.appBranchFk;
+    }
+
+    public Build setAppBranchFk(Integer appBranchFk) {
+        this.appBranchFk = appBranchFk;
+        return this;
     }
 
     public Integer getAppBranchBuildOrdinal() {
         return this.appBranchBuildOrdinal;
     }
 
+    public Build setAppBranchBuildOrdinal(Integer appBranchBuildOrdinal) {
+        this.appBranchBuildOrdinal = appBranchBuildOrdinal;
+        return this;
+    }
+
     public LocalDateTime getBuildCreated() {
         return this.buildCreated;
+    }
+
+    public Build setBuildCreated(LocalDateTime buildCreated) {
+        this.buildCreated = buildCreated;
+        return this;
     }
 
     public String getBuildExternalIdentifier() {
         return this.buildExternalIdentifier;
     }
 
+    public Build setBuildExternalIdentifier(String buildExternalIdentifier) {
+        this.buildExternalIdentifier = buildExternalIdentifier;
+        return this;
+    }
+
     public String getBuildSha() {
         return this.buildSha;
+    }
+
+    public Build setBuildSha(String buildSha) {
+        this.buildSha = buildSha;
+        return this;
     }
 
     @Override
