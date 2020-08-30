@@ -27,8 +27,8 @@ import static com.ericdriggs.reportcard.db.Tables.*;
 public class ReportCardService {
 
     //TODO: use constructor wiring
-    
-    OrgDao orgDao = new OrgDao();
+
+//    OrgDao orgDao = new OrgDao();
     RepoDao repoDao = new RepoDao();
     AppDao appDao = new AppDao();
     BranchDao branchDao = new BranchDao();
@@ -36,7 +36,11 @@ public class ReportCardService {
     BuildDao buildDao = new BuildDao();
     StageDao stageDao = new StageDao();
     BuildStageDao buildStageDao = new BuildStageDao();
-    
+
+//    protected Connection getConnection() {
+//        return dsl.
+//    }
+
     @Autowired
     private ModelMapper mapper;
 
@@ -331,11 +335,11 @@ public class ReportCardService {
                 ).where(ORG.ORG_NAME.eq(request.getOrgName()))
                 .fetchOne();
 
+        BuildStagePath buildStagePath = new BuildStagePath();
         if (record == null) {
-            return null;
+            return buildStagePath;
         }
 
-        BuildStagePath buildStagePath = new BuildStagePath();
         {
             Org _org = null;
             Repo _repo = null;
@@ -384,12 +388,20 @@ public class ReportCardService {
         return buildStagePath;
     }
 
+    //FIXME: possible race conditions on insert -- should try insert then select if fails (maybe use try catch with recursion with retry counter)
+    //TODO: test on conflict do nothing with duplicate org name -- will need to mock path or split this method to test
     public BuildStagePath getOrInsertBuildStagePath(BuildStagePathRequest request) {
         BuildStagePath path = getBuildStagePath(request);
 
         if (path.getOrg() == null) {
-            Org org = new Org().setOrgName(request.getOrgName());
-            orgDao.insert(org);
+            Record record = dsl
+                    .insertInto(ORG, ORG.ORG_NAME)
+                    .values(request.getOrgName())
+                    .onConflictDoNothing()
+                    .returningResult(ORG.ORG_ID)
+                    .fetchOne();
+
+            Org org = record.into(OrgRecord.class).into(Org.class);
             path.setOrg(org);
         }
 
@@ -417,6 +429,35 @@ public class ReportCardService {
             path.setBranch(branch);
         }
 
+        if (path.getAppBranch() == null) {
+            AppBranch appBranch = new AppBranch()
+                    .setAppFk(path.getApp().getAppId())
+                    .setBranchFk(path.getBranch().getBranchId());
+            appBranchDao.insert(appBranch);
+            path.setAppBranch(appBranch);
+        }
+
+        if (path.getBuild() == null) {
+            Build build = new Build()
+                    .setAppBranchBuildOrdinal(request.getBuildOrdinal())
+                    .setAppBranchFk(path.getAppBranch().getAppBranchId());
+            buildDao.insert(build);
+            path.setBuild(build);
+        }
+        if (path.getStage() == null) {
+            Stage stage = new Stage()
+                    .setStageName(request.getStageName())
+                    .setAppBranchFk(path.getAppBranch().getAppBranchId());
+            stageDao.insert(stage);
+            path.setStage(stage);
+        }
+        if (path.getBuildStage() == null) {
+            BuildStage buildStage = new BuildStage()
+                    .setBuildFk(path.getBuild().getBuildId())
+                    .setStageFk(path.getStage().getStageId());
+            buildStageDao.insert(buildStage);
+            path.setBuildStage(buildStage);
+        }
         return path;
     }
 
