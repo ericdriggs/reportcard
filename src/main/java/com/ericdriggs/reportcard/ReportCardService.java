@@ -7,6 +7,7 @@ import com.ericdriggs.reportcard.db.tables.pojos.*;
 import com.ericdriggs.reportcard.db.tables.records.*;
 import com.ericdriggs.reportcard.model.BuildStagePath;
 import com.ericdriggs.reportcard.model.BuildStagePathRequest;
+import com.ericdriggs.reportcard.xml.testng.Run;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.modelmapper.ModelMapper;
@@ -26,26 +27,46 @@ import static com.ericdriggs.reportcard.db.Tables.*;
  */
 public class ReportCardService {
 
-    //TODO: use constructor wiring
+    @Autowired
+    DSLContext dsl;
 
-//    OrgDao orgDao = new OrgDao();
-    RepoDao repoDao = new RepoDao();
-    AppDao appDao = new AppDao();
-    BranchDao branchDao = new BranchDao();
-    AppBranchDao appBranchDao = new AppBranchDao();
-    BuildDao buildDao = new BuildDao();
-    StageDao stageDao = new StageDao();
-    BuildStageDao buildStageDao = new BuildStageDao();
+    @Autowired
+    private ModelMapper mapper;
+
+    final OrgDao orgDao;
+    final RepoDao repoDao;
+    final AppDao appDao;
+    final BranchDao branchDao;
+    final AppBranchDao appBranchDao;
+    final BuildDao buildDao;
+    final StageDao stageDao;
+    final BuildStageDao buildStageDao;
+
+
+    private ReportCardService() {
+        throw new RuntimeException("needs dsl in constructor");
+    }
+
+    @Autowired
+    public ReportCardService(DSLContext dsl, ModelMapper mapper) {
+
+        this.dsl = dsl;
+        this.mapper = mapper;
+        orgDao = new OrgDao(dsl.configuration());
+        repoDao = new RepoDao(dsl.configuration());
+        appDao = new AppDao(dsl.configuration());
+        branchDao = new BranchDao(dsl.configuration());
+        appBranchDao = new AppBranchDao(dsl.configuration());
+        buildDao = new BuildDao(dsl.configuration());
+        stageDao = new StageDao(dsl.configuration());
+        buildStageDao = new BuildStageDao(dsl.configuration());
+    }
+
 
 //    protected Connection getConnection() {
 //        return dsl.
 //    }
 
-    @Autowired
-    private ModelMapper mapper;
-
-    @Autowired
-    DSLContext dsl;
 
     public List<Org> getOrgs() {
         return dsl.select().from(ORG)
@@ -393,21 +414,28 @@ public class ReportCardService {
     public BuildStagePath getOrInsertBuildStagePath(BuildStagePathRequest request) {
         BuildStagePath path = getBuildStagePath(request);
 
-        if (path.getOrg() == null) {
-            Record record = dsl
-                    .insertInto(ORG, ORG.ORG_NAME)
-                    .values(request.getOrgName())
-                    .onConflictDoNothing()
-                    .returningResult(ORG.ORG_ID)
-                    .fetchOne();
+//        if (path.getOrg() == null) {
+//            Record record = dsl
+//                    .insertInto(ORG, ORG.ORG_NAME)
+//                    .values(request.getOrgName())
+//                    .onConflictDoNothing()
+//                    .returningResult(ORG.ORG_ID)
+//                    .fetchOne();
+//
+//            Org org = record.into(OrgRecord.class).into(Org.class);
+//            path.setOrg(org);
+//        }
 
-            Org org = record.into(OrgRecord.class).into(Org.class);
+        if (path.getOrg() == null) {
+            Org org = new Org()
+                    .setOrgName(request.getOrgName());
+            orgDao.insert(org);
             path.setOrg(org);
         }
 
         if (path.getRepo() == null) {
             Repo repo = new Repo()
-                    .setRepoName(request.getOrgName())
+                    .setRepoName(request.getRepoName())
                     .setOrgFk(path.getOrg().getOrgId());
             repoDao.insert(repo);
             path.setRepo(repo);
