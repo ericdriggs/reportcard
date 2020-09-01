@@ -19,7 +19,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row4;
+import org.jooq.Row5;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -35,7 +35,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Build extends TableImpl<BuildRecord> {
 
-    private static final long serialVersionUID = 2117866293;
+    private static final long serialVersionUID = 528540978;
 
     /**
      * The reference instance of <code>reportcard.build</code>
@@ -63,7 +63,12 @@ public class Build extends TableImpl<BuildRecord> {
     /**
      * The column <code>reportcard.build.build_unique_string</code>.
      */
-    public final TableField<BuildRecord, String> BUILD_UNIQUE_STRING = createField(DSL.name("build_unique_string"), org.jooq.impl.SQLDataType.VARCHAR(255).nullable(false).defaultValue(org.jooq.impl.DSL.inline("UUID()", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
+    public final TableField<BuildRecord, String> BUILD_UNIQUE_STRING = createField(DSL.name("build_unique_string"), org.jooq.impl.SQLDataType.VARCHAR(255).nullable(false), this, "");
+
+    /**
+     * The column <code>reportcard.build.build_unique_string_short</code>.
+     */
+    public final TableField<BuildRecord, String> BUILD_UNIQUE_STRING_SHORT = createField(DSL.name("build_unique_string_short"), org.jooq.impl.SQLDataType.VARCHAR(6), this, "");
 
     /**
      * The column <code>reportcard.build.build_created</code>.
@@ -164,11 +169,11 @@ public class Build extends TableImpl<BuildRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row4 type methods
+    // Row5 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row4<Long, Integer, String, LocalDateTime> fieldsRow() {
-        return (Row4) super.fieldsRow();
+    public Row5<Long, Integer, String, String, LocalDateTime> fieldsRow() {
+        return (Row5) super.fieldsRow();
     }
 }

@@ -2,7 +2,6 @@ package com.ericdriggs.reportcard.model;
 
 import lombok.Data;
 
-//TOMAYBE: will likely have to change from buildOrdinal to buildSha
 @Data
 public class BuildStagePathRequest {
     private String orgName;
@@ -11,5 +10,14 @@ public class BuildStagePathRequest {
     private String branchName;
     private String buildUniqueString;
     private String stageName;
+
+    public boolean isComplete() {
+        return orgName != null
+                && repoName != null
+                && appName != null
+                && branchName != null
+                && buildUniqueString != null
+                && stageName != null;
+    }
 
 }

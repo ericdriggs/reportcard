@@ -409,72 +409,101 @@ public class ReportCardService {
         return buildStagePath;
     }
 
-    //FIXME: possible race conditions on insert -- should try insert then select if fails (maybe use try catch with recursion with retry counter)
-    //TODO: test on conflict do nothing with duplicate org name -- will need to mock path or split this method to test
+    /**
+     *
+     * @param request a BuildStagePathRequest with the fields to match on
+     * @return
+     */
     public BuildStagePath getOrInsertBuildStagePath(BuildStagePathRequest request) {
-        BuildStagePath path = getBuildStagePath(request);
+        return getOrInsertBuildStagePath(request,  null);
+    }
 
-        if (path.getOrg() == null) {
+    /**
+     * TODO: add test to simulate race condition on insert where buildstage path is missing data from db to ensure that
+     *     1) insert failure is ignored/skipped and
+     *     2) the existing data is returned
+     */
+
+
+    /**
+     * prefer public method -- t
+     * @param request a BuildStagePathRequest
+     * @param buildStagePath normally null, only values passed for testing
+     * @return
+     */
+    BuildStagePath getOrInsertBuildStagePath(BuildStagePathRequest request, BuildStagePath buildStagePath) {
+
+        //TODO: add test
+        if (!request.isComplete()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Missing request fields, request: " + request.toString());
+        }
+
+        if (buildStagePath == null) {
+            buildStagePath = getBuildStagePath(request);
+        }
+
+        if (buildStagePath.getOrg() == null) {
             Org org = new Org()
                     .setOrgName(request.getOrgName());
             orgDao.insert(org);
-            path.setOrg(org);
+            buildStagePath.setOrg(org);
         }
 
-        if (path.getRepo() == null) {
+        if (buildStagePath.getRepo() == null) {
             Repo repo = new Repo()
                     .setRepoName(request.getRepoName())
-                    .setOrgFk(path.getOrg().getOrgId());
+                    .setOrgFk(buildStagePath.getOrg().getOrgId());
             repoDao.insert(repo);
-            path.setRepo(repo);
+            buildStagePath.setRepo(repo);
         }
 
-        if (path.getApp() == null) {
+        if (buildStagePath.getApp() == null) {
             App app = new App()
                     .setAppName(request.getAppName())
-                    .setRepoFk(path.getRepo().getRepoId());
+                    .setRepoFk(buildStagePath.getRepo().getRepoId());
             appDao.insert(app);
-            path.setApp(app);
+            buildStagePath.setApp(app);
         }
 
-        if (path.getBranch() == null) {
+        if (buildStagePath.getBranch() == null) {
             Branch branch = new Branch()
                     .setBranchName(request.getBranchName())
-                    .setRepoFk(path.getRepo().getRepoId());
+                    .setRepoFk(buildStagePath.getRepo().getRepoId());
             branchDao.insert(branch);
-            path.setBranch(branch);
+            buildStagePath.setBranch(branch);
         }
 
-        if (path.getAppBranch() == null) {
+        if (buildStagePath.getAppBranch() == null) {
             AppBranch appBranch = new AppBranch()
-                    .setAppFk(path.getApp().getAppId())
-                    .setBranchFk(path.getBranch().getBranchId());
+                    .setAppFk(buildStagePath.getApp().getAppId())
+                    .setBranchFk(buildStagePath.getBranch().getBranchId());
             appBranchDao.insert(appBranch);
-            path.setAppBranch(appBranch);
+            buildStagePath.setAppBranch(appBranch);
         }
 
-        if (path.getBuild() == null) {
+        if (buildStagePath.getBuild() == null) {
             Build build = new Build()
                     .setBuildUniqueString(request.getBuildUniqueString())
-                    .setAppBranchFk(path.getAppBranch().getAppBranchId());
+                    .setAppBranchFk(buildStagePath.getAppBranch().getAppBranchId());
             buildDao.insert(build);
-            path.setBuild(build);
+            buildStagePath.setBuild(build);
         }
-        if (path.getStage() == null) {
+        if (buildStagePath.getStage() == null) {
             Stage stage = new Stage()
                     .setStageName(request.getStageName())
-                    .setAppBranchFk(path.getAppBranch().getAppBranchId());
+                    .setAppBranchFk(buildStagePath.getAppBranch().getAppBranchId());
             stageDao.insert(stage);
-            path.setStage(stage);
+            buildStagePath.setStage(stage);
         }
-        if (path.getBuildStage() == null) {
+        if (buildStagePath.getBuildStage() == null) {
             BuildStage buildStage = new BuildStage()
-                    .setBuildFk(path.getBuild().getBuildId())
-                    .setStageFk(path.getStage().getStageId());
+                    .setBuildFk(buildStagePath.getBuild().getBuildId())
+                    .setStageFk(buildStagePath.getStage().getStageId());
             buildStageDao.insert(buildStage);
-            path.setBuildStage(buildStage);
+            buildStagePath.setBuildStage(buildStage);
         }
-        return path;
+        return buildStagePath;
     }
 
 

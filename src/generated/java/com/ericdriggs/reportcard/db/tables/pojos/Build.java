@@ -14,11 +14,12 @@ import java.time.LocalDateTime;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Build implements Serializable {
 
-    private static final long serialVersionUID = -707528028;
+    private static final long serialVersionUID = 1862700065;
 
     private Long          buildId;
     private Integer       appBranchFk;
     private String        buildUniqueString;
+    private String        buildUniqueStringShort;
     private LocalDateTime buildCreated;
 
     public Build() {}
@@ -27,6 +28,7 @@ public class Build implements Serializable {
         this.buildId = value.buildId;
         this.appBranchFk = value.appBranchFk;
         this.buildUniqueString = value.buildUniqueString;
+        this.buildUniqueStringShort = value.buildUniqueStringShort;
         this.buildCreated = value.buildCreated;
     }
 
@@ -34,11 +36,13 @@ public class Build implements Serializable {
         Long          buildId,
         Integer       appBranchFk,
         String        buildUniqueString,
+        String        buildUniqueStringShort,
         LocalDateTime buildCreated
     ) {
         this.buildId = buildId;
         this.appBranchFk = appBranchFk;
         this.buildUniqueString = buildUniqueString;
+        this.buildUniqueStringShort = buildUniqueStringShort;
         this.buildCreated = buildCreated;
     }
 
@@ -69,6 +73,15 @@ public class Build implements Serializable {
         return this;
     }
 
+    public String getBuildUniqueStringShort() {
+        return this.buildUniqueStringShort;
+    }
+
+    public Build setBuildUniqueStringShort(String buildUniqueStringShort) {
+        this.buildUniqueStringShort = buildUniqueStringShort;
+        return this;
+    }
+
     public LocalDateTime getBuildCreated() {
         return this.buildCreated;
     }
@@ -85,6 +98,7 @@ public class Build implements Serializable {
         sb.append(buildId);
         sb.append(", ").append(appBranchFk);
         sb.append(", ").append(buildUniqueString);
+        sb.append(", ").append(buildUniqueStringShort);
         sb.append(", ").append(buildCreated);
 
         sb.append(")");

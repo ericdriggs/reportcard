@@ -89,6 +89,20 @@ public class BuildDao extends DAOImpl<BuildRecord, com.ericdriggs.reportcard.db.
     }
 
     /**
+     * Fetch records that have <code>build_unique_string_short BETWEEN lowerInclusive AND upperInclusive</code>
+     */
+    public List<com.ericdriggs.reportcard.db.tables.pojos.Build> fetchRangeOfBuildUniqueStringShort(String lowerInclusive, String upperInclusive) {
+        return fetchRange(Build.BUILD.BUILD_UNIQUE_STRING_SHORT, lowerInclusive, upperInclusive);
+    }
+
+    /**
+     * Fetch records that have <code>build_unique_string_short IN (values)</code>
+     */
+    public List<com.ericdriggs.reportcard.db.tables.pojos.Build> fetchByBuildUniqueStringShort(String... values) {
+        return fetch(Build.BUILD.BUILD_UNIQUE_STRING_SHORT, values);
+    }
+
+    /**
      * Fetch records that have <code>build_created BETWEEN lowerInclusive AND upperInclusive</code>
      */
     public List<com.ericdriggs.reportcard.db.tables.pojos.Build> fetchRangeOfBuildCreated(LocalDateTime lowerInclusive, LocalDateTime upperInclusive) {

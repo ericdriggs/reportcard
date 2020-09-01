@@ -133,7 +133,8 @@ SHOW WARNINGS;
 CREATE TABLE IF NOT EXISTS `build` (
                                        `build_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
                                        `app_branch_fk` INT UNSIGNED NOT NULL,
-                                       `build_unique_string` VARCHAR(255) NOT NULL DEFAULT 'UUID()',
+                                       `build_unique_string` VARCHAR(255) NOT NULL,
+                                       `build_unique_string_short` VARCHAR(6) GENERATED ALWAYS AS (left(`build_unique_string`,6)) STORED,
                                        `build_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                                        PRIMARY KEY (`build_id`),
                                        UNIQUE INDEX `build_unique_string_idx` USING BTREE (`app_branch_fk`, `build_unique_string`) VISIBLE,
