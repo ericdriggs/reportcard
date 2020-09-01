@@ -74,13 +74,6 @@ public class BranchDao extends DAOImpl<BranchRecord, com.ericdriggs.reportcard.d
     }
 
     /**
-     * Fetch a unique record that has <code>branch_name = value</code>
-     */
-    public com.ericdriggs.reportcard.db.tables.pojos.Branch fetchOneByBranchName(String value) {
-        return fetchOne(Branch.BRANCH.BRANCH_NAME, value);
-    }
-
-    /**
      * Fetch records that have <code>repo_fk BETWEEN lowerInclusive AND upperInclusive</code>
      */
     public List<com.ericdriggs.reportcard.db.tables.pojos.Branch> fetchRangeOfRepoFk(Integer lowerInclusive, Integer upperInclusive) {

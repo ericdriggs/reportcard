@@ -32,7 +32,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Org extends TableImpl<OrgRecord> {
 
-    private static final long serialVersionUID = -470832349;
+    private static final long serialVersionUID = -2014343265;
 
     /**
      * The reference instance of <code>reportcard.org</code>
@@ -107,7 +107,7 @@ public class Org extends TableImpl<OrgRecord> {
 
     @Override
     public List<UniqueKey<OrgRecord>> getKeys() {
-        return Arrays.<UniqueKey<OrgRecord>>asList(Keys.KEY_ORG_PRIMARY, Keys.KEY_ORG_IDX_ORG_NAME);
+        return Arrays.<UniqueKey<OrgRecord>>asList(Keys.KEY_ORG_PRIMARY, Keys.KEY_ORG_ORG_NAME_IDX);
     }
 
     @Override

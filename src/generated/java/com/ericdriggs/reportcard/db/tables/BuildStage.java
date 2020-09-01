@@ -34,7 +34,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BuildStage extends TableImpl<BuildStageRecord> {
 
-    private static final long serialVersionUID = 1430932176;
+    private static final long serialVersionUID = -1388191936;
 
     /**
      * The reference instance of <code>reportcard.build_stage</code>
@@ -104,7 +104,7 @@ public class BuildStage extends TableImpl<BuildStageRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.BUILD_STAGE_BUILD_IDX, Indexes.BUILD_STAGE_STAGE_FK_IDX);
+        return Arrays.<Index>asList(Indexes.BUILD_STAGE_BUILD_IDX, Indexes.BUILD_STAGE_BUILD_STAGE_FK_STAGE_IDX);
     }
 
     @Override

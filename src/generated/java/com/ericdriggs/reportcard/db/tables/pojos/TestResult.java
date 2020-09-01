@@ -5,6 +5,7 @@ package com.ericdriggs.reportcard.db.tables.pojos;
 
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 
 /**
@@ -13,17 +14,18 @@ import java.io.Serializable;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestResult implements Serializable {
 
-    private static final long serialVersionUID = 308128451;
+    private static final long serialVersionUID = -262331089;
 
-    private Long    testResultId;
-    private Long    buildStageFk;
-    private Integer tests;
-    private Integer skipped;
-    private Integer error;
-    private Integer failure;
-    private Long    time;
-    private Byte    isSuccess;
-    private Byte    hasSkip;
+    private Long          testResultId;
+    private Long          buildStageFk;
+    private Integer       tests;
+    private Integer       skipped;
+    private Integer       error;
+    private Integer       failure;
+    private Long          time;
+    private LocalDateTime testResultCreated;
+    private Byte          isSuccess;
+    private Byte          hasSkip;
 
     public TestResult() {}
 
@@ -35,20 +37,22 @@ public class TestResult implements Serializable {
         this.error = value.error;
         this.failure = value.failure;
         this.time = value.time;
+        this.testResultCreated = value.testResultCreated;
         this.isSuccess = value.isSuccess;
         this.hasSkip = value.hasSkip;
     }
 
     public TestResult(
-        Long    testResultId,
-        Long    buildStageFk,
-        Integer tests,
-        Integer skipped,
-        Integer error,
-        Integer failure,
-        Long    time,
-        Byte    isSuccess,
-        Byte    hasSkip
+        Long          testResultId,
+        Long          buildStageFk,
+        Integer       tests,
+        Integer       skipped,
+        Integer       error,
+        Integer       failure,
+        Long          time,
+        LocalDateTime testResultCreated,
+        Byte          isSuccess,
+        Byte          hasSkip
     ) {
         this.testResultId = testResultId;
         this.buildStageFk = buildStageFk;
@@ -57,6 +61,7 @@ public class TestResult implements Serializable {
         this.error = error;
         this.failure = failure;
         this.time = time;
+        this.testResultCreated = testResultCreated;
         this.isSuccess = isSuccess;
         this.hasSkip = hasSkip;
     }
@@ -124,6 +129,15 @@ public class TestResult implements Serializable {
         return this;
     }
 
+    public LocalDateTime getTestResultCreated() {
+        return this.testResultCreated;
+    }
+
+    public TestResult setTestResultCreated(LocalDateTime testResultCreated) {
+        this.testResultCreated = testResultCreated;
+        return this;
+    }
+
     public Byte getIsSuccess() {
         return this.isSuccess;
     }
@@ -153,6 +167,7 @@ public class TestResult implements Serializable {
         sb.append(", ").append(error);
         sb.append(", ").append(failure);
         sb.append(", ").append(time);
+        sb.append(", ").append(testResultCreated);
         sb.append(", ").append(isSuccess);
         sb.append(", ").append(hasSkip);
 

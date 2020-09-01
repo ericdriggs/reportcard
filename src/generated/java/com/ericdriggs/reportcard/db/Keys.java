@@ -65,20 +65,19 @@ public class Keys {
     // -------------------------------------------------------------------------
 
     public static final UniqueKey<AppRecord> KEY_APP_PRIMARY = UniqueKeys0.KEY_APP_PRIMARY;
-    public static final UniqueKey<AppRecord> KEY_APP_NAME_UNIQUE = UniqueKeys0.KEY_APP_NAME_UNIQUE;
+    public static final UniqueKey<AppRecord> KEY_APP_APP_NAME_IDX = UniqueKeys0.KEY_APP_APP_NAME_IDX;
     public static final UniqueKey<AppBranchRecord> KEY_APP_BRANCH_PRIMARY = UniqueKeys0.KEY_APP_BRANCH_PRIMARY;
     public static final UniqueKey<BranchRecord> KEY_BRANCH_PRIMARY = UniqueKeys0.KEY_BRANCH_PRIMARY;
-    public static final UniqueKey<BranchRecord> KEY_BRANCH_REPO_BRANCH_IDX = UniqueKeys0.KEY_BRANCH_REPO_BRANCH_IDX;
-    public static final UniqueKey<BranchRecord> KEY_BRANCH_NAME_UNIQUE = UniqueKeys0.KEY_BRANCH_NAME_UNIQUE;
+    public static final UniqueKey<BranchRecord> KEY_BRANCH_REPO_BRANCH_NAME_IDX = UniqueKeys0.KEY_BRANCH_REPO_BRANCH_NAME_IDX;
     public static final UniqueKey<BuildRecord> KEY_BUILD_PRIMARY = UniqueKeys0.KEY_BUILD_PRIMARY;
+    public static final UniqueKey<BuildRecord> KEY_BUILD_BUILD_UNIQUE_STRING_IDX = UniqueKeys0.KEY_BUILD_BUILD_UNIQUE_STRING_IDX;
     public static final UniqueKey<BuildStageRecord> KEY_BUILD_STAGE_PRIMARY = UniqueKeys0.KEY_BUILD_STAGE_PRIMARY;
     public static final UniqueKey<OrgRecord> KEY_ORG_PRIMARY = UniqueKeys0.KEY_ORG_PRIMARY;
-    public static final UniqueKey<OrgRecord> KEY_ORG_IDX_ORG_NAME = UniqueKeys0.KEY_ORG_IDX_ORG_NAME;
+    public static final UniqueKey<OrgRecord> KEY_ORG_ORG_NAME_IDX = UniqueKeys0.KEY_ORG_ORG_NAME_IDX;
     public static final UniqueKey<RepoRecord> KEY_REPO_PRIMARY = UniqueKeys0.KEY_REPO_PRIMARY;
-    public static final UniqueKey<RepoRecord> KEY_REPO_ORG_REPO_IDX = UniqueKeys0.KEY_REPO_ORG_REPO_IDX;
-    public static final UniqueKey<RepoRecord> KEY_REPO_NAME_UNIQUE = UniqueKeys0.KEY_REPO_NAME_UNIQUE;
+    public static final UniqueKey<RepoRecord> KEY_REPO_REPO_NAME_IDX = UniqueKeys0.KEY_REPO_REPO_NAME_IDX;
     public static final UniqueKey<StageRecord> KEY_STAGE_PRIMARY = UniqueKeys0.KEY_STAGE_PRIMARY;
-    public static final UniqueKey<StageRecord> KEY_STAGE_NAME_UNIQUE = UniqueKeys0.KEY_STAGE_NAME_UNIQUE;
+    public static final UniqueKey<StageRecord> KEY_STAGE_STAGE_NAME_IDX = UniqueKeys0.KEY_STAGE_STAGE_NAME_IDX;
     public static final UniqueKey<TestCaseRecord> KEY_TEST_CASE_PRIMARY = UniqueKeys0.KEY_TEST_CASE_PRIMARY;
     public static final UniqueKey<TestResultRecord> KEY_TEST_RESULT_PRIMARY = UniqueKeys0.KEY_TEST_RESULT_PRIMARY;
     public static final UniqueKey<TestStatusRecord> KEY_TEST_STATUS_PRIMARY = UniqueKeys0.KEY_TEST_STATUS_PRIMARY;
@@ -123,20 +122,19 @@ public class Keys {
 
     private static class UniqueKeys0 {
         public static final UniqueKey<AppRecord> KEY_APP_PRIMARY = Internal.createUniqueKey(App.APP, "KEY_app_PRIMARY", new TableField[] { App.APP.APP_ID }, true);
-        public static final UniqueKey<AppRecord> KEY_APP_NAME_UNIQUE = Internal.createUniqueKey(App.APP, "KEY_app_name_UNIQUE", new TableField[] { App.APP.APP_NAME }, true);
+        public static final UniqueKey<AppRecord> KEY_APP_APP_NAME_IDX = Internal.createUniqueKey(App.APP, "KEY_app_app_name_idx", new TableField[] { App.APP.REPO_FK, App.APP.APP_NAME }, true);
         public static final UniqueKey<AppBranchRecord> KEY_APP_BRANCH_PRIMARY = Internal.createUniqueKey(AppBranch.APP_BRANCH, "KEY_app_branch_PRIMARY", new TableField[] { AppBranch.APP_BRANCH.APP_BRANCH_ID }, true);
         public static final UniqueKey<BranchRecord> KEY_BRANCH_PRIMARY = Internal.createUniqueKey(Branch.BRANCH, "KEY_branch_PRIMARY", new TableField[] { Branch.BRANCH.BRANCH_ID }, true);
-        public static final UniqueKey<BranchRecord> KEY_BRANCH_REPO_BRANCH_IDX = Internal.createUniqueKey(Branch.BRANCH, "KEY_branch_repo_branch_idx", new TableField[] { Branch.BRANCH.REPO_FK, Branch.BRANCH.BRANCH_ID }, true);
-        public static final UniqueKey<BranchRecord> KEY_BRANCH_NAME_UNIQUE = Internal.createUniqueKey(Branch.BRANCH, "KEY_branch_name_UNIQUE", new TableField[] { Branch.BRANCH.BRANCH_NAME }, true);
+        public static final UniqueKey<BranchRecord> KEY_BRANCH_REPO_BRANCH_NAME_IDX = Internal.createUniqueKey(Branch.BRANCH, "KEY_branch_repo_branch_name_idx", new TableField[] { Branch.BRANCH.REPO_FK, Branch.BRANCH.BRANCH_NAME }, true);
         public static final UniqueKey<BuildRecord> KEY_BUILD_PRIMARY = Internal.createUniqueKey(Build.BUILD, "KEY_build_PRIMARY", new TableField[] { Build.BUILD.BUILD_ID }, true);
+        public static final UniqueKey<BuildRecord> KEY_BUILD_BUILD_UNIQUE_STRING_IDX = Internal.createUniqueKey(Build.BUILD, "KEY_build_build_unique_string_idx", new TableField[] { Build.BUILD.APP_BRANCH_FK, Build.BUILD.BUILD_UNIQUE_STRING }, true);
         public static final UniqueKey<BuildStageRecord> KEY_BUILD_STAGE_PRIMARY = Internal.createUniqueKey(BuildStage.BUILD_STAGE, "KEY_build_stage_PRIMARY", new TableField[] { BuildStage.BUILD_STAGE.BUILD_STAGE_ID }, true);
         public static final UniqueKey<OrgRecord> KEY_ORG_PRIMARY = Internal.createUniqueKey(Org.ORG, "KEY_org_PRIMARY", new TableField[] { Org.ORG.ORG_ID }, true);
-        public static final UniqueKey<OrgRecord> KEY_ORG_IDX_ORG_NAME = Internal.createUniqueKey(Org.ORG, "KEY_org_idx_org_name", new TableField[] { Org.ORG.ORG_NAME }, true);
+        public static final UniqueKey<OrgRecord> KEY_ORG_ORG_NAME_IDX = Internal.createUniqueKey(Org.ORG, "KEY_org_org_name_idx", new TableField[] { Org.ORG.ORG_NAME }, true);
         public static final UniqueKey<RepoRecord> KEY_REPO_PRIMARY = Internal.createUniqueKey(Repo.REPO, "KEY_repo_PRIMARY", new TableField[] { Repo.REPO.REPO_ID }, true);
-        public static final UniqueKey<RepoRecord> KEY_REPO_ORG_REPO_IDX = Internal.createUniqueKey(Repo.REPO, "KEY_repo_org_repo_idx", new TableField[] { Repo.REPO.REPO_ID, Repo.REPO.ORG_FK }, true);
-        public static final UniqueKey<RepoRecord> KEY_REPO_NAME_UNIQUE = Internal.createUniqueKey(Repo.REPO, "KEY_repo_name_UNIQUE", new TableField[] { Repo.REPO.REPO_NAME }, true);
+        public static final UniqueKey<RepoRecord> KEY_REPO_REPO_NAME_IDX = Internal.createUniqueKey(Repo.REPO, "KEY_repo_repo_name_idx", new TableField[] { Repo.REPO.ORG_FK, Repo.REPO.REPO_NAME }, true);
         public static final UniqueKey<StageRecord> KEY_STAGE_PRIMARY = Internal.createUniqueKey(Stage.STAGE, "KEY_stage_PRIMARY", new TableField[] { Stage.STAGE.STAGE_ID }, true);
-        public static final UniqueKey<StageRecord> KEY_STAGE_NAME_UNIQUE = Internal.createUniqueKey(Stage.STAGE, "KEY_stage_name_UNIQUE", new TableField[] { Stage.STAGE.STAGE_NAME }, true);
+        public static final UniqueKey<StageRecord> KEY_STAGE_STAGE_NAME_IDX = Internal.createUniqueKey(Stage.STAGE, "KEY_stage_stage_name_idx", new TableField[] { Stage.STAGE.APP_BRANCH_FK, Stage.STAGE.STAGE_NAME }, true);
         public static final UniqueKey<TestCaseRecord> KEY_TEST_CASE_PRIMARY = Internal.createUniqueKey(TestCase.TEST_CASE, "KEY_test_case_PRIMARY", new TableField[] { TestCase.TEST_CASE.TEST_CASE_ID }, true);
         public static final UniqueKey<TestResultRecord> KEY_TEST_RESULT_PRIMARY = Internal.createUniqueKey(TestResult.TEST_RESULT, "KEY_test_result_PRIMARY", new TableField[] { TestResult.TEST_RESULT.TEST_RESULT_ID }, true);
         public static final UniqueKey<TestStatusRecord> KEY_TEST_STATUS_PRIMARY = Internal.createUniqueKey(TestStatus.TEST_STATUS, "KEY_test_status_PRIMARY", new TableField[] { TestStatus.TEST_STATUS.TEST_STATUS_ID }, true);

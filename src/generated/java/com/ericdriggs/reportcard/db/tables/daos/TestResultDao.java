@@ -7,6 +7,7 @@ package com.ericdriggs.reportcard.db.tables.daos;
 import com.ericdriggs.reportcard.db.tables.TestResult;
 import com.ericdriggs.reportcard.db.tables.records.TestResultRecord;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.jooq.Configuration;
@@ -141,6 +142,20 @@ public class TestResultDao extends DAOImpl<TestResultRecord, com.ericdriggs.repo
      */
     public List<com.ericdriggs.reportcard.db.tables.pojos.TestResult> fetchByTime(Long... values) {
         return fetch(TestResult.TEST_RESULT.TIME, values);
+    }
+
+    /**
+     * Fetch records that have <code>test_result_created BETWEEN lowerInclusive AND upperInclusive</code>
+     */
+    public List<com.ericdriggs.reportcard.db.tables.pojos.TestResult> fetchRangeOfTestResultCreated(LocalDateTime lowerInclusive, LocalDateTime upperInclusive) {
+        return fetchRange(TestResult.TEST_RESULT.TEST_RESULT_CREATED, lowerInclusive, upperInclusive);
+    }
+
+    /**
+     * Fetch records that have <code>test_result_created IN (values)</code>
+     */
+    public List<com.ericdriggs.reportcard.db.tables.pojos.TestResult> fetchByTestResultCreated(LocalDateTime... values) {
+        return fetch(TestResult.TEST_RESULT.TEST_RESULT_CREATED, values);
     }
 
     /**

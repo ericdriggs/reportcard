@@ -13,13 +13,13 @@ import java.io.Serializable;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestCase implements Serializable {
 
-    private static final long serialVersionUID = 406158122;
+    private static final long serialVersionUID = 2122263908;
 
     private Long   testCaseId;
     private Long   testSuiteFk;
     private String testCaseName;
     private String className;
-    private Long   testCaseTime;
+    private Long   time;
     private Byte   testStatusFk;
 
     public TestCase() {}
@@ -29,7 +29,7 @@ public class TestCase implements Serializable {
         this.testSuiteFk = value.testSuiteFk;
         this.testCaseName = value.testCaseName;
         this.className = value.className;
-        this.testCaseTime = value.testCaseTime;
+        this.time = value.time;
         this.testStatusFk = value.testStatusFk;
     }
 
@@ -38,14 +38,14 @@ public class TestCase implements Serializable {
         Long   testSuiteFk,
         String testCaseName,
         String className,
-        Long   testCaseTime,
+        Long   time,
         Byte   testStatusFk
     ) {
         this.testCaseId = testCaseId;
         this.testSuiteFk = testSuiteFk;
         this.testCaseName = testCaseName;
         this.className = className;
-        this.testCaseTime = testCaseTime;
+        this.time = time;
         this.testStatusFk = testStatusFk;
     }
 
@@ -85,12 +85,12 @@ public class TestCase implements Serializable {
         return this;
     }
 
-    public Long getTestCaseTime() {
-        return this.testCaseTime;
+    public Long getTime() {
+        return this.time;
     }
 
-    public TestCase setTestCaseTime(Long testCaseTime) {
-        this.testCaseTime = testCaseTime;
+    public TestCase setTime(Long time) {
+        this.time = time;
         return this;
     }
 
@@ -111,7 +111,7 @@ public class TestCase implements Serializable {
         sb.append(", ").append(testSuiteFk);
         sb.append(", ").append(testCaseName);
         sb.append(", ").append(className);
-        sb.append(", ").append(testCaseTime);
+        sb.append(", ").append(time);
         sb.append(", ").append(testStatusFk);
 
         sb.append(")");

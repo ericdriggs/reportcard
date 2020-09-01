@@ -75,17 +75,17 @@ public class BuildDao extends DAOImpl<BuildRecord, com.ericdriggs.reportcard.db.
     }
 
     /**
-     * Fetch records that have <code>app_branch_build_ordinal BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>build_unique_string BETWEEN lowerInclusive AND upperInclusive</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.Build> fetchRangeOfAppBranchBuildOrdinal(Integer lowerInclusive, Integer upperInclusive) {
-        return fetchRange(Build.BUILD.APP_BRANCH_BUILD_ORDINAL, lowerInclusive, upperInclusive);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.Build> fetchRangeOfBuildUniqueString(String lowerInclusive, String upperInclusive) {
+        return fetchRange(Build.BUILD.BUILD_UNIQUE_STRING, lowerInclusive, upperInclusive);
     }
 
     /**
-     * Fetch records that have <code>app_branch_build_ordinal IN (values)</code>
+     * Fetch records that have <code>build_unique_string IN (values)</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.Build> fetchByAppBranchBuildOrdinal(Integer... values) {
-        return fetch(Build.BUILD.APP_BRANCH_BUILD_ORDINAL, values);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.Build> fetchByBuildUniqueString(String... values) {
+        return fetch(Build.BUILD.BUILD_UNIQUE_STRING, values);
     }
 
     /**
@@ -100,33 +100,5 @@ public class BuildDao extends DAOImpl<BuildRecord, com.ericdriggs.reportcard.db.
      */
     public List<com.ericdriggs.reportcard.db.tables.pojos.Build> fetchByBuildCreated(LocalDateTime... values) {
         return fetch(Build.BUILD.BUILD_CREATED, values);
-    }
-
-    /**
-     * Fetch records that have <code>build_external_identifier BETWEEN lowerInclusive AND upperInclusive</code>
-     */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.Build> fetchRangeOfBuildExternalIdentifier(String lowerInclusive, String upperInclusive) {
-        return fetchRange(Build.BUILD.BUILD_EXTERNAL_IDENTIFIER, lowerInclusive, upperInclusive);
-    }
-
-    /**
-     * Fetch records that have <code>build_external_identifier IN (values)</code>
-     */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.Build> fetchByBuildExternalIdentifier(String... values) {
-        return fetch(Build.BUILD.BUILD_EXTERNAL_IDENTIFIER, values);
-    }
-
-    /**
-     * Fetch records that have <code>build_sha BETWEEN lowerInclusive AND upperInclusive</code>
-     */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.Build> fetchRangeOfBuildSha(String lowerInclusive, String upperInclusive) {
-        return fetchRange(Build.BUILD.BUILD_SHA, lowerInclusive, upperInclusive);
-    }
-
-    /**
-     * Fetch records that have <code>build_sha IN (values)</code>
-     */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.Build> fetchByBuildSha(String... values) {
-        return fetch(Build.BUILD.BUILD_SHA, values);
     }
 }

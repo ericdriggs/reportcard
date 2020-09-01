@@ -34,7 +34,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestSuite extends TableImpl<TestSuiteRecord> {
 
-    private static final long serialVersionUID = 392178540;
+    private static final long serialVersionUID = -1477111890;
 
     /**
      * The reference instance of <code>reportcard.test_suite</code>
@@ -60,9 +60,9 @@ public class TestSuite extends TableImpl<TestSuiteRecord> {
     public final TableField<TestSuiteRecord, Long> TEST_RESULT_FK = createField(DSL.name("test_result_fk"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
 
     /**
-     * The column <code>reportcard.test_suite.test_suite_package</code>.
+     * The column <code>reportcard.test_suite.package</code>.
      */
-    public final TableField<TestSuiteRecord, String> TEST_SUITE_PACKAGE = createField(DSL.name("test_suite_package"), org.jooq.impl.SQLDataType.VARCHAR(1024).nullable(false), this, "");
+    public final TableField<TestSuiteRecord, String> PACKAGE = createField(DSL.name("package"), org.jooq.impl.SQLDataType.VARCHAR(1024).nullable(false), this, "");
 
     /**
      * The column <code>reportcard.test_suite.tests</code>.
@@ -85,14 +85,14 @@ public class TestSuite extends TableImpl<TestSuiteRecord> {
     public final TableField<TestSuiteRecord, Integer> FAILURE = createField(DSL.name("failure"), org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
-     * The column <code>reportcard.test_suite.test_suite_time</code>.
+     * The column <code>reportcard.test_suite.time</code>.
      */
-    public final TableField<TestSuiteRecord, Long> TEST_SUITE_TIME = createField(DSL.name("test_suite_time"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
+    public final TableField<TestSuiteRecord, Long> TIME = createField(DSL.name("time"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
 
     /**
-     * The column <code>reportcard.test_suite.test_suite_is_success</code>.
+     * The column <code>reportcard.test_suite.is_success</code>.
      */
-    public final TableField<TestSuiteRecord, Byte> TEST_SUITE_IS_SUCCESS = createField(DSL.name("test_suite_is_success"), org.jooq.impl.SQLDataType.TINYINT, this, "");
+    public final TableField<TestSuiteRecord, Byte> IS_SUCCESS = createField(DSL.name("is_success"), org.jooq.impl.SQLDataType.TINYINT, this, "");
 
     /**
      * The column <code>reportcard.test_suite.has_skip</code>.

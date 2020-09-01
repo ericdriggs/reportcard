@@ -19,9 +19,9 @@ INSERT INTO `reportcard`.`app_branch`
 VALUES (1, 1, 1);
 
 INSERT INTO `reportcard`.`build`
-(`build_id`, `app_branch_fk`, `app_branch_build_ordinal`)
+(`build_id`, `app_branch_fk`, `build_unique_string`)
 VALUES
-(1, 1, 1);
+(1, 1, '9282be75-6ca5-424b-a7ec-13d13370ba90');
 
 INSERT INTO `reportcard`.`stage`
 (`stage_id`, `stage_name`, `app_branch_fk`)

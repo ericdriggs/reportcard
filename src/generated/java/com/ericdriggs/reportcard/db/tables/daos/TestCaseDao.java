@@ -102,17 +102,17 @@ public class TestCaseDao extends DAOImpl<TestCaseRecord, com.ericdriggs.reportca
     }
 
     /**
-     * Fetch records that have <code>test_case_time BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>time BETWEEN lowerInclusive AND upperInclusive</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.TestCase> fetchRangeOfTestCaseTime(Long lowerInclusive, Long upperInclusive) {
-        return fetchRange(TestCase.TEST_CASE.TEST_CASE_TIME, lowerInclusive, upperInclusive);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.TestCase> fetchRangeOfTime(Long lowerInclusive, Long upperInclusive) {
+        return fetchRange(TestCase.TEST_CASE.TIME, lowerInclusive, upperInclusive);
     }
 
     /**
-     * Fetch records that have <code>test_case_time IN (values)</code>
+     * Fetch records that have <code>time IN (values)</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.TestCase> fetchByTestCaseTime(Long... values) {
-        return fetch(TestCase.TEST_CASE.TEST_CASE_TIME, values);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.TestCase> fetchByTime(Long... values) {
+        return fetch(TestCase.TEST_CASE.TIME, values);
     }
 
     /**

@@ -13,17 +13,17 @@ import java.io.Serializable;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestSuite implements Serializable {
 
-    private static final long serialVersionUID = -747646185;
+    private static final long serialVersionUID = 377455660;
 
     private Long    testSuiteId;
     private Long    testResultFk;
-    private String  testSuitePackage;
+    private String  package_;
     private Integer tests;
     private Integer skipped;
     private Integer error;
     private Integer failure;
-    private Long    testSuiteTime;
-    private Byte    testSuiteIsSuccess;
+    private Long    time;
+    private Byte    isSuccess;
     private Byte    hasSkip;
 
     public TestSuite() {}
@@ -31,37 +31,37 @@ public class TestSuite implements Serializable {
     public TestSuite(TestSuite value) {
         this.testSuiteId = value.testSuiteId;
         this.testResultFk = value.testResultFk;
-        this.testSuitePackage = value.testSuitePackage;
+        this.package_ = value.package_;
         this.tests = value.tests;
         this.skipped = value.skipped;
         this.error = value.error;
         this.failure = value.failure;
-        this.testSuiteTime = value.testSuiteTime;
-        this.testSuiteIsSuccess = value.testSuiteIsSuccess;
+        this.time = value.time;
+        this.isSuccess = value.isSuccess;
         this.hasSkip = value.hasSkip;
     }
 
     public TestSuite(
         Long    testSuiteId,
         Long    testResultFk,
-        String  testSuitePackage,
+        String  package_,
         Integer tests,
         Integer skipped,
         Integer error,
         Integer failure,
-        Long    testSuiteTime,
-        Byte    testSuiteIsSuccess,
+        Long    time,
+        Byte    isSuccess,
         Byte    hasSkip
     ) {
         this.testSuiteId = testSuiteId;
         this.testResultFk = testResultFk;
-        this.testSuitePackage = testSuitePackage;
+        this.package_ = package_;
         this.tests = tests;
         this.skipped = skipped;
         this.error = error;
         this.failure = failure;
-        this.testSuiteTime = testSuiteTime;
-        this.testSuiteIsSuccess = testSuiteIsSuccess;
+        this.time = time;
+        this.isSuccess = isSuccess;
         this.hasSkip = hasSkip;
     }
 
@@ -83,12 +83,12 @@ public class TestSuite implements Serializable {
         return this;
     }
 
-    public String getTestSuitePackage() {
-        return this.testSuitePackage;
+    public String getPackage() {
+        return this.package_;
     }
 
-    public TestSuite setTestSuitePackage(String testSuitePackage) {
-        this.testSuitePackage = testSuitePackage;
+    public TestSuite setPackage(String package_) {
+        this.package_ = package_;
         return this;
     }
 
@@ -128,21 +128,21 @@ public class TestSuite implements Serializable {
         return this;
     }
 
-    public Long getTestSuiteTime() {
-        return this.testSuiteTime;
+    public Long getTime() {
+        return this.time;
     }
 
-    public TestSuite setTestSuiteTime(Long testSuiteTime) {
-        this.testSuiteTime = testSuiteTime;
+    public TestSuite setTime(Long time) {
+        this.time = time;
         return this;
     }
 
-    public Byte getTestSuiteIsSuccess() {
-        return this.testSuiteIsSuccess;
+    public Byte getIsSuccess() {
+        return this.isSuccess;
     }
 
-    public TestSuite setTestSuiteIsSuccess(Byte testSuiteIsSuccess) {
-        this.testSuiteIsSuccess = testSuiteIsSuccess;
+    public TestSuite setIsSuccess(Byte isSuccess) {
+        this.isSuccess = isSuccess;
         return this;
     }
 
@@ -161,13 +161,13 @@ public class TestSuite implements Serializable {
 
         sb.append(testSuiteId);
         sb.append(", ").append(testResultFk);
-        sb.append(", ").append(testSuitePackage);
+        sb.append(", ").append(package_);
         sb.append(", ").append(tests);
         sb.append(", ").append(skipped);
         sb.append(", ").append(error);
         sb.append(", ").append(failure);
-        sb.append(", ").append(testSuiteTime);
-        sb.append(", ").append(testSuiteIsSuccess);
+        sb.append(", ").append(time);
+        sb.append(", ").append(isSuccess);
         sb.append(", ").append(hasSkip);
 
         sb.append(")");

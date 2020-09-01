@@ -74,13 +74,6 @@ public class RepoDao extends DAOImpl<RepoRecord, com.ericdriggs.reportcard.db.ta
     }
 
     /**
-     * Fetch a unique record that has <code>repo_name = value</code>
-     */
-    public com.ericdriggs.reportcard.db.tables.pojos.Repo fetchOneByRepoName(String value) {
-        return fetchOne(Repo.REPO.REPO_NAME, value);
-    }
-
-    /**
      * Fetch records that have <code>org_fk BETWEEN lowerInclusive AND upperInclusive</code>
      */
     public List<com.ericdriggs.reportcard.db.tables.pojos.Repo> fetchRangeOfOrgFk(Integer lowerInclusive, Integer upperInclusive) {

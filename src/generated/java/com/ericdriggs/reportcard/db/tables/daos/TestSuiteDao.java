@@ -74,17 +74,17 @@ public class TestSuiteDao extends DAOImpl<TestSuiteRecord, com.ericdriggs.report
     }
 
     /**
-     * Fetch records that have <code>test_suite_package BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>package BETWEEN lowerInclusive AND upperInclusive</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.TestSuite> fetchRangeOfTestSuitePackage(String lowerInclusive, String upperInclusive) {
-        return fetchRange(TestSuite.TEST_SUITE.TEST_SUITE_PACKAGE, lowerInclusive, upperInclusive);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.TestSuite> fetchRangeOfPackage(String lowerInclusive, String upperInclusive) {
+        return fetchRange(TestSuite.TEST_SUITE.PACKAGE, lowerInclusive, upperInclusive);
     }
 
     /**
-     * Fetch records that have <code>test_suite_package IN (values)</code>
+     * Fetch records that have <code>package IN (values)</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.TestSuite> fetchByTestSuitePackage(String... values) {
-        return fetch(TestSuite.TEST_SUITE.TEST_SUITE_PACKAGE, values);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.TestSuite> fetchByPackage(String... values) {
+        return fetch(TestSuite.TEST_SUITE.PACKAGE, values);
     }
 
     /**
@@ -144,31 +144,31 @@ public class TestSuiteDao extends DAOImpl<TestSuiteRecord, com.ericdriggs.report
     }
 
     /**
-     * Fetch records that have <code>test_suite_time BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>time BETWEEN lowerInclusive AND upperInclusive</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.TestSuite> fetchRangeOfTestSuiteTime(Long lowerInclusive, Long upperInclusive) {
-        return fetchRange(TestSuite.TEST_SUITE.TEST_SUITE_TIME, lowerInclusive, upperInclusive);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.TestSuite> fetchRangeOfTime(Long lowerInclusive, Long upperInclusive) {
+        return fetchRange(TestSuite.TEST_SUITE.TIME, lowerInclusive, upperInclusive);
     }
 
     /**
-     * Fetch records that have <code>test_suite_time IN (values)</code>
+     * Fetch records that have <code>time IN (values)</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.TestSuite> fetchByTestSuiteTime(Long... values) {
-        return fetch(TestSuite.TEST_SUITE.TEST_SUITE_TIME, values);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.TestSuite> fetchByTime(Long... values) {
+        return fetch(TestSuite.TEST_SUITE.TIME, values);
     }
 
     /**
-     * Fetch records that have <code>test_suite_is_success BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>is_success BETWEEN lowerInclusive AND upperInclusive</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.TestSuite> fetchRangeOfTestSuiteIsSuccess(Byte lowerInclusive, Byte upperInclusive) {
-        return fetchRange(TestSuite.TEST_SUITE.TEST_SUITE_IS_SUCCESS, lowerInclusive, upperInclusive);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.TestSuite> fetchRangeOfIsSuccess(Byte lowerInclusive, Byte upperInclusive) {
+        return fetchRange(TestSuite.TEST_SUITE.IS_SUCCESS, lowerInclusive, upperInclusive);
     }
 
     /**
-     * Fetch records that have <code>test_suite_is_success IN (values)</code>
+     * Fetch records that have <code>is_success IN (values)</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.TestSuite> fetchByTestSuiteIsSuccess(Byte... values) {
-        return fetch(TestSuite.TEST_SUITE.TEST_SUITE_IS_SUCCESS, values);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.TestSuite> fetchByIsSuccess(Byte... values) {
+        return fetch(TestSuite.TEST_SUITE.IS_SUCCESS, values);
     }
 
     /**

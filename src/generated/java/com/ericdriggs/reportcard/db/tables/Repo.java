@@ -34,7 +34,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Repo extends TableImpl<RepoRecord> {
 
-    private static final long serialVersionUID = 1424780545;
+    private static final long serialVersionUID = -1681540284;
 
     /**
      * The reference instance of <code>reportcard.repo</code>
@@ -119,7 +119,7 @@ public class Repo extends TableImpl<RepoRecord> {
 
     @Override
     public List<UniqueKey<RepoRecord>> getKeys() {
-        return Arrays.<UniqueKey<RepoRecord>>asList(Keys.KEY_REPO_PRIMARY, Keys.KEY_REPO_ORG_REPO_IDX, Keys.KEY_REPO_NAME_UNIQUE);
+        return Arrays.<UniqueKey<RepoRecord>>asList(Keys.KEY_REPO_PRIMARY, Keys.KEY_REPO_REPO_NAME_IDX);
     }
 
     @Override

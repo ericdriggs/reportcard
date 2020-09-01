@@ -14,40 +14,32 @@ import java.time.LocalDateTime;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Build implements Serializable {
 
-    private static final long serialVersionUID = -1088733834;
+    private static final long serialVersionUID = -707528028;
 
     private Long          buildId;
     private Integer       appBranchFk;
-    private Integer       appBranchBuildOrdinal;
+    private String        buildUniqueString;
     private LocalDateTime buildCreated;
-    private String        buildExternalIdentifier;
-    private String        buildSha;
 
     public Build() {}
 
     public Build(Build value) {
         this.buildId = value.buildId;
         this.appBranchFk = value.appBranchFk;
-        this.appBranchBuildOrdinal = value.appBranchBuildOrdinal;
+        this.buildUniqueString = value.buildUniqueString;
         this.buildCreated = value.buildCreated;
-        this.buildExternalIdentifier = value.buildExternalIdentifier;
-        this.buildSha = value.buildSha;
     }
 
     public Build(
         Long          buildId,
         Integer       appBranchFk,
-        Integer       appBranchBuildOrdinal,
-        LocalDateTime buildCreated,
-        String        buildExternalIdentifier,
-        String        buildSha
+        String        buildUniqueString,
+        LocalDateTime buildCreated
     ) {
         this.buildId = buildId;
         this.appBranchFk = appBranchFk;
-        this.appBranchBuildOrdinal = appBranchBuildOrdinal;
+        this.buildUniqueString = buildUniqueString;
         this.buildCreated = buildCreated;
-        this.buildExternalIdentifier = buildExternalIdentifier;
-        this.buildSha = buildSha;
     }
 
     public Long getBuildId() {
@@ -68,12 +60,12 @@ public class Build implements Serializable {
         return this;
     }
 
-    public Integer getAppBranchBuildOrdinal() {
-        return this.appBranchBuildOrdinal;
+    public String getBuildUniqueString() {
+        return this.buildUniqueString;
     }
 
-    public Build setAppBranchBuildOrdinal(Integer appBranchBuildOrdinal) {
-        this.appBranchBuildOrdinal = appBranchBuildOrdinal;
+    public Build setBuildUniqueString(String buildUniqueString) {
+        this.buildUniqueString = buildUniqueString;
         return this;
     }
 
@@ -86,34 +78,14 @@ public class Build implements Serializable {
         return this;
     }
 
-    public String getBuildExternalIdentifier() {
-        return this.buildExternalIdentifier;
-    }
-
-    public Build setBuildExternalIdentifier(String buildExternalIdentifier) {
-        this.buildExternalIdentifier = buildExternalIdentifier;
-        return this;
-    }
-
-    public String getBuildSha() {
-        return this.buildSha;
-    }
-
-    public Build setBuildSha(String buildSha) {
-        this.buildSha = buildSha;
-        return this;
-    }
-
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("Build (");
 
         sb.append(buildId);
         sb.append(", ").append(appBranchFk);
-        sb.append(", ").append(appBranchBuildOrdinal);
+        sb.append(", ").append(buildUniqueString);
         sb.append(", ").append(buildCreated);
-        sb.append(", ").append(buildExternalIdentifier);
-        sb.append(", ").append(buildSha);
 
         sb.append(")");
         return sb.toString();

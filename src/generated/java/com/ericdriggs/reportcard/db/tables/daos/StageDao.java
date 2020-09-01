@@ -74,13 +74,6 @@ public class StageDao extends DAOImpl<StageRecord, com.ericdriggs.reportcard.db.
     }
 
     /**
-     * Fetch a unique record that has <code>stage_name = value</code>
-     */
-    public com.ericdriggs.reportcard.db.tables.pojos.Stage fetchOneByStageName(String value) {
-        return fetchOne(Stage.STAGE.STAGE_NAME, value);
-    }
-
-    /**
      * Fetch records that have <code>app_branch_fk BETWEEN lowerInclusive AND upperInclusive</code>
      */
     public List<com.ericdriggs.reportcard.db.tables.pojos.Stage> fetchRangeOfAppBranchFk(Integer lowerInclusive, Integer upperInclusive) {

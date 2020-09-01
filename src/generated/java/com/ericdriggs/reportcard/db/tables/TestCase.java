@@ -34,7 +34,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestCase extends TableImpl<TestCaseRecord> {
 
-    private static final long serialVersionUID = 1697208480;
+    private static final long serialVersionUID = -270510046;
 
     /**
      * The reference instance of <code>reportcard.test_case</code>
@@ -70,9 +70,9 @@ public class TestCase extends TableImpl<TestCaseRecord> {
     public final TableField<TestCaseRecord, String> CLASS_NAME = createField(DSL.name("class_name"), org.jooq.impl.SQLDataType.VARCHAR(8096).nullable(false), this, "");
 
     /**
-     * The column <code>reportcard.test_case.test_case_time</code>.
+     * The column <code>reportcard.test_case.time</code>.
      */
-    public final TableField<TestCaseRecord, Long> TEST_CASE_TIME = createField(DSL.name("test_case_time"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
+    public final TableField<TestCaseRecord, Long> TIME = createField(DSL.name("time"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
 
     /**
      * The column <code>reportcard.test_case.test_status_fk</code>.

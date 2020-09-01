@@ -34,7 +34,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class App extends TableImpl<AppRecord> {
 
-    private static final long serialVersionUID = 410916125;
+    private static final long serialVersionUID = -771793615;
 
     /**
      * The reference instance of <code>reportcard.app</code>
@@ -104,7 +104,7 @@ public class App extends TableImpl<AppRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.APP_BRANCH_IDX);
+        return Arrays.<Index>asList(Indexes.APP_APP_REPO_IDX);
     }
 
     @Override
@@ -119,7 +119,7 @@ public class App extends TableImpl<AppRecord> {
 
     @Override
     public List<UniqueKey<AppRecord>> getKeys() {
-        return Arrays.<UniqueKey<AppRecord>>asList(Keys.KEY_APP_PRIMARY, Keys.KEY_APP_NAME_UNIQUE);
+        return Arrays.<UniqueKey<AppRecord>>asList(Keys.KEY_APP_PRIMARY, Keys.KEY_APP_APP_NAME_IDX);
     }
 
     @Override

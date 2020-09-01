@@ -9,6 +9,7 @@ import com.ericdriggs.reportcard.db.Keys;
 import com.ericdriggs.reportcard.db.Reportcard;
 import com.ericdriggs.reportcard.db.tables.records.TestResultRecord;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -18,7 +19,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row9;
+import org.jooq.Row10;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -34,7 +35,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestResult extends TableImpl<TestResultRecord> {
 
-    private static final long serialVersionUID = 1929730330;
+    private static final long serialVersionUID = -1987178258;
 
     /**
      * The reference instance of <code>reportcard.test_result</code>
@@ -83,6 +84,11 @@ public class TestResult extends TableImpl<TestResultRecord> {
      * The column <code>reportcard.test_result.time</code>.
      */
     public final TableField<TestResultRecord, Long> TIME = createField(DSL.name("time"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
+
+    /**
+     * The column <code>reportcard.test_result.test_result_created</code>.
+     */
+    public final TableField<TestResultRecord, LocalDateTime> TEST_RESULT_CREATED = createField(DSL.name("test_result_created"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false).defaultValue(org.jooq.impl.DSL.field("CURRENT_TIMESTAMP", org.jooq.impl.SQLDataType.LOCALDATETIME)), this, "");
 
     /**
      * The column <code>reportcard.test_result.is_success</code>.
@@ -134,7 +140,7 @@ public class TestResult extends TableImpl<TestResultRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.TEST_RESULT_FK_TEST_RESULT_BUILD_STAGE_IDX);
+        return Arrays.<Index>asList(Indexes.TEST_RESULT_TEST_RESULT_FK_BUILD_STAGE_IDX);
     }
 
     @Override
@@ -188,11 +194,11 @@ public class TestResult extends TableImpl<TestResultRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row9 type methods
+    // Row10 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row9<Long, Long, Integer, Integer, Integer, Integer, Long, Byte, Byte> fieldsRow() {
-        return (Row9) super.fieldsRow();
+    public Row10<Long, Long, Integer, Integer, Integer, Integer, Long, LocalDateTime, Byte, Byte> fieldsRow() {
+        return (Row10) super.fieldsRow();
     }
 }

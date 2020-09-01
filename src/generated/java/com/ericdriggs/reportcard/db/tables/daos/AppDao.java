@@ -74,13 +74,6 @@ public class AppDao extends DAOImpl<AppRecord, com.ericdriggs.reportcard.db.tabl
     }
 
     /**
-     * Fetch a unique record that has <code>app_name = value</code>
-     */
-    public com.ericdriggs.reportcard.db.tables.pojos.App fetchOneByAppName(String value) {
-        return fetchOne(App.APP.APP_NAME, value);
-    }
-
-    /**
      * Fetch records that have <code>repo_fk BETWEEN lowerInclusive AND upperInclusive</code>
      */
     public List<com.ericdriggs.reportcard.db.tables.pojos.App> fetchRangeOfRepoFk(Integer lowerInclusive, Integer upperInclusive) {

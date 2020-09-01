@@ -19,7 +19,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row6;
+import org.jooq.Row4;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -35,7 +35,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Build extends TableImpl<BuildRecord> {
 
-    private static final long serialVersionUID = 1007906703;
+    private static final long serialVersionUID = 2117866293;
 
     /**
      * The reference instance of <code>reportcard.build</code>
@@ -61,24 +61,14 @@ public class Build extends TableImpl<BuildRecord> {
     public final TableField<BuildRecord, Integer> APP_BRANCH_FK = createField(DSL.name("app_branch_fk"), org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
-     * The column <code>reportcard.build.app_branch_build_ordinal</code>.
+     * The column <code>reportcard.build.build_unique_string</code>.
      */
-    public final TableField<BuildRecord, Integer> APP_BRANCH_BUILD_ORDINAL = createField(DSL.name("app_branch_build_ordinal"), org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+    public final TableField<BuildRecord, String> BUILD_UNIQUE_STRING = createField(DSL.name("build_unique_string"), org.jooq.impl.SQLDataType.VARCHAR(255).nullable(false).defaultValue(org.jooq.impl.DSL.inline("UUID()", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
 
     /**
      * The column <code>reportcard.build.build_created</code>.
      */
     public final TableField<BuildRecord, LocalDateTime> BUILD_CREATED = createField(DSL.name("build_created"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false).defaultValue(org.jooq.impl.DSL.field("CURRENT_TIMESTAMP", org.jooq.impl.SQLDataType.LOCALDATETIME)), this, "");
-
-    /**
-     * The column <code>reportcard.build.build_external_identifier</code>.
-     */
-    public final TableField<BuildRecord, String> BUILD_EXTERNAL_IDENTIFIER = createField(DSL.name("build_external_identifier"), org.jooq.impl.SQLDataType.VARCHAR(45), this, "");
-
-    /**
-     * The column <code>reportcard.build.build_sha</code>.
-     */
-    public final TableField<BuildRecord, String> BUILD_SHA = createField(DSL.name("build_sha"), org.jooq.impl.SQLDataType.VARCHAR(45), this, "");
 
     /**
      * Create a <code>reportcard.build</code> table reference
@@ -120,7 +110,7 @@ public class Build extends TableImpl<BuildRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.BUILD_APP_IDX);
+        return Arrays.<Index>asList(Indexes.BUILD_APP_IDX, Indexes.BUILD_BUILD_CREATED);
     }
 
     @Override
@@ -135,7 +125,7 @@ public class Build extends TableImpl<BuildRecord> {
 
     @Override
     public List<UniqueKey<BuildRecord>> getKeys() {
-        return Arrays.<UniqueKey<BuildRecord>>asList(Keys.KEY_BUILD_PRIMARY);
+        return Arrays.<UniqueKey<BuildRecord>>asList(Keys.KEY_BUILD_PRIMARY, Keys.KEY_BUILD_BUILD_UNIQUE_STRING_IDX);
     }
 
     @Override
@@ -174,11 +164,11 @@ public class Build extends TableImpl<BuildRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row6 type methods
+    // Row4 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row6<Long, Integer, Integer, LocalDateTime, String, String> fieldsRow() {
-        return (Row6) super.fieldsRow();
+    public Row4<Long, Integer, String, LocalDateTime> fieldsRow() {
+        return (Row4) super.fieldsRow();
     }
 }
