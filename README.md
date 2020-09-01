@@ -14,3 +14,4 @@ TODO PROTOTYPE:
 TODO MVP:
 * secure secrets
 * db migration tool (flyway)
+* tests for uniqueness constraints all tables

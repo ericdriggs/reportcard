@@ -16,6 +16,8 @@ import static org.junit.jupiter.api.Assertions.*;
 //@EnableConfigurationProperties
 public class GetBuildStagePathTest extends AbstractDbTest {
 
+    final static String buildUniqueString = "9282be75-6ca5-424b-a7ec-13d13370ba90";
+
     @Autowired
     public GetBuildStagePathTest(ReportCardService reportCardService ) {
         super(reportCardService);
@@ -30,7 +32,7 @@ public class GetBuildStagePathTest extends AbstractDbTest {
                 .setRepoName("default")
                 .setAppName("app1")
                 .setBranchName("master")
-                .setBuildOrdinal(1)
+                .setBuildUniqueString(buildUniqueString)
                 .setStageName("unit");
 
         BuildStagePath bsp = reportCardService.getBuildStagePath(request);
@@ -49,7 +51,7 @@ public class GetBuildStagePathTest extends AbstractDbTest {
         assertEquals(bsp.getApp().getAppName(), request.getAppName());
         assertEquals(bsp.getBranch().getBranchName(), request.getBranchName());
         assertNotNull(bsp.getAppBranch().getAppBranchId());
-        assertEquals(bsp.getBuild().getAppBranchBuildOrdinal(), request.getBuildOrdinal());
+        assertEquals(bsp.getBuild().getBuildUniqueString(), request.getBuildUniqueString());
         assertEquals(bsp.getStage().getStageName(), request.getStageName());
         assertNotNull(bsp.getBuildStage().getBuildStageId());
     }
@@ -63,7 +65,7 @@ public class GetBuildStagePathTest extends AbstractDbTest {
                         .setRepoName("default")
                         .setAppName("app1")
                         .setBranchName("master")
-                        .setBuildOrdinal(-1)
+                        .setBuildUniqueString("not_found")
                         .setStageName("unit");
 
         BuildStagePath bsp = reportCardService.getBuildStagePath(request);
@@ -96,7 +98,7 @@ public class GetBuildStagePathTest extends AbstractDbTest {
                         .setRepoName("default")
                         .setAppName("not_found")
                         .setBranchName("master")
-                        .setBuildOrdinal(-1)
+                        .setBuildUniqueString("not_found")
                         .setStageName("not_found");
 
         BuildStagePath bsp = reportCardService.getBuildStagePath(request);
@@ -130,7 +132,7 @@ public class GetBuildStagePathTest extends AbstractDbTest {
                         .setRepoName("default")
                         .setAppName("app1")
                         .setBranchName("not_found")
-                        .setBuildOrdinal(-1)
+                        .setBuildUniqueString("not_found")
                         .setStageName("not_found");
 
         BuildStagePath bsp = reportCardService.getBuildStagePath(request);

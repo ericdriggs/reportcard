@@ -226,7 +226,7 @@ public class ReportCardService {
     }
 
 
-    public Build getBuild(String org, String repo, String app, String branch, Integer appBranchBuildOrdinal) {
+    public Build getBuild(String org, String repo, String app, String branch, String buildUniqueString) {
         final com.ericdriggs.reportcard.db.tables.Repo REPO2 = REPO.as("REPO2");
 
         Build ret = dsl.
@@ -243,14 +243,14 @@ public class ReportCardService {
                 .and(REPO.REPO_NAME.eq(repo))
                 .and(APP.APP_NAME.eq(app))
                 .and(BRANCH.BRANCH_NAME.eq(branch))
-                .and(BUILD.APP_BRANCH_BUILD_ORDINAL.eq(appBranchBuildOrdinal))
+                .and(BUILD.BUILD_UNIQUE_STRING.eq(buildUniqueString))
                 .fetchOne()
                 .into(Build.class);
         if (ret == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     "Unable to find org:" + org + ", repo: " + repo +
                             ", app: " + app + ", branch: " + branch +
-                            ", appBranchBuildOrdinal: " + appBranchBuildOrdinal);
+                            ", buildUniqueString: " + buildUniqueString);
         }
         return ret;
     }
@@ -307,7 +307,7 @@ public class ReportCardService {
         return ret;
     }
 
-    public Stage getBuildStage(String org, String repo, String app, String branch, Integer buildOrdinal, String stage) {
+    public Stage getBuildStage(String org, String repo, String app, String branch, String buildUniqueString, String stage) {
         final com.ericdriggs.reportcard.db.tables.Repo REPO2 = REPO.as("REPO2");
 
         Stage ret = dsl.
@@ -326,7 +326,7 @@ public class ReportCardService {
                 .and(REPO.REPO_NAME.eq(repo))
                 .and(APP.APP_NAME.eq(app))
                 .and(BRANCH.BRANCH_NAME.eq(branch))
-                .and(BUILD.APP_BRANCH_BUILD_ORDINAL.eq(buildOrdinal))
+                .and(BUILD.BUILD_UNIQUE_STRING.eq(buildUniqueString))
                 .and(STAGE.STAGE_NAME.eq(stage))
                 .fetchOne()
                 .into(Stage.class);
@@ -350,7 +350,7 @@ public class ReportCardService {
                         .leftJoin(APP).on(APP.REPO_FK.eq(REPO.REPO_ID)).and(APP.APP_NAME.eq(request.getAppName()))
                         .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)).and(BRANCH.BRANCH_NAME.eq(request.getBranchName()))
                         .leftJoin(APP_BRANCH).on(APP_BRANCH.APP_FK.eq(APP.APP_ID).and(APP_BRANCH.BRANCH_FK.eq(BRANCH.BRANCH_ID)))
-                        .leftJoin(BUILD).on(BUILD.APP_BRANCH_FK.eq(APP_BRANCH.APP_BRANCH_ID)).and(BUILD.APP_BRANCH_BUILD_ORDINAL.eq(request.getBuildOrdinal()))
+                        .leftJoin(BUILD).on(BUILD.APP_BRANCH_FK.eq(APP_BRANCH.APP_BRANCH_ID)).and(BUILD.BUILD_UNIQUE_STRING.eq(request.getBuildUniqueString()))
                         .leftJoin(STAGE).on(STAGE.APP_BRANCH_FK.eq(APP_BRANCH.APP_BRANCH_ID)).and(STAGE.STAGE_NAME.eq(request.getStageName()))
                         .leftJoin(BUILD_STAGE).on(BUILD_STAGE.BUILD_FK.eq(BUILD.BUILD_ID).and(BUILD_STAGE.STAGE_FK.eq(STAGE.STAGE_ID)))
                 ).where(ORG.ORG_NAME.eq(request.getOrgName()))
@@ -414,18 +414,6 @@ public class ReportCardService {
     public BuildStagePath getOrInsertBuildStagePath(BuildStagePathRequest request) {
         BuildStagePath path = getBuildStagePath(request);
 
-//        if (path.getOrg() == null) {
-//            Record record = dsl
-//                    .insertInto(ORG, ORG.ORG_NAME)
-//                    .values(request.getOrgName())
-//                    .onConflictDoNothing()
-//                    .returningResult(ORG.ORG_ID)
-//                    .fetchOne();
-//
-//            Org org = record.into(OrgRecord.class).into(Org.class);
-//            path.setOrg(org);
-//        }
-
         if (path.getOrg() == null) {
             Org org = new Org()
                     .setOrgName(request.getOrgName());
@@ -467,7 +455,7 @@ public class ReportCardService {
 
         if (path.getBuild() == null) {
             Build build = new Build()
-                    .setAppBranchBuildOrdinal(request.getBuildOrdinal())
+                    .setBuildUniqueString(request.getBuildUniqueString())
                     .setAppBranchFk(path.getAppBranch().getAppBranchId());
             buildDao.insert(build);
             path.setBuild(build);

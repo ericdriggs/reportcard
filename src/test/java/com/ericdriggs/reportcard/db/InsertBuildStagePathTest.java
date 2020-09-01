@@ -13,6 +13,8 @@ import static org.junit.jupiter.api.Assertions.*;
 //@EnableConfigurationProperties
 public class InsertBuildStagePathTest extends AbstractDbTest {
 
+    final String buildUniqueString = "64bb0231-9a2e-4492-bbd1-e0aeba24c982";
+
     @Autowired
     public InsertBuildStagePathTest(ReportCardService reportCardService ) {
         super(reportCardService);
@@ -27,7 +29,7 @@ public class InsertBuildStagePathTest extends AbstractDbTest {
                 .setRepoName("newRepo")
                 .setAppName("newApp")
                 .setBranchName("newBranch")
-                .setBuildOrdinal(1)
+                .setBuildUniqueString(buildUniqueString)
                 .setStageName("newStage");
 
         BuildStagePath bsp = reportCardService.getOrInsertBuildStagePath(request);
@@ -47,7 +49,7 @@ public class InsertBuildStagePathTest extends AbstractDbTest {
         assertEquals(bsp.getApp().getAppName(), request.getAppName());
         assertEquals(bsp.getBranch().getBranchName(), request.getBranchName());
         assertNotNull(bsp.getAppBranch().getAppBranchId());
-        assertEquals(bsp.getBuild().getAppBranchBuildOrdinal(), request.getBuildOrdinal());
+        assertEquals(bsp.getBuild().getBuildUniqueString(), request.getBuildUniqueString());
         assertEquals(bsp.getStage().getStageName(), request.getStageName());
         assertNotNull(bsp.getBuildStage().getBuildStageId());
     }

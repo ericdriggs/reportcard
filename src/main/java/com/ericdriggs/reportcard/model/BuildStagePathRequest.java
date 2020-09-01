@@ -9,7 +9,7 @@ public class BuildStagePathRequest {
     private String repoName;
     private String appName;
     private String branchName;
-    private Integer buildOrdinal;
+    private String buildUniqueString;
     private String stageName;
 
 }

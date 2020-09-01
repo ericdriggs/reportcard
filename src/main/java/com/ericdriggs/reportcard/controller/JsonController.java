@@ -91,10 +91,10 @@ public class JsonController {
             @PathVariable String repo,
             @PathVariable String app,
             @PathVariable String branch,
-            @PathVariable Integer buildOrdinal
+            @PathVariable String buildUniqueString
 
     ) {
-        return new ResponseEntity<>(reportCardService.getBuild(org, repo, app, branch, buildOrdinal), HttpStatus.OK);
+        return new ResponseEntity<>(reportCardService.getBuild(org, repo, app, branch, buildUniqueString), HttpStatus.OK);
     }
 
     @GetMapping(path = {"/orgs/{org}/repos/{repo}/apps/{app}/branches/{branch}/stages",
@@ -136,11 +136,11 @@ public class JsonController {
             @PathVariable String repo,
             @PathVariable String app,
             @PathVariable String branch,
-            @PathVariable Integer buildOrdinal,
+            @PathVariable String buildUniqueString,
             @PathVariable String stage
 
     ) {
-        return new ResponseEntity<>(reportCardService.getBuildStage(org, repo, app, branch, buildOrdinal, stage), HttpStatus.OK);
+        return new ResponseEntity<>(reportCardService.getBuildStage(org, repo, app, branch, buildUniqueString, stage), HttpStatus.OK);
     }
 
 }
