@@ -14,13 +14,13 @@ public enum TestStatus {
 
     }
 
-    private int statusId;
+    private final int statusId;
 
     public int getStatusId() {
         return statusId;
     }
 
-    private static volatile Map<Integer, TestStatus> testStatusMap = new HashMap<>();
+    private static final Map<Integer, TestStatus> testStatusMap = new HashMap<>();
 
     private static void initMap() {
         if (testStatusMap.isEmpty()) {
