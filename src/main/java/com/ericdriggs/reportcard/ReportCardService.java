@@ -62,10 +62,6 @@ public class ReportCardService {
     }
 
 
-//    protected Connection getConnection() {
-//        return dsl.
-//    }
-
 
     public List<Org> getOrgs() {
         return dsl.select().from(ORG)
