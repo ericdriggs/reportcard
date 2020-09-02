@@ -16,7 +16,7 @@ public class InsertBuildStagePathTest extends AbstractDbTest {
     final String buildUniqueString = "64bb0231-9a2e-4492-bbd1-e0aeba24c982";
 
     @Autowired
-    public InsertBuildStagePathTest(ReportCardService reportCardService ) {
+    public InsertBuildStagePathTest(ReportCardService reportCardService) {
         super(reportCardService);
     }
 
@@ -26,11 +26,11 @@ public class InsertBuildStagePathTest extends AbstractDbTest {
         BuildStagePathRequest request =
                 new BuildStagePathRequest()
                         .setOrgName("newOrg")
-                .setRepoName("newRepo")
-                .setAppName("newApp")
-                .setBranchName("newBranch")
-                .setBuildUniqueString(buildUniqueString)
-                .setStageName("newStage");
+                        .setRepoName("newRepo")
+                        .setAppName("newApp")
+                        .setBranchName("newBranch")
+                        .setBuildUniqueString(buildUniqueString)
+                        .setStageName("newStage");
 
         BuildStagePath bsp = reportCardService.getOrInsertBuildStagePath(request);
 
@@ -44,13 +44,13 @@ public class InsertBuildStagePathTest extends AbstractDbTest {
         assertNotNull(bsp.getStage());
         assertNotNull(bsp.getBuildStage());
 
-        assertEquals(bsp.getOrg().getOrgName(), request.getOrgName());
-        assertEquals(bsp.getRepo().getRepoName(), request.getRepoName());
-        assertEquals(bsp.getApp().getAppName(), request.getAppName());
-        assertEquals(bsp.getBranch().getBranchName(), request.getBranchName());
+        assertEquals(request.getOrgName(), bsp.getOrg().getOrgName());
+        assertEquals(request.getRepoName(), bsp.getRepo().getRepoName());
+        assertEquals(request.getAppName(), bsp.getApp().getAppName());
+        assertEquals(request.getBranchName(), bsp.getBranch().getBranchName());
         assertNotNull(bsp.getAppBranch().getAppBranchId());
-        assertEquals(bsp.getBuild().getBuildUniqueString(), request.getBuildUniqueString());
-        assertEquals(bsp.getStage().getStageName(), request.getStageName());
+        assertEquals(request.getBuildUniqueString(), bsp.getBuild().getBuildUniqueString());
+        assertEquals(request.getStageName(), bsp.getStage().getStageName());
         assertNotNull(bsp.getBuildStage().getBuildStageId());
     }
 

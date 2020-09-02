@@ -7,7 +7,6 @@ import com.ericdriggs.reportcard.db.tables.pojos.*;
 import com.ericdriggs.reportcard.db.tables.records.*;
 import com.ericdriggs.reportcard.model.BuildStagePath;
 import com.ericdriggs.reportcard.model.BuildStagePathRequest;
-import com.ericdriggs.reportcard.xml.testng.Run;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.modelmapper.ModelMapper;
@@ -38,7 +37,7 @@ public class ReportCardService {
     final AppDao appDao;
     final BranchDao branchDao;
     final AppBranchDao appBranchDao;
-    final BuildDao buildDao;
+//    final BuildDao buildDao;
     final StageDao stageDao;
     final BuildStageDao buildStageDao;
 
@@ -57,7 +56,7 @@ public class ReportCardService {
         appDao = new AppDao(dsl.configuration());
         branchDao = new BranchDao(dsl.configuration());
         appBranchDao = new AppBranchDao(dsl.configuration());
-        buildDao = new BuildDao(dsl.configuration());
+//        buildDao = new BuildDao(dsl.configuration());
         stageDao = new StageDao(dsl.configuration());
         buildStageDao = new BuildStageDao(dsl.configuration());
     }
@@ -482,13 +481,19 @@ public class ReportCardService {
             buildStagePath.setAppBranch(appBranch);
         }
 
+        //Can't use dao since won't handle null columns correctly
         if (buildStagePath.getBuild() == null) {
-            Build build = new Build()
-                    .setBuildUniqueString(request.getBuildUniqueString())
-                    .setAppBranchFk(buildStagePath.getAppBranch().getAppBranchId());
-            buildDao.insert(build);
+            Record record = dsl
+                    .insertInto(BUILD, BUILD.APP_BRANCH_FK, BUILD.BUILD_UNIQUE_STRING)
+                    .values(buildStagePath.getAppBranch().getAppBranchId(), request.getBuildUniqueString())
+                    .onConflictDoNothing()
+                    .returning()
+                    .fetchOne();
+
+            Build build = record.into(BuildRecord.class).into(Build.class);
             buildStagePath.setBuild(build);
         }
+
         if (buildStagePath.getStage() == null) {
             Stage stage = new Stage()
                     .setStageName(request.getStageName())
