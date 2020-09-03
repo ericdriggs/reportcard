@@ -543,8 +543,7 @@ public class ReportCardService {
             testResult.setTestSuites(testSuites);
 
             for (TestSuite testSuite : testResult.getTestSuites()) {
-                List<TestCase> testCases = new ArrayList<>();
-                List<TestCase> testCaseRecords = dsl.
+                List<TestCase> testCases = dsl.
                         select(TEST_CASE.fields())
                         .from(TEST_CASE
                                 .join(TEST_SUITE).on(TEST_CASE.TEST_SUITE_FK.eq(TEST_SUITE.TEST_SUITE_ID))
