@@ -14,11 +14,11 @@ public class BuildStagePath {
     private Stage stage;
     private BuildStage buildStage;
 
-    private boolean isEmpty() {
+    public boolean isEmpty() {
         return org == null;
     }
 
-    private boolean isComplete() {
+    public boolean isComplete() {
         return org != null
                 && repo != null
                 && app != null

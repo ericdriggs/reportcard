@@ -10,7 +10,7 @@ public class TestSuite extends com.ericdriggs.reportcard.db.tables.pojos.TestSui
         return testCases;
     }
 
-    public TestSuite setTestSuites( List<TestCase> testCases) {
+    public TestSuite setTestCases( List<TestCase> testCases) {
         this.testCases = testCases;
         return this;
     }

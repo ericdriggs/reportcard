@@ -36,15 +36,7 @@ public class GetBuildStagePathTest extends AbstractDbTest {
                 .setStageName("unit");
 
         BuildStagePath bsp = reportCardService.getBuildStagePath(request);
-        assertNotNull(bsp);
-        assertNotNull(bsp.getOrg());
-        assertNotNull(bsp.getRepo());
-        assertNotNull(bsp.getApp());
-        assertNotNull(bsp.getBranch());
-        assertNotNull(bsp.getAppBranch());
-        assertNotNull(bsp.getBuild());
-        assertNotNull(bsp.getStage());
-        assertNotNull(bsp.getBuildStage());
+        assertTrue(bsp.isComplete());
 
         assertEquals(bsp.getOrg().getOrgName(), request.getOrgName());
         assertEquals(bsp.getRepo().getRepoName(), request.getRepoName());

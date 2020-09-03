@@ -1,5 +1,6 @@
 package com.ericdriggs.reportcard;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.ericdriggs.reportcard.db.tables.daos.*;
@@ -7,13 +8,19 @@ import com.ericdriggs.reportcard.db.tables.pojos.*;
 import com.ericdriggs.reportcard.db.tables.records.*;
 import com.ericdriggs.reportcard.model.BuildStagePath;
 import com.ericdriggs.reportcard.model.BuildStagePathRequest;
+import com.ericdriggs.reportcard.model.TestResult;
+import com.ericdriggs.reportcard.model.TestSuite;
+import com.ericdriggs.reportcard.model.TestCase;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
 
 import static com.ericdriggs.reportcard.db.Tables.*;
 
@@ -26,6 +33,8 @@ import static com.ericdriggs.reportcard.db.Tables.*;
  */
 public class ReportCardService {
 
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
+
     @Autowired
     DSLContext dsl;
 
@@ -37,9 +46,13 @@ public class ReportCardService {
     final AppDao appDao;
     final BranchDao branchDao;
     final AppBranchDao appBranchDao;
-//    final BuildDao buildDao;
+    //    final BuildDao buildDao;
     final StageDao stageDao;
     final BuildStageDao buildStageDao;
+
+    final TestResultDao testResultDao;
+    final TestSuiteDao testSuiteDao;
+    final TestCaseDao testCaseDao;
 
 
     private ReportCardService() {
@@ -59,8 +72,10 @@ public class ReportCardService {
 //        buildDao = new BuildDao(dsl.configuration());
         stageDao = new StageDao(dsl.configuration());
         buildStageDao = new BuildStageDao(dsl.configuration());
+        testResultDao = new TestResultDao(dsl.configuration());
+        testSuiteDao = new TestSuiteDao(dsl.configuration());
+        testCaseDao = new TestCaseDao(dsl.configuration());
     }
-
 
 
     public List<Org> getOrgs() {
@@ -405,12 +420,11 @@ public class ReportCardService {
     }
 
     /**
-     *
      * @param request a BuildStagePathRequest with the fields to match on
      * @return
      */
     public BuildStagePath getOrInsertBuildStagePath(BuildStagePathRequest request) {
-        return getOrInsertBuildStagePath(request,  null);
+        return getOrInsertBuildStagePath(request, null);
     }
 
     /**
@@ -422,7 +436,8 @@ public class ReportCardService {
 
     /**
      * prefer public method -- t
-     * @param request a BuildStagePathRequest
+     *
+     * @param request        a BuildStagePathRequest
      * @param buildStagePath normally null, only values passed for testing
      * @return
      */
@@ -507,5 +522,110 @@ public class ReportCardService {
         return buildStagePath;
     }
 
+    public List<TestResult> getTestResults(Long buildStageId) {
+
+        List<TestResult> testResults = dsl.
+                select(TEST_RESULT.fields())
+                .from(BUILD_STAGE
+                        .join(TEST_RESULT).on(TEST_RESULT.BUILD_STAGE_FK.eq(BUILD_STAGE.BUILD_STAGE_ID))
+                ).where(BUILD_STAGE.BUILD_STAGE_ID.eq(buildStageId))
+                .fetchInto(TestResult.class);
+
+        for (TestResult testResult : testResults) {
+
+            List<TestSuite> testSuites = dsl.
+                    select(TEST_SUITE.fields())
+                    .from(TEST_RESULT
+                            .join(TEST_SUITE).on(TEST_SUITE.TEST_RESULT_FK.eq(TEST_RESULT.TEST_RESULT_ID))
+                    ).where(TEST_SUITE.TEST_SUITE_ID.eq(testResult.getTestResultId()))
+                    .fetchInto(TestSuite.class);
+
+            testResult.setTestSuites(testSuites);
+
+            for (TestSuite testSuite : testResult.getTestSuites()) {
+                List<TestCase> testCases = new ArrayList<>();
+                List<TestCase> testCaseRecords = dsl.
+                        select(TEST_CASE.fields())
+                        .from(TEST_CASE
+                                .join(TEST_SUITE).on(TEST_CASE.TEST_SUITE_FK.eq(TEST_SUITE.TEST_SUITE_ID))
+                        ).where(TEST_CASE.TEST_CASE_ID.eq(testSuite.getTestSuiteId()))
+                        .fetchInto(TestCase.class);
+
+                testSuite.setTestCases(testCases);
+            }
+
+        }
+        return testResults;
+    }
+
+    public TestResult insertTestResult(TestResult testResult) {
+
+        if (testResult.getBuildStageFk() == null) {
+            throw new NullPointerException("testResult.getBuildStageFk()");
+        }
+
+        if (testResult.getTestResultId() == null) {
+            List<TestSuite> testSuites = testResult.getTestSuites();
+            TestResultRecord testResultRecord = dsl.newRecord(TEST_RESULT);
+            testResultRecord.setBuildStageFk(testResult.getBuildStageFk())
+                    .setError(testResult.getError())
+                    .setFailure(testResult.getFailure())
+                    .setSkipped(testResult.getSkipped())
+                    .setTests(testResult.getTests())
+                    .setTime(testResult.getTime())
+                    .store();
+            testResult = testResultRecord.into(TestResult.class);
+            testResult.setTestSuites(testSuites);
+        }
+
+//        List<TestSuite> testSuites = testResult.getTestSuites();
+        if (testResult.getTestSuites().isEmpty()) {
+            log.warn("testSuites.isEmpty()");
+        }
+
+        List<TestSuite> testSuites = new ArrayList<>();
+        for (TestSuite testSuite : testResult.getTestSuites()) {
+            if (testSuite.getTestSuiteId() == null) {
+                List<TestCase> testCases = testSuite.getTestCases();
+                TestSuiteRecord testSuiteRecord = dsl.newRecord(TEST_SUITE);
+                testSuiteRecord.setTestResultFk(testResult.getTestResultId())
+                        .setError(testSuite.getError())
+                        .setFailure(testSuite.getFailure())
+                        .setSkipped(testSuite.getSkipped())
+                        .setTests(testSuite.getTests())
+                        .setTime(testSuite.getTime())
+                        .setPackage(testSuite.getPackage())
+                        .store();
+
+                testSuite = testSuiteRecord.into(TestSuite.class);
+                testSuite.setTestCases(testCases);
+                testSuites.add(testSuite);
+            }
+//            final List<TestCase> testCases = testSuite.getTestCases();
+            if (testSuite.getTestCases().isEmpty()) {
+                log.warn("testCases.isEmpty()");
+            }
+
+            final List<TestCase> testCases = new ArrayList<>();
+            for (TestCase testCase : testSuite.getTestCases()) {
+                if (testCase.getTestCaseId() == null) {
+                    TestCaseRecord testCaseRecord = dsl.newRecord(TEST_CASE);
+                    testCaseRecord.setTestSuiteFk(testSuite.getTestSuiteId())
+                            .setClassName(testCase.getClassName())
+                            .setTestCaseName(testCase.getTestCaseName())
+                            .setTestStatusFk(testCase.getTestStatusFk())
+                            .setTime(testCase.getTime())
+                            .store();
+
+                    testCase = testCaseRecord.into(TestCase.class);
+                    testCases.add(testCase);
+                }
+            }
+            testSuite.setTestCases(testCases);
+        }
+        testResult.setTestSuites(testSuites);
+
+        return testResult;
+    }
 
 }
