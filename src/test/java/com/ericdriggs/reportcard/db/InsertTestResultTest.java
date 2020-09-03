@@ -26,6 +26,28 @@ public class InsertTestResultTest extends AbstractDbTest {
     @Test
     public void insertTestResultTest() {
 
+        final TestResult testResultBefore = getInsertableTestResult();
+        final TestResult testResultAfter = reportCardService.insertTestResult(testResultBefore);
+
+        assertNotNull(testResultAfter.getTestResultId());
+        assertFalse(testResultAfter.getTestSuites().isEmpty());
+
+        TestSuite testSuite = testResultAfter.getTestSuites().get(0);
+        assertNotNull(testSuite.getTestSuiteId());
+        assertNotNull(testSuite.getTestCases());
+
+
+        TestCase testCase = testSuite.getTestCases().get(0);
+        assertNotNull(testCase);
+        //TODO: more assertions on values
+
+        //TODO: do get and validate matches, use fixture for validating values and comparing
+
+    }
+
+
+    TestResult getInsertableTestResult() {
+
         BuildStagePath bsp = null;
         {
             BuildStagePathRequest request =
@@ -89,20 +111,7 @@ public class InsertTestResultTest extends AbstractDbTest {
 
         assertFalse(testResult.getTestSuites().isEmpty());
         assertFalse(testResult.getTestSuites().get(0).getTestCases().isEmpty());
-        testResult = reportCardService.insertTestResult(testResult);
-
-        assertNotNull(testResult.getTestResultId());
-        assertFalse(testResult.getTestSuites().isEmpty());
-
-        TestSuite testSuite = testResult.getTestSuites().get(0);
-        assertNotNull(testSuite.getTestSuiteId());
-        assertNotNull(testSuite.getTestCases());
-
-
-        TestCase testCase = testSuite.getTestCases().get(0);
-        assertNotNull(testCase);
-        fail("more assertions needed");
-
+        return testResult;
     }
 
 }
