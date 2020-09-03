@@ -56,8 +56,8 @@ public class InsertTestResultTest extends AbstractDbTest {
         assertIdsandFks(testResultInsert);
 
         final List<TestResult> testResultsGet = reportCardService.getTestResults(testResultBefore.getBuildStageFk());
-        assertEquals(1, testResultsGet.size());
-        final TestResult testResultGet = testResultsGet.get(0);
+        assertEquals(2, testResultsGet.size());
+        final TestResult testResultGet = testResultsGet.get(1);
         assertValues(testResultGet);
         assertIdsandFks(testResultGet);
     }
