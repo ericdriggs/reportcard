@@ -146,7 +146,7 @@ CREATE TABLE IF NOT EXISTS `build` (
                                                ON DELETE CASCADE
                                                ON UPDATE CASCADE)
     ENGINE = InnoDB
-    AUTO_INCREMENT = 2
+    AUTO_INCREMENT = 3
     DEFAULT CHARACTER SET = utf8mb4
     COLLATE = utf8mb4_0900_ai_ci;
 
@@ -209,7 +209,7 @@ CREATE TABLE IF NOT EXISTS `test_status` (
                                              `test_status_name` CHAR(8) NOT NULL,
                                              PRIMARY KEY (`test_status_id`))
     ENGINE = InnoDB
-    AUTO_INCREMENT = 5
+    AUTO_INCREMENT = 9
     DEFAULT CHARACTER SET = utf8mb4
     COLLATE = utf8mb4_0900_ai_ci;
 
@@ -225,7 +225,7 @@ CREATE TABLE IF NOT EXISTS `test_result` (
                                              `skipped` INT UNSIGNED NOT NULL,
                                              `error` INT UNSIGNED NOT NULL,
                                              `failure` INT UNSIGNED NOT NULL,
-                                             `time` DECIMAL(10,0) UNSIGNED NOT NULL,
+                                             `time` DECIMAL(9,3) UNSIGNED NOT NULL,
                                              `test_result_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                                              `is_success` TINYINT GENERATED ALWAYS AS (((`failure` + `error`) = 0)) VIRTUAL,
                                              `has_skip` TINYINT GENERATED ALWAYS AS ((`skipped` > 0)) VIRTUAL,
@@ -253,7 +253,7 @@ CREATE TABLE IF NOT EXISTS `test_suite` (
                                             `skipped` INT NOT NULL,
                                             `error` INT NOT NULL,
                                             `failure` INT NOT NULL,
-                                            `time` DECIMAL(10,0) NOT NULL,
+                                            `time` DECIMAL(9,3) NOT NULL,
                                             `is_success` TINYINT GENERATED ALWAYS AS (((`failure` + `error`) = 0)) VIRTUAL,
                                             `has_skip` TINYINT GENERATED ALWAYS AS ((`skipped` > 0)) VIRTUAL,
                                             PRIMARY KEY (`test_suite_id`),
@@ -276,8 +276,8 @@ CREATE TABLE IF NOT EXISTS `test_case` (
                                            `test_case_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
                                            `test_suite_fk` BIGINT UNSIGNED NOT NULL,
                                            `test_case_name` VARCHAR(1024) NOT NULL,
-                                           `class_name` VARCHAR(8096) NOT NULL,
-                                           `time` DECIMAL(10,0) NOT NULL,
+                                           `class_name` VARCHAR(4096) NOT NULL,
+                                           `time` DECIMAL(9,3) NOT NULL,
                                            `test_status_fk` TINYINT NOT NULL,
                                            PRIMARY KEY (`test_case_id`),
                                            INDEX `fk_test_case_status_idx` (`test_status_fk` ASC) VISIBLE,
