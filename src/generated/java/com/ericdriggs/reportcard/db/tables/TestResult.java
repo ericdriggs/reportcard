@@ -9,6 +9,7 @@ import com.ericdriggs.reportcard.db.Keys;
 import com.ericdriggs.reportcard.db.Reportcard;
 import com.ericdriggs.reportcard.db.tables.records.TestResultRecord;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -35,7 +36,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestResult extends TableImpl<TestResultRecord> {
 
-    private static final long serialVersionUID = -1987178258;
+    private static final long serialVersionUID = 1580938508;
 
     /**
      * The reference instance of <code>reportcard.test_result</code>
@@ -83,7 +84,7 @@ public class TestResult extends TableImpl<TestResultRecord> {
     /**
      * The column <code>reportcard.test_result.time</code>.
      */
-    public final TableField<TestResultRecord, Long> TIME = createField(DSL.name("time"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
+    public final TableField<TestResultRecord, BigDecimal> TIME = createField(DSL.name("time"), org.jooq.impl.SQLDataType.DECIMAL(9, 3).nullable(false), this, "");
 
     /**
      * The column <code>reportcard.test_result.test_result_created</code>.
@@ -198,7 +199,7 @@ public class TestResult extends TableImpl<TestResultRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row10<Long, Long, Integer, Integer, Integer, Integer, Long, LocalDateTime, Byte, Byte> fieldsRow() {
+    public Row10<Long, Long, Integer, Integer, Integer, Integer, BigDecimal, LocalDateTime, Byte, Byte> fieldsRow() {
         return (Row10) super.fieldsRow();
     }
 }

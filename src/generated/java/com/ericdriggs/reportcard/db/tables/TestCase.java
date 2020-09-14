@@ -9,6 +9,7 @@ import com.ericdriggs.reportcard.db.Keys;
 import com.ericdriggs.reportcard.db.Reportcard;
 import com.ericdriggs.reportcard.db.tables.records.TestCaseRecord;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
@@ -34,7 +35,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestCase extends TableImpl<TestCaseRecord> {
 
-    private static final long serialVersionUID = -270510046;
+    private static final long serialVersionUID = 1257354898;
 
     /**
      * The reference instance of <code>reportcard.test_case</code>
@@ -67,12 +68,12 @@ public class TestCase extends TableImpl<TestCaseRecord> {
     /**
      * The column <code>reportcard.test_case.class_name</code>.
      */
-    public final TableField<TestCaseRecord, String> CLASS_NAME = createField(DSL.name("class_name"), org.jooq.impl.SQLDataType.VARCHAR(8096).nullable(false), this, "");
+    public final TableField<TestCaseRecord, String> CLASS_NAME = createField(DSL.name("class_name"), org.jooq.impl.SQLDataType.VARCHAR(4096).nullable(false), this, "");
 
     /**
      * The column <code>reportcard.test_case.time</code>.
      */
-    public final TableField<TestCaseRecord, Long> TIME = createField(DSL.name("time"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
+    public final TableField<TestCaseRecord, BigDecimal> TIME = createField(DSL.name("time"), org.jooq.impl.SQLDataType.DECIMAL(9, 3).nullable(false), this, "");
 
     /**
      * The column <code>reportcard.test_case.test_status_fk</code>.
@@ -181,7 +182,7 @@ public class TestCase extends TableImpl<TestCaseRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row6<Long, Long, String, String, Long, Byte> fieldsRow() {
+    public Row6<Long, Long, String, String, BigDecimal, Byte> fieldsRow() {
         return (Row6) super.fieldsRow();
     }
 }

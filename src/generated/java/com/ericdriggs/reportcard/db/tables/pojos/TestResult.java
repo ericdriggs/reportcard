@@ -5,6 +5,7 @@ package com.ericdriggs.reportcard.db.tables.pojos;
 
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 
@@ -14,7 +15,7 @@ import java.time.LocalDateTime;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestResult implements Serializable {
 
-    private static final long serialVersionUID = -262331089;
+    private static final long serialVersionUID = -1424353928;
 
     private Long          testResultId;
     private Long          buildStageFk;
@@ -22,7 +23,7 @@ public class TestResult implements Serializable {
     private Integer       skipped;
     private Integer       error;
     private Integer       failure;
-    private Long          time;
+    private BigDecimal    time;
     private LocalDateTime testResultCreated;
     private Byte          isSuccess;
     private Byte          hasSkip;
@@ -49,7 +50,7 @@ public class TestResult implements Serializable {
         Integer       skipped,
         Integer       error,
         Integer       failure,
-        Long          time,
+        BigDecimal    time,
         LocalDateTime testResultCreated,
         Byte          isSuccess,
         Byte          hasSkip
@@ -120,11 +121,11 @@ public class TestResult implements Serializable {
         return this;
     }
 
-    public Long getTime() {
+    public BigDecimal getTime() {
         return this.time;
     }
 
-    public TestResult setTime(Long time) {
+    public TestResult setTime(BigDecimal time) {
         this.time = time;
         return this;
     }

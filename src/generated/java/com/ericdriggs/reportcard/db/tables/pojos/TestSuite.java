@@ -5,6 +5,7 @@ package com.ericdriggs.reportcard.db.tables.pojos;
 
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 
 /**
@@ -13,18 +14,18 @@ import java.io.Serializable;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestSuite implements Serializable {
 
-    private static final long serialVersionUID = 377455660;
+    private static final long serialVersionUID = 1176758815;
 
-    private Long    testSuiteId;
-    private Long    testResultFk;
-    private String  package_;
-    private Integer tests;
-    private Integer skipped;
-    private Integer error;
-    private Integer failure;
-    private Long    time;
-    private Byte    isSuccess;
-    private Byte    hasSkip;
+    private Long       testSuiteId;
+    private Long       testResultFk;
+    private String     package_;
+    private Integer    tests;
+    private Integer    skipped;
+    private Integer    error;
+    private Integer    failure;
+    private BigDecimal time;
+    private Byte       isSuccess;
+    private Byte       hasSkip;
 
     public TestSuite() {}
 
@@ -42,16 +43,16 @@ public class TestSuite implements Serializable {
     }
 
     public TestSuite(
-        Long    testSuiteId,
-        Long    testResultFk,
-        String  package_,
-        Integer tests,
-        Integer skipped,
-        Integer error,
-        Integer failure,
-        Long    time,
-        Byte    isSuccess,
-        Byte    hasSkip
+        Long       testSuiteId,
+        Long       testResultFk,
+        String     package_,
+        Integer    tests,
+        Integer    skipped,
+        Integer    error,
+        Integer    failure,
+        BigDecimal time,
+        Byte       isSuccess,
+        Byte       hasSkip
     ) {
         this.testSuiteId = testSuiteId;
         this.testResultFk = testResultFk;
@@ -128,11 +129,11 @@ public class TestSuite implements Serializable {
         return this;
     }
 
-    public Long getTime() {
+    public BigDecimal getTime() {
         return this.time;
     }
 
-    public TestSuite setTime(Long time) {
+    public TestSuite setTime(BigDecimal time) {
         this.time = time;
         return this;
     }

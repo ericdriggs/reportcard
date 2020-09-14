@@ -7,6 +7,7 @@ package com.ericdriggs.reportcard.db.tables.daos;
 import com.ericdriggs.reportcard.db.tables.TestSuite;
 import com.ericdriggs.reportcard.db.tables.records.TestSuiteRecord;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.jooq.Configuration;
@@ -146,14 +147,14 @@ public class TestSuiteDao extends DAOImpl<TestSuiteRecord, com.ericdriggs.report
     /**
      * Fetch records that have <code>time BETWEEN lowerInclusive AND upperInclusive</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.TestSuite> fetchRangeOfTime(Long lowerInclusive, Long upperInclusive) {
+    public List<com.ericdriggs.reportcard.db.tables.pojos.TestSuite> fetchRangeOfTime(BigDecimal lowerInclusive, BigDecimal upperInclusive) {
         return fetchRange(TestSuite.TEST_SUITE.TIME, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>time IN (values)</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.TestSuite> fetchByTime(Long... values) {
+    public List<com.ericdriggs.reportcard.db.tables.pojos.TestSuite> fetchByTime(BigDecimal... values) {
         return fetch(TestSuite.TEST_SUITE.TIME, values);
     }
 

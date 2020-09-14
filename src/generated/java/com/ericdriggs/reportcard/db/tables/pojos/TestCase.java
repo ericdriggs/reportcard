@@ -5,6 +5,7 @@ package com.ericdriggs.reportcard.db.tables.pojos;
 
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 
 /**
@@ -13,14 +14,14 @@ import java.io.Serializable;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestCase implements Serializable {
 
-    private static final long serialVersionUID = 2122263908;
+    private static final long serialVersionUID = -327093051;
 
-    private Long   testCaseId;
-    private Long   testSuiteFk;
-    private String testCaseName;
-    private String className;
-    private Long   time;
-    private Byte   testStatusFk;
+    private Long       testCaseId;
+    private Long       testSuiteFk;
+    private String     testCaseName;
+    private String     className;
+    private BigDecimal time;
+    private Byte       testStatusFk;
 
     public TestCase() {}
 
@@ -34,12 +35,12 @@ public class TestCase implements Serializable {
     }
 
     public TestCase(
-        Long   testCaseId,
-        Long   testSuiteFk,
-        String testCaseName,
-        String className,
-        Long   time,
-        Byte   testStatusFk
+        Long       testCaseId,
+        Long       testSuiteFk,
+        String     testCaseName,
+        String     className,
+        BigDecimal time,
+        Byte       testStatusFk
     ) {
         this.testCaseId = testCaseId;
         this.testSuiteFk = testSuiteFk;
@@ -85,11 +86,11 @@ public class TestCase implements Serializable {
         return this;
     }
 
-    public Long getTime() {
+    public BigDecimal getTime() {
         return this.time;
     }
 
-    public TestCase setTime(Long time) {
+    public TestCase setTime(BigDecimal time) {
         this.time = time;
         return this;
     }

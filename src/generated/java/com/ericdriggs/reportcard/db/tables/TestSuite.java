@@ -9,6 +9,7 @@ import com.ericdriggs.reportcard.db.Keys;
 import com.ericdriggs.reportcard.db.Reportcard;
 import com.ericdriggs.reportcard.db.tables.records.TestSuiteRecord;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
@@ -34,7 +35,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestSuite extends TableImpl<TestSuiteRecord> {
 
-    private static final long serialVersionUID = -1477111890;
+    private static final long serialVersionUID = -1891011712;
 
     /**
      * The reference instance of <code>reportcard.test_suite</code>
@@ -87,7 +88,7 @@ public class TestSuite extends TableImpl<TestSuiteRecord> {
     /**
      * The column <code>reportcard.test_suite.time</code>.
      */
-    public final TableField<TestSuiteRecord, Long> TIME = createField(DSL.name("time"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
+    public final TableField<TestSuiteRecord, BigDecimal> TIME = createField(DSL.name("time"), org.jooq.impl.SQLDataType.DECIMAL(9, 3).nullable(false), this, "");
 
     /**
      * The column <code>reportcard.test_suite.is_success</code>.
@@ -197,7 +198,7 @@ public class TestSuite extends TableImpl<TestSuiteRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row10<Long, Long, String, Integer, Integer, Integer, Integer, Long, Byte, Byte> fieldsRow() {
+    public Row10<Long, Long, String, Integer, Integer, Integer, Integer, BigDecimal, Byte, Byte> fieldsRow() {
         return (Row10) super.fieldsRow();
     }
 }
