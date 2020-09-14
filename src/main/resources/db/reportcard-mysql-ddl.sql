@@ -275,7 +275,7 @@ SHOW WARNINGS;
 CREATE TABLE IF NOT EXISTS `test_case` (
                                            `test_case_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
                                            `test_suite_fk` BIGINT UNSIGNED NOT NULL,
-                                           `test_case_name` VARCHAR(1024) NOT NULL,
+                                           `name` VARCHAR(1024) NOT NULL,
                                            `class_name` VARCHAR(4096) NOT NULL,
                                            `time` DECIMAL(9,3) NOT NULL,
                                            `test_status_fk` TINYINT NOT NULL,
