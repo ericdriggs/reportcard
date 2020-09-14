@@ -25,19 +25,19 @@ public class InsertTestResultTest extends AbstractDbTest {
     final static int testResultFailureCount = 20;
     final static int testResultSkippedCount = 30;
     final static int testResultTestCount = 70;
-    final static BigDecimal testResultTime = new BigDecimal(3.141);
+    final static BigDecimal testResultTime = new BigDecimal("3.141");
 
     final static int testSuiteErrorCount = 5;
     final static int testSuiteFailureCount = 6;
     final static int testSuiteSkippedCount = 7;
     final static int testSuiteTestCount = 8;
-    final static long testSuiteTimeMillis = 1000L;
+    final static BigDecimal testSuiteTime = new BigDecimal("1.690");
     final static String testSuitePackage = "com.foo.bar";
 
     final static String testCaseClassName = "testCaseClassName1";
     final static String testCaseName = "testCaseName1";
     final static TestStatus testCaseStatus = TestStatus.FAILURE;
-    final static long testCaseTime = 500l;
+    final static BigDecimal testCaseTime = new BigDecimal("0.500");
 
 
     @Autowired
@@ -85,7 +85,7 @@ public class InsertTestResultTest extends AbstractDbTest {
         assertEquals(testSuiteFailureCount, testSuite.getFailure());
         assertEquals(testSuiteSkippedCount, testSuite.getSkipped());
         assertEquals(testSuiteTestCount, testSuite.getTests());
-        assertEquals(testSuiteTimeMillis, testSuite.getTime());
+        assertEquals(testSuiteTime, testSuite.getTime());
         assertEquals(testSuitePackage, testSuite.getPackage());
 
         assertEquals(testCaseClassName, testCase.getClassName());
@@ -142,7 +142,7 @@ public class InsertTestResultTest extends AbstractDbTest {
             testSuite.setPackage(testSuitePackage);
             testSuite.setSkipped(testSuiteSkippedCount);
             testSuite.setTests(testSuiteTestCount);
-            testSuite.setTime(testResultTime);
+            testSuite.setTime(testSuiteTime);
 
 
             List<TestCase> testCases = new ArrayList<>();
@@ -153,7 +153,7 @@ public class InsertTestResultTest extends AbstractDbTest {
                 testCase.setClassName(testCaseClassName);
                 testCase.setTestStatusFk(testCaseStatus.getStatusId());
                 testCase.setName(testCaseName);
-                testCase.setTime(testResultTime);
+                testCase.setTime(testCaseTime);
                 testCases.add(testCase);
             }
             testSuite.setTestCases(testCases);
