@@ -40,12 +40,12 @@ VALUES (0, 'SUCCESS'),
 
 insert into `reportcard`.`test_result`
 (`build_stage_fk`, `tests`, `skipped`, `error`, `failure`, `time`)
-values (1, 70, 30, 10, 20, 3000);
+values (1, 70, 30, 10, 20, 3.300);
 
 insert into `reportcard`.`test_suite`
 (`test_result_fk`, `package`, `tests`, `skipped`, `error`, `failure`, `time`)
-values (1, 'com.foo.baz', 8, 7, 5, 6, 1000);
+values (1, 'com.foo.baz', 8, 7, 5, 6, 1.010);
 
 insert into `reportcard`.`test_case`
-(`test_suite_fk`, `test_case_name`, `class_name`, `time`, `test_status_fk`)
-values (1, 'testCaseName0', 'testCaseClassName0', 500, 2);
+(`test_suite_fk`, `name`, `class_name`, `time`, `test_status_fk`)
+values (1, 'testCaseName0', 'testCaseClassName0', 0.500, 2);

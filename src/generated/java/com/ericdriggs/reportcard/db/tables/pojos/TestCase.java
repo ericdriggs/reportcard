@@ -14,11 +14,11 @@ import java.math.BigDecimal;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestCase implements Serializable {
 
-    private static final long serialVersionUID = -327093051;
+    private static final long serialVersionUID = 644611267;
 
     private Long       testCaseId;
     private Long       testSuiteFk;
-    private String     testCaseName;
+    private String     name;
     private String     className;
     private BigDecimal time;
     private Byte       testStatusFk;
@@ -28,7 +28,7 @@ public class TestCase implements Serializable {
     public TestCase(TestCase value) {
         this.testCaseId = value.testCaseId;
         this.testSuiteFk = value.testSuiteFk;
-        this.testCaseName = value.testCaseName;
+        this.name = value.name;
         this.className = value.className;
         this.time = value.time;
         this.testStatusFk = value.testStatusFk;
@@ -37,14 +37,14 @@ public class TestCase implements Serializable {
     public TestCase(
         Long       testCaseId,
         Long       testSuiteFk,
-        String     testCaseName,
+        String     name,
         String     className,
         BigDecimal time,
         Byte       testStatusFk
     ) {
         this.testCaseId = testCaseId;
         this.testSuiteFk = testSuiteFk;
-        this.testCaseName = testCaseName;
+        this.name = name;
         this.className = className;
         this.time = time;
         this.testStatusFk = testStatusFk;
@@ -68,12 +68,12 @@ public class TestCase implements Serializable {
         return this;
     }
 
-    public String getTestCaseName() {
-        return this.testCaseName;
+    public String getName() {
+        return this.name;
     }
 
-    public TestCase setTestCaseName(String testCaseName) {
-        this.testCaseName = testCaseName;
+    public TestCase setName(String name) {
+        this.name = name;
         return this;
     }
 
@@ -110,7 +110,7 @@ public class TestCase implements Serializable {
 
         sb.append(testCaseId);
         sb.append(", ").append(testSuiteFk);
-        sb.append(", ").append(testCaseName);
+        sb.append(", ").append(name);
         sb.append(", ").append(className);
         sb.append(", ").append(time);
         sb.append(", ").append(testStatusFk);

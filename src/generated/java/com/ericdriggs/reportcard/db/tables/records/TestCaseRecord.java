@@ -21,7 +21,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestCaseRecord extends UpdatableRecordImpl<TestCaseRecord> implements Record6<Long, Long, String, String, BigDecimal, Byte> {
 
-    private static final long serialVersionUID = 853176352;
+    private static final long serialVersionUID = 209203360;
 
     /**
      * Setter for <code>reportcard.test_case.test_case_id</code>.
@@ -54,17 +54,17 @@ public class TestCaseRecord extends UpdatableRecordImpl<TestCaseRecord> implemen
     }
 
     /**
-     * Setter for <code>reportcard.test_case.test_case_name</code>.
+     * Setter for <code>reportcard.test_case.name</code>.
      */
-    public TestCaseRecord setTestCaseName(String value) {
+    public TestCaseRecord setName(String value) {
         set(2, value);
         return this;
     }
 
     /**
-     * Getter for <code>reportcard.test_case.test_case_name</code>.
+     * Getter for <code>reportcard.test_case.name</code>.
      */
-    public String getTestCaseName() {
+    public String getName() {
         return (String) get(2);
     }
 
@@ -148,7 +148,7 @@ public class TestCaseRecord extends UpdatableRecordImpl<TestCaseRecord> implemen
 
     @Override
     public Field<String> field3() {
-        return TestCase.TEST_CASE.TEST_CASE_NAME;
+        return TestCase.TEST_CASE.NAME;
     }
 
     @Override
@@ -178,7 +178,7 @@ public class TestCaseRecord extends UpdatableRecordImpl<TestCaseRecord> implemen
 
     @Override
     public String component3() {
-        return getTestCaseName();
+        return getName();
     }
 
     @Override
@@ -208,7 +208,7 @@ public class TestCaseRecord extends UpdatableRecordImpl<TestCaseRecord> implemen
 
     @Override
     public String value3() {
-        return getTestCaseName();
+        return getName();
     }
 
     @Override
@@ -240,7 +240,7 @@ public class TestCaseRecord extends UpdatableRecordImpl<TestCaseRecord> implemen
 
     @Override
     public TestCaseRecord value3(String value) {
-        setTestCaseName(value);
+        setName(value);
         return this;
     }
 
@@ -287,12 +287,12 @@ public class TestCaseRecord extends UpdatableRecordImpl<TestCaseRecord> implemen
     /**
      * Create a detached, initialised TestCaseRecord
      */
-    public TestCaseRecord(Long testCaseId, Long testSuiteFk, String testCaseName, String className, BigDecimal time, Byte testStatusFk) {
+    public TestCaseRecord(Long testCaseId, Long testSuiteFk, String name, String className, BigDecimal time, Byte testStatusFk) {
         super(TestCase.TEST_CASE);
 
         set(0, testCaseId);
         set(1, testSuiteFk);
-        set(2, testCaseName);
+        set(2, name);
         set(3, className);
         set(4, time);
         set(5, testStatusFk);

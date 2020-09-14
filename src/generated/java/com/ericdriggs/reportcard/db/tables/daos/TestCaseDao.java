@@ -75,17 +75,17 @@ public class TestCaseDao extends DAOImpl<TestCaseRecord, com.ericdriggs.reportca
     }
 
     /**
-     * Fetch records that have <code>test_case_name BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>name BETWEEN lowerInclusive AND upperInclusive</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.TestCase> fetchRangeOfTestCaseName(String lowerInclusive, String upperInclusive) {
-        return fetchRange(TestCase.TEST_CASE.TEST_CASE_NAME, lowerInclusive, upperInclusive);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.TestCase> fetchRangeOfName(String lowerInclusive, String upperInclusive) {
+        return fetchRange(TestCase.TEST_CASE.NAME, lowerInclusive, upperInclusive);
     }
 
     /**
-     * Fetch records that have <code>test_case_name IN (values)</code>
+     * Fetch records that have <code>name IN (values)</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.TestCase> fetchByTestCaseName(String... values) {
-        return fetch(TestCase.TEST_CASE.TEST_CASE_NAME, values);
+    public List<com.ericdriggs.reportcard.db.tables.pojos.TestCase> fetchByName(String... values) {
+        return fetch(TestCase.TEST_CASE.NAME, values);
     }
 
     /**
