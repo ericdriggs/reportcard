@@ -611,7 +611,7 @@ public class ReportCardService {
                     TestCaseRecord testCaseRecord = dsl.newRecord(TEST_CASE);
                     testCaseRecord.setTestSuiteFk(testSuite.getTestSuiteId())
                             .setClassName(testCase.getClassName())
-                            .setTestCaseName(testCase.getTestCaseName())
+                            .setName(testCase.getName())
                             .setTestStatusFk(testCase.getTestStatusFk())
                             .setTime(testCase.getTime())
                             .store();

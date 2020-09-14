@@ -10,6 +10,7 @@ import org.springframework.util.CollectionUtils;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +25,7 @@ public class InsertTestResultTest extends AbstractDbTest {
     final static int testResultFailureCount = 20;
     final static int testResultSkippedCount = 30;
     final static int testResultTestCount = 70;
-    final static long testResultTimeMillis = 3000L;
+    final static BigDecimal testResultTime = new BigDecimal(3.141);
 
     final static int testSuiteErrorCount = 5;
     final static int testSuiteFailureCount = 6;
@@ -78,7 +79,7 @@ public class InsertTestResultTest extends AbstractDbTest {
         assertEquals(testResultFailureCount, testResult.getFailure());
         assertEquals(testResultSkippedCount, testResult.getSkipped());
         assertEquals(testResultTestCount, testResult.getTests());
-        assertEquals(testResultTimeMillis, testResult.getTime());
+        assertEquals(testResultTime, testResult.getTime());
 
         assertEquals(testSuiteErrorCount, testSuite.getError());
         assertEquals(testSuiteFailureCount, testSuite.getFailure());
@@ -88,7 +89,7 @@ public class InsertTestResultTest extends AbstractDbTest {
         assertEquals(testSuitePackage, testSuite.getPackage());
 
         assertEquals(testCaseClassName, testCase.getClassName());
-        assertEquals(testCaseName, testCase.getTestCaseName());
+        assertEquals(testCaseName, testCase.getName());
         assertEquals(testCaseStatus, testCase.getTestStatus());
         assertEquals(testCaseStatus.getStatusId().byteValue(), testCase.getTestStatusFk());
         assertEquals(testCaseTime, testCase.getTime());
@@ -130,7 +131,7 @@ public class InsertTestResultTest extends AbstractDbTest {
         testResult.setFailure(testResultFailureCount);
         testResult.setSkipped(testResultSkippedCount);
         testResult.setTests(testResultTestCount);
-        testResult.setTime(testResultTimeMillis);
+        testResult.setTime(testResultTime);
 
         List<TestSuite> testSuites = new ArrayList<>();
         {//TestSuite
@@ -141,7 +142,7 @@ public class InsertTestResultTest extends AbstractDbTest {
             testSuite.setPackage(testSuitePackage);
             testSuite.setSkipped(testSuiteSkippedCount);
             testSuite.setTests(testSuiteTestCount);
-            testSuite.setTime(testSuiteTimeMillis);
+            testSuite.setTime(testResultTime);
 
 
             List<TestCase> testCases = new ArrayList<>();
@@ -151,8 +152,8 @@ public class InsertTestResultTest extends AbstractDbTest {
                 TestCase testCase = new TestCase();
                 testCase.setClassName(testCaseClassName);
                 testCase.setTestStatusFk(testCaseStatus.getStatusId());
-                testCase.setTestCaseName(testCaseName);
-                testCase.setTime(testCaseTime);
+                testCase.setName(testCaseName);
+                testCase.setTime(testResultTime);
                 testCases.add(testCase);
             }
             testSuite.setTestCases(testCases);
