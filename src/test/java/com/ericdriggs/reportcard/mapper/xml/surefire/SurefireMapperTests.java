@@ -1,7 +1,6 @@
 package com.ericdriggs.reportcard.mapper.xml.surefire;
 
 import com.ericdriggs.reportcard.model.TestStatus;
-import com.ericdriggs.reportcard.model.TestStatusType;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 
@@ -9,6 +8,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.ericdriggs.reportcard.mapper.xml.surefire.SurefireConvertersUtil.doFromSurefireToModelTestCase;
+import static com.ericdriggs.reportcard.mapper.xml.surefire.SurefireConvertersUtil.doFromSurefireToModelTestSuite;
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -72,7 +73,8 @@ public class SurefireMapperTests {
             assertEquals(3, modelTestSuite.getError());
             assertEquals(3, modelTestSuite.getFailure());
             assertEquals(1, modelTestSuite.getSkipped());
-//            assertEquals("testSuiteGroup", modelTestSuite.getGroup());
+            assertEquals("testSuiteGroup", modelTestSuite.getGroup());
+
 //            assertEquals("testSuiteName", modelTestSuite.getName());
 //            {
 //                assertEquals(1, modelTestSuite.getProperties().size());
@@ -86,6 +88,7 @@ public class SurefireMapperTests {
             assertEquals(new BigDecimal("9.84"), modelTestSuite.getTime());
             {
                 List<com.ericdriggs.reportcard.model.TestCase> testcases = modelTestSuite.getTestCases();
+                assertEquals(TestStatus.SUCCESS, testcases.get(0).getTestStatus());
                 //TODO: assert testcases;
             }
         }
