@@ -38,6 +38,10 @@ public enum TestStatus {
         }
     }
 
+    public TestStatusType getTestStatusType() {
+        return testStatusType;
+    }
+
     public static TestStatus fromStatusId(int statusId) {
         initMap();
         TestStatus testStatus = testStatusMap.get(statusId);

@@ -1,61 +1,101 @@
-//package com.ericdriggs.reportcard.mapper.xml.surefire;
+package com.ericdriggs.reportcard.mapper.xml.surefire;
+
+import com.ericdriggs.reportcard.model.TestStatus;
+import com.ericdriggs.reportcard.model.TestStatusType;
+import org.junit.jupiter.api.Test;
+import org.modelmapper.ModelMapper;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+
+public class SurefireMapperTests {
+
+    private static ModelMapper modelMapper = SurefireConvertersUtil.modelMapper;
+
+    @Test
+    public void testCaseTest() {
+
+        com.ericdriggs.reportcard.xml.surefire.Testcase surefireTestCase = SurefireFactoryUtil.newTestCase(TestStatus.FAILURE);
+        assertNotNull(surefireTestCase.getFailure());
+        assertNull(surefireTestCase.getError());
+        assertNull(surefireTestCase.getSkipped());
+
+        com.ericdriggs.reportcard.model.TestCase modelTestCase = modelMapper.map(surefireTestCase, com.ericdriggs.reportcard.model.TestCase.class );
+        assertEquals(surefireTestCase.getClassname(), modelTestCase.getClassName());
+        assertEquals(surefireTestCase.getName(), modelTestCase.getName());
+        assertEquals(surefireTestCase.getTime(), modelTestCase.getTime().toPlainString());
+        assertEquals(TestStatus.FAILURE, modelTestCase.getTestStatus());
+    }
+
+    @Test
+    public void testSuiteTest() {
+
+        List<TestStatus> testStatuses = new ArrayList<>();
+        testStatuses.add(TestStatus.SUCCESS);
+        testStatuses.add(TestStatus.SKIPPED);
+        testStatuses.add(TestStatus.FAILURE);
+        testStatuses.add(TestStatus.ERROR);
+        testStatuses.add(TestStatus.FLAKY_FAILURE);
+        testStatuses.add(TestStatus.RERUN_FAILURE);
+        testStatuses.add(TestStatus.FLAKY_ERROR);
+        testStatuses.add(TestStatus.RERUN_ERROR);
+
+        com.ericdriggs.reportcard.xml.surefire.Testsuite suite = SurefireFactoryUtil.newTestSuite(testStatuses);
+        {
+            assertEquals(3, suite.getErrors());
+            assertEquals(3, suite.getFailures());
+            assertEquals(1, suite.getSkipped());
+            assertEquals("testSuiteGroup", suite.getGroup());
+            assertEquals("testSuiteName", suite.getName());
+            {
+                assertEquals(1, suite.getProperties().size());
+                final com.ericdriggs.reportcard.xml.surefire.Properties properties = suite.getProperties().get(0);
+                assertEquals(1, properties.getProperty().size());
+                final com.ericdriggs.reportcard.xml.surefire.Property property = properties.getProperty().get(0);
+                assertEquals("foo", property.getName());
+                assertEquals("bar", property.getValue());
+            }
+            assertEquals(8, suite.getTests());
+            assertEquals(new BigDecimal("9.84"), suite.getTime());
+            {
+                List<com.ericdriggs.reportcard.xml.surefire.Testcase> testcases = suite.getTestcase();
+                //TODO: assert testcases;
+            }
+        }
 //
-//
-//import com.ericdriggs.reportcard.mapper.xml.junit.JunitFactoryUtil;
-//import com.ericdriggs.reportcard.model.TestStatus;
-//import org.junit.jupiter.api.Test;
-//import org.modelmapper.AbstractConverter;
-//import org.modelmapper.Converter;
-//import org.modelmapper.ModelMapper;
-//
-//import static org.junit.jupiter.api.Assertions.*;
-//
-//
-//public class SurefireMapperTests {
-//
-//    @Test
-//    public void testCaseTest() {
-//
-//
-//
-//        Converter<com.ericdriggs.reportcard.xml.junit.Testcase, com.ericdriggs.reportcard.model.TestCase> fromJunitToModelTestCase = new AbstractConverter<>() {
-//            protected com.ericdriggs.reportcard.model.TestCase convert(com.ericdriggs.reportcard.xml.junit.Testcase source) {
-//                com.ericdriggs.reportcard.model.TestCase modelTestCase = new com.ericdriggs.reportcard.model.TestCase();
-//                modelTestCase.setName(source.getName());
-//                modelTestCase.setClassName(source.getClassname());
-//                modelTestCase.setTime(source.getTime());
-//
-//                if (source.getSkipped() != null) {
-//                    modelTestCase.setTestStatus(TestStatus.SKIPPED);
-//                }
-//                else if (source.getFailure() != null) {
-//                    modelTestCase.setTestStatus(TestStatus.FAILURE);
-//                }
-//                else if (source.getError() != null) {
-//                    modelTestCase.setTestStatus(TestStatus.ERROR);
-//                }
-//                else {
-//                    modelTestCase.setTestStatus(TestStatus.SUCCESS);
-//                }
-//                return modelTestCase;
+        com.ericdriggs.reportcard.model.TestSuite modelTestSuite = modelMapper.map(suite, com.ericdriggs.reportcard.model.TestSuite.class);
+        {
+            assertEquals(3, modelTestSuite.getError());
+            assertEquals(3, modelTestSuite.getFailure());
+            assertEquals(1, modelTestSuite.getSkipped());
+//            assertEquals("testSuiteGroup", modelTestSuite.getGroup());
+//            assertEquals("testSuiteName", modelTestSuite.getName());
+//            {
+//                assertEquals(1, modelTestSuite.getProperties().size());
+//                final Properties properties = modelTestSuite.getProperties().get(0);
+//                assertEquals(1, properties.getProperty().size());
+//                final Property property = properties.getProperty().get(0);
+//                assertEquals("foo", property.getName());
+//                assertEquals("bar", property.getValue());
 //            }
-//        };
-//
-//        ModelMapper modelMapper = new ModelMapper();
-//        modelMapper.addConverter(fromJunitToModelTestCase);
-//
-//        com.ericdriggs.reportcard.xml.junit.Testcase junitTestCase = JunitFactoryUtil.testcase(TestStatus.FAILURE);
-//        assertNotNull(junitTestCase.getFailure());
-//        assertNull(junitTestCase.getError());
-//        assertNull(junitTestCase.getSkipped());
-//
-//        com.ericdriggs.reportcard.model.TestCase modelTestCase = modelMapper.map(junitTestCase, com.ericdriggs.reportcard.model.TestCase.class );
-//        assertEquals(junitTestCase.getClassname(), modelTestCase.getClassName());
-//        assertEquals(junitTestCase.getName(), modelTestCase.getName());
-//        assertEquals(junitTestCase.getTime(), modelTestCase.getTime());
+            assertEquals(8, modelTestSuite.getTests());
+            assertEquals(new BigDecimal("9.84"), modelTestSuite.getTime());
+            {
+                List<com.ericdriggs.reportcard.model.TestCase> testcases = modelTestSuite.getTestCases();
+                //TODO: assert testcases;
+            }
+        }
+
+//        assertEquals(surefireTestCase.getClassname(), modelTestCase.getClassName());
+//        assertEquals(surefireTestCase.getName(), modelTestCase.getName());
+//        assertEquals(surefireTestCase.getTime(), modelTestCase.getTime().toPlainString());
 //        assertEquals(TestStatus.FAILURE, modelTestCase.getTestStatus());
-//
-//    }
-//
-//
-//}
+    }
+
+
+
+}

@@ -33,12 +33,15 @@ public class JunitFactoryUtil {
         junitTestCase.setName(name);
         junitTestCase.setTime(time);
 
-        if (testStatus.equals(TestStatus.SKIPPED)) {
+        if (testStatus.equals(TestStatus.SUCCESS)){
+            //NOOP
+        }
+        else if (testStatus.equals(TestStatus.SKIPPED)) {
             final Object skipped = new Object();
             junitTestCase.setSkipped(skipped);
         }
 
-        if (testStatus.equals(TestStatus.FAILURE)){
+        else if (testStatus.equals(TestStatus.FAILURE)){
             com.ericdriggs.reportcard.xml.junit.Failure junitFailure = new com.ericdriggs.reportcard.xml.junit.Failure();
             junitFailure.setMessage(junitFailureMessage);
             junitFailure.setType(junitFailureType);
@@ -46,7 +49,7 @@ public class JunitFactoryUtil {
             junitTestCase.setFailure(junitFailure);
         }
 
-        if (testStatus.equals(TestStatus.ERROR)){
+        else if (testStatus.equals(TestStatus.ERROR)){
             com.ericdriggs.reportcard.xml.junit.Error junitError = new com.ericdriggs.reportcard.xml.junit.Error();
             junitError.setMessage(junitErrorMessage);
             junitError.setType(junitErrorType);
