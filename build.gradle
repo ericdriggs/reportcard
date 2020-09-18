@@ -125,6 +125,10 @@ jooq {
                         includeExpression = '.*'
                         includeTypes = 'INET'
                     }
+                    forcedType {
+                        name = 'boolean'
+                        includeTypes = '(?i:TINYINT(1))'
+                    }
                 }
             }
             generate {

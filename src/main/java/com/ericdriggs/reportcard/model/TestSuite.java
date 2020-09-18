@@ -14,4 +14,9 @@ public class TestSuite extends com.ericdriggs.reportcard.db.tables.pojos.TestSui
         this.testCases = testCases;
         return this;
     }
+
+    public boolean calcIsSuccess() {
+        return getFailure() == 0 && getError() == 0;
+    }
+    //TODO: serialize and desrialize properties from json to Map<String,String>
 }
