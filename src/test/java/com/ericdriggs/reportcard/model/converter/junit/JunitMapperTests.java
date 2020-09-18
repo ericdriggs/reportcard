@@ -1,19 +1,16 @@
-package com.ericdriggs.reportcard.mapper.xml.junit;
+package com.ericdriggs.reportcard.model.converter.junit;
 
 
 import com.ericdriggs.reportcard.model.TestStatus;
 import org.junit.jupiter.api.Test;
-import org.modelmapper.AbstractConverter;
-import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.convention.MatchingStrategies;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 
 public class JunitMapperTests {
 
-    protected static ModelMapper modelMapper = JunitConvertsUtil.modelMapper;
+    protected static ModelMapper modelMapper = JunitConvertersUtil.modelMapper;
 
     @Test
     public void testCaseTest() {

@@ -1,4 +1,4 @@
-package com.ericdriggs.reportcard.mapper.xml.junit;
+package com.ericdriggs.reportcard.model.converter.junit;
 
 import com.ericdriggs.reportcard.model.TestStatus;
 import com.ericdriggs.reportcard.xml.junit.Testcase;

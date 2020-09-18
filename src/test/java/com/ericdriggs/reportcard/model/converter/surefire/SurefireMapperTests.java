@@ -1,4 +1,4 @@
-package com.ericdriggs.reportcard.mapper.xml.surefire;
+package com.ericdriggs.reportcard.model.converter.surefire;
 
 import com.ericdriggs.reportcard.model.TestStatus;
 import com.ericdriggs.reportcard.model.converter.surefire.SurefireConvertersUtil;
