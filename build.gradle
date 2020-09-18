@@ -118,12 +118,12 @@ jooq {
                     forcedType {
                         name = 'varchar'
                         includeExpression = '.*'
-                        types = 'JSONB?'
+                        includeTypes = 'JSONB?'
                     }
                     forcedType {
                         name = 'varchar'
                         includeExpression = '.*'
-                        types = 'INET'
+                        includeTypes = 'INET'
                     }
                 }
             }
