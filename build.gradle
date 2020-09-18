@@ -126,8 +126,14 @@ jooq {
                         includeTypes = 'INET'
                     }
                     forcedType {
-                        name = 'boolean'
-                        includeTypes = '(?i:TINYINT(1))'
+                        name = 'BOOLEAN'
+                        includeExpression = 'is_.*'
+                        includeTypes = "TINYINT"
+                    }
+                    forcedType {
+                        name = 'BOOLEAN'
+                        includeExpression = 'has_.*'
+                        includeTypes = "TINYINT"
                     }
                 }
             }
