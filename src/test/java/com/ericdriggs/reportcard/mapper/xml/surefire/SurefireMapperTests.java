@@ -1,6 +1,7 @@
 package com.ericdriggs.reportcard.mapper.xml.surefire;
 
 import com.ericdriggs.reportcard.model.TestStatus;
+import com.ericdriggs.reportcard.xml.surefire.Testsuite;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 
@@ -8,8 +9,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.ericdriggs.reportcard.mapper.xml.surefire.SurefireConvertersUtil.doFromSurefireToModelTestCase;
-import static com.ericdriggs.reportcard.mapper.xml.surefire.SurefireConvertersUtil.doFromSurefireToModelTestSuite;
+import static com.ericdriggs.reportcard.mapper.xml.surefire.SurefireConvertersUtil.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -25,16 +25,14 @@ public class SurefireMapperTests {
         assertNull(surefireTestCase.getError());
         assertNull(surefireTestCase.getSkipped());
 
-        com.ericdriggs.reportcard.model.TestCase modelTestCase = modelMapper.map(surefireTestCase, com.ericdriggs.reportcard.model.TestCase.class );
+        com.ericdriggs.reportcard.model.TestCase modelTestCase = modelMapper.map(surefireTestCase, com.ericdriggs.reportcard.model.TestCase.class);
         assertEquals(surefireTestCase.getClassname(), modelTestCase.getClassName());
         assertEquals(surefireTestCase.getName(), modelTestCase.getName());
         assertEquals(surefireTestCase.getTime(), modelTestCase.getTime().toPlainString());
         assertEquals(TestStatus.FAILURE, modelTestCase.getTestStatus());
     }
 
-    @Test
-    public void testSuiteTest() {
-
+    protected static Testsuite genTestSuite() {
         List<TestStatus> testStatuses = new ArrayList<>();
         testStatuses.add(TestStatus.SUCCESS);
         testStatuses.add(TestStatus.SKIPPED);
@@ -46,6 +44,13 @@ public class SurefireMapperTests {
         testStatuses.add(TestStatus.RERUN_ERROR);
 
         com.ericdriggs.reportcard.xml.surefire.Testsuite suite = SurefireFactoryUtil.newTestSuite(testStatuses);
+        return suite;
+    }
+
+    @Test
+    public void testSuiteTest() {
+
+        com.ericdriggs.reportcard.xml.surefire.Testsuite suite = genTestSuite();
         {
             assertEquals(3, suite.getErrors());
             assertEquals(3, suite.getFailures());
@@ -99,6 +104,21 @@ public class SurefireMapperTests {
 //        assertEquals(TestStatus.FAILURE, modelTestCase.getTestStatus());
     }
 
+    @Test
+    public void testResultTest() {
+
+        com.ericdriggs.reportcard.xml.surefire.Testsuite suite = genTestSuite();
+        List<Testsuite> testsuites = new ArrayList<>();
+        testsuites.add(suite);
+        testsuites.add(suite); //calculations are by value so add same twice is valid
+
+//        com.ericdriggs.reportcard.model.TestResult modelTestResult = modelMapper.map(testsuites, com.ericdriggs.reportcard.model.TestResult.class);
+        com.ericdriggs.reportcard.model.TestResult modelTestResult = doFromSurefireToModelTestResult(testsuites);
+        assertEquals(16, modelTestResult.getTests());
+        assertEquals(6, modelTestResult.getError());
+        assertEquals(6, modelTestResult.getFailure());
+        assertEquals(2, modelTestResult.getSkipped());
 
 
+    }
 }

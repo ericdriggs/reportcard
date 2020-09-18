@@ -1,6 +1,7 @@
 package com.ericdriggs.reportcard.mapper.xml.surefire;
 
 import com.ericdriggs.reportcard.model.TestCase;
+import com.ericdriggs.reportcard.model.TestResult;
 import com.ericdriggs.reportcard.model.TestStatus;
 import com.ericdriggs.reportcard.model.TestSuite;
 import com.ericdriggs.reportcard.xml.surefire.Testcase;
@@ -11,6 +12,7 @@ import org.modelmapper.ModelMapper;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class SurefireConvertersUtil {
@@ -18,6 +20,18 @@ public class SurefireConvertersUtil {
     public static Converter<Testcase, TestCase> fromSurefireToModelTestCase = new AbstractConverter<>() {
         protected com.ericdriggs.reportcard.model.TestCase convert(com.ericdriggs.reportcard.xml.surefire.Testcase source) {
             return doFromSurefireToModelTestCase(source);
+        }
+    };
+
+    public static Converter<Testsuite, TestSuite> fromSurefireToModelTestSuite = new AbstractConverter<>() {
+        protected com.ericdriggs.reportcard.model.TestSuite convert(com.ericdriggs.reportcard.xml.surefire.Testsuite source) {
+            return doFromSurefireToModelTestSuite(source);
+        }
+    };
+
+    public static Converter<Collection<Testsuite>, TestResult> fromSurefireToModelTestResult = new AbstractConverter<>() {
+        protected com.ericdriggs.reportcard.model.TestResult convert(Collection<Testsuite> source) {
+            return doFromSurefireToModelTestResult(source);
         }
     };
 
@@ -47,31 +61,65 @@ public class SurefireConvertersUtil {
         return modelTestCase;
     }
 
-    public static ModelMapper testCasemodelMapper = new ModelMapper();
-
-    static {
-        testCasemodelMapper.addConverter(fromSurefireToModelTestCase);
-    }
-
-    public static Converter<Testsuite, TestSuite> fromSurefireToModelTestSuite = new AbstractConverter<>() {
-        protected com.ericdriggs.reportcard.model.TestSuite convert(com.ericdriggs.reportcard.xml.surefire.Testsuite source) {
-            return doFromSurefireToModelTestSuite(source);
+    public static List<TestSuite> doFromSurefireToModelTestSuites(Collection<Testsuite> source) {
+        List<TestSuite> testSuites = new ArrayList<>();
+        for (Testsuite testsuite : source) {
+            testSuites.add(doFromSurefireToModelTestSuite(testsuite));
         }
-    };
+        return testSuites;
+    }
 
     public static TestSuite doFromSurefireToModelTestSuite(Testsuite source) {
         com.ericdriggs.reportcard.model.TestSuite modelTestSuite = new com.ericdriggs.reportcard.model.TestSuite();
         modelTestSuite.setError(source.getErrors());
+        if (modelTestSuite.getError() == null) {
+            modelTestSuite.setError(0);
+        }
         modelTestSuite.setFailure(source.getFailures());
+        if (modelTestSuite.getFailure() == null) {
+            modelTestSuite.setFailure(0);
+        }
         modelTestSuite.setSkipped(source.getSkipped());
+        if (modelTestSuite.getSkipped() == null) {
+            modelTestSuite.setSkipped(0);
+        }
         modelTestSuite.setTests(source.getTests());
+        if (modelTestSuite.getTests() == null) {
+            modelTestSuite.setTests(0);
+        }
+        modelTestSuite.setSkipped(source.getSkipped());
+        if (modelTestSuite.getSkipped() == null) {
+            modelTestSuite.setSkipped(0);
+        }
         modelTestSuite.setGroup(source.getGroup());
         modelTestSuite.setPackage(null);
         modelTestSuite.setProperties(null); //TODO: support properties;
-        modelTestSuite.setTestCases(doFromSurefireToModelTestCases(source.getTestcase())); //FIXME: set test cases from loop
+        modelTestSuite.setTestCases(doFromSurefireToModelTestCases(source.getTestcase()));
         modelTestSuite.setTime(source.getTime());
+        if (modelTestSuite.getTime() == null) {
+            modelTestSuite.setTime(BigDecimal.ZERO);
+        }
 
         return modelTestSuite;
+    }
+
+    public static TestResult doFromSurefireToModelTestResult(Collection<Testsuite> sources) {
+        com.ericdriggs.reportcard.model.TestResult modelTestResult = new com.ericdriggs.reportcard.model.TestResult();
+        modelTestResult.setTestSuites(doFromSurefireToModelTestSuites(sources));
+        modelTestResult.setTests(0);
+        modelTestResult.setSkipped(0);
+        modelTestResult.setFailure(0);
+        modelTestResult.setError(0);
+        modelTestResult.setTime(BigDecimal.ZERO);
+
+        for (TestSuite testSuite : modelTestResult.getTestSuites()) {
+            modelTestResult.setTime(modelTestResult.getTime().add(testSuite.getTime()));
+            modelTestResult.setTests(modelTestResult.getTests() + testSuite.getTests());
+            modelTestResult.setSkipped(modelTestResult.getSkipped() + testSuite.getSkipped());
+            modelTestResult.setFailure(modelTestResult.getFailure() + testSuite.getFailure());
+            modelTestResult.setError(modelTestResult.getError() + testSuite.getError());
+        }
+        return modelTestResult;
     }
 
     public static ModelMapper modelMapper = new ModelMapper();
@@ -79,5 +127,6 @@ public class SurefireConvertersUtil {
     static {
         modelMapper.addConverter(fromSurefireToModelTestCase);
         modelMapper.addConverter(fromSurefireToModelTestSuite);
+        modelMapper.addConverter(fromSurefireToModelTestResult);
     }
 }
