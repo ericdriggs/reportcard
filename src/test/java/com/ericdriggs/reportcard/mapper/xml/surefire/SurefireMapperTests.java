@@ -1,6 +1,7 @@
 package com.ericdriggs.reportcard.mapper.xml.surefire;
 
 import com.ericdriggs.reportcard.model.TestStatus;
+import com.ericdriggs.reportcard.model.converter.surefire.SurefireConvertersUtil;
 import com.ericdriggs.reportcard.xml.surefire.Testsuite;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
@@ -9,7 +10,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.ericdriggs.reportcard.mapper.xml.surefire.SurefireConvertersUtil.*;
+import static com.ericdriggs.reportcard.model.converter.surefire.SurefireConvertersUtil.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 
