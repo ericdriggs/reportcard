@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestResult implements Serializable {
 
-    private static final long serialVersionUID = -1424353928;
+    private static final long serialVersionUID = 105469620;
 
     private Long          testResultId;
     private Long          buildStageFk;
@@ -25,8 +25,8 @@ public class TestResult implements Serializable {
     private Integer       failure;
     private BigDecimal    time;
     private LocalDateTime testResultCreated;
-    private Byte          isSuccess;
-    private Byte          hasSkip;
+    private Boolean       isSuccess;
+    private Boolean       hasSkip;
 
     public TestResult() {}
 
@@ -52,8 +52,8 @@ public class TestResult implements Serializable {
         Integer       failure,
         BigDecimal    time,
         LocalDateTime testResultCreated,
-        Byte          isSuccess,
-        Byte          hasSkip
+        Boolean       isSuccess,
+        Boolean       hasSkip
     ) {
         this.testResultId = testResultId;
         this.buildStageFk = buildStageFk;
@@ -139,20 +139,20 @@ public class TestResult implements Serializable {
         return this;
     }
 
-    public Byte getIsSuccess() {
+    public Boolean getIsSuccess() {
         return this.isSuccess;
     }
 
-    public TestResult setIsSuccess(Byte isSuccess) {
+    public TestResult setIsSuccess(Boolean isSuccess) {
         this.isSuccess = isSuccess;
         return this;
     }
 
-    public Byte getHasSkip() {
+    public Boolean getHasSkip() {
         return this.hasSkip;
     }
 
-    public TestResult setHasSkip(Byte hasSkip) {
+    public TestResult setHasSkip(Boolean hasSkip) {
         this.hasSkip = hasSkip;
         return this;
     }

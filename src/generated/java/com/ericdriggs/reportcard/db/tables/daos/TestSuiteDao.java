@@ -189,28 +189,28 @@ public class TestSuiteDao extends DAOImpl<TestSuiteRecord, com.ericdriggs.report
     /**
      * Fetch records that have <code>is_success BETWEEN lowerInclusive AND upperInclusive</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.TestSuite> fetchRangeOfIsSuccess(Byte lowerInclusive, Byte upperInclusive) {
+    public List<com.ericdriggs.reportcard.db.tables.pojos.TestSuite> fetchRangeOfIsSuccess(Boolean lowerInclusive, Boolean upperInclusive) {
         return fetchRange(TestSuite.TEST_SUITE.IS_SUCCESS, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>is_success IN (values)</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.TestSuite> fetchByIsSuccess(Byte... values) {
+    public List<com.ericdriggs.reportcard.db.tables.pojos.TestSuite> fetchByIsSuccess(Boolean... values) {
         return fetch(TestSuite.TEST_SUITE.IS_SUCCESS, values);
     }
 
     /**
      * Fetch records that have <code>has_skip BETWEEN lowerInclusive AND upperInclusive</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.TestSuite> fetchRangeOfHasSkip(Byte lowerInclusive, Byte upperInclusive) {
+    public List<com.ericdriggs.reportcard.db.tables.pojos.TestSuite> fetchRangeOfHasSkip(Boolean lowerInclusive, Boolean upperInclusive) {
         return fetchRange(TestSuite.TEST_SUITE.HAS_SKIP, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>has_skip IN (values)</code>
      */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.TestSuite> fetchByHasSkip(Byte... values) {
+    public List<com.ericdriggs.reportcard.db.tables.pojos.TestSuite> fetchByHasSkip(Boolean... values) {
         return fetch(TestSuite.TEST_SUITE.HAS_SKIP, values);
     }
 }

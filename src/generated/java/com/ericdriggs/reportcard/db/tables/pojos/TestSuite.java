@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestSuite implements Serializable {
 
-    private static final long serialVersionUID = -2121329411;
+    private static final long serialVersionUID = -1563885571;
 
     private Long       testSuiteId;
     private Long       testResultFk;
@@ -26,8 +26,8 @@ public class TestSuite implements Serializable {
     private String     package_;
     private String     group;
     private String     properties;
-    private Byte       isSuccess;
-    private Byte       hasSkip;
+    private Boolean    isSuccess;
+    private Boolean    hasSkip;
 
     public TestSuite() {}
 
@@ -57,8 +57,8 @@ public class TestSuite implements Serializable {
         String     package_,
         String     group,
         String     properties,
-        Byte       isSuccess,
-        Byte       hasSkip
+        Boolean    isSuccess,
+        Boolean    hasSkip
     ) {
         this.testSuiteId = testSuiteId;
         this.testResultFk = testResultFk;
@@ -164,20 +164,20 @@ public class TestSuite implements Serializable {
         return this;
     }
 
-    public Byte getIsSuccess() {
+    public Boolean getIsSuccess() {
         return this.isSuccess;
     }
 
-    public TestSuite setIsSuccess(Byte isSuccess) {
+    public TestSuite setIsSuccess(Boolean isSuccess) {
         this.isSuccess = isSuccess;
         return this;
     }
 
-    public Byte getHasSkip() {
+    public Boolean getHasSkip() {
         return this.hasSkip;
     }
 
-    public TestSuite setHasSkip(Byte hasSkip) {
+    public TestSuite setHasSkip(Boolean hasSkip) {
         this.hasSkip = hasSkip;
         return this;
     }

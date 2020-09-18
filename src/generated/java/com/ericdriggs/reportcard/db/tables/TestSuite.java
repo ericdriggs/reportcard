@@ -35,7 +35,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestSuite extends TableImpl<TestSuiteRecord> {
 
-    private static final long serialVersionUID = 441000151;
+    private static final long serialVersionUID = 1509889013;
 
     /**
      * The reference instance of <code>reportcard.test_suite</code>
@@ -103,12 +103,12 @@ public class TestSuite extends TableImpl<TestSuiteRecord> {
     /**
      * The column <code>reportcard.test_suite.is_success</code>.
      */
-    public final TableField<TestSuiteRecord, Byte> IS_SUCCESS = createField(DSL.name("is_success"), org.jooq.impl.SQLDataType.TINYINT, this, "");
+    public final TableField<TestSuiteRecord, Boolean> IS_SUCCESS = createField(DSL.name("is_success"), org.jooq.impl.SQLDataType.BOOLEAN, this, "");
 
     /**
      * The column <code>reportcard.test_suite.has_skip</code>.
      */
-    public final TableField<TestSuiteRecord, Byte> HAS_SKIP = createField(DSL.name("has_skip"), org.jooq.impl.SQLDataType.TINYINT, this, "");
+    public final TableField<TestSuiteRecord, Boolean> HAS_SKIP = createField(DSL.name("has_skip"), org.jooq.impl.SQLDataType.BOOLEAN, this, "");
 
     /**
      * Create a <code>reportcard.test_suite</code> table reference
@@ -208,7 +208,7 @@ public class TestSuite extends TableImpl<TestSuiteRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row12<Long, Long, Integer, Integer, Integer, Integer, BigDecimal, String, String, String, Byte, Byte> fieldsRow() {
+    public Row12<Long, Long, Integer, Integer, Integer, Integer, BigDecimal, String, String, String, Boolean, Boolean> fieldsRow() {
         return (Row12) super.fieldsRow();
     }
 }
