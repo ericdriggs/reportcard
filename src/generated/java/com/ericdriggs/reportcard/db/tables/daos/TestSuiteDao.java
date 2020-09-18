@@ -75,20 +75,6 @@ public class TestSuiteDao extends DAOImpl<TestSuiteRecord, com.ericdriggs.report
     }
 
     /**
-     * Fetch records that have <code>package BETWEEN lowerInclusive AND upperInclusive</code>
-     */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.TestSuite> fetchRangeOfPackage(String lowerInclusive, String upperInclusive) {
-        return fetchRange(TestSuite.TEST_SUITE.PACKAGE, lowerInclusive, upperInclusive);
-    }
-
-    /**
-     * Fetch records that have <code>package IN (values)</code>
-     */
-    public List<com.ericdriggs.reportcard.db.tables.pojos.TestSuite> fetchByPackage(String... values) {
-        return fetch(TestSuite.TEST_SUITE.PACKAGE, values);
-    }
-
-    /**
      * Fetch records that have <code>tests BETWEEN lowerInclusive AND upperInclusive</code>
      */
     public List<com.ericdriggs.reportcard.db.tables.pojos.TestSuite> fetchRangeOfTests(Integer lowerInclusive, Integer upperInclusive) {
@@ -156,6 +142,48 @@ public class TestSuiteDao extends DAOImpl<TestSuiteRecord, com.ericdriggs.report
      */
     public List<com.ericdriggs.reportcard.db.tables.pojos.TestSuite> fetchByTime(BigDecimal... values) {
         return fetch(TestSuite.TEST_SUITE.TIME, values);
+    }
+
+    /**
+     * Fetch records that have <code>package BETWEEN lowerInclusive AND upperInclusive</code>
+     */
+    public List<com.ericdriggs.reportcard.db.tables.pojos.TestSuite> fetchRangeOfPackage(String lowerInclusive, String upperInclusive) {
+        return fetchRange(TestSuite.TEST_SUITE.PACKAGE, lowerInclusive, upperInclusive);
+    }
+
+    /**
+     * Fetch records that have <code>package IN (values)</code>
+     */
+    public List<com.ericdriggs.reportcard.db.tables.pojos.TestSuite> fetchByPackage(String... values) {
+        return fetch(TestSuite.TEST_SUITE.PACKAGE, values);
+    }
+
+    /**
+     * Fetch records that have <code>group BETWEEN lowerInclusive AND upperInclusive</code>
+     */
+    public List<com.ericdriggs.reportcard.db.tables.pojos.TestSuite> fetchRangeOfGroup(String lowerInclusive, String upperInclusive) {
+        return fetchRange(TestSuite.TEST_SUITE.GROUP, lowerInclusive, upperInclusive);
+    }
+
+    /**
+     * Fetch records that have <code>group IN (values)</code>
+     */
+    public List<com.ericdriggs.reportcard.db.tables.pojos.TestSuite> fetchByGroup(String... values) {
+        return fetch(TestSuite.TEST_SUITE.GROUP, values);
+    }
+
+    /**
+     * Fetch records that have <code>properties BETWEEN lowerInclusive AND upperInclusive</code>
+     */
+    public List<com.ericdriggs.reportcard.db.tables.pojos.TestSuite> fetchRangeOfProperties(String lowerInclusive, String upperInclusive) {
+        return fetchRange(TestSuite.TEST_SUITE.PROPERTIES, lowerInclusive, upperInclusive);
+    }
+
+    /**
+     * Fetch records that have <code>properties IN (values)</code>
+     */
+    public List<com.ericdriggs.reportcard.db.tables.pojos.TestSuite> fetchByProperties(String... values) {
+        return fetch(TestSuite.TEST_SUITE.PROPERTIES, values);
     }
 
     /**

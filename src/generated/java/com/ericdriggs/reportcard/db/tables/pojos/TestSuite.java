@@ -14,16 +14,18 @@ import java.math.BigDecimal;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestSuite implements Serializable {
 
-    private static final long serialVersionUID = 1176758815;
+    private static final long serialVersionUID = -2121329411;
 
     private Long       testSuiteId;
     private Long       testResultFk;
-    private String     package_;
     private Integer    tests;
     private Integer    skipped;
     private Integer    error;
     private Integer    failure;
     private BigDecimal time;
+    private String     package_;
+    private String     group;
+    private String     properties;
     private Byte       isSuccess;
     private Byte       hasSkip;
 
@@ -32,12 +34,14 @@ public class TestSuite implements Serializable {
     public TestSuite(TestSuite value) {
         this.testSuiteId = value.testSuiteId;
         this.testResultFk = value.testResultFk;
-        this.package_ = value.package_;
         this.tests = value.tests;
         this.skipped = value.skipped;
         this.error = value.error;
         this.failure = value.failure;
         this.time = value.time;
+        this.package_ = value.package_;
+        this.group = value.group;
+        this.properties = value.properties;
         this.isSuccess = value.isSuccess;
         this.hasSkip = value.hasSkip;
     }
@@ -45,23 +49,27 @@ public class TestSuite implements Serializable {
     public TestSuite(
         Long       testSuiteId,
         Long       testResultFk,
-        String     package_,
         Integer    tests,
         Integer    skipped,
         Integer    error,
         Integer    failure,
         BigDecimal time,
+        String     package_,
+        String     group,
+        String     properties,
         Byte       isSuccess,
         Byte       hasSkip
     ) {
         this.testSuiteId = testSuiteId;
         this.testResultFk = testResultFk;
-        this.package_ = package_;
         this.tests = tests;
         this.skipped = skipped;
         this.error = error;
         this.failure = failure;
         this.time = time;
+        this.package_ = package_;
+        this.group = group;
+        this.properties = properties;
         this.isSuccess = isSuccess;
         this.hasSkip = hasSkip;
     }
@@ -81,15 +89,6 @@ public class TestSuite implements Serializable {
 
     public TestSuite setTestResultFk(Long testResultFk) {
         this.testResultFk = testResultFk;
-        return this;
-    }
-
-    public String getPackage() {
-        return this.package_;
-    }
-
-    public TestSuite setPackage(String package_) {
-        this.package_ = package_;
         return this;
     }
 
@@ -138,6 +137,33 @@ public class TestSuite implements Serializable {
         return this;
     }
 
+    public String getPackage() {
+        return this.package_;
+    }
+
+    public TestSuite setPackage(String package_) {
+        this.package_ = package_;
+        return this;
+    }
+
+    public String getGroup() {
+        return this.group;
+    }
+
+    public TestSuite setGroup(String group) {
+        this.group = group;
+        return this;
+    }
+
+    public String getProperties() {
+        return this.properties;
+    }
+
+    public TestSuite setProperties(String properties) {
+        this.properties = properties;
+        return this;
+    }
+
     public Byte getIsSuccess() {
         return this.isSuccess;
     }
@@ -162,12 +188,14 @@ public class TestSuite implements Serializable {
 
         sb.append(testSuiteId);
         sb.append(", ").append(testResultFk);
-        sb.append(", ").append(package_);
         sb.append(", ").append(tests);
         sb.append(", ").append(skipped);
         sb.append(", ").append(error);
         sb.append(", ").append(failure);
         sb.append(", ").append(time);
+        sb.append(", ").append(package_);
+        sb.append(", ").append(group);
+        sb.append(", ").append(properties);
         sb.append(", ").append(isSuccess);
         sb.append(", ").append(hasSkip);
 

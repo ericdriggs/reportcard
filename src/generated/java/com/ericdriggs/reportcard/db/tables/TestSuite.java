@@ -19,7 +19,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row10;
+import org.jooq.Row12;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -35,7 +35,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestSuite extends TableImpl<TestSuiteRecord> {
 
-    private static final long serialVersionUID = -1891011712;
+    private static final long serialVersionUID = 441000151;
 
     /**
      * The reference instance of <code>reportcard.test_suite</code>
@@ -61,11 +61,6 @@ public class TestSuite extends TableImpl<TestSuiteRecord> {
     public final TableField<TestSuiteRecord, Long> TEST_RESULT_FK = createField(DSL.name("test_result_fk"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
 
     /**
-     * The column <code>reportcard.test_suite.package</code>.
-     */
-    public final TableField<TestSuiteRecord, String> PACKAGE = createField(DSL.name("package"), org.jooq.impl.SQLDataType.VARCHAR(1024).nullable(false), this, "");
-
-    /**
      * The column <code>reportcard.test_suite.tests</code>.
      */
     public final TableField<TestSuiteRecord, Integer> TESTS = createField(DSL.name("tests"), org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
@@ -89,6 +84,21 @@ public class TestSuite extends TableImpl<TestSuiteRecord> {
      * The column <code>reportcard.test_suite.time</code>.
      */
     public final TableField<TestSuiteRecord, BigDecimal> TIME = createField(DSL.name("time"), org.jooq.impl.SQLDataType.DECIMAL(9, 3).nullable(false), this, "");
+
+    /**
+     * The column <code>reportcard.test_suite.package</code>.
+     */
+    public final TableField<TestSuiteRecord, String> PACKAGE = createField(DSL.name("package"), org.jooq.impl.SQLDataType.VARCHAR(1024), this, "");
+
+    /**
+     * The column <code>reportcard.test_suite.group</code>.
+     */
+    public final TableField<TestSuiteRecord, String> GROUP = createField(DSL.name("group"), org.jooq.impl.SQLDataType.VARCHAR(1024), this, "");
+
+    /**
+     * The column <code>reportcard.test_suite.properties</code>.
+     */
+    public final TableField<TestSuiteRecord, String> PROPERTIES = createField(DSL.name("properties"), org.jooq.impl.SQLDataType.VARCHAR, this, "");
 
     /**
      * The column <code>reportcard.test_suite.is_success</code>.
@@ -194,11 +204,11 @@ public class TestSuite extends TableImpl<TestSuiteRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row10 type methods
+    // Row12 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row10<Long, Long, String, Integer, Integer, Integer, Integer, BigDecimal, Byte, Byte> fieldsRow() {
-        return (Row10) super.fieldsRow();
+    public Row12<Long, Long, Integer, Integer, Integer, Integer, BigDecimal, String, String, String, Byte, Byte> fieldsRow() {
+        return (Row12) super.fieldsRow();
     }
 }
