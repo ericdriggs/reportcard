@@ -1,11 +1,7 @@
 package com.ericdriggs.reportcard.db;
 
 import com.ericdriggs.reportcard.ReportCardService;
-import com.ericdriggs.reportcard.db.tables.pojos.Org;
-import com.ericdriggs.reportcard.db.tables.pojos.Repo;
-import com.ericdriggs.reportcard.db.tables.records.RepoRecord;
 import com.ericdriggs.reportcard.model.BuildStagePath;
-import com.ericdriggs.reportcard.model.BuildStagePathRequest;
 import com.ericdriggs.reportcard.model.ReportMetatData;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
