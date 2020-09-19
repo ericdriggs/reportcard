@@ -92,8 +92,8 @@ public class JunitMapperTests {
         com.ericdriggs.reportcard.xml.junit.Testsuites suites = new Testsuites();
         suites.setTestsuite(testsuites);
 
-//        com.ericdriggs.reportcard.model.TestResult modelTestResult = modelMapper.map(testsuites, com.ericdriggs.reportcard.model.TestResult.class);
-        com.ericdriggs.reportcard.model.TestResult modelTestResult = doFromJunitToModelTestResult(suites);
+        com.ericdriggs.reportcard.model.TestResult modelTestResult = modelMapper.map(suites, com.ericdriggs.reportcard.model.TestResult.class);
+
         assertEquals(8, modelTestResult.getTests());
         assertEquals(2, modelTestResult.getError());
         assertEquals(2, modelTestResult.getFailure());

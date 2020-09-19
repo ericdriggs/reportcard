@@ -3,6 +3,7 @@ package com.ericdriggs.reportcard.db;
 import com.ericdriggs.reportcard.ReportCardService;
 import com.ericdriggs.reportcard.model.BuildStagePath;
 import com.ericdriggs.reportcard.model.BuildStagePathRequest;
+import com.ericdriggs.reportcard.model.ReportMetatData;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -23,14 +24,14 @@ public class InsertBuildStagePathTest extends AbstractDbTest {
 
     @Test
     public void insertBuildStagePathAllInserted() {
-        BuildStagePathRequest request =
-                new BuildStagePathRequest()
-                        .setOrgName("newOrg")
-                        .setRepoName("newRepo")
-                        .setAppName("newApp")
-                        .setBranchName("newBranch")
-                        .setBuildUniqueString(buildUniqueString)
-                        .setStageName("newStage");
+        ReportMetatData request =
+                new ReportMetatData()
+                        .setOrg("newOrg")
+                        .setRepo("newRepo")
+                        .setApp("newApp")
+                        .setBranch("newBranch")
+                        .setBuildIdentifier(buildUniqueString)
+                        .setStage("newStage");
 
         BuildStagePath bsp = reportCardService.getOrInsertBuildStagePath(request);
 
@@ -44,13 +45,13 @@ public class InsertBuildStagePathTest extends AbstractDbTest {
         assertNotNull(bsp.getStage());
         assertNotNull(bsp.getBuildStage());
 
-        assertEquals(request.getOrgName(), bsp.getOrg().getOrgName());
-        assertEquals(request.getRepoName(), bsp.getRepo().getRepoName());
-        assertEquals(request.getAppName(), bsp.getApp().getAppName());
-        assertEquals(request.getBranchName(), bsp.getBranch().getBranchName());
+        assertEquals(request.getOrg(), bsp.getOrg().getOrgName());
+        assertEquals(request.getRepo(), bsp.getRepo().getRepoName());
+        assertEquals(request.getApp(), bsp.getApp().getAppName());
+        assertEquals(request.getBranch(), bsp.getBranch().getBranchName());
         assertNotNull(bsp.getAppBranch().getAppBranchId());
-        assertEquals(request.getBuildUniqueString(), bsp.getBuild().getBuildUniqueString());
-        assertEquals(request.getStageName(), bsp.getStage().getStageName());
+        assertEquals(request.getBuildIdentifier(), bsp.getBuild().getBuildUniqueString());
+        assertEquals(request.getStage(), bsp.getStage().getStageName());
         assertNotNull(bsp.getBuildStage().getBuildStageId());
     }
 

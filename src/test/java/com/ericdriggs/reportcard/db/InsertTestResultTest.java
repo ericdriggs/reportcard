@@ -112,14 +112,14 @@ public class InsertTestResultTest extends AbstractDbTest {
 
         BuildStagePath bsp = null;
         {
-            BuildStagePathRequest request =
-                    new BuildStagePathRequest()
-                            .setOrgName("default")
-                            .setRepoName("default")
-                            .setAppName("app1")
-                            .setBranchName("master")
-                            .setBuildUniqueString(buildUniqueString)
-                            .setStageName("unit");
+            ReportMetatData request =
+                    new ReportMetatData()
+                            .setOrg("default")
+                            .setRepo("default")
+                            .setApp("app1")
+                            .setBranch("master")
+                            .setBuildIdentifier(buildUniqueString)
+                            .setStage("unit");
             bsp = reportCardService.getBuildStagePath(request);
             assertTrue(bsp.isComplete());
         }

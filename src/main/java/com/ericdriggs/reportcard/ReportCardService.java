@@ -6,11 +6,10 @@ import java.util.List;
 import com.ericdriggs.reportcard.db.tables.daos.*;
 import com.ericdriggs.reportcard.db.tables.pojos.*;
 import com.ericdriggs.reportcard.db.tables.records.*;
-import com.ericdriggs.reportcard.model.BuildStagePath;
-import com.ericdriggs.reportcard.model.BuildStagePathRequest;
+import com.ericdriggs.reportcard.model.*;
+import com.ericdriggs.reportcard.model.TestCase;
 import com.ericdriggs.reportcard.model.TestResult;
 import com.ericdriggs.reportcard.model.TestSuite;
-import com.ericdriggs.reportcard.model.TestCase;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.modelmapper.ModelMapper;
@@ -349,21 +348,21 @@ public class ReportCardService {
         return ret;
     }
 
-    public BuildStagePath getBuildStagePath(BuildStagePathRequest request) {
+    public BuildStagePath getBuildStagePath(ReportMetatData request) {
 
         //String org, String repo, String app, String branch, Integer buildOrdinal, String stage
 
         Record record = dsl.
                 select()
                 .from(ORG
-                        .leftJoin(REPO).on(ORG.ORG_ID.eq(REPO.ORG_FK)).and(REPO.REPO_NAME.eq(request.getRepoName()))
-                        .leftJoin(APP).on(APP.REPO_FK.eq(REPO.REPO_ID)).and(APP.APP_NAME.eq(request.getAppName()))
-                        .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)).and(BRANCH.BRANCH_NAME.eq(request.getBranchName()))
+                        .leftJoin(REPO).on(ORG.ORG_ID.eq(REPO.ORG_FK)).and(REPO.REPO_NAME.eq(request.getRepo()))
+                        .leftJoin(APP).on(APP.REPO_FK.eq(REPO.REPO_ID)).and(APP.APP_NAME.eq(request.getApp()))
+                        .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)).and(BRANCH.BRANCH_NAME.eq(request.getBranch()))
                         .leftJoin(APP_BRANCH).on(APP_BRANCH.APP_FK.eq(APP.APP_ID).and(APP_BRANCH.BRANCH_FK.eq(BRANCH.BRANCH_ID)))
-                        .leftJoin(BUILD).on(BUILD.APP_BRANCH_FK.eq(APP_BRANCH.APP_BRANCH_ID)).and(BUILD.BUILD_UNIQUE_STRING.eq(request.getBuildUniqueString()))
-                        .leftJoin(STAGE).on(STAGE.APP_BRANCH_FK.eq(APP_BRANCH.APP_BRANCH_ID)).and(STAGE.STAGE_NAME.eq(request.getStageName()))
+                        .leftJoin(BUILD).on(BUILD.APP_BRANCH_FK.eq(APP_BRANCH.APP_BRANCH_ID)).and(BUILD.BUILD_UNIQUE_STRING.eq(request.getBuildIdentifier()))
+                        .leftJoin(STAGE).on(STAGE.APP_BRANCH_FK.eq(APP_BRANCH.APP_BRANCH_ID)).and(STAGE.STAGE_NAME.eq(request.getStage()))
                         .leftJoin(BUILD_STAGE).on(BUILD_STAGE.BUILD_FK.eq(BUILD.BUILD_ID).and(BUILD_STAGE.STAGE_FK.eq(STAGE.STAGE_ID)))
-                ).where(ORG.ORG_NAME.eq(request.getOrgName()))
+                ).where(ORG.ORG_NAME.eq(request.getOrg()))
                 .fetchOne();
 
         BuildStagePath buildStagePath = new BuildStagePath();
@@ -423,7 +422,7 @@ public class ReportCardService {
      * @param request a BuildStagePathRequest with the fields to match on
      * @return
      */
-    public BuildStagePath getOrInsertBuildStagePath(BuildStagePathRequest request) {
+    public BuildStagePath getOrInsertBuildStagePath(ReportMetatData request) {
         return getOrInsertBuildStagePath(request, null);
     }
 
@@ -441,13 +440,9 @@ public class ReportCardService {
      * @param buildStagePath normally null, only values passed for testing
      * @return
      */
-    BuildStagePath getOrInsertBuildStagePath(BuildStagePathRequest request, BuildStagePath buildStagePath) {
+    BuildStagePath getOrInsertBuildStagePath(ReportMetatData request, BuildStagePath buildStagePath) {
 
-        //TODO: add test
-        if (!request.isComplete()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "Missing request fields, request: " + request.toString());
-        }
+        request.validateAndSetDefaults();
 
         if (buildStagePath == null) {
             buildStagePath = getBuildStagePath(request);
@@ -455,14 +450,14 @@ public class ReportCardService {
 
         if (buildStagePath.getOrg() == null) {
             Org org = new Org()
-                    .setOrgName(request.getOrgName());
+                    .setOrgName(request.getOrg());
             orgDao.insert(org);
             buildStagePath.setOrg(org);
         }
 
         if (buildStagePath.getRepo() == null) {
             Repo repo = new Repo()
-                    .setRepoName(request.getRepoName())
+                    .setRepoName(request.getRepo())
                     .setOrgFk(buildStagePath.getOrg().getOrgId());
             repoDao.insert(repo);
             buildStagePath.setRepo(repo);
@@ -470,7 +465,7 @@ public class ReportCardService {
 
         if (buildStagePath.getApp() == null) {
             App app = new App()
-                    .setAppName(request.getAppName())
+                    .setAppName(request.getApp())
                     .setRepoFk(buildStagePath.getRepo().getRepoId());
             appDao.insert(app);
             buildStagePath.setApp(app);
@@ -478,7 +473,7 @@ public class ReportCardService {
 
         if (buildStagePath.getBranch() == null) {
             Branch branch = new Branch()
-                    .setBranchName(request.getBranchName())
+                    .setBranchName(request.getBranch())
                     .setRepoFk(buildStagePath.getRepo().getRepoId());
             branchDao.insert(branch);
             buildStagePath.setBranch(branch);
@@ -496,7 +491,7 @@ public class ReportCardService {
         if (buildStagePath.getBuild() == null) {
             Record record = dsl
                     .insertInto(BUILD, BUILD.APP_BRANCH_FK, BUILD.BUILD_UNIQUE_STRING)
-                    .values(buildStagePath.getAppBranch().getAppBranchId(), request.getBuildUniqueString())
+                    .values(buildStagePath.getAppBranch().getAppBranchId(), request.getBuildIdentifier())
                     .onConflictDoNothing()
                     .returning()
                     .fetchOne();
@@ -507,7 +502,7 @@ public class ReportCardService {
 
         if (buildStagePath.getStage() == null) {
             Stage stage = new Stage()
-                    .setStageName(request.getStageName())
+                    .setStageName(request.getStage())
                     .setAppBranchFk(buildStagePath.getAppBranch().getAppBranchId());
             stageDao.insert(stage);
             buildStagePath.setStage(stage);

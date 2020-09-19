@@ -6,6 +6,7 @@ import com.ericdriggs.reportcard.db.tables.pojos.Repo;
 import com.ericdriggs.reportcard.db.tables.records.RepoRecord;
 import com.ericdriggs.reportcard.model.BuildStagePath;
 import com.ericdriggs.reportcard.model.BuildStagePathRequest;
+import com.ericdriggs.reportcard.model.ReportMetatData;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -26,39 +27,39 @@ public class GetBuildStagePathTest extends AbstractDbTest {
 
     @Test
     public void getBuildStagePathAllFound() {
-        BuildStagePathRequest request =
-                new BuildStagePathRequest()
-                        .setOrgName("default")
-                .setRepoName("default")
-                .setAppName("app1")
-                .setBranchName("master")
-                .setBuildUniqueString(buildUniqueString)
-                .setStageName("unit");
+        ReportMetatData request =
+                new ReportMetatData()
+                        .setOrg("default")
+                .setRepo("default")
+                .setApp("app1")
+                .setBranch("master")
+                .setBuildIdentifier(buildUniqueString)
+                .setStage("unit");
 
         BuildStagePath bsp = reportCardService.getBuildStagePath(request);
         assertTrue(bsp.isComplete());
 
-        assertEquals(bsp.getOrg().getOrgName(), request.getOrgName());
-        assertEquals(bsp.getRepo().getRepoName(), request.getRepoName());
-        assertEquals(bsp.getApp().getAppName(), request.getAppName());
-        assertEquals(bsp.getBranch().getBranchName(), request.getBranchName());
+        assertEquals(bsp.getOrg().getOrgName(), request.getOrg());
+        assertEquals(bsp.getRepo().getRepoName(), request.getRepo());
+        assertEquals(bsp.getApp().getAppName(), request.getApp());
+        assertEquals(bsp.getBranch().getBranchName(), request.getBranch());
         assertNotNull(bsp.getAppBranch().getAppBranchId());
-        assertEquals(bsp.getBuild().getBuildUniqueString(), request.getBuildUniqueString());
-        assertEquals(bsp.getStage().getStageName(), request.getStageName());
+        assertEquals(bsp.getBuild().getBuildUniqueString(), request.getBuildIdentifier());
+        assertEquals(bsp.getStage().getStageName(), request.getStage());
         assertNotNull(bsp.getBuildStage().getBuildStageId());
     }
 
     @Test
     public void getBuildStagePath_Missing_build() {
 
-        BuildStagePathRequest request =
-                new BuildStagePathRequest()
-                        .setOrgName("default")
-                        .setRepoName("default")
-                        .setAppName("app1")
-                        .setBranchName("master")
-                        .setBuildUniqueString("not_found")
-                        .setStageName("unit");
+        ReportMetatData request =
+                new ReportMetatData()
+                        .setOrg("default")
+                        .setRepo("default")
+                        .setApp("app1")
+                        .setBranch("master")
+                        .setBuildIdentifier("not_found")
+                        .setStage("unit");
 
         BuildStagePath bsp = reportCardService.getBuildStagePath(request);
         assertNotNull(bsp);
@@ -71,27 +72,27 @@ public class GetBuildStagePathTest extends AbstractDbTest {
         assertNotNull(bsp.getStage());
         assertNull(bsp.getBuildStage());
 
-        assertEquals(bsp.getOrg().getOrgName(), request.getOrgName());
-        assertEquals(bsp.getRepo().getRepoName(), request.getRepoName());
-        assertEquals(bsp.getApp().getAppName(), request.getAppName());
-        assertEquals(bsp.getBranch().getBranchName(), request.getBranchName());
+        assertEquals(bsp.getOrg().getOrgName(), request.getOrg());
+        assertEquals(bsp.getRepo().getRepoName(), request.getRepo());
+        assertEquals(bsp.getApp().getAppName(), request.getApp());
+        assertEquals(bsp.getBranch().getBranchName(), request.getBranch());
         assertNotNull(bsp.getAppBranch().getAppBranchId());
         //assertEquals(bsp.getBuild().getAppBranchBuildOrdinal(), request.getBuildOrdinal());
-        assertEquals(bsp.getStage().getStageName(), request.getStageName());
+        assertEquals(bsp.getStage().getStageName(), request.getStage());
         //assertNotNull(bsp.getBuildStage().getBuildStageId());
     }
 
     @Test
     public void getBuildStagePath_Missing_app_build_stage() {
 
-        BuildStagePathRequest request =
-                new BuildStagePathRequest()
-                        .setOrgName("default")
-                        .setRepoName("default")
-                        .setAppName("not_found")
-                        .setBranchName("master")
-                        .setBuildUniqueString("not_found")
-                        .setStageName("not_found");
+        ReportMetatData request =
+                new ReportMetatData()
+                        .setOrg("default")
+                        .setRepo("default")
+                        .setApp("not_found")
+                        .setBranch("master")
+                        .setBuildIdentifier("not_found")
+                        .setStage("not_found");
 
         BuildStagePath bsp = reportCardService.getBuildStagePath(request);
         assertNotNull(bsp);
@@ -104,10 +105,10 @@ public class GetBuildStagePathTest extends AbstractDbTest {
         assertNull(bsp.getStage());
         assertNull(bsp.getBuildStage());
 
-        assertEquals(bsp.getOrg().getOrgName(), request.getOrgName());
-        assertEquals(bsp.getRepo().getRepoName(), request.getRepoName());
+        assertEquals(bsp.getOrg().getOrgName(), request.getOrg());
+        assertEquals(bsp.getRepo().getRepoName(), request.getRepo());
         //assertEquals(bsp.getApp().getAppName(), request.getAppName());
-        assertEquals(bsp.getBranch().getBranchName(), request.getBranchName());
+        assertEquals(bsp.getBranch().getBranchName(), request.getBranch());
         //assertNotNull(bsp.getAppBranch().getAppBranchId());
         //assertEquals(bsp.getBuild().getAppBranchBuildOrdinal(), request.getBuildOrdinal());
         //assertEquals(bsp.getStage().getStageName(), request.getStageName());
@@ -118,14 +119,14 @@ public class GetBuildStagePathTest extends AbstractDbTest {
     @Test
     public void getBuildStagePath_Missing_branch_build_stage() {
 
-        BuildStagePathRequest request =
-                new BuildStagePathRequest()
-                        .setOrgName("default")
-                        .setRepoName("default")
-                        .setAppName("app1")
-                        .setBranchName("not_found")
-                        .setBuildUniqueString("not_found")
-                        .setStageName("not_found");
+        ReportMetatData request =
+                new ReportMetatData()
+                        .setOrg("default")
+                        .setRepo("default")
+                        .setApp("app1")
+                        .setBranch("not_found")
+                        .setBuildIdentifier("not_found")
+                        .setStage("not_found");
 
         BuildStagePath bsp = reportCardService.getBuildStagePath(request);
         assertNotNull(bsp);
@@ -138,9 +139,9 @@ public class GetBuildStagePathTest extends AbstractDbTest {
         assertNull(bsp.getStage());
         assertNull(bsp.getBuildStage());
 
-        assertEquals(bsp.getOrg().getOrgName(), request.getOrgName());
-        assertEquals(bsp.getRepo().getRepoName(), request.getRepoName());
-        assertEquals(bsp.getApp().getAppName(), request.getAppName());
+        assertEquals(bsp.getOrg().getOrgName(), request.getOrg());
+        assertEquals(bsp.getRepo().getRepoName(), request.getRepo());
+        assertEquals(bsp.getApp().getAppName(), request.getApp());
         //assertEquals(bsp.getBranch().getBranchName(), request.getBranchName());
         //assertNotNull(bsp.getAppBranch().getAppBranchId());
         //assertEquals(bsp.getBuild().getAppBranchBuildOrdinal(), request.getBuildOrdinal());

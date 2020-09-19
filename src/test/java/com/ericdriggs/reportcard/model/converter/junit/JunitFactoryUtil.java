@@ -13,7 +13,7 @@ public class JunitFactoryUtil {
     }
 
     private final static Random random = new Random();
-    private final static JunitObjectFactory objectFactory = new JunitObjectFactory();
+    private final static ObjectFactory objectFactory = new ObjectFactory();
 
     public static Testsuite newTestSuite(List<TestStatus> testStatuses) {
 

@@ -29,7 +29,7 @@ import javax.xml.namespace.QName;
  * 
  */
 @XmlRegistry
-public class JunitObjectFactory {
+public class ObjectFactory {
 
     private final static QName _Testsuite_QNAME = new QName("", "testsuite");
 
@@ -37,7 +37,7 @@ public class JunitObjectFactory {
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: com.ericdriggs.reportcard.gen.junit
      *
      */
-    public JunitObjectFactory() {
+    public ObjectFactory() {
     }
 
     /**

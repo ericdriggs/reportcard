@@ -29,7 +29,7 @@ import javax.xml.namespace.QName;
  * 
  */
 @XmlRegistry
-public class SurefireObjectFactory {
+public class ObjectFactory {
 
     private final static QName _TestsuiteTestcaseSkipped_QNAME = new QName("", "skipped");
     private final static QName _TestsuiteTestcaseError_QNAME = new QName("", "error");
@@ -38,7 +38,7 @@ public class SurefireObjectFactory {
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: com.ericdriggs.reportcard.gen.surefire
      * 
      */
-    public SurefireObjectFactory() {
+    public ObjectFactory() {
     }
 
     /**

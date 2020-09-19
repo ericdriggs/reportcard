@@ -16,7 +16,7 @@ public class SurefireFactoryUtil {
     }
 
     private final static Random random = new Random();
-    private final static SurefireObjectFactory objectFactory = new SurefireObjectFactory();
+    private final static ObjectFactory objectFactory = new ObjectFactory();
 
     public static Testsuite newTestSuite(List<TestStatus> testStatuses) {
 
