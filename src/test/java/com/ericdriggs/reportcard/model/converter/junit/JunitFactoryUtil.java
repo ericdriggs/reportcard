@@ -3,9 +3,7 @@ package com.ericdriggs.reportcard.model.converter.junit;
 import com.ericdriggs.reportcard.model.TestStatus;
 import com.ericdriggs.reportcard.model.TestStatusType;
 import com.ericdriggs.reportcard.xml.junit.*;
-import com.ericdriggs.reportcard.xml.junit.Error;
 
-import javax.xml.bind.JAXBElement;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -15,7 +13,7 @@ public class JunitFactoryUtil {
     }
 
     private final static Random random = new Random();
-    private final static ObjectFactory objectFactory = new ObjectFactory();
+    private final static JunitObjectFactory objectFactory = new JunitObjectFactory();
 
     public static Testsuite newTestSuite(List<TestStatus> testStatuses) {
 
