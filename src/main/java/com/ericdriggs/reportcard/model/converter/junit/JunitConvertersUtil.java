@@ -6,13 +6,13 @@ import com.ericdriggs.reportcard.model.TestStatus;
 import com.ericdriggs.reportcard.model.TestSuite;
 import com.ericdriggs.reportcard.xml.junit.Testcase;
 import com.ericdriggs.reportcard.xml.junit.Testsuite;
+import com.ericdriggs.reportcard.xml.junit.Testsuites;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class JunitConvertersUtil {
@@ -20,6 +20,18 @@ public class JunitConvertersUtil {
     public static Converter<Testcase, TestCase> fromJunitToModelTestCase = new AbstractConverter<>() {
         protected com.ericdriggs.reportcard.model.TestCase convert(com.ericdriggs.reportcard.xml.junit.Testcase source) {
             return doFromJunitToModelTestCase(source);
+        }
+    };
+    
+    public static Converter<com.ericdriggs.reportcard.xml.junit.Testsuite, TestSuite> fromJunitToModelTestSuite = new AbstractConverter<>() {
+        protected com.ericdriggs.reportcard.model.TestSuite convert(com.ericdriggs.reportcard.xml.junit.Testsuite source) {
+            return doFromJunitToModelTestSuite(source);
+        }
+    };
+
+    public static Converter<Testsuites, TestResult> fromJunitToModelTestResult = new AbstractConverter<>() {
+        protected com.ericdriggs.reportcard.model.TestResult convert(com.ericdriggs.reportcard.xml.junit.Testsuites source) {
+            return doFromJunitToModelTestResult(source);
         }
     };
 
@@ -53,9 +65,9 @@ public class JunitConvertersUtil {
     }
 
 
-    public static List<TestSuite> doFromJunitToModelTestSuites(Collection<Testsuite> source) {
+    public static List<TestSuite> doFromJunitToModelTestSuites(Testsuites source) {
         List<TestSuite> testSuites = new ArrayList<>();
-        for (Testsuite testsuite : source) {
+        for (Testsuite testsuite : source.getTestsuite()) {
             testSuites.add(doFromJunitToModelTestSuite(testsuite));
         }
         return testSuites;
@@ -84,8 +96,7 @@ public class JunitConvertersUtil {
             modelTestSuite.setSkipped(0);
         }
         modelTestSuite.setPackage(source.get_package());
-        modelTestSuite.setPackage(null);
-        modelTestSuite.setProperties(null); //TODO: support properties;
+        modelTestSuite.setProperties(null);
         modelTestSuite.setTestCases(doFromJunitToModelTestCases(source.getTestcase()));
         modelTestSuite.setTime(source.getTime());
         if (modelTestSuite.getTime() == null) {
@@ -95,7 +106,7 @@ public class JunitConvertersUtil {
         return modelTestSuite;
     }
 
-    public static TestResult doFromJunitToModelTestResult(Collection<Testsuite> sources) {
+    public static TestResult doFromJunitToModelTestResult(Testsuites sources) {
         com.ericdriggs.reportcard.model.TestResult modelTestResult = new com.ericdriggs.reportcard.model.TestResult();
         modelTestResult.setTestSuites(doFromJunitToModelTestSuites(sources));
         modelTestResult.setTests(0);
@@ -117,5 +128,7 @@ public class JunitConvertersUtil {
     public static ModelMapper modelMapper = new ModelMapper();
     static {
         modelMapper.addConverter(fromJunitToModelTestCase);
+        modelMapper.addConverter(fromJunitToModelTestSuite);
+        modelMapper.addConverter(fromJunitToModelTestResult);
     }
 }
