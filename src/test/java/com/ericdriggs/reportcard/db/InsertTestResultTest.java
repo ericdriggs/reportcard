@@ -19,7 +19,13 @@ import java.util.List;
 @Profile("test")
 public class InsertTestResultTest extends AbstractDbTest {
 
-    final static String buildUniqueString = "9282be75-6ca5-424b-a7ec-13d13370ba90";
+
+    final String org = "org10";
+    final String repo = "repo10";
+    final String app = "app10";
+    final String branch = "branch10";
+    final static String buildUniqueString = "a5493474-274c-44bd-93a1-82e9df1c15d4";
+    final static String stage = "stage10";
 
     final static int testResultErrorCount = 10;
     final static int testResultFailureCount = 20;
@@ -34,8 +40,8 @@ public class InsertTestResultTest extends AbstractDbTest {
     final static BigDecimal testSuiteTime = new BigDecimal("1.690");
     final static String testSuitePackage = "com.foo.bar";
 
-    final static String testCaseClassName = "testCaseClassName1";
-    final static String testCaseName = "testCaseName1";
+    final static String testCaseClassName = "testCaseClassName10";
+    final static String testCaseName = "testCaseName10";
     final static TestStatus testCaseStatus = TestStatus.FAILURE;
     final static BigDecimal testCaseTime = new BigDecimal("0.500");
 
@@ -57,8 +63,8 @@ public class InsertTestResultTest extends AbstractDbTest {
         assertIdsandFks(testResultInsert);
 
         final List<TestResult> testResultsGet = reportCardService.getTestResults(testResultBefore.getBuildStageFk());
-        assertEquals(2, testResultsGet.size());
-        final TestResult testResultGet = testResultsGet.get(1);
+        assertEquals(1, testResultsGet.size());
+        final TestResult testResultGet = testResultsGet.get(0);
         assertValues(testResultGet);
         assertIdsandFks(testResultGet);
     }
@@ -108,22 +114,28 @@ public class InsertTestResultTest extends AbstractDbTest {
         assertEquals(testSuite.getTestSuiteId(), testCase.getTestSuiteFk());
     }
 
+
+    private ReportMetatData getReportMetaData() {
+
+        ReportMetatData reportMetatData =
+                new ReportMetatData()
+                        .setOrg(org)
+                        .setRepo(repo)
+                        .setApp(app)
+                        .setBranch(branch)
+                        .setBuildIdentifier(buildUniqueString)
+                        .setStage(stage);
+        return reportMetatData;
+    }
+
     private TestResult getInsertableTestResult() {
 
         BuildStagePath bsp = null;
         {
-            ReportMetatData request =
-                    new ReportMetatData()
-                            .setOrg("default")
-                            .setRepo("default")
-                            .setApp("app1")
-                            .setBranch("master")
-                            .setBuildIdentifier(buildUniqueString)
-                            .setStage("unit");
-            bsp = reportCardService.getBuildStagePath(request);
+            ReportMetatData reportMetatData = getReportMetaData();
+            bsp = reportCardService.getOrInsertBuildStagePath(reportMetatData);
             assertTrue(bsp.isComplete());
         }
-
 
         TestResult testResult = new TestResult();
         testResult.setBuildStageFk(bsp.getBuildStage().getBuildStageId());

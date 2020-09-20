@@ -535,7 +535,7 @@ public class ReportCardService {
                     select(TEST_SUITE.fields())
                     .from(TEST_RESULT
                             .join(TEST_SUITE).on(TEST_SUITE.TEST_RESULT_FK.eq(TEST_RESULT.TEST_RESULT_ID))
-                    ).where(TEST_SUITE.TEST_SUITE_ID.eq(testResult.getTestResultId()))
+                    ).where(TEST_RESULT.TEST_RESULT_ID.eq(testResult.getTestResultId()))
                     .fetchInto(TestSuite.class);
 
             testResult.setTestSuites(testSuites);
@@ -545,7 +545,7 @@ public class ReportCardService {
                         select(TEST_CASE.fields())
                         .from(TEST_CASE
                                 .join(TEST_SUITE).on(TEST_CASE.TEST_SUITE_FK.eq(TEST_SUITE.TEST_SUITE_ID))
-                        ).where(TEST_CASE.TEST_CASE_ID.eq(testSuite.getTestSuiteId()))
+                        ).where(TEST_SUITE.TEST_SUITE_ID.eq(testSuite.getTestSuiteId()))
                         .fetchInto(TestCase.class);
 
                 testSuite.setTestCases(testCases);
@@ -582,7 +582,6 @@ public class ReportCardService {
             testResult.setTestSuites(testSuites);
         }
 
-//        List<TestSuite> testSuites = testResult.getTestSuites();
         if (testResult.getTestSuites().isEmpty()) {
             log.warn("testSuites.isEmpty()");
         }
@@ -610,7 +609,7 @@ public class ReportCardService {
                 testSuite.setTestCases(testCases);
                 testSuites.add(testSuite);
             }
-//            final List<TestCase> testCases = testSuite.getTestCases();
+
             if (testSuite.getTestCases().isEmpty()) {
                 log.warn("testCases.isEmpty()");
             }
@@ -618,32 +617,16 @@ public class ReportCardService {
             final List<TestCase> testCases = new ArrayList<>();
             for (TestCase testCase : testSuite.getTestCases()) {
                 if (testCase.getTestCaseId() == null) {
-                    Record record = dsl
-                            .insertInto(TEST_CASE,
-                                    TEST_CASE.TEST_SUITE_FK,
-                                    TEST_CASE.TEST_STATUS_FK,
-                                    TEST_CASE.CLASS_NAME,
-                                    TEST_CASE.NAME,
-                                    TEST_CASE.TIME)
-                            .values(testSuite.getTestSuiteId(),
-                                    testCase.getTestStatusFk(),
-                                    testCase.getClassName(),
-                                    testCase.getName(),
-                                    testCase.getTime())
-//                            .onConflictDoNothing()
-                            .returning()
-                            .fetchOne();
-                    TestCase testCaseRecord = record.into(TestCaseRecord.class).into(TestCase.class);
-//
-//                    TestCaseRecord testCaseRecord = dsl.newRecord(TEST_CASE);
-//                    testCaseRecord.setTestSuiteFk(testSuite.getTestSuiteId())
-//                            .setTestStatusFk(testCase.getTestStatusFk())
-//                            .setClassName(testCase.getClassName())
-//                            .setName(testCase.getName())
-//                            .setTime(testCase.getTime())
-//                            .store();
-//
-//                    testCase = testCaseRecord.into(TestCase.class);
+
+                    TestCaseRecord testCaseRecord = dsl.newRecord(TEST_CASE);
+                    testCaseRecord.setTestSuiteFk(testSuite.getTestSuiteId())
+                            .setTestStatusFk(testCase.getTestStatusFk())
+                            .setClassName(testCase.getClassName())
+                            .setName(testCase.getName())
+                            .setTime(testCase.getTime())
+                            .store();
+
+                    testCase = testCaseRecord.into(TestCase.class);
                     testCases.add(testCase);
                 }
             }
@@ -654,7 +637,7 @@ public class ReportCardService {
         return testResult;
     }
 
-    public Map<Integer, String> getTestStatuMap() {
+    public Map<Integer, String> getTestStatusMap() {
         List<TestStatusRecord> testStatusRecords = dsl.
                 select(TEST_STATUS.fields())
                 .from(TEST_STATUS)

@@ -47,7 +47,7 @@ public class ReportControllerTest {
     //TODO: move to other class
     @Test
     public void testStatusTest() {
-        Map<Integer, String> statuses = reportCardService.getTestStatuMap();
+        Map<Integer, String> statuses = reportCardService.getTestStatusMap();
         assertEquals(8, statuses.size());
         for (TestStatus testStatus : TestStatus.values()) {
             assertEquals(testStatus.name(), statuses.get(testStatus.getStatusId()));
