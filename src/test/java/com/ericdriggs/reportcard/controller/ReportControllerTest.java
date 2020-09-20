@@ -14,6 +14,7 @@ import org.springframework.test.context.TestPropertySource;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Random;
 
@@ -28,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class ReportControllerTest {
 
     @Autowired
-    public ReportControllerTest (ReportControllerUtil reportControllerUtil, ResourceReader resourceReader, ReportCardService reportCardService) {
+    public ReportControllerTest(ReportControllerUtil reportControllerUtil, ResourceReader resourceReader, ReportCardService reportCardService) {
         this.reportControllerUtil = reportControllerUtil;
         this.resourceReader = resourceReader;
         this.reportCardService = reportCardService;
@@ -58,7 +59,7 @@ public class ReportControllerTest {
 
 
         final ReportMetatData reportMetatData = generateRandomReportMetaData();
-        TestResult inserted = reportControllerUtil.doPostXmlJunit(reportMetatData, xmlJunit );
+        TestResult inserted = reportControllerUtil.doPostXmlJunit(reportMetatData, xmlJunit);
         assertNotNull(inserted);
         assertNotNull(inserted.getTestResultId());
 
@@ -70,8 +71,29 @@ public class ReportControllerTest {
         assertEquals(false, inserted.getHasSkip());
         assertEquals(true, inserted.getIsSuccess());
         assertNotNull(inserted.getTestResultCreated());
-        assertNotNull( LocalDateTime.now().isAfter(inserted.getTestResultCreated()));
+        assertNotNull(LocalDateTime.now().isAfter(inserted.getTestResultCreated()));
         assertEquals(new BigDecimal("50.500"), inserted.getTime());
+    }
+
+    @Test
+    public void insertSurefireTest() {
+
+
+        final ReportMetatData reportMetatData = generateRandomReportMetaData();
+        TestResult inserted = reportControllerUtil.doPostXmlSurefire(reportMetatData, Collections.singletonList(xmlSurefire));
+        assertNotNull(inserted);
+        assertNotNull(inserted.getTestResultId());
+
+        assertEquals(1, inserted.getTestSuites().size());
+        assertEquals(3, inserted.getTests());
+        assertEquals(1, inserted.getSkipped());
+        assertEquals(1, inserted.getError());
+        assertEquals(1, inserted.getFailure());
+        assertEquals(true, inserted.getHasSkip());
+        assertEquals(false, inserted.getIsSuccess());
+        assertNotNull(inserted.getTestResultCreated());
+        assertNotNull(LocalDateTime.now().isAfter(inserted.getTestResultCreated()));
+        assertEquals(new BigDecimal("0.014"), inserted.getTime());
     }
 
     private static Random random = new Random();
