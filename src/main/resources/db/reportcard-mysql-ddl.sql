@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS `org` (
                                      PRIMARY KEY (`org_id`),
                                      UNIQUE INDEX `org_name_idx` (`org_name` ASC) VISIBLE)
     ENGINE = InnoDB
-    AUTO_INCREMENT = 3
+    AUTO_INCREMENT = 0
     DEFAULT CHARACTER SET = utf8mb4
     COLLATE = utf8mb4_0900_ai_ci;
 
@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS `repo` (
                                               ON DELETE CASCADE
                                               ON UPDATE CASCADE)
     ENGINE = InnoDB
-    AUTO_INCREMENT = 2
+    AUTO_INCREMENT = 0
     DEFAULT CHARACTER SET = utf8mb4
     COLLATE = utf8mb4_0900_ai_ci;
 
@@ -72,7 +72,7 @@ CREATE TABLE IF NOT EXISTS `app` (
                                              ON DELETE CASCADE
                                              ON UPDATE CASCADE)
     ENGINE = InnoDB
-    AUTO_INCREMENT = 2
+    AUTO_INCREMENT = 0
     DEFAULT CHARACTER SET = utf8mb4
     COLLATE = utf8mb4_0900_ai_ci;
 
@@ -94,7 +94,7 @@ CREATE TABLE IF NOT EXISTS `branch` (
                                                 ON DELETE CASCADE
                                                 ON UPDATE CASCADE)
     ENGINE = InnoDB
-    AUTO_INCREMENT = 2
+    AUTO_INCREMENT = 0
     DEFAULT CHARACTER SET = utf8mb4
     COLLATE = utf8mb4_0900_ai_ci;
 
@@ -121,7 +121,7 @@ CREATE TABLE IF NOT EXISTS `app_branch` (
                                                     ON DELETE CASCADE
                                                     ON UPDATE CASCADE)
     ENGINE = InnoDB
-    AUTO_INCREMENT = 2
+    AUTO_INCREMENT = 0
     DEFAULT CHARACTER SET = utf8mb4
     COLLATE = utf8mb4_0900_ai_ci;
 
@@ -146,7 +146,7 @@ CREATE TABLE IF NOT EXISTS `build` (
                                                ON DELETE CASCADE
                                                ON UPDATE CASCADE)
     ENGINE = InnoDB
-    AUTO_INCREMENT = 3
+    AUTO_INCREMENT = 0
     DEFAULT CHARACTER SET = utf8mb4
     COLLATE = utf8mb4_0900_ai_ci;
 
@@ -168,7 +168,7 @@ CREATE TABLE IF NOT EXISTS `stage` (
                                                ON DELETE CASCADE
                                                ON UPDATE CASCADE)
     ENGINE = InnoDB
-    AUTO_INCREMENT = 2
+    AUTO_INCREMENT = 0
     DEFAULT CHARACTER SET = utf8mb4
     COLLATE = utf8mb4_0900_ai_ci;
 
@@ -195,7 +195,7 @@ CREATE TABLE IF NOT EXISTS `build_stage` (
                                                      ON DELETE CASCADE
                                                      ON UPDATE CASCADE)
     ENGINE = InnoDB
-    AUTO_INCREMENT = 2
+    AUTO_INCREMENT = 0
     DEFAULT CHARACTER SET = utf8mb4
     COLLATE = utf8mb4_0900_ai_ci;
 
@@ -209,7 +209,7 @@ CREATE TABLE IF NOT EXISTS `test_status` (
                                              `test_status_name` VARCHAR(64) NOT NULL,
                                              PRIMARY KEY (`test_status_id`))
     ENGINE = InnoDB
-    AUTO_INCREMENT = 9
+    AUTO_INCREMENT = 0
     DEFAULT CHARACTER SET = utf8mb4
     COLLATE = utf8mb4_0900_ai_ci;
 

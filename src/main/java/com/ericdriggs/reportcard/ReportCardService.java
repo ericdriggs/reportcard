@@ -2,6 +2,8 @@ package com.ericdriggs.reportcard;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import com.ericdriggs.reportcard.db.tables.daos.*;
 import com.ericdriggs.reportcard.db.tables.pojos.*;
@@ -9,6 +11,7 @@ import com.ericdriggs.reportcard.db.tables.records.*;
 import com.ericdriggs.reportcard.model.*;
 import com.ericdriggs.reportcard.model.TestCase;
 import com.ericdriggs.reportcard.model.TestResult;
+import com.ericdriggs.reportcard.model.TestStatus;
 import com.ericdriggs.reportcard.model.TestSuite;
 import org.jooq.DSLContext;
 import org.jooq.Record;
@@ -603,15 +606,32 @@ public class ReportCardService {
             final List<TestCase> testCases = new ArrayList<>();
             for (TestCase testCase : testSuite.getTestCases()) {
                 if (testCase.getTestCaseId() == null) {
-                    TestCaseRecord testCaseRecord = dsl.newRecord(TEST_CASE);
-                    testCaseRecord.setTestSuiteFk(testSuite.getTestSuiteId())
-                            .setClassName(testCase.getClassName())
-                            .setName(testCase.getName())
-                            .setTestStatusFk(testCase.getTestStatusFk())
-                            .setTime(testCase.getTime())
-                            .store();
-
-                    testCase = testCaseRecord.into(TestCase.class);
+                    Record record = dsl
+                            .insertInto(TEST_CASE,
+                                    TEST_CASE.TEST_SUITE_FK,
+                                    TEST_CASE.TEST_STATUS_FK,
+                                    TEST_CASE.CLASS_NAME,
+                                    TEST_CASE.NAME,
+                                    TEST_CASE.TIME)
+                            .values(testSuite.getTestSuiteId(),
+                                    testCase.getTestStatusFk(),
+                                    testCase.getClassName(),
+                                    testCase.getName(),
+                                    testCase.getTime())
+//                            .onConflictDoNothing()
+                            .returning()
+                            .fetchOne();
+                    TestCase testCaseRecord = record.into(TestCaseRecord.class).into(TestCase.class);
+//
+//                    TestCaseRecord testCaseRecord = dsl.newRecord(TEST_CASE);
+//                    testCaseRecord.setTestSuiteFk(testSuite.getTestSuiteId())
+//                            .setTestStatusFk(testCase.getTestStatusFk())
+//                            .setClassName(testCase.getClassName())
+//                            .setName(testCase.getName())
+//                            .setTime(testCase.getTime())
+//                            .store();
+//
+//                    testCase = testCaseRecord.into(TestCase.class);
                     testCases.add(testCase);
                 }
             }
@@ -620,6 +640,20 @@ public class ReportCardService {
         testResult.setTestSuites(testSuites);
 
         return testResult;
+    }
+
+    public Map<Integer, String> getTestStatuMap() {
+        List<TestStatusRecord> testStatusRecords = dsl.
+                select(TEST_STATUS.fields())
+                .from(TEST_STATUS)
+                .fetchInto(TestStatusRecord.class);
+
+        Map<Integer, String> testStatusMap = new TreeMap<>();
+        for (TestStatusRecord testStatusRecord : testStatusRecords) {
+            testStatusMap.put(testStatusRecord.getTestStatusId().intValue(), testStatusRecord.getTestStatusName());
+        }
+
+        return testStatusMap;
     }
 
 }

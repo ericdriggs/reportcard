@@ -4,14 +4,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum TestStatus {
-    SUCCESS(0, TestStatusType.SUCCESS),
-    SKIPPED(1, TestStatusType.SKIPPED),
-    FAILURE(2, TestStatusType.FAILURE),
-    ERROR(3, TestStatusType.ERROR),
-    FLAKY_FAILURE(4, TestStatusType.FAILURE),
-    RERUN_FAILURE(5, TestStatusType.FAILURE),
-    FLAKY_ERROR(6, TestStatusType.ERROR),
-    RERUN_ERROR(7, TestStatusType.ERROR);
+    SUCCESS(1, TestStatusType.SUCCESS),
+    SKIPPED(2, TestStatusType.SKIPPED),
+    FAILURE(3, TestStatusType.FAILURE),
+    ERROR(4, TestStatusType.ERROR),
+    FLAKY_FAILURE(5, TestStatusType.FAILURE),
+    RERUN_FAILURE(6, TestStatusType.FAILURE),
+    FLAKY_ERROR(7, TestStatusType.ERROR),
+    RERUN_ERROR(8, TestStatusType.ERROR);
 
     TestStatus(int statusId, TestStatusType testStatusType) {
         this.statusId = statusId;
