@@ -206,7 +206,7 @@ SHOW WARNINGS;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `test_status` (
                                              `test_status_id` TINYINT NOT NULL AUTO_INCREMENT,
-                                             `test_status_name` CHAR(8) NOT NULL,
+                                             `test_status_name` VARCHAR(64) NOT NULL,
                                              PRIMARY KEY (`test_status_id`))
     ENGINE = InnoDB
     AUTO_INCREMENT = 9

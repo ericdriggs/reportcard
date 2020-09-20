@@ -35,8 +35,11 @@ INSERT INTO `reportcard`.`test_status`
 VALUES (0, 'SUCCESS'),
        (1, 'SKIPPED'),
        (2, 'FAILURE'),
-       (3, 'ERROR');
-
+       (3, 'ERROR'),
+       (4, 'FLAKY_FAILURE'),
+       (5, 'RERUN_FAILURE'),
+       (6, 'FLAKY_ERROR'),
+       (7, 'RERUN_ERROR');
 
 insert into `reportcard`.`test_result`
 (`build_stage_fk`, `tests`, `skipped`, `error`, `failure`, `time`)
