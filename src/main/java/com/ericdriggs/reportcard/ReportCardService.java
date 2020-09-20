@@ -571,7 +571,14 @@ public class ReportCardService {
                     .setTests(testResult.getTests())
                     .setTime(testResult.getTime())
                     .store();
+
             testResult = testResultRecord.into(TestResult.class);
+
+            //need select for generated values
+            testResult = dsl.select().from(TEST_RESULT)
+                    .where(TEST_RESULT.TEST_RESULT_ID.eq(testResult.getTestResultId()))
+                    .fetchOne()
+                    .into(TestResultRecord.class).into(TestResult.class);
             testResult.setTestSuites(testSuites);
         }
 
@@ -594,7 +601,12 @@ public class ReportCardService {
                         .setPackage(testSuite.getPackage())
                         .store();
 
-                testSuite = testSuiteRecord.into(TestSuite.class);
+                //need select for generated values
+                testSuite = dsl.select().from(TEST_SUITE)
+                        .where(TEST_SUITE.TEST_SUITE_ID.eq(testSuiteRecord.getTestSuiteId()))
+                        .fetchOne()
+                        .into(TestSuiteRecord.class).into(TestSuite.class);
+
                 testSuite.setTestCases(testCases);
                 testSuites.add(testSuite);
             }
