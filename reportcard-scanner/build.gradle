@@ -1,19 +1,7 @@
-buildscript {
-    ext {
-        javaVersion = JavaVersion.VERSION_1_8
-    }
-}
-
 plugins {
     id 'java'
     id 'idea'
 }
-
-group 'com.github.ericdriggs'
-version '0.0.1-SNAPSHOT'
-
-sourceCompatibility = javaVersion
-targetCompatibility = javaVersion
 
 test {
     systemProperties System.properties
@@ -23,8 +11,26 @@ test {
 dependencies {
 }
 
-repositories {
-    mavenLocal()
-    mavenCentral()
-    jcenter()
+// If on JDK 9+, verify project cross-compiles on its 'sourceCompatible' JVM version (see https://github.com/melix/mrjar-gradle/blob/master/jdks.gradle)
+if (project.hasProperty('crossCompile')) {
+    if (JavaVersion.current().java9Compatible) {
+        project.afterEvaluate {
+            tasks.withType(JavaCompile) {
+                def version = compat(sourceCompatibility)
+                project.logger.info("Configuring $name to use --release $version")
+                options.compilerArgs.addAll(['--release', version])
+            }
+        }
+    } else {
+        project.logger.warn("-PcrossCompile not supported prior to JDK 9; using JDK ${JavaVersion.current()}")
+    }
+}
+
+// This function converts 1.8 -> 8
+static String compat(String src) {
+    if (src.contains('.')) {
+        src.substring(src.lastIndexOf('.')+1)
+    } else {
+        src
+    }
 }

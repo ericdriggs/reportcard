@@ -1,158 +1,25 @@
 buildscript {
     ext {
         javaVersion = JavaVersion.VERSION_11
-        jaxbVersion = '2.3.1'
-        springBootVersion = '2.3.1.RELEASE'
-//        jooq.version = '3.13.2'
-    }
-    dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
     }
 }
+
 plugins {
     id 'java'
     id 'idea'
-    id 'org.springframework.boot' version '2.3.1.RELEASE'
-    id 'io.spring.dependency-management' version '1.0.9.RELEASE'
-    id 'nu.studer.jooq' version '4.2'
-}
-
-allprojects {
-    group 'com.github.ericdriggs'
-    version '0.0.1-SNAPSHOT'
-}
-
-configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
-    }
-}
-
-repositories {
-    mavenLocal()
-    mavenCentral()
-    jcenter()
 }
 
 sourceCompatibility = javaVersion
 targetCompatibility = javaVersion
 
+allprojects {
 
-dependencies {
+    group 'com.github.ericdriggs'
+    version '0.0.1-SNAPSHOT'
 
-
-    //Lombok
-
-    compile 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
-
-
-    //Swagger
-    implementation 'io.springfox:springfox-swagger2:2.9.2'
-    implementation 'io.springfox:springfox-swagger-ui:2.9.2'
-
-    //XML
-    implementation "javax.xml.bind:jaxb-api:${jaxbVersion}"
-
-    //Spring
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    runtimeOnly 'org.springframework.boot:spring-boot-starter-logging'
-    runtimeOnly 'org.springframework.boot:spring-boot-devtools'
-    implementation 'org.springframework.boot:spring-boot-devtools'
-    testImplementation('org.springframework.boot:spring-boot-starter-test') {
-        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-    }
-
-    //Database
-    implementation 'mysql:mysql-connector-java'
-    implementation 'org.jooq:jooq'
-    implementation 'org.springframework.boot:spring-boot-starter-jooq:2.3.1.RELEASE'
-
-    testImplementation 'com.wix:wix-embedded-mysql:4.6.1'
-
-
-    jooqRuntime 'mysql:mysql-connector-java:8.0.20'
-
-    //Mapping
-    implementation 'org.modelmapper:modelmapper:2.3.0'
-    implementation 'org.modelmapper.extensions:modelmapper-jooq:2.3.0'
-
-    //Test
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
-}
-
-test {
-    useJUnitPlatform()
-    systemProperties System.properties
-    outputs.upToDateWhen { false }
-}
-
-jooq {
-    version = '3.13.4'
-    edition = 'OSS'
-    generateSchemaSourceOnCompilation = false
-    sample(sourceSets.main) {
-        jdbc {
-            driver = 'com.mysql.cj.jdbc.Driver'
-            url = 'jdbc:mysql://127.0.0.1:3306/reportcard?serverTimezone=UTC'
-            user = 'root'
-            password = ''
-            properties {
-                property {
-                    key = 'ssl'
-                    value = 'true'
-                }
-            }
-        }
-        generator {
-            name = 'org.jooq.codegen.DefaultGenerator'
-            strategy {
-                name = 'org.jooq.codegen.DefaultGeneratorStrategy'
-            }
-            database {
-                name = 'org.jooq.meta.mysql.MySQLDatabase'
-                inputSchema = 'reportcard'
-                unsignedTypes = false
-                forcedTypes {
-                    forcedType {
-                        name = 'varchar'
-                        includeExpression = '.*'
-                        includeTypes = 'JSONB?'
-                    }
-                    forcedType {
-                        name = 'varchar'
-                        includeExpression = '.*'
-                        includeTypes = 'INET'
-                    }
-                    forcedType {
-                        name = 'BOOLEAN'
-                        includeExpression = 'is_.*'
-                        includeTypes = "TINYINT"
-                    }
-                    forcedType {
-                        name = 'BOOLEAN'
-                        includeExpression = 'has_.*'
-                        includeTypes = "TINYINT"
-                    }
-                }
-            }
-            generate {
-                daos = true
-                relations = true
-                deprecated = false
-                records = true
-                immutablePojos = false
-                fluentSetters = true
-            }
-            target {
-                packageName = 'com.ericdriggs.reportcard.db'
-                directory = 'src/generated/java'
-            }
-        }
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        jcenter()
     }
 }
-sourceSets.main.java.srcDirs += ['src/generated/java']
-
