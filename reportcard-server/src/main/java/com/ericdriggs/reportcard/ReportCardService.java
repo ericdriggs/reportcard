@@ -11,7 +11,6 @@ import com.ericdriggs.reportcard.db.tables.records.*;
 import com.ericdriggs.reportcard.model.*;
 import com.ericdriggs.reportcard.model.TestCase;
 import com.ericdriggs.reportcard.model.TestResult;
-import com.ericdriggs.reportcard.model.TestStatus;
 import com.ericdriggs.reportcard.model.TestSuite;
 import org.jooq.DSLContext;
 import org.jooq.Record;
@@ -351,7 +350,7 @@ public class ReportCardService {
         return ret;
     }
 
-    public BuildStagePath getBuildStagePath(ReportMetatData request) {
+    public BuildStagePath getBuildStagePath(ReportMetaData request) {
 
         //String org, String repo, String app, String branch, Integer buildOrdinal, String stage
 
@@ -425,7 +424,7 @@ public class ReportCardService {
      * @param request a BuildStagePathRequest with the fields to match on
      * @return
      */
-    public BuildStagePath getOrInsertBuildStagePath(ReportMetatData request) {
+    public BuildStagePath getOrInsertBuildStagePath(ReportMetaData request) {
         return getOrInsertBuildStagePath(request, null);
     }
 
@@ -443,7 +442,7 @@ public class ReportCardService {
      * @param buildStagePath normally null, only values passed for testing
      * @return
      */
-    BuildStagePath getOrInsertBuildStagePath(ReportMetatData request, BuildStagePath buildStagePath) {
+    BuildStagePath getOrInsertBuildStagePath(ReportMetaData request, BuildStagePath buildStagePath) {
 
         request.validateAndSetDefaults();
 

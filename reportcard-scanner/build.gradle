@@ -12,10 +12,17 @@ plugins {
 }
 
 dependencies {
+    compile 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
+
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.11'
+
+
 
 }
 

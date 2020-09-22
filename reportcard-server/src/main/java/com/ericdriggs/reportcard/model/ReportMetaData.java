@@ -1,8 +1,9 @@
 package com.ericdriggs.reportcard.model;
 
 import lombok.Data;
-import org.jooq.tools.StringUtils;
+
 import org.springframework.http.HttpStatus;
+import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Arrays;
@@ -10,7 +11,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 @Data
-public class ReportMetatData {
+public class ReportMetaData {
     private String org;
     private String repo;
     private String app;
@@ -44,6 +45,5 @@ public class ReportMetatData {
                     "errors - " + Arrays.toString(errors.entrySet().toArray()));
         }
     }
-
 
 }

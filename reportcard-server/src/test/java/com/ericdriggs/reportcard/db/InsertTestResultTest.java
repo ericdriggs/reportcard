@@ -115,10 +115,10 @@ public class InsertTestResultTest extends AbstractDbTest {
     }
 
 
-    private ReportMetatData getReportMetaData() {
+    private ReportMetaData getReportMetaData() {
 
-        ReportMetatData reportMetatData =
-                new ReportMetatData()
+        ReportMetaData reportMetatData =
+                new ReportMetaData()
                         .setOrg(org)
                         .setRepo(repo)
                         .setApp(app)
@@ -132,7 +132,7 @@ public class InsertTestResultTest extends AbstractDbTest {
 
         BuildStagePath bsp = null;
         {
-            ReportMetatData reportMetatData = getReportMetaData();
+            ReportMetaData reportMetatData = getReportMetaData();
             bsp = reportCardService.getOrInsertBuildStagePath(reportMetatData);
             assertTrue(bsp.isComplete());
         }

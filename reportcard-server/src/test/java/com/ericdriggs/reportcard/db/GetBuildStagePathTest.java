@@ -2,7 +2,7 @@ package com.ericdriggs.reportcard.db;
 
 import com.ericdriggs.reportcard.ReportCardService;
 import com.ericdriggs.reportcard.model.BuildStagePath;
-import com.ericdriggs.reportcard.model.ReportMetatData;
+import com.ericdriggs.reportcard.model.ReportMetaData;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -23,8 +23,8 @@ public class GetBuildStagePathTest extends AbstractDbTest {
 
     @Test
     public void getBuildStagePathAllFound() {
-        ReportMetatData request =
-                new ReportMetatData()
+        ReportMetaData request =
+                new ReportMetaData()
                         .setOrg("default")
                 .setRepo("default")
                 .setApp("app1")
@@ -48,8 +48,8 @@ public class GetBuildStagePathTest extends AbstractDbTest {
     @Test
     public void getBuildStagePath_Missing_build() {
 
-        ReportMetatData request =
-                new ReportMetatData()
+        ReportMetaData request =
+                new ReportMetaData()
                         .setOrg("default")
                         .setRepo("default")
                         .setApp("app1")
@@ -81,8 +81,8 @@ public class GetBuildStagePathTest extends AbstractDbTest {
     @Test
     public void getBuildStagePath_Missing_app_build_stage() {
 
-        ReportMetatData request =
-                new ReportMetatData()
+        ReportMetaData request =
+                new ReportMetaData()
                         .setOrg("default")
                         .setRepo("default")
                         .setApp("not_found")
@@ -115,8 +115,8 @@ public class GetBuildStagePathTest extends AbstractDbTest {
     @Test
     public void getBuildStagePath_Missing_branch_build_stage() {
 
-        ReportMetatData request =
-                new ReportMetatData()
+        ReportMetaData request =
+                new ReportMetaData()
                         .setOrg("default")
                         .setRepo("default")
                         .setApp("app1")

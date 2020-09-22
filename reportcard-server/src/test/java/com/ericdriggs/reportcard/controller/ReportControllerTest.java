@@ -2,7 +2,7 @@ package com.ericdriggs.reportcard.controller;
 
 import com.ericdriggs.reportcard.ReportCardService;
 import com.ericdriggs.reportcard.ReportcardApplication;
-import com.ericdriggs.reportcard.model.ReportMetatData;
+import com.ericdriggs.reportcard.model.ReportMetaData;
 import com.ericdriggs.reportcard.model.TestResult;
 import com.ericdriggs.reportcard.model.TestStatus;
 import com.ericdriggs.reportcard.xml.ResourceReader;
@@ -58,7 +58,7 @@ public class ReportControllerTest {
     public void insertJunitTest() {
 
 
-        final ReportMetatData reportMetatData = generateRandomReportMetaData();
+        final ReportMetaData reportMetatData = generateRandomReportMetaData();
         TestResult inserted = reportControllerUtil.doPostXmlJunit(reportMetatData, xmlJunit);
         assertNotNull(inserted);
         assertNotNull(inserted.getTestResultId());
@@ -79,7 +79,7 @@ public class ReportControllerTest {
     public void insertSurefireTest() {
 
 
-        final ReportMetatData reportMetatData = generateRandomReportMetaData();
+        final ReportMetaData reportMetatData = generateRandomReportMetaData();
         TestResult inserted = reportControllerUtil.doPostXmlSurefire(reportMetatData, Collections.singletonList(xmlSurefire));
         assertNotNull(inserted);
         assertNotNull(inserted.getTestResultId());
@@ -99,11 +99,11 @@ public class ReportControllerTest {
     private static Random random = new Random();
 
 
-    static ReportMetatData generateRandomReportMetaData() {
+    static ReportMetaData generateRandomReportMetaData() {
 
         long randLong = random.nextLong();
-        ReportMetatData request =
-                new ReportMetatData()
+        ReportMetaData request =
+                new ReportMetaData()
                         .setOrg("org" + randLong)
                         .setRepo("repo" + randLong)
                         .setApp("app" + randLong)

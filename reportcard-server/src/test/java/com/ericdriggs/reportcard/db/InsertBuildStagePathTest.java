@@ -2,7 +2,7 @@ package com.ericdriggs.reportcard.db;
 
 import com.ericdriggs.reportcard.ReportCardService;
 import com.ericdriggs.reportcard.model.BuildStagePath;
-import com.ericdriggs.reportcard.model.ReportMetatData;
+import com.ericdriggs.reportcard.model.ReportMetaData;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -23,8 +23,8 @@ public class InsertBuildStagePathTest extends AbstractDbTest {
 
     @Test
     public void insertBuildStagePathAllInserted() {
-        ReportMetatData request =
-                new ReportMetatData()
+        ReportMetaData request =
+                new ReportMetaData()
                         .setOrg("newOrg")
                         .setRepo("newRepo")
                         .setApp("newApp")
