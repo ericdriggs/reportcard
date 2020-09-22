@@ -1,3 +1,10 @@
+pluginManagement {
+    plugins {
+        id 'org.springframework.boot' version "${springBootVersion}"
+        id 'io.spring.dependency-management' version "${springDependencyVersion}"
+    }
+}
+
 rootProject.name = 'reportcard'
 include 'coinflip'
 include 'reportcard-server'

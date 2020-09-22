@@ -1,14 +1,28 @@
-plugins {
-    id 'java'
-    id 'idea'
+buildscript {
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
 }
 
-test {
-    systemProperties System.properties
-    outputs.upToDateWhen { false }
+plugins {
+	id 'org.springframework.boot'
+	id 'io.spring.dependency-management'
+	id 'java'
+	id 'idea'
 }
 
 dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	testImplementation('org.springframework.boot:spring-boot-starter-test') {
+		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+	}
+
+}
+
+test {
+	systemProperties System.properties
+	outputs.upToDateWhen { false }
+	useJUnitPlatform()
 }
 
 // If on JDK 9+, verify project cross-compiles on its 'sourceCompatible' JVM version (see https://github.com/melix/mrjar-gradle/blob/master/jdks.gradle)
