@@ -17,19 +17,19 @@ import java.util.List;
 
 public class SurefireConvertersUtil {
 
-    public static Converter<Testcase, TestCase> fromSurefireToModelTestCase = new AbstractConverter<>() {
+    public static Converter<Testcase, TestCase> fromSurefireToModelTestCase = new AbstractConverter<Testcase, TestCase>() {
         protected com.ericdriggs.reportcard.model.TestCase convert(com.ericdriggs.reportcard.xml.surefire.Testcase source) {
             return doFromSurefireToModelTestCase(source);
         }
     };
 
-    public static Converter<Testsuite, TestSuite> fromSurefireToModelTestSuite = new AbstractConverter<>() {
+    public static Converter<Testsuite, TestSuite> fromSurefireToModelTestSuite = new AbstractConverter<Testsuite, TestSuite>() {
         protected com.ericdriggs.reportcard.model.TestSuite convert(com.ericdriggs.reportcard.xml.surefire.Testsuite source) {
             return doFromSurefireToModelTestSuite(source);
         }
     };
 
-    public static Converter<Collection<Testsuite>, TestResult> fromSurefireToModelTestResult = new AbstractConverter<>() {
+    public static Converter<Collection<Testsuite>, TestResult> fromSurefireToModelTestResult = new AbstractConverter<Collection<Testsuite>, TestResult>() {
         protected com.ericdriggs.reportcard.model.TestResult convert(Collection<Testsuite> source) {
             return doFromSurefireToModelTestResult(source);
         }

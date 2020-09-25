@@ -17,19 +17,19 @@ import java.util.List;
 
 public class JunitConvertersUtil {
 
-    public static Converter<Testcase, TestCase> fromJunitToModelTestCase = new AbstractConverter<>() {
+    public static Converter<Testcase, TestCase> fromJunitToModelTestCase = new AbstractConverter<Testcase, TestCase>() {
         protected com.ericdriggs.reportcard.model.TestCase convert(com.ericdriggs.reportcard.xml.junit.Testcase source) {
             return doFromJunitToModelTestCase(source);
         }
     };
     
-    public static Converter<com.ericdriggs.reportcard.xml.junit.Testsuite, TestSuite> fromJunitToModelTestSuite = new AbstractConverter<>() {
+    public static Converter<Testsuite, TestSuite> fromJunitToModelTestSuite = new AbstractConverter<Testsuite, TestSuite>() {
         protected com.ericdriggs.reportcard.model.TestSuite convert(com.ericdriggs.reportcard.xml.junit.Testsuite source) {
             return doFromJunitToModelTestSuite(source);
         }
     };
 
-    public static Converter<Testsuites, TestResult> fromJunitToModelTestResult = new AbstractConverter<>() {
+    public static Converter<Testsuites, TestResult> fromJunitToModelTestResult = new AbstractConverter<Testsuites, TestResult>() {
         protected com.ericdriggs.reportcard.model.TestResult convert(com.ericdriggs.reportcard.xml.junit.Testsuites source) {
             return doFromJunitToModelTestResult(source);
         }
