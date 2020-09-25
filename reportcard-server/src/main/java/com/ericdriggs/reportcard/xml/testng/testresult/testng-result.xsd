@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+    <xs:element name="testng-results">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="reporter-output"/>
+                <xs:element maxOccurs="unbounded" ref="suite"/>
+            </xs:sequence>
+            <xs:attribute name="failed" use="required" type="xs:integer"/>
+            <xs:attribute name="ignored" use="required" type="xs:integer"/>
+            <xs:attribute name="passed" use="required" type="xs:integer"/>
+            <xs:attribute name="skipped" use="required" type="xs:integer"/>
+            <xs:attribute name="total" use="required" type="xs:integer"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="suite">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="groups"/>
+                <xs:element maxOccurs="unbounded" ref="test"/>
+            </xs:sequence>
+            <xs:attribute name="duration-ms" use="required" type="xs:integer"/>
+            <xs:attribute name="finished-at" use="required" type="xs:NMTOKEN"/>
+            <xs:attribute name="name" use="required" type="xs:NCName"/>
+            <xs:attribute name="started-at" use="required" type="xs:NMTOKEN"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="groups">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" maxOccurs="unbounded" ref="group"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="group">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" ref="method"/>
+            </xs:sequence>
+            <xs:attribute name="name" use="required" type="xs:NCName"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="method">
+        <xs:complexType>
+            <xs:attribute name="class" use="required"/>
+            <xs:attribute name="name" use="required" type="xs:NCName"/>
+            <xs:attribute name="signature" use="required"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="test">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" ref="class"/>
+            </xs:sequence>
+            <xs:attribute name="duration-ms" use="required" type="xs:integer"/>
+            <xs:attribute name="finished-at" use="required" type="xs:NMTOKEN"/>
+            <xs:attribute name="name" use="required" type="xs:NCName"/>
+            <xs:attribute name="started-at" use="required" type="xs:NMTOKEN"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="class">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" ref="test-method"/>
+            </xs:sequence>
+            <xs:attribute name="name" use="required"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="test-method">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:choice minOccurs="0">
+                    <xs:element ref="exception"/>
+                    <xs:element ref="params"/>
+                </xs:choice>
+                <xs:element ref="reporter-output"/>
+            </xs:sequence>
+            <xs:attribute name="data-provider" type="xs:NCName"/>
+            <xs:attribute name="duration-ms" use="required" type="xs:integer"/>
+            <xs:attribute name="finished-at" use="required" type="xs:NMTOKEN"/>
+            <xs:attribute name="name" use="required" type="xs:NCName"/>
+            <xs:attribute name="signature" use="required"/>
+            <xs:attribute name="started-at" use="required" type="xs:NMTOKEN"/>
+            <xs:attribute name="status" use="required" type="xs:NCName"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="exception">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" ref="message"/>
+                <xs:element ref="full-stacktrace"/>
+            </xs:sequence>
+            <xs:attribute name="class" use="required" type="xs:NCName"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="message" type="xs:string"/>
+    <xs:element name="full-stacktrace" type="xs:string"/>
+    <xs:element name="params">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="param"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="param">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="value"/>
+            </xs:sequence>
+            <xs:attribute name="index" use="required" type="xs:integer"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="value" type="xs:string"/>
+    <xs:element name="reporter-output">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" maxOccurs="unbounded" ref="line"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="line" type="xs:string"/>
+</xs:schema>
