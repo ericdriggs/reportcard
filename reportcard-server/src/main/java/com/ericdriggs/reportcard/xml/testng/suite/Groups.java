@@ -6,11 +6,14 @@
 //
 
 
-package com.ericdriggs.reportcard.xml.testng;
+package com.ericdriggs.reportcard.xml.testng.suite;
 
 import lombok.*;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import java.util.List;
 
 
@@ -23,11 +26,11 @@ import java.util.List;
  * &lt;complexType&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;sequence maxOccurs="unbounded" minOccurs="0"&gt;
- *         &lt;element ref="{}include" minOccurs="0"/&gt;
- *         &lt;element ref="{}exclude" minOccurs="0"/&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element ref="{}define" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{}run" minOccurs="0"/&gt;
+ *         &lt;element ref="{}dependencies" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
- *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -37,22 +40,19 @@ import java.util.List;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "includeAndExclude"
+    "define",
+    "run",
+    "dependencies"
 })
-@XmlRootElement(name = "package")
+@XmlRootElement(name = "groups")
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder(builderMethodName = "builderForPackage")
+@Builder(builderMethodName = "builderForGroups")
 @Data
-public class Package {
+public class Groups {
 
-    @XmlElements({
-        @XmlElement(name = "include", type = Include.class),
-        @XmlElement(name = "exclude", type = Exclude.class)
-    })
-    protected List<Any> includeAndExclude;
-    @XmlAttribute(name = "name", required = true)
-    @XmlSchemaType(name = "anySimpleType")
-    protected String name;
+    protected List<Define> define;
+    protected Run run;
+    protected Dependencies dependencies;
 
 }

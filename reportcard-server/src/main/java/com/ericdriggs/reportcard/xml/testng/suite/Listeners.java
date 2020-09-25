@@ -6,11 +6,14 @@
 //
 
 
-package com.ericdriggs.reportcard.xml.testng;
+package com.ericdriggs.reportcard.xml.testng.suite;
 
 import lombok.*;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import java.util.List;
 
 
@@ -23,10 +26,9 @@ import java.util.List;
  * &lt;complexType&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;choice&gt;
- *         &lt;element ref="{}selector-class" maxOccurs="unbounded" minOccurs="0"/&gt;
- *         &lt;element ref="{}script"/&gt;
- *       &lt;/choice&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element ref="{}listener" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -36,18 +38,15 @@ import java.util.List;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "selectorClass",
-    "script"
+    "listener"
 })
-@XmlRootElement(name = "method-selector")
+@XmlRootElement(name = "listeners")
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder(builderMethodName = "builderForMethodSelector")
+@Builder(builderMethodName = "builderForListeners")
 @Data
-public class MethodSelector {
+public class Listeners {
 
-    @XmlElement(name = "selector-class")
-    protected List<SelectorClass> selectorClass;
-    protected Script script;
+    protected List<Listener> listener;
 
 }

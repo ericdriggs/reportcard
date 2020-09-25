@@ -6,7 +6,7 @@
 //
 
 
-package com.ericdriggs.reportcard.xml.testng;
+package com.ericdriggs.reportcard.xml.testng.suite;
 
 import lombok.*;
 
@@ -23,11 +23,10 @@ import java.util.List;
  * &lt;complexType&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;choice maxOccurs="unbounded" minOccurs="0"&gt;
- *         &lt;element ref="{}methods"/&gt;
- *         &lt;element ref="{}parameter"/&gt;
- *       &lt;/choice&gt;
- *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" /&gt;
+ *       &lt;sequence maxOccurs="unbounded" minOccurs="0"&gt;
+ *         &lt;element ref="{}include" minOccurs="0"/&gt;
+ *         &lt;element ref="{}exclude" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -37,22 +36,18 @@ import java.util.List;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "methodsOrParameter"
+    "includeAndExclude"
 })
-@XmlRootElement(name = "class")
+@XmlRootElement(name = "run")
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder(builderMethodName = "builderForClass")
+@Builder(builderMethodName = "builderForRun")
 @Data
-public class Class {
+public class Run {
 
     @XmlElements({
-        @XmlElement(name = "methods", type = Methods.class),
-        @XmlElement(name = "parameter", type = Parameter.class)
+        @XmlElement(name = "include", type = Include.class),
+        @XmlElement(name = "exclude", type = Exclude.class)
     })
-    protected List<Object> methodsOrParameter;
-    @XmlAttribute(name = "name", required = true)
-    @XmlSchemaType(name = "anySimpleType")
-    protected String name;
-
+    protected List<Any> includeAndExclude;
 }

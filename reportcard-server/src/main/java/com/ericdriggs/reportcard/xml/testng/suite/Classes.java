@@ -6,7 +6,7 @@
 //
 
 
-package com.ericdriggs.reportcard.xml.testng;
+package com.ericdriggs.reportcard.xml.testng.suite;
 
 import lombok.*;
 
@@ -18,33 +18,34 @@ import java.util.List;
  * <p>Java class for anonymous complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
- * <pre>
- * &lt;complexType&gt;
- *   &lt;complexContent&gt;
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;sequence&gt;
- *         &lt;element ref="{}suite-file" maxOccurs="unbounded" minOccurs="0"/&gt;
- *       &lt;/sequence&gt;
- *     &lt;/restriction&gt;
- *   &lt;/complexContent&gt;
- * &lt;/complexType&gt;
- * </pre>
- * 
+
+ * <pre>{@code
+ * <complexType>
+ *   <complexContent>
+ *     <restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *       <sequence>
+ *         <element ref="{}class" maxOccurs="unbounded" minOccurs="0"/>
+ *         <element ref="{}parameter" maxOccurs="unbounded" minOccurs="0"/>
+ *       </sequence>
+ *     </restriction>
+ *   </complexContent>
+ * </complexType>
+ * }</pre>
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "suiteFile"
+    "clazz",
+    "parameter"
 })
-@XmlRootElement(name = "suite-files")
+@XmlRootElement(name = "classes")
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder(builderMethodName = "builderForSuiteFiles")
+@Builder(builderMethodName = "builderForClasses")
 @Data
-public class SuiteFiles {
+public class Classes {
 
-    @XmlElement(name = "suite-file")
-    protected List<SuiteFile> suiteFile;
-
+    @XmlElement(name = "class")
+    protected List<java.lang.Class> clazz;
+    protected List<Parameter> parameter;
 }

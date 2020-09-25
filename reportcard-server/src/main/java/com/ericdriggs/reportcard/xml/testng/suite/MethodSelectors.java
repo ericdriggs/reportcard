@@ -6,14 +6,11 @@
 //
 
 
-package com.ericdriggs.reportcard.xml.testng;
+package com.ericdriggs.reportcard.xml.testng.suite;
 
 import lombok.*;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.*;
 import java.util.List;
 
 
@@ -27,7 +24,7 @@ import java.util.List;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element ref="{}listener" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{}method-selector" maxOccurs="unbounded" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -38,15 +35,17 @@ import java.util.List;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "listener"
+    "methodSelector"
 })
-@XmlRootElement(name = "listeners")
+@XmlRootElement(name = "method-selectors")
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder(builderMethodName = "builderForListeners")
+@Builder(builderMethodName = "builderForMethodSelectors")
 @Data
-public class Listeners {
+public class MethodSelectors {
 
-    protected List<Listener> listener;
+    @XmlElement(name = "method-selector")
+    protected List<MethodSelector> methodSelector;
+
 
 }

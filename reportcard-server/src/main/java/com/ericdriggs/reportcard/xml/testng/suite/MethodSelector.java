@@ -6,7 +6,7 @@
 //
 
 
-package com.ericdriggs.reportcard.xml.testng;
+package com.ericdriggs.reportcard.xml.testng.suite;
 
 import lombok.*;
 
@@ -23,10 +23,10 @@ import java.util.List;
  * &lt;complexType&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;sequence maxOccurs="unbounded" minOccurs="0"&gt;
- *         &lt;element ref="{}include" minOccurs="0"/&gt;
- *         &lt;element ref="{}exclude" minOccurs="0"/&gt;
- *       &lt;/sequence&gt;
+ *       &lt;choice&gt;
+ *         &lt;element ref="{}selector-class" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{}script"/&gt;
+ *       &lt;/choice&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -36,18 +36,18 @@ import java.util.List;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "includeAndExclude"
+    "selectorClass",
+    "script"
 })
-@XmlRootElement(name = "run")
+@XmlRootElement(name = "method-selector")
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder(builderMethodName = "builderForRun")
+@Builder(builderMethodName = "builderForMethodSelector")
 @Data
-public class Run {
+public class MethodSelector {
 
-    @XmlElements({
-        @XmlElement(name = "include", type = Include.class),
-        @XmlElement(name = "exclude", type = Exclude.class)
-    })
-    protected List<Any> includeAndExclude;
+    @XmlElement(name = "selector-class")
+    protected List<SelectorClass> selectorClass;
+    protected Script script;
+
 }

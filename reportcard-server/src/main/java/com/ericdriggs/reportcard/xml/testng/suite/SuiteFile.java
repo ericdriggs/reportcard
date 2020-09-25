@@ -6,7 +6,7 @@
 //
 
 
-package com.ericdriggs.reportcard.xml.testng;
+package com.ericdriggs.reportcard.xml.testng.suite;
 
 import lombok.*;
 
@@ -22,8 +22,7 @@ import javax.xml.bind.annotation.*;
  * &lt;complexType&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{}any"&gt;
- *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" /&gt;
- *       &lt;attribute name="priority" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" /&gt;
+ *       &lt;attribute name="path" use="required" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -33,20 +32,17 @@ import javax.xml.bind.annotation.*;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
-@XmlRootElement(name = "selector-class")
+@XmlRootElement(name = "suite-file")
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder(builderMethodName = "builderForSelectorClass")
+@Builder(builderMethodName = "builderForSuiteFile")
 @Data
-public class SelectorClass
+public class SuiteFile
     extends Any
 {
 
-    @XmlAttribute(name = "name", required = true)
+    @XmlAttribute(name = "path", required = true)
     @XmlSchemaType(name = "anySimpleType")
-    protected String name;
-    @XmlAttribute(name = "priority")
-    @XmlSchemaType(name = "anySimpleType")
-    protected String priority;
+    protected String path;
 
 }

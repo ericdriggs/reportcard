@@ -6,11 +6,12 @@
 //
 
 
-package com.ericdriggs.reportcard.xml.testng;
+package com.ericdriggs.reportcard.xml.testng.suite;
 
 import lombok.*;
 
 import javax.xml.bind.annotation.*;
+import java.util.List;
 
 
 /**
@@ -21,11 +22,13 @@ import javax.xml.bind.annotation.*;
  * <pre>
  * &lt;complexType&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{}any"&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;choice maxOccurs="unbounded" minOccurs="0"&gt;
+ *         &lt;element ref="{}methods"/&gt;
+ *         &lt;element ref="{}parameter"/&gt;
+ *       &lt;/choice&gt;
  *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" /&gt;
- *       &lt;attribute name="description" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" /&gt;
- *       &lt;attribute name="invocation-numbers" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" /&gt;
- *     &lt;/extension&gt;
+ *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
@@ -33,24 +36,23 @@ import javax.xml.bind.annotation.*;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "")
-@XmlRootElement(name = "include")
+@XmlType(name = "", propOrder = {
+    "methodsOrParameter"
+})
+@XmlRootElement(name = "class")
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder(builderMethodName = "builderForInclude")
+@Builder(builderMethodName = "builderForClass")
 @Data
-public class Include
-    extends Any
-{
+public class Class {
 
+    @XmlElements({
+        @XmlElement(name = "methods", type = Methods.class),
+        @XmlElement(name = "parameter", type = Parameter.class)
+    })
+    protected List<Object> methodsOrParameter;
     @XmlAttribute(name = "name", required = true)
     @XmlSchemaType(name = "anySimpleType")
     protected String name;
-    @XmlAttribute(name = "description")
-    @XmlSchemaType(name = "anySimpleType")
-    protected String description;
-    @XmlAttribute(name = "invocation-numbers")
-    @XmlSchemaType(name = "anySimpleType")
-    protected String invocationNumbers;
 
 }

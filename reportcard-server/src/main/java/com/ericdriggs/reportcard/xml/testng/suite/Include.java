@@ -6,7 +6,7 @@
 //
 
 
-package com.ericdriggs.reportcard.xml.testng;
+package com.ericdriggs.reportcard.xml.testng.suite;
 
 import lombok.*;
 
@@ -15,32 +15,42 @@ import javax.xml.bind.annotation.*;
 
 /**
  * <p>Java class for anonymous complex type.
- *
+ * 
  * <p>The following schema fragment specifies the expected content contained within this class.
- *
+ * 
  * <pre>
  * &lt;complexType&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{}any"&gt;
- *       &lt;attribute name="class-name" use="required" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" /&gt;
+ *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" /&gt;
+ *       &lt;attribute name="description" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" /&gt;
+ *       &lt;attribute name="invocation-numbers" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
+ * 
+ * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
-@XmlRootElement(name = "listener")
+@XmlRootElement(name = "include")
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder(builderMethodName = "builderForListener")
+@Builder(builderMethodName = "builderForInclude")
 @Data
-public class Listener
-        extends Any {
+public class Include
+    extends Any
+{
 
-    @XmlAttribute(name = "class-name", required = true)
+    @XmlAttribute(name = "name", required = true)
     @XmlSchemaType(name = "anySimpleType")
-    protected String className;
-
+    protected String name;
+    @XmlAttribute(name = "description")
+    @XmlSchemaType(name = "anySimpleType")
+    protected String description;
+    @XmlAttribute(name = "invocation-numbers")
+    @XmlSchemaType(name = "anySimpleType")
+    protected String invocationNumbers;
 
 }

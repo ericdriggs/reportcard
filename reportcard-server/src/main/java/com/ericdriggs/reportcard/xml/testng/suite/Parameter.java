@@ -6,12 +6,11 @@
 //
 
 
-package com.ericdriggs.reportcard.xml.testng;
+package com.ericdriggs.reportcard.xml.testng.suite;
 
 import lombok.*;
 
 import javax.xml.bind.annotation.*;
-import java.util.List;
 
 
 /**
@@ -22,11 +21,10 @@ import java.util.List;
  * <pre>
  * &lt;complexType&gt;
  *   &lt;complexContent&gt;
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;sequence&gt;
- *         &lt;element ref="{}package" maxOccurs="unbounded" minOccurs="0"/&gt;
- *       &lt;/sequence&gt;
- *     &lt;/restriction&gt;
+ *     &lt;extension base="{}any"&gt;
+ *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" /&gt;
+ *       &lt;attribute name="value" use="required" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" /&gt;
+ *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
@@ -34,16 +32,21 @@ import java.util.List;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "_package"
-})
-@XmlRootElement(name = "packages")
+@XmlType(name = "")
+@XmlRootElement(name = "parameter")
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder(builderMethodName = "builderForPackages")
+@Builder(builderMethodName = "builderForParameter")
 @Data
-public class Packages {
+public class Parameter
+    extends Any
+{
 
-    @XmlElement(name = "package")
-    protected List<Package> _package;
+    @XmlAttribute(name = "name", required = true)
+    @XmlSchemaType(name = "anySimpleType")
+    protected String name;
+    @XmlAttribute(name = "value", required = true)
+    @XmlSchemaType(name = "anySimpleType")
+    protected String value;
+
 }

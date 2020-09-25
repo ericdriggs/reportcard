@@ -1,4 +1,4 @@
-package com.ericdriggs.reportcard.xml.testng;
+package com.ericdriggs.reportcard.xml.testng.suite;
 
 import com.ericdriggs.reportcard.xml.ResourceReader;
 import org.junit.jupiter.api.Test;
@@ -30,7 +30,7 @@ public class TestngUnmarshallTest {
             System.out.println(testngResults);
             assertEquals(1, testngResults.suites.size());
             assertEquals(1, testngResults.suites.get(0).listenersOrPackagesOrTest.size());
-            com.ericdriggs.reportcard.xml.testng.Test test = (com.ericdriggs.reportcard.xml.testng.Test)  testngResults.suites.get(0).listenersOrPackagesOrTest.get(0);
+            com.ericdriggs.reportcard.xml.testng.suite.Test test = (com.ericdriggs.reportcard.xml.testng.suite.Test)  testngResults.suites.get(0).listenersOrPackagesOrTest.get(0);
             assertEquals("Ant test", test.getName() );
         } catch (JAXBException e) {
             throw new RuntimeException(e);

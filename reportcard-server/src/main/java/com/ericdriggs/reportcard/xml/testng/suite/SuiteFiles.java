@@ -6,7 +6,7 @@
 //
 
 
-package com.ericdriggs.reportcard.xml.testng;
+package com.ericdriggs.reportcard.xml.testng.suite;
 
 import lombok.*;
 
@@ -24,9 +24,8 @@ import java.util.List;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element ref="{}include" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{}suite-file" maxOccurs="unbounded" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
- *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -36,17 +35,16 @@ import java.util.List;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "include"
+    "suiteFile"
 })
-@XmlRootElement(name = "define")
+@XmlRootElement(name = "suite-files")
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder(builderMethodName = "builderForDefine")
+@Builder(builderMethodName = "builderForSuiteFiles")
 @Data
-public class Define {
+public class SuiteFiles {
 
-    protected List<Include> include;
-    @XmlAttribute(name = "name", required = true)
-    @XmlSchemaType(name = "anySimpleType")
-    protected String name;
+    @XmlElement(name = "suite-file")
+    protected List<SuiteFile> suiteFile;
+
 }

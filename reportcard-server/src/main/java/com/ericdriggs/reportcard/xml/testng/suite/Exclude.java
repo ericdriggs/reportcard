@@ -6,7 +6,7 @@
 //
 
 
-package com.ericdriggs.reportcard.xml.testng;
+package com.ericdriggs.reportcard.xml.testng.suite;
 
 import lombok.*;
 
@@ -23,7 +23,6 @@ import javax.xml.bind.annotation.*;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{}any"&gt;
  *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" /&gt;
- *       &lt;attribute name="value" use="required" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -33,20 +32,17 @@ import javax.xml.bind.annotation.*;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
-@XmlRootElement(name = "parameter")
+@XmlRootElement(name = "exclude")
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder(builderMethodName = "builderForParameter")
+@Builder(builderMethodName = "builderForExclude")
 @Data
-public class Parameter
+public class Exclude
     extends Any
 {
 
     @XmlAttribute(name = "name", required = true)
     @XmlSchemaType(name = "anySimpleType")
     protected String name;
-    @XmlAttribute(name = "value", required = true)
-    @XmlSchemaType(name = "anySimpleType")
-    protected String value;
 
 }

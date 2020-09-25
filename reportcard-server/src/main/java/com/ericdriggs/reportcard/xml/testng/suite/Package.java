@@ -6,7 +6,7 @@
 //
 
 
-package com.ericdriggs.reportcard.xml.testng;
+package com.ericdriggs.reportcard.xml.testng.suite;
 
 import lombok.*;
 
@@ -26,8 +26,8 @@ import java.util.List;
  *       &lt;sequence maxOccurs="unbounded" minOccurs="0"&gt;
  *         &lt;element ref="{}include" minOccurs="0"/&gt;
  *         &lt;element ref="{}exclude" minOccurs="0"/&gt;
- *         &lt;element ref="{}parameter" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
+ *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -37,20 +37,22 @@ import java.util.List;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "includeAndExcludeAndParameter"
+    "includeAndExclude"
 })
-@XmlRootElement(name = "methods")
+@XmlRootElement(name = "package")
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder(builderMethodName = "builderForMethods")
+@Builder(builderMethodName = "builderForPackage")
 @Data
-public class Methods {
+public class Package {
 
     @XmlElements({
         @XmlElement(name = "include", type = Include.class),
-        @XmlElement(name = "exclude", type = Exclude.class),
-        @XmlElement(name = "parameter", type = Parameter.class)
+        @XmlElement(name = "exclude", type = Exclude.class)
     })
-    protected List<Any> includeAndExcludeAndParameter;
+    protected List<Any> includeAndExclude;
+    @XmlAttribute(name = "name", required = true)
+    @XmlSchemaType(name = "anySimpleType")
+    protected String name;
 
 }

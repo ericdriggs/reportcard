@@ -6,7 +6,7 @@
 //
 
 
-package com.ericdriggs.reportcard.xml.testng;
+package com.ericdriggs.reportcard.xml.testng.suite;
 
 import lombok.*;
 
@@ -18,34 +18,32 @@ import java.util.List;
  * <p>Java class for anonymous complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
-
- * <pre>{@code
- * <complexType>
- *   <complexContent>
- *     <restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       <sequence>
- *         <element ref="{}class" maxOccurs="unbounded" minOccurs="0"/>
- *         <element ref="{}parameter" maxOccurs="unbounded" minOccurs="0"/>
- *       </sequence>
- *     </restriction>
- *   </complexContent>
- * </complexType>
- * }</pre>
+ * 
+ * <pre>
+ * &lt;complexType&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element ref="{}package" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
+ * </pre>
+ * 
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "clazz",
-    "parameter"
+    "_package"
 })
-@XmlRootElement(name = "classes")
+@XmlRootElement(name = "packages")
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder(builderMethodName = "builderForClasses")
+@Builder(builderMethodName = "builderForPackages")
 @Data
-public class Classes {
+public class Packages {
 
-    @XmlElement(name = "class")
-    protected List<Class> clazz;
-    protected List<Parameter> parameter;
+    @XmlElement(name = "package")
+    protected List<java.lang.Package> _package;
 }

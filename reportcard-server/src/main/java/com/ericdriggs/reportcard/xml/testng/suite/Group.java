@@ -6,7 +6,7 @@
 //
 
 
-package com.ericdriggs.reportcard.xml.testng;
+package com.ericdriggs.reportcard.xml.testng.suite;
 
 import lombok.*;
 
@@ -22,7 +22,8 @@ import javax.xml.bind.annotation.*;
  * &lt;complexType&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{}any"&gt;
- *       &lt;attribute name="language" use="required" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" /&gt;
+ *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" /&gt;
+ *       &lt;attribute name="depends-on" use="required" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -32,17 +33,20 @@ import javax.xml.bind.annotation.*;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
-@XmlRootElement(name = "script")
+@XmlRootElement(name = "group")
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder(builderMethodName = "builderForScript")
+@Builder(builderMethodName = "builderForGroup")
 @Data
-public class Script
+public class Group
     extends Any
 {
 
-    @XmlAttribute(name = "language", required = true)
+    @XmlAttribute(name = "name", required = true)
     @XmlSchemaType(name = "anySimpleType")
-    protected String language;
+    protected String name;
+    @XmlAttribute(name = "depends-on", required = true)
+    @XmlSchemaType(name = "anySimpleType")
+    protected String dependsOn;
 
 }

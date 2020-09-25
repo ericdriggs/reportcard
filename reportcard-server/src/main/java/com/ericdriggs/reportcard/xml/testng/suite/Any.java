@@ -6,30 +6,25 @@
 //
 
 
-package com.ericdriggs.reportcard.xml.testng;
+package com.ericdriggs.reportcard.xml.testng.suite;
 
 import lombok.*;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.*;
 import java.util.List;
 
 
 /**
- * <p>Java class for anonymous complex type.
+ * <p>Java class for any complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType&gt;
+ * &lt;complexType name="any"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element ref="{}define" maxOccurs="unbounded" minOccurs="0"/&gt;
- *         &lt;element ref="{}run" minOccurs="0"/&gt;
- *         &lt;element ref="{}dependencies" minOccurs="0"/&gt;
+ *         &lt;any maxOccurs="unbounded" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -39,20 +34,26 @@ import java.util.List;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "define",
-    "run",
-    "dependencies"
+@XmlType(name = "any", propOrder = {
+    "content"
 })
-@XmlRootElement(name = "groups")
+@XmlSeeAlso({
+    SuiteFile.class,
+    Parameter.class,
+    Script.class,
+    SelectorClass.class,
+    Listener.class,
+    Group.class,
+    Exclude.class,
+    Include.class
+})
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder(builderMethodName = "builderForGroups")
+@Builder(builderMethodName = "builderForAny")
 @Data
-public class Groups {
+public class Any {
 
-    protected List<Define> define;
-    protected Run run;
-    protected Dependencies dependencies;
-
+    @XmlMixed
+    @XmlAnyElement(lax = true)
+    protected List<Object> content;
 }

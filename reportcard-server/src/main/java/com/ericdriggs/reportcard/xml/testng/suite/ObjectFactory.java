@@ -6,7 +6,7 @@
 //
 
 
-package com.ericdriggs.reportcard.xml.testng;
+package com.ericdriggs.reportcard.xml.testng.suite;
 
 import javax.xml.bind.annotation.XmlRegistry;
 
@@ -23,7 +23,7 @@ import javax.xml.bind.annotation.XmlRegistry;
  * type definitions, element declarations and model 
  * groups.  Factory methods for each of these are 
  * provided in this class.
- * 
+ *
  */
 @XmlRegistry
 public class ObjectFactory {
@@ -31,14 +31,14 @@ public class ObjectFactory {
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: com.ericdriggs.reportcard.gen.testng
-     * 
+     *
      */
     public ObjectFactory() {
     }
 
     /**
      * Create an instance of {@link Suite }
-     * 
+     *
      */
     public Suite createSuite() {
         return new Suite();
@@ -46,7 +46,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Groups }
-     * 
+     *
      */
     public Groups createGroups() {
         return new Groups();
@@ -54,7 +54,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Define }
-     * 
+     *
      */
     public Define createDefine() {
         return new Define();
@@ -62,7 +62,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Include }
-     * 
+     *
      */
     public Include createInclude() {
         return new Include();
@@ -70,7 +70,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Any }
-     * 
+     *
      */
     public Any createAny() {
         return new Any();
@@ -78,7 +78,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Run }
-     * 
+     *
      */
     public Run createRun() {
         return new Run();
@@ -86,7 +86,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Exclude }
-     * 
+     *
      */
     public Exclude createExclude() {
         return new Exclude();
@@ -94,7 +94,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Dependencies }
-     * 
+     *
      */
     public Dependencies createDependencies() {
         return new Dependencies();
@@ -102,7 +102,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Group }
-     * 
+     *
      */
     public Group createGroup() {
         return new Group();
@@ -110,7 +110,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Listeners }
-     * 
+     *
      */
     public Listeners createListeners() {
         return new Listeners();
@@ -118,7 +118,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Listener }
-     * 
+     *
      */
     public Listener createListener() {
         return new Listener();
@@ -126,7 +126,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Packages }
-     * 
+     *
      */
     public Packages createPackages() {
         return new Packages();
@@ -134,7 +134,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Package }
-     * 
+     *
      */
     public Package createPackage() {
         return new Package();
@@ -142,7 +142,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Test }
-     * 
+     *
      */
     public Test createTest() {
         return new Test();
@@ -150,7 +150,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link MethodSelectors }
-     * 
+     *
      */
     public MethodSelectors createMethodSelectors() {
         return new MethodSelectors();
@@ -158,7 +158,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link MethodSelector }
-     * 
+     *
      */
     public MethodSelector createMethodSelector() {
         return new MethodSelector();
@@ -166,7 +166,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link SelectorClass }
-     * 
+     *
      */
     public SelectorClass createSelectorClass() {
         return new SelectorClass();
@@ -174,7 +174,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Script }
-     * 
+     *
      */
     public Script createScript() {
         return new Script();
@@ -182,7 +182,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Parameter }
-     * 
+     *
      */
     public Parameter createParameter() {
         return new Parameter();
@@ -190,23 +190,23 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Classes }
-     * 
+     *
      */
     public Classes createClasses() {
         return new Classes();
     }
 
-    /**
-     * Create an instance of {@link Class }
-     * 
-     */
-    public Class createClass() {
-        return new Class();
-    }
+//    /**
+//     * Create an instance of {@link java.lang.Class }
+//     *
+//     */
+//    public java.lang.Class createClass() {
+//        return new java.lang.Class();
+//    }
 
     /**
      * Create an instance of {@link Methods }
-     * 
+     *
      */
     public Methods createMethods() {
         return new Methods();
@@ -214,7 +214,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link SuiteFiles }
-     * 
+     *
      */
     public SuiteFiles createSuiteFiles() {
         return new SuiteFiles();
@@ -222,7 +222,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link SuiteFile }
-     * 
+     *
      */
     public SuiteFile createSuiteFile() {
         return new SuiteFile();

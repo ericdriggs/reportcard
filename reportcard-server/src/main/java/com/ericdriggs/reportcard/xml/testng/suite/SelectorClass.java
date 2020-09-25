@@ -6,7 +6,7 @@
 //
 
 
-package com.ericdriggs.reportcard.xml.testng;
+package com.ericdriggs.reportcard.xml.testng.suite;
 
 import lombok.*;
 
@@ -23,6 +23,7 @@ import javax.xml.bind.annotation.*;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{}any"&gt;
  *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" /&gt;
+ *       &lt;attribute name="priority" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -32,17 +33,20 @@ import javax.xml.bind.annotation.*;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
-@XmlRootElement(name = "exclude")
+@XmlRootElement(name = "selector-class")
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder(builderMethodName = "builderForExclude")
+@Builder(builderMethodName = "builderForSelectorClass")
 @Data
-public class Exclude
+public class SelectorClass
     extends Any
 {
 
     @XmlAttribute(name = "name", required = true)
     @XmlSchemaType(name = "anySimpleType")
     protected String name;
+    @XmlAttribute(name = "priority")
+    @XmlSchemaType(name = "anySimpleType")
+    protected String priority;
 
 }

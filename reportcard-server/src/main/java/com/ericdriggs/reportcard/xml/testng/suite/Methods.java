@@ -6,45 +6,51 @@
 //
 
 
-package com.ericdriggs.reportcard.xml.testng;
+package com.ericdriggs.reportcard.xml.testng.suite;
 
 import lombok.*;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.*;
 import java.util.List;
 
 
 /**
  * <p>Java class for anonymous complex type.
- *
+ * 
  * <p>The following schema fragment specifies the expected content contained within this class.
- *
+ * 
  * <pre>
  * &lt;complexType&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;sequence&gt;
- *         &lt;element ref="{}group" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *       &lt;sequence maxOccurs="unbounded" minOccurs="0"&gt;
+ *         &lt;element ref="{}include" minOccurs="0"/&gt;
+ *         &lt;element ref="{}exclude" minOccurs="0"/&gt;
+ *         &lt;element ref="{}parameter" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
+ * 
+ * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-        "group"
+    "includeAndExcludeAndParameter"
 })
-@XmlRootElement(name = "dependencies")
+@XmlRootElement(name = "methods")
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder(builderMethodName = "builderForDependencies")
+@Builder(builderMethodName = "builderForMethods")
 @Data
-public class Dependencies {
+public class Methods {
 
-    protected List<Group> group;
+    @XmlElements({
+        @XmlElement(name = "include", type = Include.class),
+        @XmlElement(name = "exclude", type = Exclude.class),
+        @XmlElement(name = "parameter", type = Parameter.class)
+    })
+    protected List<Any> includeAndExcludeAndParameter;
 
 }
