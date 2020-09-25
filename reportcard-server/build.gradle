@@ -1,6 +1,5 @@
 buildscript {
     ext {
-        javaVersion = JavaVersion.VERSION_11
         jaxbVersion = '2.3.1'
     }
     dependencies {
@@ -32,18 +31,10 @@ repositories {
     jcenter()
 }
 
-sourceCompatibility = javaVersion
-targetCompatibility = javaVersion
-
-
 dependencies {
-
-
     //Lombok
-
     compile 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
-
 
     //Swagger
     implementation 'io.springfox:springfox-swagger2:2.9.2'
