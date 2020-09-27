@@ -61,7 +61,7 @@ public class ScannerProperties {
             }
         }
         {
-            final String branch = props.getProperty(ScannerArgs.GIT_BRANCH.name());
+            final String branch = props.getProperty(ScannerArgs.SCM_BRANCH.name());
             if (hasValue(branch)) {
                 payload.setBranch(branch);
             }
