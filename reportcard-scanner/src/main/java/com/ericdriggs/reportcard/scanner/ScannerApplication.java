@@ -1,4 +1,4 @@
-package com.ericdriggs.reportcard.reportcardscanner;
+package com.ericdriggs.reportcard.scanner;
 
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -6,10 +6,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class ReportcardScannerApplication implements ApplicationRunner {
+public class ScannerApplication implements ApplicationRunner {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ReportcardScannerApplication.class, args);
+		SpringApplication.run(ScannerApplication.class, args);
 	}
 
 	@Override

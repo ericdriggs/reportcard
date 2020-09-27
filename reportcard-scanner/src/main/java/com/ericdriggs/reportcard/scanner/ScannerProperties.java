@@ -1,4 +1,4 @@
-package com.ericdriggs.reportcard.reportcardscanner;
+package com.ericdriggs.reportcard.scanner;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.ApplicationArguments;
@@ -8,56 +8,99 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
-
 import java.util.Properties;
 
+/**
+ *
+ * Gets all request variable values listed in ScannerArgs
+ * from the following precedence
+ * 1. command-line argument
+ * 2. environment variable
+ * 3. property file
+ * @see ScannerArgs
+ */
 @Component
-public class ReportcardScannerFlags {
+public class ScannerProperties {
 
-    public ReportMetaData getReportMetaData(ApplicationArguments applicationArguments) {
-        final Properties varMap = getProperties(applicationArguments);
+    public ScannerPostRequest getReportPostPayload(ApplicationArguments applicationArguments) {
+        final Properties props = getProperties(applicationArguments);
 
-        ReportMetaData reportMetaData = new ReportMetaData();
+        ScannerPostRequest payload = new ScannerPostRequest();
 
         {
-            final String org = varMap.getProperty(ReportMetaDataVariable.GIT_ORG.name());
+            final String host = props.getProperty(ScannerArgs.REPORTCARD_HOST.name());
+            if (hasValue(host)) {
+                payload.setHost(host);
+            }
+        }
+        {
+            final String user = props.getProperty(ScannerArgs.REPORTCARD_USER.name());
+            if (hasValue(user)) {
+                payload.setUser(user);
+            }
+        }
+
+
+        {
+            final String pass = props.getProperty(ScannerArgs.REPORTCARD_PASS.name());
+            if (hasValue(pass)) {
+                payload.setPass(pass);
+            }
+        }
+
+        {
+            final String org = props.getProperty(ScannerArgs.SCM_ORG.name());
             if (hasValue(org)) {
-                reportMetaData.setOrg(org);
+                payload.setOrg(org);
             }
         }
         {
-            final String repo = varMap.getProperty(ReportMetaDataVariable.GIT_REPO.name());
+            final String repo = props.getProperty(ScannerArgs.SCM_REPO.name());
             if (hasValue(repo)) {
-                reportMetaData.setRepo(repo);
+                payload.setRepo(repo);
             }
         }
         {
-            final String branch = varMap.getProperty(ReportMetaDataVariable.GIT_BRANCH.name());
+            final String branch = props.getProperty(ScannerArgs.GIT_BRANCH.name());
             if (hasValue(branch)) {
-                reportMetaData.setBranch(branch);
+                payload.setBranch(branch);
             }
         }
         {
-            final String app = varMap.getProperty(ReportMetaDataVariable.BUILD_APP.name());
+            final String app = props.getProperty(ScannerArgs.BUILD_APP.name());
             if (hasValue(app)) {
-                reportMetaData.setApp(app);
+                payload.setApp(app);
             }
         }
         {
-            final String buildIdentifier = varMap.getProperty(ReportMetaDataVariable.BUILD_IDENTIFIER.name());
+            final String buildIdentifier = props.getProperty(ScannerArgs.BUILD_IDENTIFIER.name());
             if (hasValue(buildIdentifier)) {
-                reportMetaData.setBuildIdentifier(buildIdentifier);
+                payload.setBuildIdentifier(buildIdentifier);
             }
         }
         {
-            final String stage = varMap.getProperty(ReportMetaDataVariable.BUILD_STAGE.name());
+            final String stage = props.getProperty(ScannerArgs.BUILD_STAGE.name());
             if (hasValue(stage)) {
-                reportMetaData.setStage(stage);
+                payload.setStage(stage);
             }
         }
-        reportMetaData.validateAndSetDefaults();
 
-        return reportMetaData;
+        {
+            final String testReportPath = props.getProperty(ScannerArgs.TEST_REPORT_PATH.name());
+            if (hasValue(testReportPath)) {
+                payload.setTestReportPath(testReportPath);
+            }
+        }
+
+        {
+            final String testReportRegex = props.getProperty(ScannerArgs.TEST_REPORT_REGEX.name());
+            if (hasValue(testReportRegex)) {
+                payload.setTestReportRegex(testReportRegex);
+            }
+        }
+        payload.prepare();
+
+        return payload;
     }
 
     public static Properties getProperties(ApplicationArguments applicationArguments) {
@@ -68,7 +111,7 @@ public class ReportcardScannerFlags {
 
     public static Properties getArgProperties(ApplicationArguments args, Properties defaultProperties) {
         Properties properties = new Properties(defaultProperties);
-        for (ReportMetaDataVariable argument : ReportMetaDataVariable.values()) {
+        for (ScannerArgs argument : ScannerArgs.values()) {
             if (args.getOptionNames().contains(argument.name())) {
                 String value = getLastValue(args.getOptionValues(argument.name()));
                 if (!StringUtils.isEmpty(value) && !StringUtils.isBlank(value)) {
@@ -81,7 +124,7 @@ public class ReportcardScannerFlags {
 
     public static Properties getEnvProperties(Properties defaultProperties) {
         Properties properties = new Properties(defaultProperties);
-        for (ReportMetaDataVariable argument : ReportMetaDataVariable.values()) {
+        for (ScannerArgs argument : ScannerArgs.values()) {
             String value = System.getenv(argument.name());
             if (hasValue(value)) {
                 properties.put(argument.name(), value);

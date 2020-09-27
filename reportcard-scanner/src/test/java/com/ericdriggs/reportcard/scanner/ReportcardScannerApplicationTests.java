@@ -1,4 +1,4 @@
-package com.ericdriggs.reportcard.reportcardscanner;
+package com.ericdriggs.reportcard.scanner;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
