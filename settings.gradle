@@ -8,4 +8,5 @@ pluginManagement {
 rootProject.name = 'reportcard'
 include 'coinflip'
 include 'reportcard-server'
+include 'reportcard-client'
 include 'reportcard-scanner'
