@@ -9,6 +9,8 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.TreeMap;
 
+import static com.ericdriggs.reportcard.scanner.ScannerArg.getToken;
+
 @Data
 public class ScannerPostRequest {
 
@@ -23,37 +25,56 @@ public class ScannerPostRequest {
     private String stage;
     private String testReportPath;
     private String testReportRegex;
-//    private List<String> reports;
+    private String externalLinks;
 
     public ScannerPostRequest() {
-
     }
 
-    public ScannerPostRequest(Map<ScannerArgs, String> argMap) {
+    public ScannerPostRequest(Map<ScannerArg, String> argMap) {
 
-        if (argMap.get(ScannerArgs.SCM_ORG) != null) {
-            this.org = argMap.get(ScannerArgs.SCM_ORG);
+        if (argMap.get(ScannerArg.REPORTCARD_HOST) != null) {
+            this.host = argMap.get(ScannerArg.REPORTCARD_HOST);
         }
-        if (argMap.get(ScannerArgs.SCM_REPO) != null) {
-            this.repo = argMap.get(ScannerArgs.SCM_REPO);
+        if (argMap.get(ScannerArg.REPORTCARD_USER) != null) {
+            this.user = argMap.get(ScannerArg.REPORTCARD_USER);
         }
-        if (argMap.get(ScannerArgs.SCM_BRANCH) != null) {
-            this.branch = argMap.get(ScannerArgs.SCM_BRANCH);
+        if (argMap.get(ScannerArg.REPORTCARD_PASS) != null) {
+            this.pass = argMap.get(ScannerArg.REPORTCARD_PASS);
         }
-        if (argMap.get(ScannerArgs.BUILD_APP) != null) {
-            this.app = argMap.get(ScannerArgs.BUILD_APP);
+
+        if (argMap.get(ScannerArg.SCM_ORG) != null) {
+            this.org = argMap.get(ScannerArg.SCM_ORG);
         }
-        if (argMap.get(ScannerArgs.BUILD_IDENTIFIER) != null) {
-            this.buildIdentifier = argMap.get(ScannerArgs.BUILD_IDENTIFIER);
+        if (argMap.get(ScannerArg.SCM_REPO) != null) {
+            this.repo = argMap.get(ScannerArg.SCM_REPO);
         }
-        if (argMap.get(ScannerArgs.BUILD_STAGE) != null) {
-            this.stage = argMap.get(ScannerArgs.BUILD_STAGE);
+        if (argMap.get(ScannerArg.SCM_BRANCH) != null) {
+            this.branch = argMap.get(ScannerArg.SCM_BRANCH);
         }
-        if (argMap.get(ScannerArgs.TEST_REPORT_PATH) != null) {
-            this.testReportPath = argMap.get(ScannerArgs.TEST_REPORT_PATH);
+
+
+        if (argMap.get(ScannerArg.BUILD_APP) != null) {
+            this.app = argMap.get(ScannerArg.BUILD_APP);
         }
-        if (argMap.get(ScannerArgs.TEST_REPORT_REGEX) != null) {
-            this.testReportRegex = argMap.get(ScannerArgs.TEST_REPORT_REGEX);
+        if (argMap.get(ScannerArg.BUILD_IDENTIFIER) != null) {
+            this.buildIdentifier = argMap.get(ScannerArg.BUILD_IDENTIFIER);
+        }
+        if (argMap.get(ScannerArg.BUILD_STAGE) != null) {
+            this.stage = argMap.get(ScannerArg.BUILD_STAGE);
+        }
+
+
+        if (argMap.get(ScannerArg.TEST_REPORT_PATH) != null) {
+            this.testReportPath = argMap.get(ScannerArg.TEST_REPORT_PATH);
+        }
+        if (argMap.get(ScannerArg.TEST_REPORT_REGEX) != null) {
+            this.testReportRegex = argMap.get(ScannerArg.TEST_REPORT_REGEX);
+        }
+
+
+        if (argMap.get(ScannerArg.EXTERNAL_LINKS) != null) {
+            String externalLinksWithTokens = argMap.get(ScannerArg.EXTERNAL_LINKS);
+            this.externalLinks = replaceTokens(externalLinksWithTokens, argMap);
         }
 
     }
@@ -87,5 +108,20 @@ public class ScannerPostRequest {
                     "errors - " + Arrays.toString(errors.entrySet().toArray()));
         }
     }
+
+    protected String replaceTokens(String externalLinks, Map<ScannerArg, String> argMap) {
+        for (ScannerArg scannerArg : ScannerArg.values()) {
+            if (scannerArg == ScannerArg.EXTERNAL_LINKS) {
+                continue;
+            }
+
+            final String token = getToken(scannerArg);
+            if (externalLinks.contains(token)) {
+                externalLinks = externalLinks.replace(token, argMap.get(scannerArg));
+            }
+        }
+        return externalLinks;
+    }
+
 
 }

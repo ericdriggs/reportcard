@@ -7,7 +7,9 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -17,7 +19,7 @@ import java.util.Properties;
  * 1. command-line argument
  * 2. environment variable
  * 3. property file
- * @see ScannerArgs
+ * @see ScannerArg
  */
 @Component
 public class ScannerProperties {
@@ -25,81 +27,13 @@ public class ScannerProperties {
     public ScannerPostRequest getReportPostPayload(ApplicationArguments applicationArguments) {
         final Properties props = getProperties(applicationArguments);
 
-        ScannerPostRequest payload = new ScannerPostRequest();
-
-        {
-            final String host = props.getProperty(ScannerArgs.REPORTCARD_HOST.name());
-            if (hasValue(host)) {
-                payload.setHost(host);
-            }
-        }
-        {
-            final String user = props.getProperty(ScannerArgs.REPORTCARD_USER.name());
-            if (hasValue(user)) {
-                payload.setUser(user);
-            }
+        Map<ScannerArg, String> argMap = new HashMap<>();
+        for (ScannerArg scannerArg : ScannerArg.values()) {
+            argMap.put(scannerArg, props.getProperty(scannerArg.name()));
         }
 
-
-        {
-            final String pass = props.getProperty(ScannerArgs.REPORTCARD_PASS.name());
-            if (hasValue(pass)) {
-                payload.setPass(pass);
-            }
-        }
-
-        {
-            final String org = props.getProperty(ScannerArgs.SCM_ORG.name());
-            if (hasValue(org)) {
-                payload.setOrg(org);
-            }
-        }
-        {
-            final String repo = props.getProperty(ScannerArgs.SCM_REPO.name());
-            if (hasValue(repo)) {
-                payload.setRepo(repo);
-            }
-        }
-        {
-            final String branch = props.getProperty(ScannerArgs.SCM_BRANCH.name());
-            if (hasValue(branch)) {
-                payload.setBranch(branch);
-            }
-        }
-        {
-            final String app = props.getProperty(ScannerArgs.BUILD_APP.name());
-            if (hasValue(app)) {
-                payload.setApp(app);
-            }
-        }
-        {
-            final String buildIdentifier = props.getProperty(ScannerArgs.BUILD_IDENTIFIER.name());
-            if (hasValue(buildIdentifier)) {
-                payload.setBuildIdentifier(buildIdentifier);
-            }
-        }
-        {
-            final String stage = props.getProperty(ScannerArgs.BUILD_STAGE.name());
-            if (hasValue(stage)) {
-                payload.setStage(stage);
-            }
-        }
-
-        {
-            final String testReportPath = props.getProperty(ScannerArgs.TEST_REPORT_PATH.name());
-            if (hasValue(testReportPath)) {
-                payload.setTestReportPath(testReportPath);
-            }
-        }
-
-        {
-            final String testReportRegex = props.getProperty(ScannerArgs.TEST_REPORT_REGEX.name());
-            if (hasValue(testReportRegex)) {
-                payload.setTestReportRegex(testReportRegex);
-            }
-        }
+        ScannerPostRequest payload = new ScannerPostRequest(argMap);
         payload.prepare();
-
         return payload;
     }
 
@@ -111,7 +45,7 @@ public class ScannerProperties {
 
     public static Properties getArgProperties(ApplicationArguments args, Properties defaultProperties) {
         Properties properties = new Properties(defaultProperties);
-        for (ScannerArgs argument : ScannerArgs.values()) {
+        for (ScannerArg argument : ScannerArg.values()) {
             if (args.getOptionNames().contains(argument.name())) {
                 String value = getLastValue(args.getOptionValues(argument.name()));
                 if (!StringUtils.isEmpty(value) && !StringUtils.isBlank(value)) {
@@ -124,7 +58,7 @@ public class ScannerProperties {
 
     public static Properties getEnvProperties(Properties defaultProperties) {
         Properties properties = new Properties(defaultProperties);
-        for (ScannerArgs argument : ScannerArgs.values()) {
+        for (ScannerArg argument : ScannerArg.values()) {
             String value = System.getenv(argument.name());
             if (hasValue(value)) {
                 properties.put(argument.name(), value);

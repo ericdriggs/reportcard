@@ -13,9 +13,9 @@ package com.ericdriggs.reportcard.scanner;
  * {@link #BUILD_STAGE}<br>
  * {@link #TEST_REPORT_PATH}<br>
  * {@link #TEST_REPORT_REGEX}<br>
- *
+ * {@link #EXTERNAL_LINKS}<br>
  */
-public enum ScannerArgs {
+public enum ScannerArg {
     /**
      * The base url of the reportcard host (Required)
      */
@@ -50,7 +50,8 @@ public enum ScannerArgs {
      */
     BUILD_APP,
     /**
-     * A unique identifier for a build. Multiple reports may be submitted with the same identifier.
+     * A unique identifier for a build. Use of scm SHA is recommended.
+     * Multiple reports may be submitted with the same identifier.
      * (Optional) Defaults to a generated guid if not provided.
      */
     BUILD_IDENTIFIER,
@@ -68,6 +69,17 @@ public enum ScannerArgs {
      * A regex to restrict which xml filenames to publish
      * (Optional) Defaults to *.xml
      */
-    TEST_REPORT_REGEX;
+    TEST_REPORT_REGEX,
+    /**
+     * A map of links in the form: <code>description1|url1,description2|url2</code>
+     * URL supports all ScannerArgs (Except EXTERNAL_LINKS) as token replacements, e,g. :
+     * <code>api html|https://myreportserver.com/<SCM_ORG>/<SCM_REPO>/<SCM_BRANCH>/<BUILD_IDENTIFIER></code>
+     * (Optional) defaults to null
+     */
+    EXTERNAL_LINKS;
+
+    public static String getToken(ScannerArg scannerArg) {
+        return "<" + scannerArg.name() + ">";
+    }
 
 }
