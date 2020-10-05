@@ -78,6 +78,19 @@ public class ScannerPostRequest {
     }
 
     public void prepare() {
+
+        //Set defaults for optional values
+        if (StringUtils.isEmpty(app)) {
+            app = repo;
+        }
+        if (StringUtils.isEmpty(buildIdentifier)) {
+            buildIdentifier = UUID.randomUUID().toString();
+        }
+        if (StringUtils.isEmpty(testReportRegex)) {
+            testReportRegex = ".*[.]xml";
+        }
+
+        //Prepare errors
         Map<String, String> validationErrors = new TreeMap<>();
         if (StringUtils.isEmpty(org)) {
             validationErrors.put("org", "missing required field");
@@ -85,15 +98,10 @@ public class ScannerPostRequest {
         if (StringUtils.isEmpty(repo)) {
             validationErrors.put("repo", "missing required field");
         }
-        if (StringUtils.isEmpty(app)) {
-            app = repo;
-        }
         if (StringUtils.isEmpty(branch)) {
             validationErrors.put("branch", "missing required field");
         }
-        if (StringUtils.isEmpty(buildIdentifier)) {
-            buildIdentifier = UUID.randomUUID().toString();
-        }
+
         if (StringUtils.isEmpty(stage)) {
             validationErrors.put("stage", "missing required field");
         }

@@ -24,7 +24,7 @@ import java.util.Properties;
 @Component
 public class ScannerProperties {
 
-    public ScannerPostRequest getReportPostPayload(ApplicationArguments applicationArguments) {
+    public static ScannerPostRequest getReportPostPayload(ApplicationArguments applicationArguments) {
         final Properties props = getProperties(applicationArguments);
 
         Map<ScannerArg, String> argMap = new HashMap<>();

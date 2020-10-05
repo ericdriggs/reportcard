@@ -12,8 +12,10 @@ public class ScannerApplication implements ApplicationRunner {
 		SpringApplication.run(ScannerApplication.class, args);
 	}
 
+
 	@Override
-	public void run(ApplicationArguments args) throws Exception {
+	public void run(ApplicationArguments args) {
+		//FIXME: either don't log args or mask password
 		System.out.println("# NonOptionArgs: " + args.getNonOptionArgs().size());
 
 		System.out.println("NonOptionArgs:");
@@ -25,5 +27,10 @@ public class ScannerApplication implements ApplicationRunner {
 		args.getOptionNames().forEach(optionName -> {
 			System.out.println(optionName + "=" + args.getOptionValues(optionName));
 		});
+
+		ScannerPostRequest scannerPostRequest = ScannerProperties.getReportPostPayload(args);
+
+
+
 	}
 }

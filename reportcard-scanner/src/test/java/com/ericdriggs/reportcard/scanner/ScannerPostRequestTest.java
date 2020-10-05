@@ -144,8 +144,7 @@ public class ScannerPostRequestTest {
         assertEquals(ScannerArg.REPORTCARD_PASS.name(), scannerPostRequest.getPass());
 
         assertEquals(ScannerArg.TEST_REPORT_PATH.name(), scannerPostRequest.getTestReportPath());
-        assertNull(scannerPostRequest.getTestReportRegex());
-
+        assertEquals(".*[.]xml", scannerPostRequest.getTestReportRegex());
         assertNull(scannerPostRequest.getExternalLinks());
 
     }
