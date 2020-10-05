@@ -3,11 +3,8 @@ package com.ericdriggs.reportcard.scanner;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Arrays;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 import static com.ericdriggs.reportcard.scanner.ScannerArg.getToken;
 
@@ -25,7 +22,7 @@ public class ScannerPostRequest {
     private String stage;
     private String testReportPath;
     private String testReportRegex;
-    private String externalLinks;
+    private Map<String, String> externalLinks;
 
     public ScannerPostRequest() {
     }
@@ -73,40 +70,67 @@ public class ScannerPostRequest {
 
 
         if (argMap.get(ScannerArg.EXTERNAL_LINKS) != null) {
-            String externalLinksWithTokens = argMap.get(ScannerArg.EXTERNAL_LINKS);
-            this.externalLinks = replaceTokens(externalLinksWithTokens, argMap);
+            String externalLinksStringWithtokens = argMap.get(ScannerArg.EXTERNAL_LINKS);
+            String externalLinksString = replaceTokens(externalLinksStringWithtokens, argMap);
+            this.externalLinks = getExternalLinkMap(externalLinksString);
         }
 
     }
 
     public void prepare() {
-        Map<String, String> errors = new TreeMap<>();
+        Map<String, String> validationErrors = new TreeMap<>();
         if (StringUtils.isEmpty(org)) {
-            errors.put("org", "missing required field");
+            validationErrors.put("org", "missing required field");
         }
         if (StringUtils.isEmpty(repo)) {
-            errors.put("repo", "missing required field");
+            validationErrors.put("repo", "missing required field");
         }
         if (StringUtils.isEmpty(app)) {
             app = repo;
         }
         if (StringUtils.isEmpty(branch)) {
-            errors.put("branch", "missing required field");
+            validationErrors.put("branch", "missing required field");
         }
         if (StringUtils.isEmpty(buildIdentifier)) {
-            errors.put("buildIdentifier", "missing required field");
+            buildIdentifier = UUID.randomUUID().toString();
         }
         if (StringUtils.isEmpty(stage)) {
-            errors.put("stage", "missing required field");
+            validationErrors.put("stage", "missing required field");
         }
         if (StringUtils.isEmpty(testReportPath)) {
-            errors.put("testReportPath", "missing required field");
+            validationErrors.put("testReportPath", "missing required field");
         }
 
-        if (!errors.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "errors - " + Arrays.toString(errors.entrySet().toArray()));
+        if (!validationErrors.isEmpty()) {
+            throw new BadRequestException(validationErrors);
         }
+    }
+
+    protected Map<String, String> getExternalLinkMap(String externalLinks) {
+        if (StringUtils.isEmpty(externalLinks)) {
+            return Collections.emptyMap();
+        }
+
+        Map<String, String> linkMap = new HashMap<String, String>();
+        String[] links = externalLinks.split(",");
+        int count = 0;
+        for (String link : links) {
+            count++;
+            String key = null;
+            String value = null;
+            if (!link.contains("|")) {
+                key = Integer.toString(count);
+                value = link;
+            } else {
+                int pos = link.indexOf("|");
+                key = link.substring(0, pos);
+                value = link.substring(pos+1 );
+            }
+
+            linkMap.put(key, value);
+        }
+        return linkMap;
+
     }
 
     protected String replaceTokens(String externalLinks, Map<ScannerArg, String> argMap) {

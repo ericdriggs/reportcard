@@ -17,11 +17,13 @@ package com.ericdriggs.reportcard.scanner;
  */
 public enum ScannerArg {
     /**
-     * The base url of the reportcard host (Required)
+     * The base url of the reportcard host
+     * (Required)
      */
     REPORTCARD_HOST,
     /**
-     * The user for the reportcard host (Required)
+     * The user for the reportcard host
+     * (Required)
      */
     REPORTCARD_USER,
     /**
@@ -72,6 +74,8 @@ public enum ScannerArg {
     TEST_REPORT_REGEX,
     /**
      * A map of links in the form: <code>description1|url1,description2|url2</code>
+     * If description is missing, an ordinal value will be used in its place.
+     * Duplicate descriptions will cause map entries to be overwritten.
      * URL supports all ScannerArgs (Except EXTERNAL_LINKS) as token replacements, e,g. :
      * <code>api html|https://myreportserver.com/<SCM_ORG>/<SCM_REPO>/<SCM_BRANCH>/<BUILD_IDENTIFIER></code>
      * (Optional) defaults to null
