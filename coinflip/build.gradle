@@ -10,14 +10,6 @@ plugins {
     id 'idea'
 }
 
-group 'com.github.ericdriggs'
-version '0.0.1-SNAPSHOT'
-
-test {
-    systemProperties System.properties
-    outputs.upToDateWhen { false }
-}
-
 dependencies {
     testCompile "com.intuit.karate:karate-junit5:${karateVersion}"
     testCompile "com.intuit.karate:karate-apache:${karateVersion}"

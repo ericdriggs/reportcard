@@ -12,19 +12,7 @@ plugins {
 	id 'io.spring.dependency-management'
 	id 'java'
 	id 'idea'
-    id 'jacoco'
 }
-
-jacocoTestReport {
-
-    executionData { tasks.withType(Test).findAll { it.jacoco.destinationFile.exists() }*.jacoco.destinationFile }
-    reports {
-        html.enabled = true
-        xml.enabled = true
-        csv.enabled = false
-    }
-}
-
 
 dependencies {
     compile 'org.projectlombok:lombok'
@@ -41,34 +29,4 @@ dependencies {
     compile "com.squareup.okhttp3:okhttp:$okHttpVersion"
     implementation "com.squareup.okhttp3:logging-interceptor:$okHttpVersion"
 
-}
-
-test {
-	systemProperties System.properties
-	outputs.upToDateWhen { false }
-	useJUnitPlatform()
-}
-
-// If on JDK 9+, verify project cross-compiles on its 'sourceCompatible' JVM version (see https://github.com/melix/mrjar-gradle/blob/master/jdks.gradle)
-if (project.hasProperty('crossCompile')) {
-    if (JavaVersion.current().java9Compatible) {
-        project.afterEvaluate {
-            tasks.withType(JavaCompile) {
-                def version = compat(sourceCompatibility)
-                project.logger.info("Configuring $name to use --release $version")
-                options.compilerArgs.addAll(['--release', version])
-            }
-        }
-    } else {
-        project.logger.warn("-PcrossCompile not supported prior to JDK 9; using JDK ${JavaVersion.current()}")
-    }
-}
-
-// This function converts 1.8 -> 8
-static String compat(String src) {
-    if (src.contains('.')) {
-        src.substring(src.lastIndexOf('.')+1)
-    } else {
-        src
-    }
 }

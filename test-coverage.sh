@@ -1,0 +1,1 @@
+./gradlew clean test check codeCoverageReport -Si

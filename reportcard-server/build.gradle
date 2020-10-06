@@ -73,12 +73,6 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 }
 
-test {
-    useJUnitPlatform()
-    systemProperties System.properties
-    outputs.upToDateWhen { false }
-}
-
 jooq {
     version = '3.13.4'
     edition = 'OSS'
