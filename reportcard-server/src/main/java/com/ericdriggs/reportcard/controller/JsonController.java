@@ -3,7 +3,7 @@ package com.ericdriggs.reportcard.controller;
 import java.util.List;
 
 import com.ericdriggs.reportcard.ReportCardService;
-import com.ericdriggs.reportcard.db.tables.pojos.*;
+import com.ericdriggs.reportcard.gen.db.tables.pojos.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

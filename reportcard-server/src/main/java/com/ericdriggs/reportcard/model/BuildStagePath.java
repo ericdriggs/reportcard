@@ -1,6 +1,6 @@
 package com.ericdriggs.reportcard.model;
 
-import com.ericdriggs.reportcard.db.tables.pojos.*;
+import com.ericdriggs.reportcard.gen.db.tables.pojos.*;
 import lombok.Data;
 
 @Data

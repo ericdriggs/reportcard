@@ -5,9 +5,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import com.ericdriggs.reportcard.db.tables.daos.*;
-import com.ericdriggs.reportcard.db.tables.pojos.*;
-import com.ericdriggs.reportcard.db.tables.records.*;
+import com.ericdriggs.reportcard.gen.db.tables.Repo;
+import com.ericdriggs.reportcard.gen.db.tables.daos.*;
+import com.ericdriggs.reportcard.gen.db.tables.pojos.*;
+import com.ericdriggs.reportcard.gen.db.tables.records.*;
 import com.ericdriggs.reportcard.model.*;
 import com.ericdriggs.reportcard.model.TestCase;
 import com.ericdriggs.reportcard.model.TestResult;
@@ -23,7 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 
-import static com.ericdriggs.reportcard.db.Tables.*;
+import static com.ericdriggs.reportcard.gen.db.Tables.*;
 
 @Service
 @SuppressWarnings("unused")
@@ -98,24 +99,24 @@ public class ReportCardService {
 
     }
 
-    public List<Repo> getRepos(String org) {
+    public List<com.ericdriggs.reportcard.gen.db.tables.pojos.Repo> getRepos(String org) {
         return dsl.
                 select(REPO.fields())
                 .from(REPO.join(ORG)
                         .on(REPO.ORG_FK.eq(ORG.ORG_ID)))
                 .where(ORG.ORG_NAME.eq(org))
                 .fetch()
-                .into(Repo.class);
+                .into(com.ericdriggs.reportcard.gen.db.tables.pojos.Repo.class);
     }
 
-    public Repo getRepo(String org, String repo) {
-        Repo ret = dsl.
+    public com.ericdriggs.reportcard.gen.db.tables.pojos.Repo getRepo(String org, String repo) {
+        com.ericdriggs.reportcard.gen.db.tables.pojos.Repo ret = dsl.
                 select(REPO.fields()).from(REPO).join(ORG)
                 .on(REPO.ORG_FK.eq(ORG.ORG_ID))
                 .where(ORG.ORG_NAME.eq(org))
                 .and(REPO.REPO_NAME.eq(repo))
                 .fetchOne()
-                .into(Repo.class);
+                .into(com.ericdriggs.reportcard.gen.db.tables.pojos.Repo.class);
         if (ret == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     "Unable to find org:" + org + ", repo: " + repo);
@@ -188,7 +189,7 @@ public class ReportCardService {
     }
 
     public AppBranch getAppBranch(String org, String repo, String app, String branch) {
-        final com.ericdriggs.reportcard.db.tables.Repo REPO2 = REPO.as("REPO2");
+        final Repo REPO2 = REPO.as("REPO2");
         AppBranch ret = dsl.
                 select(APP_BRANCH.fields())
                 .from(APP_BRANCH
@@ -215,7 +216,7 @@ public class ReportCardService {
     }
 
     public List<Build> getBuilds(String org, String repo, String app, String branch) {
-        final com.ericdriggs.reportcard.db.tables.Repo REPO2 = REPO.as("REPO2");
+        final Repo REPO2 = REPO.as("REPO2");
 
         List<Build> ret = dsl.
                 select(BUILD.fields())
@@ -238,7 +239,7 @@ public class ReportCardService {
 
 
     public Build getBuild(String org, String repo, String app, String branch, String buildUniqueString) {
-        final com.ericdriggs.reportcard.db.tables.Repo REPO2 = REPO.as("REPO2");
+        final Repo REPO2 = REPO.as("REPO2");
 
         Build ret = dsl.
                 select(BUILD.fields())
@@ -267,7 +268,7 @@ public class ReportCardService {
     }
 
     public List<Stage> getStages(String org, String repo, String app, String branch) {
-        final com.ericdriggs.reportcard.db.tables.Repo REPO2 = REPO.as("REPO2");
+        final Repo REPO2 = REPO.as("REPO2");
 
         List<Stage> ret = dsl.
                 select(STAGE.fields())
@@ -290,7 +291,7 @@ public class ReportCardService {
 
 
     public Stage getStage(String org, String repo, String app, String branch, String stage) {
-        final com.ericdriggs.reportcard.db.tables.Repo REPO2 = REPO.as("REPO2");
+        final Repo REPO2 = REPO.as("REPO2");
 
         Stage ret = dsl.
                 select(STAGE.fields())
@@ -319,7 +320,7 @@ public class ReportCardService {
     }
 
     public Stage getBuildStage(String org, String repo, String app, String branch, String buildUniqueString, String stage) {
-        final com.ericdriggs.reportcard.db.tables.Repo REPO2 = REPO.as("REPO2");
+        final Repo REPO2 = REPO.as("REPO2");
 
         Stage ret = dsl.
                 select(BUILD_STAGE.fields())
@@ -374,7 +375,7 @@ public class ReportCardService {
 
         {
             Org _org = null;
-            Repo _repo = null;
+            com.ericdriggs.reportcard.gen.db.tables.pojos.Repo _repo = null;
             Branch _branch = null;
             App _app = null;
             AppBranch _appBranch = null;
@@ -386,7 +387,7 @@ public class ReportCardService {
                 _org = record.into(OrgRecord.class).into(Org.class);
             }
             if (record.get(REPO.REPO_ID.getName()) != null) {
-                _repo = record.into(RepoRecord.class).into(Repo.class);
+                _repo = record.into(RepoRecord.class).into(com.ericdriggs.reportcard.gen.db.tables.pojos.Repo.class);
             }
             if (record.get(APP.APP_ID.getName()) != null) {
                 _app = record.into(AppRecord.class).into(App.class);
@@ -458,7 +459,7 @@ public class ReportCardService {
         }
 
         if (buildStagePath.getRepo() == null) {
-            Repo repo = new Repo()
+            com.ericdriggs.reportcard.gen.db.tables.pojos.Repo repo = new com.ericdriggs.reportcard.gen.db.tables.pojos.Repo()
                     .setRepoName(request.getRepo())
                     .setOrgFk(buildStagePath.getOrg().getOrgId());
             repoDao.insert(repo);

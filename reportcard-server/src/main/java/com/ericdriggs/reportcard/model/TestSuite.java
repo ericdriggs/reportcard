@@ -2,9 +2,8 @@ package com.ericdriggs.reportcard.model;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-public class TestSuite extends com.ericdriggs.reportcard.db.tables.pojos.TestSuite {
+public class TestSuite extends com.ericdriggs.reportcard.gen.db.tables.pojos.TestSuite {
     private List<TestCase> testCases = new ArrayList<>();
 
     public List<TestCase> getTestCases() {

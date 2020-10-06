@@ -91,6 +91,9 @@ jooq {
             }
         }
         generator {
+            generate {
+                generatedAnnotation = true
+            }
             name = 'org.jooq.codegen.DefaultGenerator'
             strategy {
                 name = 'org.jooq.codegen.DefaultGeneratorStrategy'
@@ -131,7 +134,7 @@ jooq {
                 fluentSetters = true
             }
             target {
-                packageName = 'com.ericdriggs.reportcard.db'
+                packageName = 'com.ericdriggs.reportcard.gen.db'
                 directory = 'src/generated/java'
             }
         }

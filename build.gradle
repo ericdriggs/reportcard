@@ -36,6 +36,31 @@ allprojects {
             xml.enabled = true
             csv.enabled = false
         }
+
+        doFirst {
+            try {
+                classDirectories.from = files(classDirectories.files.collect {
+                    fileTree(dir: it, exclude: [
+                            'com/ericdriggs/reportcard/gen/**',
+                            'com/ericdriggs/reportcard/gen/db/**',
+                            'com/ericdriggs/reportcard/gen/db/tables/**',
+                            'com/ericdriggs/reportcard/gen/db/tables/records/**'
+                    ])
+                })
+            } catch (e) {
+                println "jacoco: no exclusion patterns due to ${e.message}"
+            }
+        }
+//        afterEvaluate {
+//            classDirectories.from = files(classDirectories.files.collect {
+//                fileTree(dir: it, exclude: [
+//                        'com/ericdriggs/reportcard/gen/**',
+//                        'com/ericdriggs/reportcard/gen/db/**',
+//                        'com/ericdriggs/reportcard/gen/db/tables/**',
+//                        'com/ericdriggs/reportcard/gen/db/tables/records/**'
+//                ])
+//            })
+//        }
     }
 
 }
@@ -56,6 +81,21 @@ tasks.register("codeCoverageReport", JacocoReport) {
             subproject.tasks.matching({ t -> t.extensions.findByType(JacocoTaskExtension) }).forEach {
                 rootProject.tasks.codeCoverageReport.dependsOn(it)
             }
+
+            doFirst {
+                try {
+                    classDirectories.from = files(classDirectories.files.collect {
+                        fileTree(dir: it, exclude: [
+                                'com/ericdriggs/reportcard/gen/**',
+                                'com/ericdriggs/reportcard/gen/db/**',
+                                'com/ericdriggs/reportcard/gen/db/tables/**',
+                                'com/ericdriggs/reportcard/gen/db/tables/records/**'
+                        ])
+                    })
+                } catch (e) {
+                    println "jacoco: no exclusion patterns due to ${e.message}"
+                }
+            }
         }
     }
 
@@ -68,5 +108,7 @@ tasks.register("codeCoverageReport", JacocoReport) {
         // HTML reports can be used to see code coverage
         // without any external tools
         html.enabled true
+
+
     }
 }

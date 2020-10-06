@@ -1,6 +1,6 @@
 package com.ericdriggs.reportcard.model;
 
-public class TestCase extends com.ericdriggs.reportcard.db.tables.pojos.TestCase {
+public class TestCase extends com.ericdriggs.reportcard.gen.db.tables.pojos.TestCase {
 
     private TestStatus testStatus;
 
