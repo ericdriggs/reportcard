@@ -12,7 +12,19 @@ plugins {
 	id 'io.spring.dependency-management'
 	id 'java'
 	id 'idea'
+    id 'jacoco'
 }
+
+jacocoTestReport {
+
+    executionData { tasks.withType(Test).findAll { it.jacoco.destinationFile.exists() }*.jacoco.destinationFile }
+    reports {
+        html.enabled = true
+        xml.enabled = true
+        csv.enabled = false
+    }
+}
+
 
 dependencies {
     compile 'org.projectlombok:lombok'

@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class ScannerPostRequestTest {
 
+
     private Map<ScannerArg, String> getAllArgsNoExternalLinkDescription() {
         Map<ScannerArg, String> argMap = new HashMap<>();
         for (ScannerArg scannerArg : ScannerArg.values()) {
@@ -69,6 +70,21 @@ public class ScannerPostRequestTest {
         return argMap;
     }
 
+    @Test
+    public void constructorNoArgsTest() {
+        ScannerPostRequest scannerPostRequest = new ScannerPostRequest(new HashMap<ScannerArg, String>());
+        assertNull(scannerPostRequest.getApp());
+        assertNull(scannerPostRequest.getBranch());
+        assertNull(scannerPostRequest.getBuildIdentifier());
+        assertEquals(Collections.emptyMap(), scannerPostRequest.getExternalLinks());
+        assertNull(scannerPostRequest.getHost());
+        assertNull(scannerPostRequest.getOrg());
+        assertNull(scannerPostRequest.getPass());
+        assertNull(scannerPostRequest.getRepo());
+        assertNull(scannerPostRequest.getStage());
+        assertNull(scannerPostRequest.getTestReportPath());
+        assertNull(scannerPostRequest.getTestReportRegex());
+    }
 
     @Test
     public void constructorAllArgsNoExternalLinkDescriptionTest() {
@@ -145,7 +161,7 @@ public class ScannerPostRequestTest {
 
         assertEquals(ScannerArg.TEST_REPORT_PATH.name(), scannerPostRequest.getTestReportPath());
         assertEquals(".*[.]xml", scannerPostRequest.getTestReportRegex());
-        assertNull(scannerPostRequest.getExternalLinks());
+        assertEquals(Collections.emptyMap(), scannerPostRequest.getExternalLinks());
 
     }
 

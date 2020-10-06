@@ -1,7 +1,6 @@
 package com.ericdriggs.reportcard.scanner;
 
 import lombok.Data;
-import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
@@ -68,12 +67,7 @@ public class ScannerPostRequest {
             this.testReportRegex = argMap.get(ScannerArg.TEST_REPORT_REGEX);
         }
 
-
-        if (argMap.get(ScannerArg.EXTERNAL_LINKS) != null) {
-            String externalLinksStringWithtokens = argMap.get(ScannerArg.EXTERNAL_LINKS);
-            String externalLinksString = replaceTokens(externalLinksStringWithtokens, argMap);
-            this.externalLinks = getExternalLinkMap(externalLinksString);
-        }
+        this.externalLinks = buildExternalLinkMap(argMap.get(ScannerArg.EXTERNAL_LINKS), argMap);
 
     }
 
@@ -114,25 +108,27 @@ public class ScannerPostRequest {
         }
     }
 
-    protected Map<String, String> getExternalLinkMap(String externalLinks) {
-        if (StringUtils.isEmpty(externalLinks)) {
+    protected Map<String, String> buildExternalLinkMap(String externalLinksArg, Map<ScannerArg, String> argMap) {
+        if (StringUtils.isEmpty(externalLinksArg)) {
             return Collections.emptyMap();
         }
 
-        Map<String, String> linkMap = new HashMap<String, String>();
-        String[] links = externalLinks.split(",");
+        String externalLinksDetokenized = replaceTokens(externalLinksArg, argMap);
+
+        Map<String, String> linkMap = new HashMap<>();
+        String[] links = externalLinksDetokenized.split(",");
         int count = 0;
         for (String link : links) {
             count++;
-            String key = null;
-            String value = null;
+            String key;
+            String value;
             if (!link.contains("|")) {
                 key = Integer.toString(count);
                 value = link;
             } else {
                 int pos = link.indexOf("|");
                 key = link.substring(0, pos);
-                value = link.substring(pos+1 );
+                value = link.substring(pos + 1);
             }
 
             linkMap.put(key, value);
