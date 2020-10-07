@@ -4,7 +4,7 @@ import org.jooq.meta.CatalogDefinition;
 import org.jooq.meta.SchemaDefinition;
 
 /**
- * Uses lombok.Generated as a class annootation instead of a javax.annotation.(processing?.)Generated
+ * Uses lombok.Generated as a class annotation instead of a javax.annotation.(processing?.)Generated
  * <ol>
  *     <li>javax.annotation.(processing?.)Generated only has <code>SOURCE</code> retention,
  *         while lombok.Generated <code>CLASS</code> retention. </li>
