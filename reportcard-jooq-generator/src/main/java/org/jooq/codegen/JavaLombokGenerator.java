@@ -29,7 +29,6 @@ public class JavaLombokGenerator extends JavaGenerator {
         }
 
         //if (!scala) //TODO: uncomment when scala variable is protected instead of private
-        out.println("@%s({ \"all\", \"unchecked\", \"rawtypes\" })",
-                out.ref("java.lang.SuppressWarnings"));
+        out.println("@%s({ \"all\", \"unchecked\", \"rawtypes\" })", out.ref("java.lang.SuppressWarnings"));
     }
 }
