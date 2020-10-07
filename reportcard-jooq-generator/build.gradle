@@ -1,0 +1,12 @@
+plugins {
+    id 'java'
+    id 'nu.studer.jooq' version '4.2'
+    id "io.freefair.lombok" version "5.2.1"
+}
+
+dependencies {
+    compile 'org.jooq:jooq-codegen'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+}
