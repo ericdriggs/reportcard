@@ -22,7 +22,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestStatusRecord extends UpdatableRecordImpl<TestStatusRecord> implements Record2<Byte, String> {
 
-    private static final long serialVersionUID = 238652479;
+    private static final long serialVersionUID = -242422172;
 
     /**
      * Setter for <code>reportcard.test_status.test_status_id</code>.

@@ -4,19 +4,17 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath 'mysql:mysql-connector-java:8.0.20'
+        classpath files('libs/reportcard-jooq-generator.jar')
     }
 }
 plugins {
     id 'java'
+    id 'groovy'
     id 'idea'
     id 'org.springframework.boot'
     id 'io.spring.dependency-management'
     id 'nu.studer.jooq' version '4.2'
-}
-
-allprojects {
-    group 'com.github.ericdriggs'
-    version '0.0.1-SNAPSHOT'
 }
 
 configurations {
@@ -57,11 +55,13 @@ dependencies {
     //Database
     implementation 'mysql:mysql-connector-java'
     implementation 'org.jooq:jooq'
+    implementation 'org.jooq:jooq-codegen'
     implementation 'org.springframework.boot:spring-boot-starter-jooq:2.3.1.RELEASE'
 
     testImplementation 'com.wix:wix-embedded-mysql:4.6.1'
 
 
+    implementation 'mysql:mysql-connector-java:8.0.20'
     jooqRuntime 'mysql:mysql-connector-java:8.0.20'
 
     //Mapping
@@ -71,6 +71,61 @@ dependencies {
     //Test
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+}
+
+import org.jooq.codegen.GenerationTool
+import org.jooq.meta.jaxb.*
+
+task generateJooqSchemaSource {
+    group = "jooq"
+    doLast {
+        GenerationTool.generate(new Configuration()
+                .withJdbc(new Jdbc()
+                        .withDriver('com.mysql.cj.jdbc.Driver')
+                        .withUrl('jdbc:mysql://127.0.0.1:3306/reportcard?serverTimezone=UTC')
+                        .withUser('root')
+                        .withPassword('')
+                        .withProperties(Arrays.asList(new Property().withKey("ssl").withValue("true")))
+                )
+                .withGenerator(new Generator()
+                        .withName('org.jooq.codegen.JavaLombokGenerator')
+                        .withStrategy(new Strategy()
+                                .withName('org.jooq.codegen.DefaultGeneratorStrategy')
+                        )
+                        .withDatabase(new Database()
+                                .withName('org.jooq.meta.mysql.MySQLDatabase')
+                                .withInputSchema('reportcard')
+                                .withUnsignedTypes(false)
+                                .withForcedTypes(
+                                        Arrays.asList(
+                                                new ForcedType().withName('varchar')
+                                                        .withIncludeExpression('.*').withIncludeTypes('JSONB?'),
+                                                new ForcedType().withName('varchar')
+                                                        .withIncludeExpression('.*').withIncludeTypes('INET'),
+                                                new ForcedType().withName('BOOLEAN')
+                                                        .withIncludeExpression('is_.*').withIncludeTypes('TINYINT'),
+                                                new ForcedType().withName('BOOLEAN')
+                                                        .withIncludeExpression('has_.*').withIncludeTypes('TINYINT')
+                                        )
+                                )
+                        )
+                        .withGenerate(new Generate()
+                                .withGeneratedAnnotation(true)
+                                .withDaos(true)
+                                .withRelations(true)
+                                .withDeprecated(false)
+                                .withRecords(true)
+                                .withPojos(true)
+                                .withImmutablePojos(false)
+                                .withFluentSetters(true)
+                        )
+                        .withTarget(new Target()
+                                .withPackageName('com.ericdriggs.reportcard.gen.db')
+                                .withDirectory('src/generated/java')
+                        )
+                )
+        )
+    }
 }
 
 jooq {
@@ -91,9 +146,7 @@ jooq {
             }
         }
         generator {
-            generate {
-                generatedAnnotation = true
-            }
+
             name = 'org.jooq.codegen.DefaultGenerator'
             strategy {
                 name = 'org.jooq.codegen.DefaultGeneratorStrategy'
@@ -126,6 +179,7 @@ jooq {
                 }
             }
             generate {
+                generatedAnnotation = true
                 daos = true
                 relations = true
                 deprecated = false

@@ -16,7 +16,7 @@ import lombok.Generated;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Stage implements Serializable {
 
-    private static final long serialVersionUID = -1464436526;
+    private static final long serialVersionUID = -1154475559;
 
     private Integer stageId;
     private String  stageName;

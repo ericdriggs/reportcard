@@ -17,7 +17,7 @@ import lombok.Generated;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestCase implements Serializable {
 
-    private static final long serialVersionUID = -409845908;
+    private static final long serialVersionUID = -2098962955;
 
     private Long       testCaseId;
     private Long       testSuiteFk;

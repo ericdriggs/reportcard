@@ -24,7 +24,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BuildRecord extends UpdatableRecordImpl<BuildRecord> implements Record5<Long, Integer, String, String, LocalDateTime> {
 
-    private static final long serialVersionUID = -1435663682;
+    private static final long serialVersionUID = 1119830031;
 
     /**
      * Setter for <code>reportcard.build.build_id</code>.

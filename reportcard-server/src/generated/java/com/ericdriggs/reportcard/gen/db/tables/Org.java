@@ -35,7 +35,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Org extends TableImpl<OrgRecord> {
 
-    private static final long serialVersionUID = 167730462;
+    private static final long serialVersionUID = -1742936563;
 
     /**
      * The reference instance of <code>reportcard.org</code>

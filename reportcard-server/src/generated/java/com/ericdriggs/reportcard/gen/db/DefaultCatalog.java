@@ -3,13 +3,11 @@
  */
 package com.ericdriggs.reportcard.gen.db;
 
-
 import java.util.Arrays;
 import java.util.List;
 
-//import lombok.Generated;
-
 import lombok.Generated;
+
 import org.jooq.Schema;
 import org.jooq.impl.CatalogImpl;
 
@@ -21,7 +19,7 @@ import org.jooq.impl.CatalogImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DefaultCatalog extends CatalogImpl {
 
-    private static final long serialVersionUID = 670000546;
+    private static final long serialVersionUID = -1796234173;
 
     /**
      * The reference instance of <code>DEFAULT_CATALOG</code>

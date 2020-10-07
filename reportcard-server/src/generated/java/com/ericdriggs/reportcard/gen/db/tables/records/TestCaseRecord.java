@@ -24,7 +24,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestCaseRecord extends UpdatableRecordImpl<TestCaseRecord> implements Record6<Long, Long, String, String, BigDecimal, Byte> {
 
-    private static final long serialVersionUID = 1333441251;
+    private static final long serialVersionUID = -1090567652;
 
     /**
      * Setter for <code>reportcard.test_case.test_case_id</code>.

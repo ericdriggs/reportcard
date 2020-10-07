@@ -16,7 +16,7 @@ import lombok.Generated;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Org implements Serializable {
 
-    private static final long serialVersionUID = 857017809;
+    private static final long serialVersionUID = 440401688;
 
     private Integer orgId;
     private String  orgName;

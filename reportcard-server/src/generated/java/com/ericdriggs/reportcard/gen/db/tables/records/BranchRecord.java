@@ -22,7 +22,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BranchRecord extends UpdatableRecordImpl<BranchRecord> implements Record3<Integer, String, Integer> {
 
-    private static final long serialVersionUID = -1835601543;
+    private static final long serialVersionUID = 1277432308;
 
     /**
      * Setter for <code>reportcard.branch.branch_id</code>.

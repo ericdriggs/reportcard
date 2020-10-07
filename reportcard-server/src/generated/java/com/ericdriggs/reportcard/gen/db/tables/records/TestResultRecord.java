@@ -25,7 +25,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> implements Record10<Long, Long, Integer, Integer, Integer, Integer, BigDecimal, LocalDateTime, Boolean, Boolean> {
 
-    private static final long serialVersionUID = -499806822;
+    private static final long serialVersionUID = -863471325;
 
     /**
      * Setter for <code>reportcard.test_result.test_result_id</code>.

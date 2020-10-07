@@ -16,7 +16,7 @@ import lombok.Generated;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Branch implements Serializable {
 
-    private static final long serialVersionUID = 1337225885;
+    private static final long serialVersionUID = -493827612;
 
     private Integer branchId;
     private String  branchName;

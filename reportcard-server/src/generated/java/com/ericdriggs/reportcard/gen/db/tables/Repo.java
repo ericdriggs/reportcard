@@ -37,7 +37,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Repo extends TableImpl<RepoRecord> {
 
-    private static final long serialVersionUID = 1484137807;
+    private static final long serialVersionUID = 1502590142;
 
     /**
      * The reference instance of <code>reportcard.repo</code>

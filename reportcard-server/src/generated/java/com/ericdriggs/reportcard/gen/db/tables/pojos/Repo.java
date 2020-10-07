@@ -16,7 +16,7 @@ import lombok.Generated;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Repo implements Serializable {
 
-    private static final long serialVersionUID = 1490397491;
+    private static final long serialVersionUID = -316831412;
 
     private Integer repoId;
     private String  repoName;

@@ -34,7 +34,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Reportcard extends SchemaImpl {
 
-    private static final long serialVersionUID = 1550174427;
+    private static final long serialVersionUID = 1110112518;
 
     /**
      * The reference instance of <code>reportcard</code>

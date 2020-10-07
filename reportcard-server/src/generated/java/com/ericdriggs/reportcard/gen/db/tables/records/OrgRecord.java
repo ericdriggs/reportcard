@@ -22,7 +22,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class OrgRecord extends UpdatableRecordImpl<OrgRecord> implements Record2<Integer, String> {
 
-    private static final long serialVersionUID = 1501025791;
+    private static final long serialVersionUID = -1438785840;
 
     /**
      * Setter for <code>reportcard.org.org_id</code>.
