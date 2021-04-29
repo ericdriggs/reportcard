@@ -1,7 +1,7 @@
 package com.ericdriggs.reportcard.gen.db;
 
 import com.ericdriggs.reportcard.ReportCardService;
-import com.ericdriggs.reportcard.model.BuildStagePath;
+import com.ericdriggs.reportcard.model.ExecutionStagePath;
 import com.ericdriggs.reportcard.model.ReportMetaData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -14,7 +14,6 @@ import static org.junit.jupiter.api.Assertions.*;
 //@EnableConfigurationProperties
 public class GetBuildStagePathTest extends AbstractDbTest {
 
-    final static String buildUniqueString = "9282be75-6ca5-424b-a7ec-13d13370ba90";
 
     @Autowired
     public GetBuildStagePathTest(ReportCardService reportCardService ) {
@@ -26,123 +25,60 @@ public class GetBuildStagePathTest extends AbstractDbTest {
     public void getBuildStagePathAllFound() {
         ReportMetaData request =
                 new ReportMetaData()
-                        .setOrg("default")
-                .setRepo("default")
-                .setApp("app1")
-                .setBranch("master")
-                .setBuildIdentifier(buildUniqueString)
-                .setStage("unit");
+                        .setOrg(TestData.org)
+                        .setRepo(TestData.repo)
+                        .setBranch(TestData.branch)
+                        .setSha(TestData.sha)
+                        .setHostApplicatiionPipeline(TestData.hostApplicationPipeline)
+                        .setExternalExecutionId(TestData.externalExecutionId)
+                        .setStage(TestData.stage);
 
-        BuildStagePath bsp = reportCardService.getBuildStagePath(request);
+        ExecutionStagePath bsp = reportCardService.getExecutionStagePath(request);
         assertTrue(bsp.isComplete());
 
         Assertions.assertEquals(bsp.getOrg().getOrgName(), request.getOrg());
         Assertions.assertEquals(bsp.getRepo().getRepoName(), request.getRepo());
-        Assertions.assertEquals(bsp.getApp().getAppName(), request.getApp());
         Assertions.assertEquals(bsp.getBranch().getBranchName(), request.getBranch());
-        assertNotNull(bsp.getAppBranch().getAppBranchId());
-        Assertions.assertEquals(bsp.getBuild().getBuildUniqueString(), request.getBuildIdentifier());
+        Assertions.assertEquals(bsp.getSha().getSha(), request.getSha());
+
+        Assertions.assertEquals(bsp.getContext().getHost(), request.getHostApplicatiionPipeline().getHost());
+        Assertions.assertEquals(bsp.getContext().getApplication(), request.getHostApplicatiionPipeline().getApplication());
+        Assertions.assertEquals(bsp.getContext().getPipeline(), request.getHostApplicatiionPipeline().getPipeline());
+
+        Assertions.assertEquals(bsp.getExecution().getExecutionExternalId(), request.getExternalExecutionId());
         Assertions.assertEquals(bsp.getStage().getStageName(), request.getStage());
-        assertNotNull(bsp.getBuildStage().getBuildStageId());
+        assertNotNull(bsp.getStage().getStageId());
     }
 
     @Test
     public void getBuildStagePath_Missing_build() {
-
         ReportMetaData request =
-                new ReportMetaData()
-                        .setOrg("default")
-                        .setRepo("default")
-                        .setApp("app1")
-                        .setBranch("master")
-                        .setBuildIdentifier("not_found")
-                        .setStage("unit");
+        new ReportMetaData()
+                .setOrg(TestData.org)
+                .setRepo(TestData.repo)
+                .setBranch(TestData.branch)
+                .setSha(TestData.sha)
+                .setHostApplicatiionPipeline(TestData.hostApplicationPipeline)
+                .setExternalExecutionId("not_found");
 
-        BuildStagePath bsp = reportCardService.getBuildStagePath(request);
+        ExecutionStagePath bsp = reportCardService.getExecutionStagePath(request);
         assertNotNull(bsp);
         assertNotNull(bsp.getOrg());
         assertNotNull(bsp.getRepo());
-        assertNotNull(bsp.getApp());
         assertNotNull(bsp.getBranch());
-        assertNotNull(bsp.getAppBranch());
-        assertNull(bsp.getBuild());
-        assertNotNull(bsp.getStage());
-        assertNull(bsp.getBuildStage());
-
-        Assertions.assertEquals(bsp.getOrg().getOrgName(), request.getOrg());
-        Assertions.assertEquals(bsp.getRepo().getRepoName(), request.getRepo());
-        Assertions.assertEquals(bsp.getApp().getAppName(), request.getApp());
-        Assertions.assertEquals(bsp.getBranch().getBranchName(), request.getBranch());
-        assertNotNull(bsp.getAppBranch().getAppBranchId());
-        //assertEquals(bsp.getBuild().getAppBranchBuildOrdinal(), request.getBuildOrdinal());
-        Assertions.assertEquals(bsp.getStage().getStageName(), request.getStage());
-        //assertNotNull(bsp.getBuildStage().getBuildStageId());
-    }
-
-    @Test
-    public void getBuildStagePath_Missing_app_build_stage() {
-
-        ReportMetaData request =
-                new ReportMetaData()
-                        .setOrg("default")
-                        .setRepo("default")
-                        .setApp("not_found")
-                        .setBranch("master")
-                        .setBuildIdentifier("not_found")
-                        .setStage("not_found");
-
-        BuildStagePath bsp = reportCardService.getBuildStagePath(request);
-        assertNotNull(bsp);
-        assertNotNull(bsp.getOrg());
-        assertNotNull(bsp.getRepo());
-        assertNull(bsp.getApp());
-        assertNotNull(bsp.getBranch());
-        assertNull(bsp.getAppBranch());
-        assertNull(bsp.getBuild());
+        assertNotNull(bsp.getSha());
+        assertNotNull(bsp.getContext());
+        assertNull(bsp.getExecution());
         assertNull(bsp.getStage());
-        assertNull(bsp.getBuildStage());
 
         Assertions.assertEquals(bsp.getOrg().getOrgName(), request.getOrg());
         Assertions.assertEquals(bsp.getRepo().getRepoName(), request.getRepo());
-        //assertEquals(bsp.getApp().getAppName(), request.getAppName());
         Assertions.assertEquals(bsp.getBranch().getBranchName(), request.getBranch());
-        //assertNotNull(bsp.getAppBranch().getAppBranchId());
-        //assertEquals(bsp.getBuild().getAppBranchBuildOrdinal(), request.getBuildOrdinal());
-        //assertEquals(bsp.getStage().getStageName(), request.getStageName());
-        //assertNotNull(bsp.getBuildStage().getBuildStageId());
+        Assertions.assertEquals(bsp.getSha().getSha(), request.getSha());
+        Assertions.assertEquals(bsp.getContext().getHost(), request.getHostApplicatiionPipeline().getHost());
+        Assertions.assertEquals(bsp.getContext().getApplication(), request.getHostApplicatiionPipeline().getApplication());
+        Assertions.assertEquals(bsp.getContext().getPipeline(), request.getHostApplicatiionPipeline().getPipeline());
 
     }
 
-    @Test
-    public void getBuildStagePath_Missing_branch_build_stage() {
-
-        ReportMetaData request =
-                new ReportMetaData()
-                        .setOrg("default")
-                        .setRepo("default")
-                        .setApp("app1")
-                        .setBranch("not_found")
-                        .setBuildIdentifier("not_found")
-                        .setStage("not_found");
-
-        BuildStagePath bsp = reportCardService.getBuildStagePath(request);
-        assertNotNull(bsp);
-        assertNotNull(bsp.getOrg());
-        assertNotNull(bsp.getRepo());
-        assertNotNull(bsp.getApp());
-        assertNull(bsp.getBranch());
-        assertNull(bsp.getAppBranch());
-        assertNull(bsp.getBuild());
-        assertNull(bsp.getStage());
-        assertNull(bsp.getBuildStage());
-
-        Assertions.assertEquals(bsp.getOrg().getOrgName(), request.getOrg());
-        Assertions.assertEquals(bsp.getRepo().getRepoName(), request.getRepo());
-        Assertions.assertEquals(bsp.getApp().getAppName(), request.getApp());
-        //assertEquals(bsp.getBranch().getBranchName(), request.getBranchName());
-        //assertNotNull(bsp.getAppBranch().getAppBranchId());
-        //assertEquals(bsp.getBuild().getAppBranchBuildOrdinal(), request.getBuildOrdinal());
-        //assertEquals(bsp.getStage().getStageName(), request.getStageName());
-        //assertNotNull(bsp.getBuildStage().getBuildStageId());
-    }
 }

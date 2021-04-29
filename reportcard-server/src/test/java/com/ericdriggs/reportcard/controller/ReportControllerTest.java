@@ -2,6 +2,7 @@ package com.ericdriggs.reportcard.controller;
 
 import com.ericdriggs.reportcard.ReportCardService;
 import com.ericdriggs.reportcard.ReportcardApplication;
+import com.ericdriggs.reportcard.model.HostApplicationPipeline;
 import com.ericdriggs.reportcard.model.ReportMetaData;
 import com.ericdriggs.reportcard.model.TestResult;
 import com.ericdriggs.reportcard.model.TestStatus;
@@ -106,11 +107,13 @@ public class ReportControllerTest {
                 new ReportMetaData()
                         .setOrg("org" + randLong)
                         .setRepo("repo" + randLong)
-                        .setApp("app" + randLong)
                         .setBranch("branch" + randLong)
-                        .setBuildIdentifier("buildIdentifier" + randLong)
+                        .setSha("sha" + randLong)
+                        .setHostApplicatiionPipeline(new HostApplicationPipeline(
+                                "host" + randLong,  "application"+ randLong, "pipeline" +randLong
+                        ))
+                        .setExternalExecutionId("externalExecutionId" + randLong)
                         .setStage("stage" + randLong);
-
         return request;
 
     }

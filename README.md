@@ -9,6 +9,8 @@ TODO PROTOTYPE:
 * implement JSON GET endpoints for hierarchy after POST
 * implement UI GET endpoints for hierarchy after POST
 
+* enum status
+
 TODO MVP:
 * secure secrets (env vars ok, expiring tokens better)
 * db migration tool (flyway)

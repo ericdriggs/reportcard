@@ -7,43 +7,39 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.TreeMap;
 
 @Data
 public class ReportMetaData {
     private String org;
     private String repo;
-    private String app;
     private String branch;
-    private String buildIdentifier;
+    private String sha;
+    private HostApplicationPipeline hostApplicatiionPipeline;
+    private String externalExecutionId;
     private String stage;
 
     public void validateAndSetDefaults() {
-        Map<String,String> errors = new TreeMap<>();
-        if (StringUtils.isEmpty(org)) {
-            errors.put("org", "missing required field");
+        Map<String,String> errors = new LinkedHashMap<>();
+        addErrorIfMissing(errors, org, "org");
+        addErrorIfMissing(errors, repo, "repo");
+        addErrorIfMissing(errors, branch, "branch");
+        addErrorIfMissing(errors, sha, "sha");
+        if (hostApplicatiionPipeline.hasErrors()) {
+            errors.put("hostApplicationPipeline", String.join(", ", hostApplicatiionPipeline.getValidationErrors()));
         }
-        if (StringUtils.isEmpty(repo)) {
-            errors.put("repo", "missing required field");
-        }
-        if (StringUtils.isEmpty(app)) {
-            app = repo;
-        }
-        if (StringUtils.isEmpty(branch)) {
-            errors.put("branch", "missing required field");
-        }
-        if (StringUtils.isEmpty(buildIdentifier)) {
-            errors.put("buildIdentifier", "missing required field");
-        }
-        if (StringUtils.isEmpty(stage)) {
-            errors.put("stage", "missing required field");
-        }
-
+        addErrorIfMissing(errors, externalExecutionId, "externalExecutionId");
+        addErrorIfMissing(errors, stage, "stage");
         if (!errors.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "errors - " + Arrays.toString(errors.entrySet().toArray()));
         }
     }
 
+    protected void addErrorIfMissing(Map<String,String> errors,  String val, String variableName) {
+        if (StringUtils.isEmpty(val)) {
+            errors.put(variableName, "missing required field");
+        }
+    }
 }
