@@ -65,7 +65,7 @@ public class MetadataJsonController {
         return new ResponseEntity<>(reportCardService.getSha(org, repo, branch, sha), HttpStatus.OK);
     }
 
-    @GetMapping(path = "{org}/repos/{repo}/branches/{branch}/shas/{sha}", produces = "application/json")
+    @GetMapping(path = "{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts", produces = "application/json")
     public ResponseEntity<List<Context>> getContexts(
             @PathVariable String org, @PathVariable String repo, @PathVariable String branch, @PathVariable String sha) {
         return new ResponseEntity<>(reportCardService.getContexts(org, repo, branch, sha), HttpStatus.OK);
@@ -83,7 +83,7 @@ public class MetadataJsonController {
         return new ResponseEntity<>(reportCardService.getContext(org, repo, branch, sha, hostApplicationPipeline), HttpStatus.OK);
     }
 
-    @GetMapping(path = "{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts/{host}", produces = "application/json")
+    @GetMapping(path = "{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts/{host}/executions", produces = "application/json")
     public ResponseEntity<List<Execution>> getExecutions (
             @PathVariable String org,
             @PathVariable String repo,
@@ -121,7 +121,7 @@ public class MetadataJsonController {
         return new ResponseEntity<>(reportCardService.getStages(org, repo, branch, sha, hostApplicationPipeline, executionName), HttpStatus.OK);
     }
 
-    @GetMapping(path = "{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts/{host}/execution/{executionName}/stages", produces = "application/json")
+    @GetMapping(path = "{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts/{host}/execution/{executionName}/stages/{stage}", produces = "application/json")
     public ResponseEntity<Stage> getStage (
             @PathVariable String org,
             @PathVariable String repo,
