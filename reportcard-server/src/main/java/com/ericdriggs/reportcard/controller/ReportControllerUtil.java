@@ -34,6 +34,10 @@ public class ReportControllerUtil {
 
     private final ReportCardService reportCardService;
 
+    public TestResult getTestResult(Long testResultId) {
+        return reportCardService.getTestResult(testResultId);
+    }
+
     public TestResult doPostXml(ReportMetaData reportMetatData, MultipartFile[] files) {
         List<String> xmlStrings = new ArrayList<>();
         Arrays.stream(files)

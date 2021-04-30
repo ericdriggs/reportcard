@@ -22,6 +22,7 @@ import javax.sql.DataSource;
 @ComponentScan({ "com.ericdriggs.reportcard" })
 @EnableTransactionManagement
 @PropertySource("classpath:application.properties")
+//TODO: can this class be removed? Don't know if it's still doing anything
 public class PersistenceContext {
 
     @Autowired

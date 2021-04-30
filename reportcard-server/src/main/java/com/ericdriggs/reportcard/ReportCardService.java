@@ -258,7 +258,7 @@ public class ReportCardService {
                 .into(Execution.class);
     }
 
-    public Context getExecution(String org, String repo, String branch, String sha, HostApplicationPipeline hostApplicatiionPipeline, String executionExternalId) {
+    public Execution getExecution(String org, String repo, String branch, String sha, HostApplicationPipeline hostApplicatiionPipeline, String executionExternalId) {
         SelectConditionStep<Record> selectConditionStep = dsl.
                 select(EXECUTION.fields())
                 .from(EXECUTION
@@ -275,10 +275,10 @@ public class ReportCardService {
         addContextConditions(selectConditionStep, hostApplicatiionPipeline);
         selectConditionStep.and(EXECUTION.EXECUTION_EXTERNAL_ID.eq(executionExternalId));
 
-        Context ret =
+        Execution ret =
                 selectConditionStep
                         .fetchOne()
-                        .into(Context.class);
+                        .into(Execution.class);
         if (ret == null) {
             throwNotFound(org, repo, branch, sha, hostApplicatiionPipeline.toString(), executionExternalId);
         }
@@ -504,6 +504,38 @@ public class ReportCardService {
         return buildStagePath;
     }
 
+    public TestResult getTestResult(Long testResultId) {
+
+        TestResult testResult = dsl.
+                select(TEST_RESULT.fields())
+                .from(TEST_RESULT)
+                .where(TEST_RESULT.TEST_RESULT_ID.eq(testResultId))
+                .fetchOne().into(TestResult.class);
+
+
+        List<TestSuite> testSuites = dsl.
+                select(TEST_SUITE.fields())
+                .from(TEST_RESULT
+                        .join(TEST_SUITE).on(TEST_SUITE.TEST_RESULT_FK.eq(TEST_RESULT.TEST_RESULT_ID))
+                ).where(TEST_RESULT.TEST_RESULT_ID.eq(testResult.getTestResultId()))
+                .fetchInto(TestSuite.class);
+
+        testResult.setTestSuites(testSuites);
+
+        for (TestSuite testSuite : testResult.getTestSuites()) {
+            List<TestCase> testCases = dsl.
+                    select(TEST_CASE.fields())
+                    .from(TEST_CASE
+                            .join(TEST_SUITE).on(TEST_CASE.TEST_SUITE_FK.eq(TEST_SUITE.TEST_SUITE_ID))
+                    ).where(TEST_SUITE.TEST_SUITE_ID.eq(testSuite.getTestSuiteId()))
+                    .fetchInto(TestCase.class);
+
+            testSuite.setTestCases(testCases);
+        }
+        return testResult;
+    }
+
+    //TODO: refactor to use getTestResult
     public List<TestResult> getTestResults(Long stageId) {
 
         List<TestResult> testResults = dsl.
@@ -538,6 +570,9 @@ public class ReportCardService {
         }
         return testResults;
     }
+
+
+
 
     public TestResult insertTestResult(TestResult testResult) {
 
