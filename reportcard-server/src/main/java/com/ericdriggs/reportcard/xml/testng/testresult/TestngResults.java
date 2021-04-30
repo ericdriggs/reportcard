@@ -108,7 +108,7 @@ public class TestngResults {
      */
     public List<Suite> getSuite() {
         if (suite == null) {
-            suite = new ArrayList<Suite>();
+            suite = new ArrayList<>();
         }
         return this.suite;
     }

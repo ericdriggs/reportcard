@@ -1,17 +1,16 @@
 package com.ericdriggs.reportcard.controller;
 
-import com.ericdriggs.reportcard.gen.db.tables.pojos.Org;
 import com.ericdriggs.reportcard.model.ReportMetaData;
 import com.ericdriggs.reportcard.model.TestResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/v1/reports")
+@SuppressWarnings("unused")
 public class ReportController {
 
     @Autowired

@@ -17,19 +17,19 @@ import java.util.List;
 
 public class JunitConvertersUtil {
 
-    public static Converter<Testcase, TestCase> fromJunitToModelTestCase = new AbstractConverter<Testcase, TestCase>() {
+    public final static Converter<Testcase, TestCase> fromJunitToModelTestCase = new AbstractConverter<Testcase, TestCase>() {
         protected com.ericdriggs.reportcard.model.TestCase convert(com.ericdriggs.reportcard.xml.junit.Testcase source) {
             return doFromJunitToModelTestCase(source);
         }
     };
     
-    public static Converter<Testsuite, TestSuite> fromJunitToModelTestSuite = new AbstractConverter<Testsuite, TestSuite>() {
+    public final static Converter<Testsuite, TestSuite> fromJunitToModelTestSuite = new AbstractConverter<Testsuite, TestSuite>() {
         protected com.ericdriggs.reportcard.model.TestSuite convert(com.ericdriggs.reportcard.xml.junit.Testsuite source) {
             return doFromJunitToModelTestSuite(source);
         }
     };
 
-    public static Converter<Testsuites, TestResult> fromJunitToModelTestResult = new AbstractConverter<Testsuites, TestResult>() {
+    public final static Converter<Testsuites, TestResult> fromJunitToModelTestResult = new AbstractConverter<Testsuites, TestResult>() {
         protected com.ericdriggs.reportcard.model.TestResult convert(com.ericdriggs.reportcard.xml.junit.Testsuites source) {
             return doFromJunitToModelTestResult(source);
         }
@@ -125,7 +125,7 @@ public class JunitConvertersUtil {
         return modelTestResult;
     }
 
-    public static ModelMapper modelMapper = new ModelMapper();
+    public final static ModelMapper modelMapper = new ModelMapper();
     static {
         modelMapper.addConverter(fromJunitToModelTestCase);
         modelMapper.addConverter(fromJunitToModelTestSuite);

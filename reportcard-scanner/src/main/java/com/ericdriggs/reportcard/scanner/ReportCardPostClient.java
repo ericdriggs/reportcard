@@ -57,7 +57,7 @@ public class ReportCardPostClient {
                     File dir = new File(scannerPostRequest.getTestReportPath());
                     FileFilter fileFilter = new RegexFileFilter(scannerPostRequest.getTestReportRegex());
                     files = dir.listFiles(fileFilter);
-                    if (files.length == 0) {
+                    if (files == null || files.length == 0) {
                         Map<String, String> validationErrors = new HashMap<>();
                         validationErrors.put(ScannerArg.TEST_REPORT_PATH.name(), "no files found");
                         validationErrors.put(ScannerArg.TEST_REPORT_REGEX.name(), "no files found");
@@ -76,7 +76,14 @@ public class ReportCardPostClient {
             Response response = client.newCall(request).execute();
             //TOMAYBE: return instead of throw
             if (!response.isSuccessful()) {
-                throw new ResponseStatusException(HttpStatus.valueOf(response.code()), response.body().string());
+                String responseString = null;
+                {
+                    ResponseBody responseBody = response.body();
+                    if (responseBody != null) {
+                        responseString= responseBody.string();
+                    }
+                }
+                throw new ResponseStatusException(HttpStatus.valueOf(response.code()), responseString);
             }
             return response;
         } catch (IOException ex) {

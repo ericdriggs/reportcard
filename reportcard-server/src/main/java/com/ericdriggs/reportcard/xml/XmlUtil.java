@@ -13,16 +13,12 @@ public class XmlUtil {
     }
 
     public static String getXmlRootElementName(String xmlString) {
-        DocumentBuilder documentBuilder = null;
+        DocumentBuilder documentBuilder;
         try {
             documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             Document doc = documentBuilder.parse(xmlString);
             return doc.getDocumentElement().getTagName();
-        } catch (SAXException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (ParserConfigurationException e) {
+        } catch (SAXException | IOException | ParserConfigurationException e) {
             throw new RuntimeException(e);
         }
     }

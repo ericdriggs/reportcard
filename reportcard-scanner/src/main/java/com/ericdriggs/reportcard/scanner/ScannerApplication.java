@@ -24,9 +24,7 @@ public class ScannerApplication implements ApplicationRunner {
 		System.out.println("# OptionArgs: " + args.getOptionNames().size());
 		System.out.println("OptionArgs:");
 
-		args.getOptionNames().forEach(optionName -> {
-			System.out.println(optionName + "=" + args.getOptionValues(optionName));
-		});
+		args.getOptionNames().forEach(optionName -> System.out.println(optionName + "=" + args.getOptionValues(optionName)));
 
 		ScannerPostRequest scannerPostRequest = ScannerProperties.getReportPostPayload(args);
 

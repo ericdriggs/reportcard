@@ -25,13 +25,14 @@ import java.util.TreeMap;
 
 import static com.ericdriggs.reportcard.gen.db.Tables.*;
 
-@Service
-@SuppressWarnings("unused")
 /**
  * Main db service class.
  * For every method which returns a single object, if <code>NULL</code> will throw
  * <code>ResponseStatusException(HttpStatus.NOT_FOUND)</code>
  */
+
+@Service
+@SuppressWarnings({"unused", "ConstantConditions"})
 public class ReportCardService {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
@@ -40,7 +41,7 @@ public class ReportCardService {
     DSLContext dsl;
 
     @Autowired
-    private ModelMapper mapper;
+    private final ModelMapper mapper;
 
     final OrgDao orgDao;
     final RepoDao repoDao;
@@ -85,14 +86,13 @@ public class ReportCardService {
     }
 
     public Org getOrg(String org) {
-        Org ret = dsl.select().from(ORG)
+        Record record = dsl.select().from(ORG)
                 .where(ORG.ORG_NAME.eq(org))
-                .fetchOne()
-                .into(Org.class);
-        if (ret == null) {
+                .fetchOne();
+        if (record == null) {
             throwNotFound(org);
         }
-        return ret;
+        return record.into(Org.class);
 
     }
 
@@ -416,13 +416,13 @@ public class ReportCardService {
 
     /**
      * @param request a BuildStagePathRequest with the fields to match on
-     * @return
+     * @return the ExecutionStagePath for the provided report metadata.
      */
     public ExecutionStagePath getOrInsertExecutionStagePath(ReportMetaData request) {
         return getOrInsertExecutionStagePath(request, null);
     }
 
-    /**
+    /*
      * TODO: add test to simulate race condition on insert where buildstage path is missing data from db to ensure that
      *     1) insert failure is ignored/skipped and
      *     2) the existing data is returned
@@ -430,78 +430,78 @@ public class ReportCardService {
 
 
     /**
-     * prefer public method -- t
+     * prefer public method. The ability to inject an executionStagePath is for testing purposes.
      *
-     * @param request        a BuildStagePathRequest
-     * @param buildStagePath normally null, only values passed for testing
-     * @return
+     * @param request        a ReportMetaData
+     * @param executionStagePath normally null, only values passed for testing
+     * @return the ExecutionStagePath for the provided report metadata.
      */
-    ExecutionStagePath getOrInsertExecutionStagePath(ReportMetaData request, ExecutionStagePath buildStagePath) {
+    ExecutionStagePath getOrInsertExecutionStagePath(ReportMetaData request, ExecutionStagePath executionStagePath) {
 
         request.validateAndSetDefaults();
 
-        if (buildStagePath == null) {
-            buildStagePath = getExecutionStagePath(request);
+        if (executionStagePath == null) {
+            executionStagePath = getExecutionStagePath(request);
         }
 
-        if (buildStagePath.getOrg() == null) {
+        if (executionStagePath.getOrg() == null) {
             Org org = new Org()
                     .setOrgName(request.getOrg());
             orgDao.insert(org);
-            buildStagePath.setOrg(org);
+            executionStagePath.setOrg(org);
         }
 
-        if (buildStagePath.getRepo() == null) {
+        if (executionStagePath.getRepo() == null) {
             com.ericdriggs.reportcard.gen.db.tables.pojos.Repo repo = new com.ericdriggs.reportcard.gen.db.tables.pojos.Repo()
                     .setRepoName(request.getRepo())
-                    .setOrgFk(buildStagePath.getOrg().getOrgId());
+                    .setOrgFk(executionStagePath.getOrg().getOrgId());
             repoDao.insert(repo);
-            buildStagePath.setRepo(repo);
+            executionStagePath.setRepo(repo);
         }
 
 
-        if (buildStagePath.getBranch() == null) {
+        if (executionStagePath.getBranch() == null) {
             Branch branch = new Branch()
                     .setBranchName(request.getBranch())
-                    .setRepoFk(buildStagePath.getRepo().getRepoId());
+                    .setRepoFk(executionStagePath.getRepo().getRepoId());
             branchDao.insert(branch);
-            buildStagePath.setBranch(branch);
+            executionStagePath.setBranch(branch);
         }
 
-        if (buildStagePath.getSha() == null) {
+        if (executionStagePath.getSha() == null) {
             Sha sha = new Sha()
                     .setSha(request.getSha())
-                    .setBranchFk(buildStagePath.getBranch().getBranchId());
+                    .setBranchFk(executionStagePath.getBranch().getBranchId());
             shaDao.insert(sha);
-            buildStagePath.setSha(sha);
+            executionStagePath.setSha(sha);
         }
 
-        if (buildStagePath.getContext() == null) {
+        if (executionStagePath.getContext() == null) {
             Context context = new Context()
                     .setHost(request.getHostApplicatiionPipeline().getHost())
                     .setApplication(request.getHostApplicatiionPipeline().getApplication())
                     .setPipeline(request.getHostApplicatiionPipeline().getPipeline())
-                    .setShaFk(buildStagePath.getSha().getShaId());
+                    .setShaFk(executionStagePath.getSha().getShaId());
             contextDao.insert(context);
-            buildStagePath.setContext(context);
+            executionStagePath.setContext(context);
         }
 
-        if (buildStagePath.getExecution() == null) {
+        if (executionStagePath.getExecution() == null) {
             Execution execution = new Execution()
                     .setExecutionExternalId(request.getExternalExecutionId())
-                    .setContextFk(buildStagePath.getContext().getContextId());
+                    .setContextFk(executionStagePath.getContext().getContextId());
             executionDao.insert(execution);
-            buildStagePath.setExecution(execution);
+            executionStagePath.setExecution(execution);
         }
 
-        if (buildStagePath.getStage() == null) {
+        if (executionStagePath.getStage() == null) {
             Stage stage = new Stage()
                     .setStageName(request.getStage())
-                    .setExecutionFk(buildStagePath.getExecution().getExecutionId());
+                    .setExecutionFk(executionStagePath.getExecution().getExecutionId());
             stageDao.insert(stage);
-            buildStagePath.setStage(stage);
+            executionStagePath.setStage(stage);
         }
-        return buildStagePath;
+        return executionStagePath;
     }
 
     public TestResult getTestResult(Long testResultId) {

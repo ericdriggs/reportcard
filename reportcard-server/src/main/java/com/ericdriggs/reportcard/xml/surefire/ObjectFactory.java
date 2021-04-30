@@ -135,7 +135,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "", name = "skipped", scope = Testcase.class)
     public JAXBElement<Skipped> createTestsuiteTestcaseSkipped(Skipped value) {
-        return new JAXBElement<Skipped>(_TestsuiteTestcaseSkipped_QNAME, Skipped.class, Testcase.class, value);
+        return new JAXBElement<>(_TestsuiteTestcaseSkipped_QNAME, Skipped.class, Testcase.class, value);
     }
 
     /**
@@ -144,7 +144,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "", name = "error", scope = Testcase.class)
     public JAXBElement<Error> createTestsuiteTestcaseError(Error value) {
-        return new JAXBElement<Error>(_TestsuiteTestcaseError_QNAME, Error.class, Testcase.class, value);
+        return new JAXBElement<>(_TestsuiteTestcaseError_QNAME, Error.class, Testcase.class, value);
     }
 
 }

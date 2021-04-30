@@ -43,6 +43,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder(builderMethodName = "builderForClasses")
 @Data
+@SuppressWarnings({"", "rawtypes"})
 public class Classes {
 
     @XmlElement(name = "class")

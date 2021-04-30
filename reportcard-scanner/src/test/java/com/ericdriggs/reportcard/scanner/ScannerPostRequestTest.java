@@ -72,7 +72,7 @@ public class ScannerPostRequestTest {
 
     @Test
     public void constructorNoArgsTest() {
-        ScannerPostRequest scannerPostRequest = new ScannerPostRequest(new HashMap<ScannerArg, String>());
+        ScannerPostRequest scannerPostRequest = new ScannerPostRequest(new HashMap<>());
         assertNull(scannerPostRequest.getApp());
         assertNull(scannerPostRequest.getBranch());
         assertNull(scannerPostRequest.getBuildIdentifier());
@@ -173,7 +173,9 @@ public class ScannerPostRequestTest {
             scannerPostRequest.prepare();
         });
 
-        assertTrue(ex.getMessage().contains("400 BAD_REQUEST"));
+        String message = ex.getMessage();
+        assertNotNull(message);
+        assertTrue(message.contains("400 BAD_REQUEST"));
         final Map<String, String> validationErrors = ex.getValidationErrors();
         assertEquals(5, validationErrors.size());
         final Set<String> actualValidationErrorKeys = validationErrors.keySet();

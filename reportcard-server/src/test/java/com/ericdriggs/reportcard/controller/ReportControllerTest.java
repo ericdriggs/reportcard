@@ -19,8 +19,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Random;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(classes = ReportcardApplication.class,
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -38,12 +37,12 @@ public class ReportControllerTest {
         this.xmlSurefire = resourceReader.resourceAsString("classpath:format-samples/sample-surefire.xml");
     }
 
-    private ReportControllerUtil reportControllerUtil;
-    private ResourceReader resourceReader;
-    private ReportCardService reportCardService;
+    private final ReportControllerUtil reportControllerUtil;
+    private final ResourceReader resourceReader;
+    private final ReportCardService reportCardService;
 
-    private String xmlJunit;
-    private String xmlSurefire;
+    private final String xmlJunit;
+    private final String xmlSurefire;
 
     //TODO: move to other class
     @Test
@@ -72,7 +71,7 @@ public class ReportControllerTest {
         assertEquals(false, inserted.getHasSkip());
         assertEquals(true, inserted.getIsSuccess());
         assertNotNull(inserted.getTestResultCreated());
-        assertNotNull(LocalDateTime.now().isAfter(inserted.getTestResultCreated()));
+        assertTrue(LocalDateTime.now().isAfter(inserted.getTestResultCreated()));
         assertEquals(new BigDecimal("50.500"), inserted.getTime());
     }
 
@@ -93,11 +92,11 @@ public class ReportControllerTest {
         assertEquals(true, inserted.getHasSkip());
         assertEquals(false, inserted.getIsSuccess());
         assertNotNull(inserted.getTestResultCreated());
-        assertNotNull(LocalDateTime.now().isAfter(inserted.getTestResultCreated()));
+        assertTrue(LocalDateTime.now().isAfter(inserted.getTestResultCreated()));
         assertEquals(new BigDecimal("0.014"), inserted.getTime());
     }
 
-    private static Random random = new Random();
+    private final static Random random = new Random();
 
 
     static ReportMetaData generateRandomReportMetaData() {

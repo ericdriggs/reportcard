@@ -23,7 +23,7 @@ public class JunitFactoryUtil {
         }
 
         BigDecimal testcaseTime = BigDecimal.ZERO;
-        Integer testcaseCount = 0;
+        int testcaseCount = 0;
 
         List<com.ericdriggs.reportcard.xml.junit.Testcase> testcases = new ArrayList<>();
         for (TestStatus testStatus : testStatuses) {

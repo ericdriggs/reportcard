@@ -29,8 +29,8 @@ public class MyEmbeddedMysql {
     final String ddlsql;
     final String dmlsql;
 
-    private DriverManagerDataSource dataSource;
-    EmbeddedMysql mysqld;
+    final DriverManagerDataSource dataSource;
+    final EmbeddedMysql mysqld;
 
 
     public MyEmbeddedMysql(@Value("${db.driverClassName}") String driverClassName,
@@ -52,7 +52,7 @@ public class MyEmbeddedMysql {
         System.out.println("##### LOADING TestEmbeddedMysql #######");
 
 //        Integer port = FreePortFinder.findFreeLocalPort();
-        Integer port = 13306;
+        int port = 13306;
         MysqldConfig config = aMysqldConfig(v5_7_27)
                 .withCharset(UTF8)
                 .withUser(username, password)

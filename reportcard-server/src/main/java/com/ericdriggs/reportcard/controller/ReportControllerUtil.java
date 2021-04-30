@@ -17,9 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -85,7 +83,7 @@ public class ReportControllerUtil {
     public TestResult doPostXmlSurefire(ReportMetaData reportMetatData, MultipartFile[] files) {
 
         List<String> xmlStrings = new ArrayList<>();
-        for (MultipartFile file : Arrays.asList(files)) {
+        for (MultipartFile file : files) {
             xmlStrings.add(file.toString());
         }
         return doPostXmlSurefire(reportMetatData, xmlStrings);
@@ -98,14 +96,6 @@ public class ReportControllerUtil {
         ExecutionStagePath buildStagePath = reportCardService.getOrInsertExecutionStagePath(reportMetatData);
         testResult.setStageFk(buildStagePath.getStage().getStageId());
         return reportCardService.insertTestResult(testResult);
-    }
-
-    public static String fileToString(File file) {
-        try {
-            return new String(Files.readAllBytes(file.toPath()));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public static String fileToString(MultipartFile file) {

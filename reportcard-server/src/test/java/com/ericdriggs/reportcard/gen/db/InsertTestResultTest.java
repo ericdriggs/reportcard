@@ -135,7 +135,7 @@ public class InsertTestResultTest extends AbstractDbTest {
 
     private TestResult getInsertableTestResult() {
 
-        ExecutionStagePath bsp = null;
+        ExecutionStagePath bsp;
         {
             ReportMetaData reportMetatData = getReportMetaData();
             bsp = reportCardService.getOrInsertExecutionStagePath(reportMetatData);
