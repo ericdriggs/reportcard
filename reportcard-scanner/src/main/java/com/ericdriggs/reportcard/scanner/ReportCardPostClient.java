@@ -69,7 +69,7 @@ public class ReportCardPostClient {
                     requestBuilder.addFormDataPart("file", file.getName(), RequestBody.create(
                             file, MediaType.parse("text/xml")));
                 }
-                request = new Request.Builder().url(scannerPostRequest.getHost())
+                request = new Request.Builder().url(scannerPostRequest.getReportCardHost())
                         .post(requestBuilder.build()).build();
             }
 

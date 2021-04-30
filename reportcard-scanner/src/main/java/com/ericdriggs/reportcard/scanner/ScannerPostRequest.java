@@ -10,15 +10,21 @@ import static com.ericdriggs.reportcard.scanner.ScannerArg.getToken;
 @Data
 public class ScannerPostRequest {
 
-    private String host;
-    private String user;
-    private String pass;
+    private String reportCardHost;
+    private String reportCardUser;
+    private String reportCardPass;
     private String org;
     private String repo;
-    private String app;
     private String branch;
-    private String buildIdentifier;
+    private String sha;
+
+    private String contextHost;
+    private String contextApplication;
+    private String contextPipeline;
+
+    private String executionExternalId;
     private String stage;
+
     private String testReportPath;
     private String testReportRegex;
     private Map<String, String> externalLinks;
@@ -29,13 +35,13 @@ public class ScannerPostRequest {
     public ScannerPostRequest(Map<ScannerArg, String> argMap) {
 
         if (argMap.get(ScannerArg.REPORTCARD_HOST) != null) {
-            this.host = argMap.get(ScannerArg.REPORTCARD_HOST);
+            this.reportCardHost = argMap.get(ScannerArg.REPORTCARD_HOST);
         }
         if (argMap.get(ScannerArg.REPORTCARD_USER) != null) {
-            this.user = argMap.get(ScannerArg.REPORTCARD_USER);
+            this.reportCardUser = argMap.get(ScannerArg.REPORTCARD_USER);
         }
         if (argMap.get(ScannerArg.REPORTCARD_PASS) != null) {
-            this.pass = argMap.get(ScannerArg.REPORTCARD_PASS);
+            this.reportCardPass = argMap.get(ScannerArg.REPORTCARD_PASS);
         }
 
         if (argMap.get(ScannerArg.SCM_ORG) != null) {
@@ -47,18 +53,27 @@ public class ScannerPostRequest {
         if (argMap.get(ScannerArg.SCM_BRANCH) != null) {
             this.branch = argMap.get(ScannerArg.SCM_BRANCH);
         }
-
-
-        if (argMap.get(ScannerArg.BUILD_APP) != null) {
-            this.app = argMap.get(ScannerArg.BUILD_APP);
-        }
-        if (argMap.get(ScannerArg.BUILD_IDENTIFIER) != null) {
-            this.buildIdentifier = argMap.get(ScannerArg.BUILD_IDENTIFIER);
-        }
-        if (argMap.get(ScannerArg.BUILD_STAGE) != null) {
-            this.stage = argMap.get(ScannerArg.BUILD_STAGE);
+        if (argMap.get(ScannerArg.SCM_SHA) != null) {
+            this.sha = argMap.get(ScannerArg.SCM_SHA);
         }
 
+
+        if (argMap.get(ScannerArg.CONTEXT_HOST) != null) {
+            this.contextHost = argMap.get(ScannerArg.CONTEXT_HOST);
+        }
+        if (argMap.get(ScannerArg.CONTEXT_APPLICATION) != null) {
+            this.contextApplication = argMap.get(ScannerArg.CONTEXT_APPLICATION);
+        }
+        if (argMap.get(ScannerArg.CONTEXT_PIPELINE) != null) {
+            this.contextPipeline = argMap.get(ScannerArg.CONTEXT_PIPELINE);
+        }
+
+        if (argMap.get(ScannerArg.EXECUTION_EXTERNAL_ID) != null) {
+            this.executionExternalId = argMap.get(ScannerArg.EXECUTION_EXTERNAL_ID);
+        }
+        if (argMap.get(ScannerArg.STAGE) != null) {
+            this.stage = argMap.get(ScannerArg.STAGE);
+        }
 
         if (argMap.get(ScannerArg.TEST_REPORT_PATH) != null) {
             this.testReportPath = argMap.get(ScannerArg.TEST_REPORT_PATH);
@@ -67,18 +82,14 @@ public class ScannerPostRequest {
             this.testReportRegex = argMap.get(ScannerArg.TEST_REPORT_REGEX);
         }
 
-        this.externalLinks = buildExternalLinkMap(argMap.get(ScannerArg.EXTERNAL_LINKS), argMap);
+        //this.externalLinks = buildExternalLinkMap(argMap.get(ScannerArg.EXTERNAL_LINKS), argMap);
 
     }
 
     public void prepare() {
 
-        //Set defaults for optional values
-        if (StringUtils.isEmpty(app)) {
-            app = repo;
-        }
-        if (StringUtils.isEmpty(buildIdentifier)) {
-            buildIdentifier = UUID.randomUUID().toString();
+        if (StringUtils.isEmpty(executionExternalId)) {
+            executionExternalId = UUID.randomUUID().toString();
         }
         if (StringUtils.isEmpty(testReportRegex)) {
             testReportRegex = ".*[.]xml";
@@ -137,18 +148,18 @@ public class ScannerPostRequest {
 
     }
 
-    protected String replaceTokens(String externalLinks, Map<ScannerArg, String> argMap) {
+    protected String replaceTokens(String externalLinksString, Map<ScannerArg, String> argMap) {
         for (ScannerArg scannerArg : ScannerArg.values()) {
             if (scannerArg == ScannerArg.EXTERNAL_LINKS) {
                 continue;
             }
 
             final String token = getToken(scannerArg);
-            if (externalLinks.contains(token)) {
-                externalLinks = externalLinks.replace(token, argMap.get(scannerArg));
+            if (externalLinksString.contains(token)) {
+                externalLinksString = externalLinksString.replace(token, argMap.get(scannerArg));
             }
         }
-        return externalLinks;
+        return externalLinksString;
     }
 
 
