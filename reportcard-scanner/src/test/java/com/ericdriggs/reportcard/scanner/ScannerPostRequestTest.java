@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
-import static com.ericdriggs.reportcard.scanner.ScannerArg.getToken;
+import static com.ericdriggs.reportcard.scanner.ScannerArg.EXTERNAL_LINKS;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ScannerPostRequestTest {
@@ -16,7 +16,7 @@ public class ScannerPostRequestTest {
             argMap.put(scannerArg, scannerArg.name());
         }
         argMap.put(ScannerArg.EXTERNAL_LINKS,
-                "https://" + getDummyRelativePath());
+                "https://" + EXTERNAL_LINKS.name());
         return argMap;
     }
 
@@ -26,24 +26,8 @@ public class ScannerPostRequestTest {
             argMap.put(scannerArg, scannerArg.name());
         }
         argMap.put(ScannerArg.EXTERNAL_LINKS,
-                "foo|https://" + getDummyRelativePath());
+                "foo|https://" + EXTERNAL_LINKS.name());
         return argMap;
-    }
-
-    public String getDummyRelativePath() {
-        return getToken(ScannerArg.REPORTCARD_USER) + ":"
-                + getToken(ScannerArg.REPORTCARD_PASS) + "@"
-                + getToken(ScannerArg.REPORTCARD_HOST) + "/"
-                + getToken(ScannerArg.SCM_ORG) + "/"
-                + getToken(ScannerArg.SCM_REPO) + "/"
-                + getToken(ScannerArg.SCM_BRANCH) + "/"
-                + getToken(ScannerArg.SCM_REPO) + "/"
-                + getToken(ScannerArg.CONTEXT_HOST) + "/"
-                + getToken(ScannerArg.CONTEXT_APPLICATION) + "/"
-                + getToken(ScannerArg.CONTEXT_PIPELINE) + "/"
-                + getToken(ScannerArg.EXECUTION_EXTERNAL_ID) + "/"
-                + getToken(ScannerArg.STAGE) + "/"
-                + getToken(ScannerArg.EXTERNAL_LINKS) + "/";
     }
 
     private Map<ScannerArg, String> getRequiredArgs() {
@@ -96,10 +80,7 @@ public class ScannerPostRequestTest {
 
        validateAllArgsFixture(scannerPostRequest);
 
-        assertEquals(Collections.singletonMap("1", "https://REPORTCARD_USER:REPORTCARD_PASS@REPORTCARD_HOST/" +
-                        "SCM_ORG/SCM_REPO/SCM_BRANCH/" +
-                        "BUILD_APP/BUILD_STAGE/BUILD_IDENTIFIER/" +
-                        "<EXTERNAL_LINKS>/"),
+        assertEquals(Collections.singletonMap("1", "https://EXTERNAL_LINKS"),
                 scannerPostRequest.getExternalLinks());
 
     }
@@ -110,10 +91,7 @@ public class ScannerPostRequestTest {
 
         validateAllArgsFixture(scannerPostRequest);
 
-        assertEquals(Collections.singletonMap("foo", "https://REPORTCARD_USER:REPORTCARD_PASS@REPORTCARD_HOST/" +
-                        "SCM_ORG/SCM_REPO/SCM_BRANCH/" +
-                        "BUILD_APP/BUILD_STAGE/BUILD_IDENTIFIER/" +
-                        "<EXTERNAL_LINKS>/"),
+        assertEquals(Collections.singletonMap("foo","https://EXTERNAL_LINKS"),
                 scannerPostRequest.getExternalLinks());
 
     }

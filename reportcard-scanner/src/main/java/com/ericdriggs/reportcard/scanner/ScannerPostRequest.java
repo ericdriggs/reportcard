@@ -82,7 +82,7 @@ public class ScannerPostRequest {
             this.testReportRegex = argMap.get(ScannerArg.TEST_REPORT_REGEX);
         }
 
-        //this.externalLinks = buildExternalLinkMap(argMap.get(ScannerArg.EXTERNAL_LINKS), argMap);
+        this.externalLinks = buildExternalLinkMap(argMap.get(ScannerArg.EXTERNAL_LINKS), argMap);
 
     }
 
