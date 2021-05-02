@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+//TODO: add reports endpoint after stages
+//TODO: return not only current level but level below in all results (e.g if ask for org, list all of its repos)
 @RestController
 @RequestMapping("/api/v1/orgs")
 @SuppressWarnings("unused")
@@ -23,7 +25,7 @@ public class MetadataJsonController {
     }
 
     @GetMapping(path = "", produces = "application/json")
-    public ResponseEntity<List<Org>> getOrgs(@PathVariable String org) {
+    public ResponseEntity<List<Org>> getOrgs() {
         return new ResponseEntity<>(reportCardService.getOrgs(), HttpStatus.OK);
     }
 
@@ -95,20 +97,20 @@ public class MetadataJsonController {
         return new ResponseEntity<>(reportCardService.getExecutions(org, repo, branch, sha, hostApplicationPipeline), HttpStatus.OK);
     }
 
-    @GetMapping(path = "{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts/{host}/execution/{executionName}", produces = "application/json")
+    @GetMapping(path = "{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts/{host}/executions/{externalExecutionId}", produces = "application/json")
     public ResponseEntity<Execution> getExecution (
             @PathVariable String org,
             @PathVariable String repo,
             @PathVariable String branch,
             @PathVariable String sha,
             @PathVariable String host,
-            @PathVariable String executionName,
+            @PathVariable String externalExecutionId,
             @RequestParam String application,  @RequestParam String pipeline) {
         HostApplicationPipeline hostApplicationPipeline  = new HostApplicationPipeline(host, application,  pipeline);
-        return new ResponseEntity<>(reportCardService.getExecution(org, repo, branch, sha, hostApplicationPipeline, executionName), HttpStatus.OK);
+        return new ResponseEntity<>(reportCardService.getExecution(org, repo, branch, sha, hostApplicationPipeline, externalExecutionId), HttpStatus.OK);
     }
 
-    @GetMapping(path = "{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts/{host}/execution/{executionName}/stages", produces = "application/json")
+    @GetMapping(path = "{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts/{host}/executions/{executionName}/stages", produces = "application/json")
     public ResponseEntity<List<Stage>> getStages (
             @PathVariable String org,
             @PathVariable String repo,
@@ -121,7 +123,7 @@ public class MetadataJsonController {
         return new ResponseEntity<>(reportCardService.getStages(org, repo, branch, sha, hostApplicationPipeline, executionName), HttpStatus.OK);
     }
 
-    @GetMapping(path = "{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts/{host}/execution/{executionName}/stages/{stage}", produces = "application/json")
+    @GetMapping(path = "{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts/{host}/executions/{executionName}/stages/{stage}", produces = "application/json")
     public ResponseEntity<Stage> getStage (
             @PathVariable String org,
             @PathVariable String repo,
@@ -134,6 +136,8 @@ public class MetadataJsonController {
         HostApplicationPipeline hostApplicationPipeline  = new HostApplicationPipeline(host, application,  pipeline);
         return new ResponseEntity<>(reportCardService.getStage(org, repo, branch, sha, hostApplicationPipeline, executionName, stage), HttpStatus.OK);
     }
+
+
 
 
 }

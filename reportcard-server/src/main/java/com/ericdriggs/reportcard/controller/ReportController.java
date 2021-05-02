@@ -21,20 +21,20 @@ public class ReportController {
     private final ReportControllerUtil reportControllerUtil;
 
     @PostMapping("")
-    public ResponseEntity<TestResult> postXml(@RequestBody ReportMetaData reportMetatData, @RequestParam("files") MultipartFile[] files) {
-        TestResult inserted = reportControllerUtil.doPostXml(reportMetatData, files);
+    public ResponseEntity<TestResult> postXml(@RequestPart("reportMetaData") ReportMetaData reportMetaData, @RequestParam("files") MultipartFile[] files) {
+        TestResult inserted = reportControllerUtil.doPostXml(reportMetaData, files);
         return new ResponseEntity<>(inserted, HttpStatus.OK);
     }
 
     @PostMapping("junit")
-    public ResponseEntity<TestResult> postXmlJunit(@RequestBody ReportMetaData reportMetatData, @RequestParam("file") MultipartFile file) {
-        TestResult inserted = reportControllerUtil.doPostXmlJunit(reportMetatData, file);
+    public ResponseEntity<TestResult> postXmlJunit(ReportMetaData reportMetaData, @RequestParam("file") MultipartFile file) {
+        TestResult inserted = reportControllerUtil.doPostXmlJunit(reportMetaData, file);
         return new ResponseEntity<>(inserted, HttpStatus.OK);
     }
 
     @PostMapping("surefire")
-    public ResponseEntity<TestResult> postXmlSurefire(@RequestBody ReportMetaData reportMetatData, @RequestParam("files") MultipartFile[] files) {
-        TestResult inserted = reportControllerUtil.doPostXmlSurefire(reportMetatData, files);
+    public ResponseEntity<TestResult> postXmlSurefire(ReportMetaData reportMetaData, @RequestParam("files") MultipartFile[] files) {
+        TestResult inserted = reportControllerUtil.doPostXmlSurefire(reportMetaData, files);
         return new ResponseEntity<>(inserted, HttpStatus.OK);
     }
 

@@ -26,6 +26,10 @@ public class ReportMetaData {
         addErrorIfMissing(errors, repo, "repo");
         addErrorIfMissing(errors, branch, "branch");
         addErrorIfMissing(errors, sha, "sha");
+        if (hostApplicatiionPipeline == null)  {
+            errors.put("hostApplicatiionPipeline", "missing required field");
+        }
+
         if (hostApplicatiionPipeline.hasErrors()) {
             errors.put("hostApplicationPipeline", String.join(", ", hostApplicatiionPipeline.getValidationErrors()));
         }

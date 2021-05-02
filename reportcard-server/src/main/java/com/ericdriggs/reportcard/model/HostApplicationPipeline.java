@@ -3,6 +3,7 @@ package com.ericdriggs.reportcard.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import org.jooq.tools.StringUtils;
 
@@ -11,6 +12,7 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class HostApplicationPipeline {
     @NonNull
     private String host;
@@ -38,4 +40,5 @@ public class HostApplicationPipeline {
         }
         return errors;
     }
+
 }
