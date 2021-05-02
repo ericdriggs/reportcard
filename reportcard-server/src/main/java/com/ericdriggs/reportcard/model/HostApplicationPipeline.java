@@ -1,5 +1,6 @@
 package com.ericdriggs.reportcard.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NonNull;
@@ -16,14 +17,17 @@ public class HostApplicationPipeline {
     private String application;
     private String pipeline;
 
+    @JsonIgnore
     public boolean isValid(){
         return getValidationErrors().isEmpty();
     }
 
+    @JsonIgnore
     public boolean hasErrors(){
         return !isValid();
     }
 
+    @JsonIgnore
     public List<String> getValidationErrors() {
         List<String> errors = new ArrayList<>();
         if (StringUtils.isEmpty(host)) {
