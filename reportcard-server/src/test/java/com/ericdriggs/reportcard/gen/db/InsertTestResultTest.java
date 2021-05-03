@@ -11,6 +11,7 @@ import org.springframework.util.CollectionUtils;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -66,9 +67,9 @@ public class InsertTestResultTest extends AbstractDbTest {
         assertValues(testResultInsert);
         assertIdsandFks(testResultInsert);
 
-        final List<TestResult> testResultsGet = reportCardService.getTestResults(testResultBefore.getStageFk());
+        final Set<TestResult> testResultsGet = reportCardService.getTestResults(testResultBefore.getStageFk());
         assertEquals(1, testResultsGet.size());
-        final TestResult testResultGet = testResultsGet.get(0);
+        final TestResult testResultGet = testResultsGet.iterator().next();
         assertValues(testResultGet);
         assertIdsandFks(testResultGet);
     }

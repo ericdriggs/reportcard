@@ -1,5 +1,6 @@
 package com.ericdriggs.reportcard.model;
 
+import com.ericdriggs.reportcard.gen.db.tables.pojos.Context;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -41,4 +42,7 @@ public class HostApplicationPipeline {
         return errors;
     }
 
+    public static HostApplicationPipeline fromContext(Context context) {
+        return new HostApplicationPipeline(context.getHost(), context.getApplication(), context.getPipeline());
+    }
 }

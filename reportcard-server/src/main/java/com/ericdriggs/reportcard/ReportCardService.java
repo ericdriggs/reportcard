@@ -3,6 +3,7 @@ package com.ericdriggs.reportcard;
 import com.ericdriggs.reportcard.gen.db.tables.daos.*;
 import com.ericdriggs.reportcard.gen.db.tables.pojos.*;
 import com.ericdriggs.reportcard.gen.db.tables.records.*;
+import com.ericdriggs.reportcard.model.Comparators;
 import com.ericdriggs.reportcard.model.TestCase;
 import com.ericdriggs.reportcard.model.TestResult;
 import com.ericdriggs.reportcard.model.TestSuite;
@@ -111,7 +112,7 @@ public class ReportCardService {
 
         Map<Org, Set<Repo>> orgRepoMap = new ConcurrentSkipListMap<>(Comparators.ORG_CASE_INSENSITIVE_ORDER);
         Set<Org> orgs = getOrgs();
-        orgs.stream().forEach(org -> {
+        orgs.parallelStream().forEach(org -> {
             orgRepoMap.put(org, getRepos(org.getOrgName()));
         });
         return orgRepoMap;
@@ -140,7 +141,7 @@ public class ReportCardService {
     public Map<Repo, Set<Branch>> getReposBranches(String orgName) {
         Set<Repo> repos = getRepos(orgName);
         Map<Repo,Set<Branch>> repoBranchMap= new ConcurrentSkipListMap<>(Comparators.REPO_CASE_INSENSITIVE_ORDER);
-        repos.stream().forEach( repo-> {
+        repos.parallelStream().forEach( repo-> {
             repoBranchMap.put(repo, getBranches(orgName, repo.getRepoName()));
         });
         return repoBranchMap;
@@ -186,7 +187,7 @@ public class ReportCardService {
     public Map<Branch,Set<Sha>> getBranchesShas(String orgName, String repoName) {
         Set<Branch> branches = getBranches(orgName, repoName);
         Map<Branch,Set<Sha>> branchShaMap = new ConcurrentSkipListMap<>(Comparators.BRANCH_CASE_INSENSITIVE_ORDER);
-        branches.stream().forEach(branch ->
+        branches.parallelStream().forEach(branch ->
                         branchShaMap.put(branch, getShas(orgName, repoName, branch.getBranchName()))
                 );
         return branchShaMap;
@@ -234,7 +235,7 @@ public class ReportCardService {
     public Map<Sha,Set<Context>> getShasContexts(String orgName, String repoName, String branchName) {
         Set<Sha> shas = getShas(orgName, repoName, branchName);
         Map<Sha,Set<Context>> shaContextMap  = new TreeMap<>(Comparators.SHA);
-        shas.stream().forEach(sha ->
+        shas.parallelStream().forEach(sha ->
                 shaContextMap.put(sha, getContexts(orgName, repoName, branchName, sha.getSha()))
                 );
         return shaContextMap;
@@ -245,7 +246,7 @@ public class ReportCardService {
         return Collections.singletonMap(sha, getContexts(orgName, repoName, branchName, shaString));
     }
 
-    public Set<Context> getContexts(String org, String repo, String branch, String sha) {
+    public Set<Context> getContexts(String orgName, String repoName, String branchName, String shaString) {
         Set<Context> contexts = new TreeSet<>(Comparators.CONTEXT_CASE_INSENSITIVE_ORDER);
         contexts.addAll(dsl.
                 select(CONTEXT.fields())
@@ -254,10 +255,10 @@ public class ReportCardService {
                         .join(BRANCH).on(SHA.BRANCH_FK.eq(BRANCH.BRANCH_ID))
                         .join(REPO).on(BRANCH.REPO_FK.eq(REPO.REPO_ID))
                         .join(ORG).on(REPO.ORG_FK.eq(ORG.ORG_ID)))
-                .where(ORG.ORG_NAME.eq(org))
-                .and(REPO.REPO_NAME.eq(repo))
-                .and(BRANCH.BRANCH_NAME.eq(branch))
-                .and(SHA.SHA_.eq(sha))
+                .where(ORG.ORG_NAME.eq(orgName))
+                .and(REPO.REPO_NAME.eq(repoName))
+                .and(BRANCH.BRANCH_NAME.eq(branchName))
+                .and(SHA.SHA_.eq(shaString))
                 .fetch()
                 .into(Context.class));
         return contexts;
@@ -279,7 +280,7 @@ public class ReportCardService {
         }
     }
 
-    public Context getContext(String org, String repo, String branch, String sha, HostApplicationPipeline hostApplicatiionPipeline) {
+    public Context getContext(String orgName, String repoName, String branchName, String shaString, HostApplicationPipeline hostApplicatiionPipeline) {
         SelectConditionStep<Record> selectConditionStep = dsl.
                 select(CONTEXT.fields())
                 .from(CONTEXT
@@ -287,9 +288,9 @@ public class ReportCardService {
                         .join(BRANCH).on(SHA.BRANCH_FK.eq(BRANCH.BRANCH_ID))
                         .join(REPO).on(BRANCH.REPO_FK.eq(REPO.REPO_ID))
                         .join(ORG).on(REPO.ORG_FK.eq(ORG.ORG_ID)))
-                .where(ORG.ORG_NAME.eq(org))
-                .and(REPO.REPO_NAME.eq(repo))
-                .and(SHA.SHA_.eq(sha));
+                .where(ORG.ORG_NAME.eq(orgName))
+                .and(REPO.REPO_NAME.eq(repoName))
+                .and(SHA.SHA_.eq(shaString));
 
         addContextConditions(selectConditionStep, hostApplicatiionPipeline);
 
@@ -298,13 +299,30 @@ public class ReportCardService {
                 .fetchOne()
                 .into(Context.class);
         if (ret == null) {
-            throwNotFound(org, repo, branch, sha, hostApplicatiionPipeline.toString());
+            throwNotFound(orgName, repoName, branchName, shaString, hostApplicatiionPipeline.toString());
         }
         return ret;
     }
 
 
-    public List<Execution> getExecutions(String org, String repo, String branch, String sha, HostApplicationPipeline hostApplicatiionPipeline) {
+    public Map<Context, Set<Execution>> getContextsExecutions(String orgName, String repoName, String branchName, String shaString) {
+        Set<Context> contexts = getContexts(orgName, repoName, branchName, shaString);
+        Map<Context, Set<Execution>> contextExecutionsMap = new ConcurrentSkipListMap<>(Comparators.CONTEXT_CASE_INSENSITIVE_ORDER);
+        contexts.parallelStream().forEach(context -> {
+            contextExecutionsMap.put(context, getExecutions(orgName, repoName, branchName, shaString, HostApplicationPipeline.fromContext(context)));
+        });
+        return contextExecutionsMap;
+    }
+
+    public Map<Context,Set<Execution>> getContextExecutions(String orgName, String repoName, String branchName, String shaString, HostApplicationPipeline hostApplicationPipeline) {
+        Context context = getContext(orgName,repoName,branchName,shaString, hostApplicationPipeline);
+        Map<Context,Set<Execution>> contextExecutionsMap = new ConcurrentSkipListMap<>(Comparators.CONTEXT_CASE_INSENSITIVE_ORDER);
+        return Collections.singletonMap(context, getExecutions(orgName,   repoName,  branchName, shaString, hostApplicationPipeline));
+    }
+
+    //
+
+    public Set<Execution> getExecutions(String org, String repo, String branch, String sha, HostApplicationPipeline hostApplicatiionPipeline) {
         SelectConditionStep<Record> selectConditionStep =  dsl.
                 select(EXECUTION.fields())
                 .from(EXECUTION
@@ -319,9 +337,12 @@ public class ReportCardService {
                 .and(SHA.SHA_.eq(sha));
 
         addContextConditions(selectConditionStep, hostApplicatiionPipeline);
-        return selectConditionStep
+
+        Set<Execution> executions = new TreeSet<>(Comparators.EXECUTION_CASE_INSENSITIVE_ORDER);
+        executions.addAll(selectConditionStep
                 .fetch()
-                .into(Execution.class);
+                .into(Execution.class));
+        return executions;
     }
 
     public Execution getExecution(String org, String repo, String branch, String sha, HostApplicationPipeline hostApplicatiionPipeline, String executionExternalId) {
@@ -351,7 +372,21 @@ public class ReportCardService {
         return ret;
     }
 
-    public List<Stage> getStages(String org, String repo, String branch, String sha, HostApplicationPipeline hostApplicatiionPipeline, String executionExternalId) {
+    public Map<Execution,Set<Stage>> getExecutionsStages(String orgName, String repoName, String branchName, String shaString, HostApplicationPipeline hostApplicationPipeline) {
+        Set<Execution> contexts = getExecutions(orgName,repoName,branchName,shaString, hostApplicationPipeline);
+        Map<Execution,Set<Stage>> stageExecutionMap = new ConcurrentSkipListMap<>(Comparators.EXECUTION_CASE_INSENSITIVE_ORDER);
+        contexts.parallelStream().forEach(  execution -> {
+            stageExecutionMap.put(execution, getStages(orgName,   repoName,  branchName, shaString, hostApplicationPipeline, execution.getExecutionExternalId()));
+        });
+        return stageExecutionMap;
+    }
+
+    public Map<Execution,Set<Stage>> getExecutionStages(String orgName, String repoName, String branchName, String shaString, HostApplicationPipeline hostApplicationPipeline, String executionExternalId) {
+        Execution execution = getExecution(orgName,repoName,branchName,shaString, hostApplicationPipeline, executionExternalId);
+        return Collections.singletonMap(execution, getStages(orgName,   repoName,  branchName, shaString, hostApplicationPipeline,executionExternalId));
+    }
+
+    public Set<Stage> getStages(String org, String repo, String branch, String sha, HostApplicationPipeline hostApplicatiionPipeline, String executionExternalId) {
         SelectConditionStep<Record> selectConditionStep =  dsl.
                 select(STAGE.fields())
                 .from(STAGE
@@ -368,9 +403,12 @@ public class ReportCardService {
 
         addContextConditions(selectConditionStep, hostApplicatiionPipeline);
         selectConditionStep.and(EXECUTION.EXECUTION_EXTERNAL_ID.eq(executionExternalId));
-        return selectConditionStep
+
+        Set<Stage>stages = new TreeSet<>(Comparators.STAGE_CASE_INSENSITIVE_ORDER);
+        stages.addAll (selectConditionStep
                 .fetch()
-                .into(Stage.class);
+                .into(Stage.class));
+        return stages;
     }
 
     public Stage getStage(String org, String repo, String branch, String sha, HostApplicationPipeline hostApplicatiionPipeline, String executionExternalId, String stage) {
@@ -400,6 +438,20 @@ public class ReportCardService {
             throwNotFound(org, repo, branch, sha, hostApplicatiionPipeline.toString(), executionExternalId, stage);
         }
         return ret;
+    }
+
+    public Map<Stage,Set<TestResult>> getStagesTestResults(String orgName, String repoName, String branchName, String shaString, HostApplicationPipeline hostApplicationPipeline, String executionExternalId) {
+        Set<Stage> stages = getStages(orgName,repoName,branchName,shaString, hostApplicationPipeline, executionExternalId);
+        Map<Stage,Set<TestResult>> stageTestResultsMap = new ConcurrentSkipListMap<>(Comparators.STAGE_CASE_INSENSITIVE_ORDER);
+        stages.parallelStream().forEach(  stage -> {
+            stageTestResultsMap.put(stage, getTestResults(stage.getStageId()));
+        });
+        return stageTestResultsMap;
+    }
+
+    public Map<Stage,Set<TestResult>> getStageTestResults(String orgName, String repoName, String branchName, String shaString, HostApplicationPipeline hostApplicationPipeline, String executionExternalId, String stageName) {
+        Stage stage = getStage(orgName,repoName,branchName,shaString, hostApplicationPipeline, executionExternalId, stageName);
+        return Collections.singletonMap(stage, getTestResults(stage.getStageId()));
     }
 
     protected void throwNotFound(String... args) {
@@ -601,15 +653,16 @@ public class ReportCardService {
         return testResult;
     }
 
-    //TODO: refactor to use getTestResult
-    public List<TestResult> getTestResults(Long stageId) {
+    public Set<TestResult> getTestResults(Long stageId) {
 
-        List<TestResult> testResults = dsl.
+        Set<TestResult> testResults = new TreeSet<>(Comparators.TEST_RESULT_CASE_INSENSITIVE_ORDER);
+        testResults.addAll(
+                dsl.
                 select(TEST_RESULT.fields())
                 .from(STAGE
                         .join(TEST_RESULT).on(TEST_RESULT.STAGE_FK.eq(STAGE.STAGE_ID))
                 ).where(STAGE.STAGE_ID.eq(stageId))
-                .fetchInto(TestResult.class);
+                .fetchInto(TestResult.class));
 
         for (TestResult testResult : testResults) {
 

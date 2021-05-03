@@ -1,6 +1,5 @@
 package com.ericdriggs.reportcard.controller;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -11,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.ericdriggs.reportcard.model.TestResult;
 
 //TODO: add reports endpoint after stages
 //TODO: return not only current level but level below in all results (e.g if ask for org, list all of its repos)
@@ -70,13 +70,13 @@ public class MetadataJsonController {
     }
 
     @GetMapping(path = "{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts", produces = "application/json")
-    public ResponseEntity<Set<Context>> getContexts(
+    public ResponseEntity<Map<Context,Set<Execution>>> getContexts(
             @PathVariable String org, @PathVariable String repo, @PathVariable String branch, @PathVariable String sha) {
-        return new ResponseEntity<>(reportCardService.getContexts(org, repo, branch, sha), HttpStatus.OK);
+        return new ResponseEntity<>(reportCardService.getContextsExecutions(org, repo, branch, sha), HttpStatus.OK);
     }
 
     @GetMapping(path = "{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts/{host}", produces = "application/json")
-    public ResponseEntity<Context> getContext (
+    public ResponseEntity<Map<Context,Set<Execution>>> getContext (
             @PathVariable String org,
             @PathVariable String repo,
             @PathVariable String branch,
@@ -84,11 +84,11 @@ public class MetadataJsonController {
             @PathVariable String host,
             @RequestParam String application,  @RequestParam String pipeline) {
         HostApplicationPipeline hostApplicationPipeline  = new HostApplicationPipeline(host, application,  pipeline);
-        return new ResponseEntity<>(reportCardService.getContext(org, repo, branch, sha, hostApplicationPipeline), HttpStatus.OK);
+        return new ResponseEntity<>(reportCardService.getContextExecutions(org, repo, branch, sha, hostApplicationPipeline), HttpStatus.OK);
     }
 
     @GetMapping(path = "{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts/{host}/executions", produces = "application/json")
-    public ResponseEntity<List<Execution>> getExecutions (
+    public ResponseEntity<Map<Execution,Set<Stage>>> getExecutions (
             @PathVariable String org,
             @PathVariable String repo,
             @PathVariable String branch,
@@ -96,11 +96,11 @@ public class MetadataJsonController {
             @PathVariable String host,
             @RequestParam String application,  @RequestParam String pipeline) {
         HostApplicationPipeline hostApplicationPipeline  = new HostApplicationPipeline(host, application,  pipeline);
-        return new ResponseEntity<>(reportCardService.getExecutions(org, repo, branch, sha, hostApplicationPipeline), HttpStatus.OK);
+        return new ResponseEntity<>(reportCardService.getExecutionsStages(org, repo, branch, sha, hostApplicationPipeline), HttpStatus.OK);
     }
 
     @GetMapping(path = "{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts/{host}/executions/{externalExecutionId}", produces = "application/json")
-    public ResponseEntity<Execution> getExecution (
+    public ResponseEntity<Map<Execution,Set<Stage>>> getExecution (
             @PathVariable String org,
             @PathVariable String repo,
             @PathVariable String branch,
@@ -109,11 +109,11 @@ public class MetadataJsonController {
             @PathVariable String externalExecutionId,
             @RequestParam String application,  @RequestParam String pipeline) {
         HostApplicationPipeline hostApplicationPipeline  = new HostApplicationPipeline(host, application,  pipeline);
-        return new ResponseEntity<>(reportCardService.getExecution(org, repo, branch, sha, hostApplicationPipeline, externalExecutionId), HttpStatus.OK);
+        return new ResponseEntity<>(reportCardService.getExecutionStages(org, repo, branch, sha, hostApplicationPipeline, externalExecutionId), HttpStatus.OK);
     }
 
     @GetMapping(path = "{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts/{host}/executions/{executionName}/stages", produces = "application/json")
-    public ResponseEntity<List<Stage>> getStages (
+    public ResponseEntity<Map<Stage,Set<TestResult>>> getStages (
             @PathVariable String org,
             @PathVariable String repo,
             @PathVariable String branch,
@@ -122,11 +122,11 @@ public class MetadataJsonController {
             @PathVariable String executionName,
             @RequestParam String application,  @RequestParam String pipeline) {
         HostApplicationPipeline hostApplicationPipeline  = new HostApplicationPipeline(host, application,  pipeline);
-        return new ResponseEntity<>(reportCardService.getStages(org, repo, branch, sha, hostApplicationPipeline, executionName), HttpStatus.OK);
+        return new ResponseEntity<>(reportCardService.getStagesTestResults(org, repo, branch, sha, hostApplicationPipeline, executionName), HttpStatus.OK);
     }
 
     @GetMapping(path = "{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts/{host}/executions/{executionName}/stages/{stage}", produces = "application/json")
-    public ResponseEntity<Stage> getStage (
+    public ResponseEntity<Map<Stage,Set<TestResult>>> getStage (
             @PathVariable String org,
             @PathVariable String repo,
             @PathVariable String branch,
@@ -136,10 +136,7 @@ public class MetadataJsonController {
             @PathVariable String stage,
             @RequestParam String application,  @RequestParam String pipeline) {
         HostApplicationPipeline hostApplicationPipeline  = new HostApplicationPipeline(host, application,  pipeline);
-        return new ResponseEntity<>(reportCardService.getStage(org, repo, branch, sha, hostApplicationPipeline, executionName, stage), HttpStatus.OK);
+        return new ResponseEntity<>(reportCardService.getStageTestResults(org, repo, branch, sha, hostApplicationPipeline, executionName, stage), HttpStatus.OK);
     }
-
-
-
 
 }
