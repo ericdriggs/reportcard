@@ -38,23 +38,23 @@ public class MetadataJsonController {
 
     @GetMapping(path = "{org}/repos", produces = "application/json")
     public ResponseEntity<Map<Repo,Set<Branch>>> getRepos(@PathVariable String org) {
-        return new ResponseEntity<>(reportCardService.getRepoBranches(org), HttpStatus.OK);
+        return new ResponseEntity<>(reportCardService.getReposBranches(org), HttpStatus.OK);
     }
 
     @GetMapping(path = "{org}/repos/{repo}", produces = "application/json")
-    public ResponseEntity<Repo> getRepo(@PathVariable String org, @PathVariable String repo) {
-        return new ResponseEntity<>(reportCardService.getRepo(org, repo), HttpStatus.OK);
+    public ResponseEntity<Map<Repo,Set<Branch>>> getRepo(@PathVariable String org, @PathVariable String repo) {
+        return new ResponseEntity<>(reportCardService.getRepoBranches(org, repo), HttpStatus.OK);
     }
 
     @GetMapping(path = "{org}/repos/{repo}/branches", produces = "application/json")
     public ResponseEntity<Map<Branch,Set<Sha>>> getBranches(@PathVariable String org, @PathVariable String repo) {
-        return new ResponseEntity<>(reportCardService.getBranchShas(org, repo), HttpStatus.OK);
+        return new ResponseEntity<>(reportCardService.getBranchesShas(org, repo), HttpStatus.OK);
     }
 
     @GetMapping(path = "{org}/repos/{repo}/branches/{branch}", produces = "application/json")
-    public ResponseEntity<Branch> getBranch(
+    public ResponseEntity<Map<Branch,Set<Sha>>> getBranch(
             @PathVariable String org, @PathVariable String repo, @PathVariable String branch) {
-        return new ResponseEntity<>(reportCardService.getBranch(org, repo, branch), HttpStatus.OK);
+        return new ResponseEntity<>(reportCardService.getBranchShas(org, repo, branch), HttpStatus.OK);
     }
 
     @GetMapping(path = "{org}/repos/{repo}/branches/{branch}/shas", produces = "application/json")

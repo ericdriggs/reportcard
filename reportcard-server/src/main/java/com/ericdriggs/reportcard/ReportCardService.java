@@ -137,13 +137,18 @@ public class ReportCardService {
         return ret;
     }
 
-    public Map<Repo, Set<Branch>> getRepoBranches(String org) {
+    public Map<Repo, Set<Branch>> getReposBranches(String org) {
         Set<Repo> repos = getRepos(org);
         Map<Repo,Set<Branch>> repoBranchMap= new ConcurrentSkipListMap<>(Comparators.REPO_CASE_INSENSITIVE_ORDER);
         repos.stream().forEach( repo-> {
             repoBranchMap.put(repo, getBranches(org, repo.getRepoName()));
         });
         return repoBranchMap;
+    }
+
+    public Map<Repo, Set<Branch>> getRepoBranches(String orgName, String repoName) {
+        Repo repo = getRepo(orgName, repoName);
+        return Collections.singletonMap(repo, getBranches(orgName, repoName));
     }
 
 
@@ -178,13 +183,18 @@ public class ReportCardService {
         return ret;
     }
 
-    public Map<Branch,Set<Sha>> getBranchShas(String org, String repo) {
+    public Map<Branch,Set<Sha>> getBranchesShas(String org, String repo) {
         Set<Branch> branches = getBranches(org, repo);
         Map<Branch,Set<Sha>> branchShaMap = new ConcurrentSkipListMap<>(Comparators.BRANCH_CASE_INSENSITIVE_ORDER);
         branches.stream().forEach(branch ->
                         branchShaMap.put(branch, getShas(org, repo, branch.getBranchName()))
                 );
         return branchShaMap;
+    }
+
+    public Map<Branch,Set<Sha>> getBranchShas(String orgName, String repoName, String branchName) {
+        Branch branch = getBranch(orgName, repoName, branchName);
+        return Collections.singletonMap(branch,  getShas(orgName, repoName, branchName));
     }
 
     public Set<Sha> getShas(String org, String repo, String branch) {
