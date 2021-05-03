@@ -10,7 +10,7 @@ import com.ericdriggs.reportcard.gen.db.tables.records.TestCaseRecord;
 import java.math.BigDecimal;
 import java.util.List;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import org.jooq.Configuration;
 import org.jooq.impl.DAOImpl;

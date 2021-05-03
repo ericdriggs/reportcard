@@ -16,7 +16,7 @@ import com.ericdriggs.reportcard.gen.db.tables.TestResult;
 import com.ericdriggs.reportcard.gen.db.tables.TestStatus;
 import com.ericdriggs.reportcard.gen.db.tables.TestSuite;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 
 /**

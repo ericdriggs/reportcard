@@ -27,7 +27,7 @@ import com.ericdriggs.reportcard.gen.db.tables.records.TestResultRecord;
 import com.ericdriggs.reportcard.gen.db.tables.records.TestStatusRecord;
 import com.ericdriggs.reportcard.gen.db.tables.records.TestSuiteRecord;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import org.jooq.ForeignKey;
 import org.jooq.TableField;

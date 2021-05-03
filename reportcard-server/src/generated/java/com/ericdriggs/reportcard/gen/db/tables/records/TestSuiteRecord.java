@@ -8,7 +8,7 @@ import com.ericdriggs.reportcard.gen.db.tables.TestSuite;
 
 import java.math.BigDecimal;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.Record1;

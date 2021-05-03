@@ -7,7 +7,7 @@ package com.ericdriggs.reportcard.gen.db.tables.pojos;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 
 /**

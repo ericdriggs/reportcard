@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
@@ -22,7 +22,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row10;
+import org.jooq.Row11;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -100,6 +100,11 @@ public class TestResult extends TableImpl<TestResultRecord> {
      * The column <code>reportcard.test_result.test_result_created</code>.
      */
     public final TableField<TestResultRecord, LocalDateTime> TEST_RESULT_CREATED = createField(DSL.name("test_result_created"), SQLDataType.LOCALDATETIME(0).nullable(false).defaultValue(DSL.field("CURRENT_TIMESTAMP", SQLDataType.LOCALDATETIME)), this, "");
+
+    /**
+     * The column <code>reportcard.test_result.external_links</code>.
+     */
+    public final TableField<TestResultRecord, String> EXTERNAL_LINKS = createField(DSL.name("external_links"), SQLDataType.VARCHAR, this, "");
 
     /**
      * The column <code>reportcard.test_result.is_success</code>.
@@ -210,11 +215,11 @@ public class TestResult extends TableImpl<TestResultRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row10 type methods
+    // Row11 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row10<Long, Long, Integer, Integer, Integer, Integer, BigDecimal, LocalDateTime, Boolean, Boolean> fieldsRow() {
-        return (Row10) super.fieldsRow();
+    public Row11<Long, Long, Integer, Integer, Integer, Integer, BigDecimal, LocalDateTime, String, Boolean, Boolean> fieldsRow() {
+        return (Row11) super.fieldsRow();
     }
 }

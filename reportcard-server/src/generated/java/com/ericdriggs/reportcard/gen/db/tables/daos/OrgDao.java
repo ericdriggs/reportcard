@@ -9,7 +9,7 @@ import com.ericdriggs.reportcard.gen.db.tables.records.OrgRecord;
 
 import java.util.List;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import org.jooq.Configuration;
 import org.jooq.impl.DAOImpl;

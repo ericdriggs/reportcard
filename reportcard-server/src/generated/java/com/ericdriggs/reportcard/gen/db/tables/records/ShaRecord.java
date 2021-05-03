@@ -8,7 +8,7 @@ import com.ericdriggs.reportcard.gen.db.tables.Sha;
 
 import java.time.LocalDateTime;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.Record1;

@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import org.jooq.Configuration;
 import org.jooq.impl.DAOImpl;
@@ -166,6 +166,20 @@ public class TestResultDao extends DAOImpl<TestResultRecord, com.ericdriggs.repo
      */
     public List<com.ericdriggs.reportcard.gen.db.tables.pojos.TestResult> fetchByTestResultCreated(LocalDateTime... values) {
         return fetch(TestResult.TEST_RESULT.TEST_RESULT_CREATED, values);
+    }
+
+    /**
+     * Fetch records that have <code>external_links BETWEEN lowerInclusive AND upperInclusive</code>
+     */
+    public List<com.ericdriggs.reportcard.gen.db.tables.pojos.TestResult> fetchRangeOfExternalLinks(String lowerInclusive, String upperInclusive) {
+        return fetchRange(TestResult.TEST_RESULT.EXTERNAL_LINKS, lowerInclusive, upperInclusive);
+    }
+
+    /**
+     * Fetch records that have <code>external_links IN (values)</code>
+     */
+    public List<com.ericdriggs.reportcard.gen.db.tables.pojos.TestResult> fetchByExternalLinks(String... values) {
+        return fetch(TestResult.TEST_RESULT.EXTERNAL_LINKS, values);
     }
 
     /**

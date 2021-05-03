@@ -13,7 +13,7 @@ import com.ericdriggs.reportcard.gen.db.tables.TestCase;
 import com.ericdriggs.reportcard.gen.db.tables.TestResult;
 import com.ericdriggs.reportcard.gen.db.tables.TestSuite;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import org.jooq.Index;
 import org.jooq.OrderField;

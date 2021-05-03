@@ -8,7 +8,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 
 /**
@@ -34,6 +34,7 @@ public class TestResult implements Serializable {
     private Integer       failure;
     private BigDecimal    time;
     private LocalDateTime testResultCreated;
+    private String        externalLinks;
     private Boolean       isSuccess;
     private Boolean       hasSkip;
 
@@ -48,6 +49,7 @@ public class TestResult implements Serializable {
         this.failure = value.failure;
         this.time = value.time;
         this.testResultCreated = value.testResultCreated;
+        this.externalLinks = value.externalLinks;
         this.isSuccess = value.isSuccess;
         this.hasSkip = value.hasSkip;
     }
@@ -61,6 +63,7 @@ public class TestResult implements Serializable {
         Integer       failure,
         BigDecimal    time,
         LocalDateTime testResultCreated,
+        String        externalLinks,
         Boolean       isSuccess,
         Boolean       hasSkip
     ) {
@@ -72,6 +75,7 @@ public class TestResult implements Serializable {
         this.failure = failure;
         this.time = time;
         this.testResultCreated = testResultCreated;
+        this.externalLinks = externalLinks;
         this.isSuccess = isSuccess;
         this.hasSkip = hasSkip;
     }
@@ -197,6 +201,21 @@ public class TestResult implements Serializable {
     }
 
     /**
+     * Getter for <code>reportcard.test_result.external_links</code>.
+     */
+    public String getExternalLinks() {
+        return this.externalLinks;
+    }
+
+    /**
+     * Setter for <code>reportcard.test_result.external_links</code>.
+     */
+    public TestResult setExternalLinks(String externalLinks) {
+        this.externalLinks = externalLinks;
+        return this;
+    }
+
+    /**
      * Getter for <code>reportcard.test_result.is_success</code>.
      */
     public Boolean getIsSuccess() {
@@ -238,6 +257,7 @@ public class TestResult implements Serializable {
         sb.append(", ").append(failure);
         sb.append(", ").append(time);
         sb.append(", ").append(testResultCreated);
+        sb.append(", ").append(externalLinks);
         sb.append(", ").append(isSuccess);
         sb.append(", ").append(hasSkip);
 
