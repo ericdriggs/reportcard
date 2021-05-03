@@ -2,6 +2,9 @@ package com.ericdriggs.reportcard.gen.db;
 
 import com.ericdriggs.reportcard.ReportCardService;
 import com.ericdriggs.reportcard.model.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,9 +12,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -50,6 +51,13 @@ public class InsertTestResultTest extends AbstractDbTest {
     final static TestStatus testCaseStatus = TestStatus.FAILURE;
     final static BigDecimal testCaseTime = new BigDecimal("0.500");
 
+    final static Map<String,String> externalLinksMap;
+    static {
+        externalLinksMap = new HashMap<>();
+        externalLinksMap.put("foo", "http://www.foo.com");
+        externalLinksMap.put("bar", "http://www.bar.com");
+    }
+
 
     @Autowired
     public InsertTestResultTest(ReportCardService reportCardService) {
@@ -66,12 +74,15 @@ public class InsertTestResultTest extends AbstractDbTest {
         final TestResult testResultInsert = reportCardService.insertTestResult(testResultBefore);
         assertValues(testResultInsert);
         assertIdsandFks(testResultInsert);
+        assertExternalLinks(testResultInsert);
 
         final Set<TestResult> testResultsGet = reportCardService.getTestResults(testResultBefore.getStageFk());
         assertEquals(1, testResultsGet.size());
         final TestResult testResultGet = testResultsGet.iterator().next();
         assertValues(testResultGet);
         assertIdsandFks(testResultGet);
+        assertExternalLinks(testResultGet);
+
     }
 
     private void assertValues(TestResult testResult) {
@@ -119,6 +130,19 @@ public class InsertTestResultTest extends AbstractDbTest {
         Assertions.assertEquals(testSuite.getTestSuiteId(), testCase.getTestSuiteFk());
     }
 
+    final static ObjectMapper objectMapper = new ObjectMapper();
+    private void assertExternalLinks(TestResult testResult) {
+        String jsonString = testResult.getExternalLinks();
+        TypeReference<HashMap<String, String>> typeRef = new TypeReference<>() {};
+        try {
+            Map<String, String> actualExternalLinksMap = objectMapper.readValue(jsonString, typeRef);
+            assertEquals(externalLinksMap, actualExternalLinksMap);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
 
     private ReportMetaData getReportMetaData() {
 
@@ -150,6 +174,7 @@ public class InsertTestResultTest extends AbstractDbTest {
         testResult.setSkipped(testResultSkippedCount);
         testResult.setTests(testResultTestCount);
         testResult.setTime(testResultTime);
+        testResult.setExternalLinksMap(externalLinksMap);
 
         List<TestSuite> testSuites = new ArrayList<>();
         {//TestSuite

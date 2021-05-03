@@ -77,6 +77,7 @@ public class ReportControllerUtil {
         TestResult testResult = JunitConvertersUtil.modelMapper.map(testsuites, TestResult.class);
         ExecutionStagePath buildStagePath = reportCardService.getOrInsertExecutionStagePath(reportMetatData);
         testResult.setStageFk(buildStagePath.getStage().getStageId());
+        testResult.setExternalLinks(reportMetatData.getExternalLinksJson());
         return reportCardService.insertTestResult(testResult);
     }
 

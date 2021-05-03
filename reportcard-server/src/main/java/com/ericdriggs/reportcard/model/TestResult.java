@@ -1,7 +1,11 @@
 package com.ericdriggs.reportcard.model;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class TestResult extends com.ericdriggs.reportcard.gen.db.tables.pojos.TestResult {
@@ -13,6 +17,11 @@ public class TestResult extends com.ericdriggs.reportcard.gen.db.tables.pojos.Te
 
     public TestResult setTestSuites( List<TestSuite> testSuites) {
         this.testSuites = testSuites;
+        return this;
+    }
+
+    public TestResult setExternalLinksMap(Map<String,String> externalLinksMap) {
+        this.setExternalLinks(getExternalLinksJson(externalLinksMap));
         return this;
     }
 
@@ -45,6 +54,20 @@ public class TestResult extends com.ericdriggs.reportcard.gen.db.tables.pojos.Te
         } else {
             int skipped = Objects.requireNonNullElse(super.getSkipped(), 0);
             return skipped > 0;
+        }
+    }
+
+    final static ObjectMapper mapper = new ObjectMapper();
+    protected String getExternalLinksJson(Map<String,String> externalLinksMap) {
+        if (externalLinksMap == null)  {
+            return null;
+        }
+
+        try {
+            return mapper.writerWithDefaultPrettyPrinter()
+                    .writeValueAsString(externalLinksMap);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
     }
 

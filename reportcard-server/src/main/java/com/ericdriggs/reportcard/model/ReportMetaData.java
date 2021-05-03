@@ -1,5 +1,7 @@
 package com.ericdriggs.reportcard.model;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 
 import org.springframework.http.HttpStatus;
@@ -7,6 +9,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -19,6 +22,7 @@ public class ReportMetaData {
     private HostApplicationPipeline hostApplicatiionPipeline;
     private String externalExecutionId;
     private String stage;
+    private Map<String,String> externalLinks = Collections.emptyMap();
 
     public void validateAndSetDefaults() {
         Map<String,String> errors = new LinkedHashMap<>();
@@ -44,6 +48,20 @@ public class ReportMetaData {
     protected void addErrorIfMissing(Map<String,String> errors,  String val, String variableName) {
         if (StringUtils.isEmpty(val)) {
             errors.put(variableName, "missing required field");
+        }
+    }
+
+    final static ObjectMapper mapper = new ObjectMapper();
+    public String getExternalLinksJson() {
+        if (externalLinks == null)  {
+            return null;
+        }
+
+        try {
+            return mapper.writerWithDefaultPrettyPrinter()
+                    .writeValueAsString(externalLinks);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
     }
 }

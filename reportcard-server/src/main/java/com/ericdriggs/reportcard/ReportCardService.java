@@ -708,6 +708,7 @@ public class ReportCardService {
                     .setSkipped(testResult.getSkipped())
                     .setTests(testResult.getTests())
                     .setTime(testResult.getTime())
+                    .setExternalLinks(testResult.getExternalLinks())
                     .store();
 
             testResult = testResultRecord.into(TestResult.class);
