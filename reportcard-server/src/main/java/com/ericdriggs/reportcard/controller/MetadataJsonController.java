@@ -32,13 +32,13 @@ public class MetadataJsonController {
     }
 
     @GetMapping(path = "{org}", produces = "application/json")
-    public ResponseEntity<Org> getOrg(@PathVariable String org) {
-        return new ResponseEntity<>(reportCardService.getOrg(org), HttpStatus.OK);
+    public ResponseEntity<Map<Org,Set<Repo>>> getOrg(@PathVariable String org) {
+        return new ResponseEntity<>(reportCardService.getOrgRepos(org), HttpStatus.OK);
     }
 
     @GetMapping(path = "{org}/repos", produces = "application/json")
-    public ResponseEntity<Set<Repo>> getRepos(@PathVariable String org) {
-        return new ResponseEntity<>(reportCardService.getRepos(org), HttpStatus.OK);
+    public ResponseEntity<Map<Repo,Set<Branch>>> getRepos(@PathVariable String org) {
+        return new ResponseEntity<>(reportCardService.getRepoBranches(org), HttpStatus.OK);
     }
 
     @GetMapping(path = "{org}/repos/{repo}", produces = "application/json")
@@ -47,8 +47,8 @@ public class MetadataJsonController {
     }
 
     @GetMapping(path = "{org}/repos/{repo}/branches", produces = "application/json")
-    public ResponseEntity<List<Branch>> getBranches(@PathVariable String org, @PathVariable String repo) {
-        return new ResponseEntity<>(reportCardService.getBranches(org, repo), HttpStatus.OK);
+    public ResponseEntity<Map<Branch,Set<Sha>>> getBranches(@PathVariable String org, @PathVariable String repo) {
+        return new ResponseEntity<>(reportCardService.getBranchShas(org, repo), HttpStatus.OK);
     }
 
     @GetMapping(path = "{org}/repos/{repo}/branches/{branch}", produces = "application/json")
@@ -58,7 +58,7 @@ public class MetadataJsonController {
     }
 
     @GetMapping(path = "{org}/repos/{repo}/branches/{branch}/shas", produces = "application/json")
-    public ResponseEntity<List<Sha>> getShas(
+    public ResponseEntity<Set<Sha>> getShas(
             @PathVariable String org, @PathVariable String repo, @PathVariable String branch) {
         return new ResponseEntity<>(reportCardService.getShas(org, repo, branch), HttpStatus.OK);
     }

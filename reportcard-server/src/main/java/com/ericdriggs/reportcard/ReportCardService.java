@@ -137,8 +137,19 @@ public class ReportCardService {
         return ret;
     }
 
-    public List<Branch> getBranches(String org, String repo) {
-        return dsl.
+    public Map<Repo, Set<Branch>> getRepoBranches(String org) {
+        Set<Repo> repos = getRepos(org);
+        Map<Repo,Set<Branch>> repoBranchMap= new ConcurrentSkipListMap<>(Comparators.REPO_CASE_INSENSITIVE_ORDER);
+        repos.stream().forEach( repo-> {
+            repoBranchMap.put(repo, getBranches(org, repo.getRepoName()));
+        });
+        return repoBranchMap;
+    }
+
+
+    public Set<Branch> getBranches(String org, String repo) {
+        Set<Branch> branches= new TreeSet<>(Comparators.BRANCH_CASE_INSENSITIVE_ORDER);
+        branches.addAll( dsl.
                 select(BRANCH.fields())
                 .from(BRANCH
                         .join(REPO).on(BRANCH.REPO_FK.eq(REPO.REPO_ID))
@@ -146,7 +157,8 @@ public class ReportCardService {
                 .where(ORG.ORG_NAME.eq(org))
                 .and(REPO.REPO_NAME.eq(repo))
                 .fetch()
-                .into(Branch.class);
+                .into(Branch.class));
+        return branches;
     }
 
     public Branch getBranch(String org, String repo, String branch) {
@@ -166,8 +178,18 @@ public class ReportCardService {
         return ret;
     }
 
-    public List<Sha> getShas(String org, String repo, String branch) {
-        return dsl.
+    public Map<Branch,Set<Sha>> getBranchShas(String org, String repo) {
+        Set<Branch> branches = getBranches(org, repo);
+        Map<Branch,Set<Sha>> branchShaMap = new ConcurrentSkipListMap<>(Comparators.BRANCH_CASE_INSENSITIVE_ORDER);
+        branches.stream().forEach(branch ->
+                        branchShaMap.put(branch, getShas(org, repo, branch.getBranchName()))
+                );
+        return branchShaMap;
+    }
+
+    public Set<Sha> getShas(String org, String repo, String branch) {
+        Set<Sha> shas = new TreeSet<>(Comparators.SHA);
+        shas.addAll(dsl.
                 select(SHA.fields())
                 .from(SHA
                         .join(BRANCH).on(SHA.BRANCH_FK.eq(BRANCH.BRANCH_ID))
@@ -177,7 +199,8 @@ public class ReportCardService {
                 .and(REPO.REPO_NAME.eq(repo))
                 .and(BRANCH.BRANCH_NAME.eq(branch))
                 .fetch()
-                .into(Sha.class);
+                .into(Sha.class));
+        return shas;
     }
 
     public Sha getSha(String org, String repo, String branch, String sha) {
