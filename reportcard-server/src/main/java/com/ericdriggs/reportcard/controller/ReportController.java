@@ -5,11 +5,12 @@ import com.ericdriggs.reportcard.model.TestResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-@Controller
+@RestController
+@RequestMapping("/api/v1/reports")
+@SuppressWarnings("unused")
 public class ReportController {
 
     @Autowired
@@ -19,22 +20,27 @@ public class ReportController {
 
     private final ReportControllerUtil reportControllerUtil;
 
-    @PostMapping("/v1/xml")
-    public ResponseEntity<TestResult> postXml(@RequestBody ReportMetaData reportMetatData, @RequestParam("files") MultipartFile[] files) {
-        TestResult inserted = reportControllerUtil.doPostXml(reportMetatData, files);
+    @PostMapping("")
+    public ResponseEntity<TestResult> postXml(@RequestPart("reportMetaData") ReportMetaData reportMetaData, @RequestParam("files") MultipartFile[] files) {
+        TestResult inserted = reportControllerUtil.doPostXml(reportMetaData, files);
         return new ResponseEntity<>(inserted, HttpStatus.OK);
     }
 
-    @PostMapping("/v1/xml/junit")
-    public ResponseEntity<TestResult> postXmlJunit(@RequestBody ReportMetaData reportMetatData, @RequestParam("file") MultipartFile file) {
-        TestResult inserted = reportControllerUtil.doPostXmlJunit(reportMetatData, file);
+    @PostMapping("junit")
+    public ResponseEntity<TestResult> postXmlJunit(ReportMetaData reportMetaData, @RequestParam("file") MultipartFile file) {
+        TestResult inserted = reportControllerUtil.doPostXmlJunit(reportMetaData, file);
         return new ResponseEntity<>(inserted, HttpStatus.OK);
     }
 
-    @PostMapping("/v1/xml/surefire")
-    public ResponseEntity<TestResult> postXmlSurefire(@RequestBody ReportMetaData reportMetatData, @RequestParam("files") MultipartFile[] files) {
-        TestResult inserted = reportControllerUtil.doPostXmlSurefire(reportMetatData, files);
+    @PostMapping("surefire")
+    public ResponseEntity<TestResult> postXmlSurefire(ReportMetaData reportMetaData, @RequestParam("files") MultipartFile[] files) {
+        TestResult inserted = reportControllerUtil.doPostXmlSurefire(reportMetaData, files);
         return new ResponseEntity<>(inserted, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "{testResultId}", produces = "application/json")
+    public ResponseEntity<TestResult> getTestResult(@PathVariable String testResultId) {
+        return new ResponseEntity<>(reportControllerUtil.getTestResult(Long.valueOf(testResultId)), HttpStatus.OK);
     }
 
 }

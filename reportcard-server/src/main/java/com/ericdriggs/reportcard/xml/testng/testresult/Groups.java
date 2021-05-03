@@ -61,7 +61,7 @@ public class Groups {
      */
     public List<Group> getGroup() {
         if (group == null) {
-            group = new ArrayList<Group>();
+            group = new ArrayList<>();
         }
         return this.group;
     }

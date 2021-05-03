@@ -4,6 +4,7 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        //classpath 'mysql:mysql-connector-java:8.0.20'
         classpath 'mysql:mysql-connector-java:8.0.20'
         classpath files('libs/reportcard-jooq-generator.jar')
     }
@@ -14,7 +15,7 @@ plugins {
     id 'idea'
     id 'org.springframework.boot'
     id 'io.spring.dependency-management'
-    id 'nu.studer.jooq' version '4.2'
+    id 'nu.studer.jooq' version '5.2.1'
 }
 
 configurations {
@@ -35,8 +36,7 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
 
     //Swagger
-    implementation 'io.springfox:springfox-swagger2:2.9.2'
-    implementation 'io.springfox:springfox-swagger-ui:2.9.2'
+    implementation 'org.springdoc:springdoc-openapi-ui:1.5.8'
 
     //XML
     implementation "javax.xml.bind:jaxb-api:${jaxbVersion}"
@@ -62,7 +62,7 @@ dependencies {
 
 
     implementation 'mysql:mysql-connector-java:8.0.20'
-    jooqRuntime 'mysql:mysql-connector-java:8.0.20'
+    jooqGenerator 'mysql:mysql-connector-java:8.0.20'
 
     //Mapping
     implementation 'org.modelmapper:modelmapper:2.3.0'
@@ -102,10 +102,10 @@ task generateJooqSchemaSource {
                                                         .withIncludeExpression('.*').withIncludeTypes('JSONB?'),
                                                 new ForcedType().withName('varchar')
                                                         .withIncludeExpression('.*').withIncludeTypes('INET'),
-                                                new ForcedType().withName('BOOLEAN')
-                                                        .withIncludeExpression('is_.*').withIncludeTypes('TINYINT'),
-                                                new ForcedType().withName('BOOLEAN')
-                                                        .withIncludeExpression('has_.*').withIncludeTypes('TINYINT')
+                                                new ForcedType()
+                                                        .withName('BOOLEAN').withIncludeTypes('tinyint.*'),
+                                                new ForcedType()
+                                                        .withName('Boolean').withIncludeTypes('tinyint.*')
                                         )
                                 )
                         )
@@ -121,7 +121,7 @@ task generateJooqSchemaSource {
                         )
                         .withTarget(new Target()
                                 .withPackageName('com.ericdriggs.reportcard.gen.db')
-                                .withDirectory('src/generated/java')
+                                .withDirectory('/Users/eric.r.driggs/github/ericdriggs/reportcard/reportcard-server/src/generated/java')
                         )
                 )
         )
@@ -129,67 +129,67 @@ task generateJooqSchemaSource {
 }
 
 jooq {
-    version = '3.13.4'
-    edition = 'OSS'
-    generateSchemaSourceOnCompilation = false
-    sample(sourceSets.main) {
-        jdbc {
-            driver = 'com.mysql.cj.jdbc.Driver'
-            url = 'jdbc:mysql://127.0.0.1:3306/reportcard?serverTimezone=UTC'
-            user = 'root'
-            password = ''
-            properties {
-                property {
-                    key = 'ssl'
-                    value = 'true'
+    version = '3.14.9'
+    edition = nu.studer.gradle.jooq.JooqEdition.OSS
+    configurations {
+        generated {
+            generateSchemaSourceOnCompilation = false
+            generationTool {
+                jdbc {
+                    driver = 'com.mysql.cj.jdbc.Driver'
+                    url = 'jdbc:mysql://127.0.0.1:3306/reportcard?serverTimezone=UTC'
+                    user = 'root'
+                    password = ''
+                    properties {
+                        property {
+                            key = 'ssl'
+                            value = 'true'
+                        }
+                    }
                 }
-            }
-        }
-        generator {
+                generator {
 
-            name = 'org.jooq.codegen.DefaultGenerator'
-            strategy {
-                name = 'org.jooq.codegen.DefaultGeneratorStrategy'
-            }
-            database {
-                name = 'org.jooq.meta.mysql.MySQLDatabase'
-                inputSchema = 'reportcard'
-                unsignedTypes = false
-                forcedTypes {
-                    forcedType {
-                        name = 'varchar'
-                        includeExpression = '.*'
-                        includeTypes = 'JSONB?'
+                    name = 'org.jooq.codegen.DefaultGenerator'
+                    strategy {
+                        name = 'org.jooq.codegen.DefaultGeneratorStrategy'
                     }
-                    forcedType {
-                        name = 'varchar'
-                        includeExpression = '.*'
-                        includeTypes = 'INET'
+                    database {
+                        name = 'org.jooq.meta.mysql.MySQLDatabase'
+                        inputSchema = 'reportcard'
+                        unsignedTypes = false
+                        forcedTypes {
+                            forcedType {
+                                name = 'varchar'
+                                includeExpression = '.*'
+                                includeTypes = 'JSONB?'
+                            }
+
+                            forcedType {
+                                name = 'BOOLEAN'
+                                includeExpression = 'is_.*'
+                                includeTypes = "tinyint.*"
+                            }
+                            forcedType {
+                                name = 'BOOLEAN'
+                                includeExpression = 'has_.*'
+                                includeTypes = "tinyint.*"
+                            }
+                        }
                     }
-                    forcedType {
-                        name = 'BOOLEAN'
-                        includeExpression = 'is_.*'
-                        includeTypes = "TINYINT"
+                    generate {
+                        generatedAnnotation = true
+                        daos = true
+                        relations = true
+                        deprecated = false
+                        records = true
+                        immutablePojos = false
+                        fluentSetters = true
                     }
-                    forcedType {
-                        name = 'BOOLEAN'
-                        includeExpression = 'has_.*'
-                        includeTypes = "TINYINT"
+                    target {
+                        packageName = 'com.ericdriggs.reportcard.gen.db'
+                        directory = 'src/generated/java'
                     }
                 }
-            }
-            generate {
-                generatedAnnotation = true
-                daos = true
-                relations = true
-                deprecated = false
-                records = true
-                immutablePojos = false
-                fluentSetters = true
-            }
-            target {
-                packageName = 'com.ericdriggs.reportcard.gen.db'
-                directory = 'src/generated/java'
             }
         }
     }

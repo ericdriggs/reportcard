@@ -1,7 +1,6 @@
 package org.jooq.codegen;
 
-import org.jooq.meta.CatalogDefinition;
-import org.jooq.meta.SchemaDefinition;
+import org.jooq.meta.Definition;
 
 /**
  * Uses lombok.Generated as a class annotation instead of a javax.annotation.(processing?.)Generated
@@ -21,8 +20,7 @@ import org.jooq.meta.SchemaDefinition;
 @SuppressWarnings("unused")
 public class JavaLombokGenerator extends JavaGenerator {
     @Override
-    protected void printClassAnnotations(JavaWriter out, SchemaDefinition schema,
-                                         CatalogDefinition catalog) {
+    protected void printClassAnnotations(JavaWriter out, Definition definition, GeneratorStrategy.Mode mode) {
         if (generateGeneratedAnnotation()) {
             String generated = "lombok.Generated";
             out.println("@%s", out.ref(generated));

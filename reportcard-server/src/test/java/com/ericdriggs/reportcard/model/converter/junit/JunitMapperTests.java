@@ -11,13 +11,12 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.ericdriggs.reportcard.model.converter.junit.JunitConvertersUtil.doFromJunitToModelTestResult;
 import static org.junit.jupiter.api.Assertions.*;
 
 
 public class JunitMapperTests {
 
-    protected static ModelMapper modelMapper = JunitConvertersUtil.modelMapper;
+    protected final static ModelMapper modelMapper = JunitConvertersUtil.modelMapper;
     @Test
     public void testCaseTest() {
 

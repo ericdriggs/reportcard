@@ -2,9 +2,7 @@ package com.ericdriggs.reportcard.controller;
 
 import com.ericdriggs.reportcard.ReportCardService;
 import com.ericdriggs.reportcard.ReportcardApplication;
-import com.ericdriggs.reportcard.model.ReportMetaData;
-import com.ericdriggs.reportcard.model.TestResult;
-import com.ericdriggs.reportcard.model.TestStatus;
+import com.ericdriggs.reportcard.model.*;
 import com.ericdriggs.reportcard.xml.ResourceReader;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +16,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Random;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(classes = ReportcardApplication.class,
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -37,14 +34,13 @@ public class ReportControllerTest {
         this.xmlSurefire = resourceReader.resourceAsString("classpath:format-samples/sample-surefire.xml");
     }
 
-    private ReportControllerUtil reportControllerUtil;
-    private ResourceReader resourceReader;
-    private ReportCardService reportCardService;
+    private final ReportControllerUtil reportControllerUtil;
+    private final ResourceReader resourceReader;
+    private final ReportCardService reportCardService;
 
-    private String xmlJunit;
-    private String xmlSurefire;
+    private final String xmlJunit;
+    private final String xmlSurefire;
 
-    //TODO: move to other class
     @Test
     public void testStatusTest() {
         Map<Integer, String> statuses = reportCardService.getTestStatusMap();
@@ -56,7 +52,6 @@ public class ReportControllerTest {
 
     @Test
     public void insertJunitTest() {
-
 
         final ReportMetaData reportMetatData = generateRandomReportMetaData();
         TestResult inserted = reportControllerUtil.doPostXmlJunit(reportMetatData, xmlJunit);
@@ -71,9 +66,13 @@ public class ReportControllerTest {
         assertEquals(false, inserted.getHasSkip());
         assertEquals(true, inserted.getIsSuccess());
         assertNotNull(inserted.getTestResultCreated());
-        assertNotNull(LocalDateTime.now().isAfter(inserted.getTestResultCreated()));
+        assertTrue(LocalDateTime.now().isAfter(inserted.getTestResultCreated()));
         assertEquals(new BigDecimal("50.500"), inserted.getTime());
+
+        validateMetadata(reportMetatData);
     }
+
+
 
     @Test
     public void insertSurefireTest() {
@@ -92,11 +91,13 @@ public class ReportControllerTest {
         assertEquals(true, inserted.getHasSkip());
         assertEquals(false, inserted.getIsSuccess());
         assertNotNull(inserted.getTestResultCreated());
-        assertNotNull(LocalDateTime.now().isAfter(inserted.getTestResultCreated()));
+        assertTrue(LocalDateTime.now().isAfter(inserted.getTestResultCreated()));
         assertEquals(new BigDecimal("0.014"), inserted.getTime());
+
+        validateMetadata(reportMetatData);
     }
 
-    private static Random random = new Random();
+    private final static Random random = new Random();
 
 
     static ReportMetaData generateRandomReportMetaData() {
@@ -106,13 +107,30 @@ public class ReportControllerTest {
                 new ReportMetaData()
                         .setOrg("org" + randLong)
                         .setRepo("repo" + randLong)
-                        .setApp("app" + randLong)
                         .setBranch("branch" + randLong)
-                        .setBuildIdentifier("buildIdentifier" + randLong)
+                        .setSha("sha" + randLong)
+                        .setHostApplicatiionPipeline(new HostApplicationPipeline(
+                                "host" + randLong,  "application"+ randLong, "pipeline" +randLong
+                        ))
+                        .setExternalExecutionId("externalExecutionId" + randLong)
                         .setStage("stage" + randLong);
-
         return request;
 
+    }
+
+    private  void validateMetadata(ReportMetaData reportMetaData) {
+        ExecutionStagePath executionStagePath =  reportCardService.getExecutionStagePath(reportMetaData);
+        assertEquals(reportMetaData.getOrg(), executionStagePath.getOrg().getOrgName() );
+        assertEquals(reportMetaData.getRepo(), executionStagePath.getRepo().getRepoName() );
+        assertEquals(reportMetaData.getBranch(), executionStagePath.getBranch().getBranchName() );
+        assertEquals(reportMetaData.getSha(), executionStagePath.getSha().getSha() );
+
+        assertEquals(reportMetaData.getHostApplicatiionPipeline().getHost(), executionStagePath.getContext().getHost() );
+        assertEquals(reportMetaData.getHostApplicatiionPipeline().getApplication(), executionStagePath.getContext().getApplication() );
+        assertEquals(reportMetaData.getHostApplicatiionPipeline().getPipeline(), executionStagePath.getContext().getPipeline() );
+
+        assertEquals(reportMetaData.getExternalExecutionId(), executionStagePath.getExecution().getExecutionExternalId() );
+        assertEquals(reportMetaData.getStage(), executionStagePath.getStage().getStageName() );
     }
 
 }

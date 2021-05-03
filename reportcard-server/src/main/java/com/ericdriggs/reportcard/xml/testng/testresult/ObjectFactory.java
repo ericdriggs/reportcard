@@ -138,7 +138,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "", name = "full-stacktrace")
     public JAXBElement<String> createFullStacktrace(String value) {
-        return new JAXBElement<String>(_FullStacktrace_QNAME, String.class, null, value);
+        return new JAXBElement<>(_FullStacktrace_QNAME, String.class, null, value);
     }
 
     /**
@@ -147,7 +147,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "", name = "line")
     public JAXBElement<String> createLine(String value) {
-        return new JAXBElement<String>(_Line_QNAME, String.class, null, value);
+        return new JAXBElement<>(_Line_QNAME, String.class, null, value);
     }
 
     /**
@@ -156,7 +156,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "", name = "message")
     public JAXBElement<String> createMessage(String value) {
-        return new JAXBElement<String>(_Message_QNAME, String.class, null, value);
+        return new JAXBElement<>(_Message_QNAME, String.class, null, value);
     }
 
     /**
@@ -165,7 +165,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "", name = "value")
     public JAXBElement<String> createValue(String value) {
-        return new JAXBElement<String>(_Value_QNAME, String.class, null, value);
+        return new JAXBElement<>(_Value_QNAME, String.class, null, value);
     }
 
 }

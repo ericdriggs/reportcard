@@ -1,7 +1,7 @@
 package com.ericdriggs.reportcard.controller;
 
 import com.ericdriggs.reportcard.ReportCardService;
-import com.ericdriggs.reportcard.model.BuildStagePath;
+import com.ericdriggs.reportcard.model.ExecutionStagePath;
 import com.ericdriggs.reportcard.model.ReportMetaData;
 import com.ericdriggs.reportcard.model.TestResult;
 import com.ericdriggs.reportcard.model.converter.junit.JunitConvertersUtil;
@@ -17,9 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -33,6 +31,10 @@ public class ReportControllerUtil {
     }
 
     private final ReportCardService reportCardService;
+
+    public TestResult getTestResult(Long testResultId) {
+        return reportCardService.getTestResult(testResultId);
+    }
 
     public TestResult doPostXml(ReportMetaData reportMetatData, MultipartFile[] files) {
         List<String> xmlStrings = new ArrayList<>();
@@ -73,15 +75,15 @@ public class ReportControllerUtil {
         reportMetatData.validateAndSetDefaults();
         Testsuites testsuites = JunitParserUtil.parseTestSuites(xmlString);
         TestResult testResult = JunitConvertersUtil.modelMapper.map(testsuites, TestResult.class);
-        BuildStagePath buildStagePath = reportCardService.getOrInsertBuildStagePath(reportMetatData);
-        testResult.setBuildStageFk(buildStagePath.getBuildStage().getBuildStageId());
+        ExecutionStagePath buildStagePath = reportCardService.getOrInsertExecutionStagePath(reportMetatData);
+        testResult.setStageFk(buildStagePath.getStage().getStageId());
         return reportCardService.insertTestResult(testResult);
     }
 
     public TestResult doPostXmlSurefire(ReportMetaData reportMetatData, MultipartFile[] files) {
 
         List<String> xmlStrings = new ArrayList<>();
-        for (MultipartFile file : Arrays.asList(files)) {
+        for (MultipartFile file : files) {
             xmlStrings.add(file.toString());
         }
         return doPostXmlSurefire(reportMetatData, xmlStrings);
@@ -91,17 +93,9 @@ public class ReportControllerUtil {
         reportMetatData.validateAndSetDefaults();
         List<Testsuite> testsuites = SurefireParserUtil.parseTestSuites(xmlStrings);
         TestResult testResult = SurefireConvertersUtil.doFromSurefireToModelTestResult(testsuites);
-        BuildStagePath buildStagePath = reportCardService.getOrInsertBuildStagePath(reportMetatData);
-        testResult.setBuildStageFk(buildStagePath.getBuildStage().getBuildStageId());
+        ExecutionStagePath buildStagePath = reportCardService.getOrInsertExecutionStagePath(reportMetatData);
+        testResult.setStageFk(buildStagePath.getStage().getStageId());
         return reportCardService.insertTestResult(testResult);
-    }
-
-    public static String fileToString(File file) {
-        try {
-            return new String(Files.readAllBytes(file.toPath()));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public static String fileToString(MultipartFile file) {

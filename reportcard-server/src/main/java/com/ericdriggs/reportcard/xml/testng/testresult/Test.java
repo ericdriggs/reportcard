@@ -86,7 +86,7 @@ public class Test {
      */
     public List<Class> getClazz() {
         if (clazz == null) {
-            clazz = new ArrayList<Class>();
+            clazz = new ArrayList<>();
         }
         return this.clazz;
     }

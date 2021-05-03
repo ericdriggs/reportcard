@@ -1,67 +1,101 @@
 package com.ericdriggs.reportcard.scanner;
 
 /**
- * The arguments needed to submit a scanner request<br>
+ * Required Arguments<br>
  * {@link #REPORTCARD_HOST}<br>
  * {@link #REPORTCARD_USER}<br>
  * {@link #REPORTCARD_PASS}<br>
  * {@link #SCM_ORG}<br>
  * {@link #SCM_REPO}<br>
  * {@link #SCM_BRANCH}<br>
- * {@link #BUILD_APP}<br>
- * {@link #BUILD_IDENTIFIER}<br>
- * {@link #BUILD_STAGE}<br>
+ * {@link #SCM_SHA}<br>
+ * {@link #CONTEXT_HOST}<br>
  * {@link #TEST_REPORT_PATH}<br>
  * {@link #TEST_REPORT_REGEX}<br>
+ *
+ * Optional Arguments<br>
+ * {@link #CONTEXT_APPLICATION}<br>
+ * {@link #CONTEXT_PIPELINE}<br>
+ *
  * {@link #EXTERNAL_LINKS}<br>
  */
 public enum ScannerArg {
+
     /**
      * The base url of the reportcard host
      * (Required)
      */
     REPORTCARD_HOST,
+
     /**
      * The user for the reportcard host
      * (Required)
      */
     REPORTCARD_USER,
+
     /**
      * The pass for the reportcard host
      * (Required)
      */
     REPORTCARD_PASS,
+
     /**
-     * The source control organization. Organizations have repositories.
+     * A source control organization. Organizations have repositories.
      * (Required)
      */
     SCM_ORG,
+
     /**
-     * The source control repository. Repositories belong to an org. Repositories have branches.
+     * A source control repository. Repositories belong to an org. Repositories have branches.
      * (Required)
      */
     SCM_REPO,
+
     /**
-     * The source control branch. Branches belong to a branch. Reposities have branches and applications.
+     * A source control branch. Branches belong to a repo. Branches have SHAs.
      * (Required)
      */
     SCM_BRANCH,
+
     /**
-     * The build application. Build applications belong to a repository.
-     * (Optional) Defaults to repository value if not provided.
-     */
-    BUILD_APP,
-    /**
-     * A unique identifier for a build. Use of scm SHA is recommended.
-     * Multiple reports may be submitted with the same identifier.
-     * (Optional) Defaults to a generated guid if not provided.
-     */
-    BUILD_IDENTIFIER,
-    /**
-     * The build stage, e.g. unit, integration, api
+     * The source control sha. SHAs belong to a branch. Shas have contexts.
      * (Required)
      */
-    BUILD_STAGE,
+    SCM_SHA,
+
+    /**
+     * The host which the report was generated on.
+     * A context includes host and optionally application/pipeline
+     * (Required)
+     */
+    CONTEXT_HOST,
+
+    /**
+     * The application which the report was generated on.
+     * A context includes host and optionally application/pipeline
+     * (Optional)
+     */
+    CONTEXT_APPLICATION,
+
+    /**
+     * The host which the report was generated on.
+     * A context includes host and optionally application/pipeline
+     * (Optional)
+     */
+    CONTEXT_PIPELINE,
+
+    /**
+     * The external identifier for the execution (build). E.g. run number, generated uuid
+     * Executions belong to a context. Executions have stages.
+     * (Required)
+     */
+    EXECUTION_EXTERNAL_ID,
+    /**
+     * The stage, e.g. unit, integration, api.
+     * Stages belong to an execution. A stage has a test result.
+     * (Required)
+     */
+    STAGE,
     /**
      * The path to a single folder containing all test reports. Will not search sub-folders.
      * (Required)

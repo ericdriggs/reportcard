@@ -8,12 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.util.CollectionUtils;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 //import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,11 +21,15 @@ import java.util.List;
 public class InsertTestResultTest extends AbstractDbTest {
 
 
-    final String org = "org10";
-    final String repo = "repo10";
-    final String app = "app10";
-    final String branch = "branch10";
-    final static String buildUniqueString = "a5493474-274c-44bd-93a1-82e9df1c15d4";
+    final static String org = "org10";
+    final static String repo = "repo10";
+    final static String branch = "branch10";
+    final static String sha = "a5493474-274c-44bd-93a1-82e9df1c15d4";
+    final static String host = "www.foo.com";
+    final static String application = "app1";
+    final static String pipeline = "pipe1";
+    final static HostApplicationPipeline hostApplicationPipeline = new HostApplicationPipeline(host, application, pipeline);
+    final static String externalExecutionId = "run23";
     final static String stage = "stage10";
 
     final static int testResultErrorCount = 10;
@@ -63,9 +67,9 @@ public class InsertTestResultTest extends AbstractDbTest {
         assertValues(testResultInsert);
         assertIdsandFks(testResultInsert);
 
-        final List<TestResult> testResultsGet = reportCardService.getTestResults(testResultBefore.getBuildStageFk());
+        final Set<TestResult> testResultsGet = reportCardService.getTestResults(testResultBefore.getStageFk());
         assertEquals(1, testResultsGet.size());
-        final TestResult testResultGet = testResultsGet.get(0);
+        final TestResult testResultGet = testResultsGet.iterator().next();
         assertValues(testResultGet);
         assertIdsandFks(testResultGet);
     }
@@ -122,24 +126,25 @@ public class InsertTestResultTest extends AbstractDbTest {
                 new ReportMetaData()
                         .setOrg(org)
                         .setRepo(repo)
-                        .setApp(app)
                         .setBranch(branch)
-                        .setBuildIdentifier(buildUniqueString)
+                        .setSha(sha)
+                        .setHostApplicatiionPipeline(hostApplicationPipeline)
+                        .setExternalExecutionId(externalExecutionId)
                         .setStage(stage);
         return reportMetatData;
     }
 
     private TestResult getInsertableTestResult() {
 
-        BuildStagePath bsp = null;
+        ExecutionStagePath bsp;
         {
             ReportMetaData reportMetatData = getReportMetaData();
-            bsp = reportCardService.getOrInsertBuildStagePath(reportMetatData);
+            bsp = reportCardService.getOrInsertExecutionStagePath(reportMetatData);
             assertTrue(bsp.isComplete());
         }
 
         TestResult testResult = new TestResult();
-        testResult.setBuildStageFk(bsp.getBuildStage().getBuildStageId());
+        testResult.setStageFk(bsp.getStage().getStageId());
         testResult.setError(testResultErrorCount);
         testResult.setFailure(testResultFailureCount);
         testResult.setSkipped(testResultSkippedCount);

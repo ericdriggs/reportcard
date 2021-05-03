@@ -20,7 +20,7 @@ public enum TestStatus {
     }
 
     private final int statusId;
-    private TestStatusType testStatusType;
+    private final TestStatusType testStatusType;
 
     public Integer getStatusId() {
         return statusId;

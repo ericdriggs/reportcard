@@ -6,6 +6,7 @@ import org.jooq.impl.DefaultExecuteListener;
 import org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator;
 import org.springframework.jdbc.support.SQLExceptionTranslator;
 
+//TODO: can this class be removed? Don't know if it's still doing anything
 public class ExceptionTranslator extends DefaultExecuteListener {
     public void exception(ExecuteContext context) {
         SQLDialect dialect = context.configuration().dialect();

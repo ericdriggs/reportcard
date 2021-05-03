@@ -14,7 +14,7 @@ import static com.wix.mysql.EmbeddedMysql.anEmbeddedMysql;
 import static com.wix.mysql.ScriptResolver.classPathScript;
 import static com.wix.mysql.config.Charset.UTF8;
 import static com.wix.mysql.config.MysqldConfig.aMysqldConfig;
-import static com.wix.mysql.distribution.Version.v8_0_17;
+import static com.wix.mysql.distribution.Version.*;
 
 @Component
 @Profile("test")
@@ -29,8 +29,8 @@ public class MyEmbeddedMysql {
     final String ddlsql;
     final String dmlsql;
 
-    private DriverManagerDataSource dataSource;
-    EmbeddedMysql mysqld;
+    final DriverManagerDataSource dataSource;
+    final EmbeddedMysql mysqld;
 
 
     public MyEmbeddedMysql(@Value("${db.driverClassName}") String driverClassName,
@@ -52,8 +52,8 @@ public class MyEmbeddedMysql {
         System.out.println("##### LOADING TestEmbeddedMysql #######");
 
 //        Integer port = FreePortFinder.findFreeLocalPort();
-        Integer port = 13306;
-        MysqldConfig config = aMysqldConfig(v8_0_17)
+        int port = 13306;
+        MysqldConfig config = aMysqldConfig(v5_7_27)
                 .withCharset(UTF8)
                 .withUser(username, password)
                 .withTimeZone("UTC")

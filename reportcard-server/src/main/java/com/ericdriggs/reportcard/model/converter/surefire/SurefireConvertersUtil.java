@@ -17,19 +17,19 @@ import java.util.List;
 
 public class SurefireConvertersUtil {
 
-    public static Converter<Testcase, TestCase> fromSurefireToModelTestCase = new AbstractConverter<Testcase, TestCase>() {
+    public final static Converter<Testcase, TestCase> fromSurefireToModelTestCase = new AbstractConverter<Testcase, TestCase>() {
         protected com.ericdriggs.reportcard.model.TestCase convert(com.ericdriggs.reportcard.xml.surefire.Testcase source) {
             return doFromSurefireToModelTestCase(source);
         }
     };
 
-    public static Converter<Testsuite, TestSuite> fromSurefireToModelTestSuite = new AbstractConverter<Testsuite, TestSuite>() {
+    public final static Converter<Testsuite, TestSuite> fromSurefireToModelTestSuite = new AbstractConverter<Testsuite, TestSuite>() {
         protected com.ericdriggs.reportcard.model.TestSuite convert(com.ericdriggs.reportcard.xml.surefire.Testsuite source) {
             return doFromSurefireToModelTestSuite(source);
         }
     };
 
-    public static Converter<Collection<Testsuite>, TestResult> fromSurefireToModelTestResult = new AbstractConverter<Collection<Testsuite>, TestResult>() {
+    public final static Converter<Collection<Testsuite>, TestResult> fromSurefireToModelTestResult = new AbstractConverter<Collection<Testsuite>, TestResult>() {
         protected com.ericdriggs.reportcard.model.TestResult convert(Collection<Testsuite> source) {
             return doFromSurefireToModelTestResult(source);
         }
@@ -122,7 +122,7 @@ public class SurefireConvertersUtil {
         return modelTestResult;
     }
 
-    public static ModelMapper modelMapper = new ModelMapper();
+    public final static ModelMapper modelMapper = new ModelMapper();
 
     static {
         modelMapper.addConverter(fromSurefireToModelTestCase);

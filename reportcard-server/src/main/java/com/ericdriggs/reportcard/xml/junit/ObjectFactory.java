@@ -110,7 +110,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "", name = "testsuite")
     public JAXBElement<Testsuite> createTestsuite(Testsuite value) {
-        return new JAXBElement<Testsuite>(_Testsuite_QNAME, Testsuite.class, null, value);
+        return new JAXBElement<>(_Testsuite_QNAME, Testsuite.class, null, value);
     }
 
 }

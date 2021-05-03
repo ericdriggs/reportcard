@@ -69,7 +69,7 @@ public class Class {
      */
     public List<TestMethod> getTestMethod() {
         if (testMethod == null) {
-            testMethod = new ArrayList<TestMethod>();
+            testMethod = new ArrayList<>();
         }
         return this.testMethod;
     }

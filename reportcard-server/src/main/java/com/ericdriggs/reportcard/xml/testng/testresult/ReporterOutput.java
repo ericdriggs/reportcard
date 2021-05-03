@@ -61,7 +61,7 @@ public class ReporterOutput {
      */
     public List<String> getLine() {
         if (line == null) {
-            line = new ArrayList<String>();
+            line = new ArrayList<>();
         }
         return this.line;
     }

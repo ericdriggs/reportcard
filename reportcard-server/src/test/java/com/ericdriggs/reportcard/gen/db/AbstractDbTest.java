@@ -16,7 +16,7 @@ import org.springframework.test.context.TestPropertySource;
 @SuppressWarnings("PMD")
 public abstract class AbstractDbTest {
 
-    protected ReportCardService reportCardService;
+    protected final ReportCardService reportCardService;
 
     @Autowired
     public AbstractDbTest(ReportCardService reportCardService ) {

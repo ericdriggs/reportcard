@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class SurefireMapperTests {
 
-    private static ModelMapper modelMapper = SurefireConvertersUtil.modelMapper;
+    private final static ModelMapper modelMapper = SurefireConvertersUtil.modelMapper;
 
     @Test
     public void testCaseTest() {

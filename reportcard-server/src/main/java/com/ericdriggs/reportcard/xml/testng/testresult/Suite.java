@@ -114,7 +114,7 @@ public class Suite {
      */
     public List<Test> getTest() {
         if (test == null) {
-            test = new ArrayList<Test>();
+            test = new ArrayList<>();
         }
         return this.test;
     }
