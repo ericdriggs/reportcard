@@ -1,6 +1,8 @@
 package com.ericdriggs.reportcard.controller;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import com.ericdriggs.reportcard.ReportCardService;
 import com.ericdriggs.reportcard.gen.db.tables.pojos.*;
@@ -25,8 +27,8 @@ public class MetadataJsonController {
     }
 
     @GetMapping(path = "", produces = "application/json")
-    public ResponseEntity<List<Org>> getOrgs() {
-        return new ResponseEntity<>(reportCardService.getOrgs(), HttpStatus.OK);
+    public ResponseEntity<Map<Org, Set<Repo>>> getOrgs() {
+        return new ResponseEntity<>(reportCardService.getOrgsRepos(), HttpStatus.OK);
     }
 
     @GetMapping(path = "{org}", produces = "application/json")
@@ -35,7 +37,7 @@ public class MetadataJsonController {
     }
 
     @GetMapping(path = "{org}/repos", produces = "application/json")
-    public ResponseEntity<List<Repo>> getRepos(@PathVariable String org) {
+    public ResponseEntity<Set<Repo>> getRepos(@PathVariable String org) {
         return new ResponseEntity<>(reportCardService.getRepos(org), HttpStatus.OK);
     }
 

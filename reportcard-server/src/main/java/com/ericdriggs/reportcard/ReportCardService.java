@@ -18,10 +18,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 import static com.ericdriggs.reportcard.gen.db.Tables.*;
 
@@ -79,10 +77,12 @@ public class ReportCardService {
     }
 
 
-    public List<Org> getOrgs() {
-        return dsl.select().from(ORG)
+    public Set<Org> getOrgs() {
+        Set<Org> orgs = new TreeSet<>(Comparators.ORG_CASE_INSENSITIVE_ORDER);
+        orgs.addAll(dsl.select().from(ORG)
                 .fetch()
-                .into(Org.class);
+                .into(Org.class));
+        return orgs;
     }
 
     public Org getOrg(String org) {
@@ -93,17 +93,34 @@ public class ReportCardService {
             throwNotFound(org);
         }
         return record.into(Org.class);
-
     }
 
-    public List<com.ericdriggs.reportcard.gen.db.tables.pojos.Repo> getRepos(String org) {
-        return dsl.
+    public Set<Repo> getRepos(String org) {
+        Set<Repo> repos= new TreeSet<>(Comparators.REPO_CASE_INSENSITIVE_ORDER);
+        repos.addAll( dsl.
                 select(REPO.fields())
                 .from(REPO.join(ORG)
                         .on(REPO.ORG_FK.eq(ORG.ORG_ID)))
                 .where(ORG.ORG_NAME.eq(org))
                 .fetch()
-                .into(com.ericdriggs.reportcard.gen.db.tables.pojos.Repo.class);
+                .into(com.ericdriggs.reportcard.gen.db.tables.pojos.Repo.class));
+        return repos;
+    }
+
+    public Map<Org, Set<Repo>> getOrgsRepos() {
+
+        Map<Org, Set<Repo>> orgRepoMap = new ConcurrentSkipListMap<>(Comparators.ORG_CASE_INSENSITIVE_ORDER);
+        Set<Org> orgs = getOrgs();
+        orgs.stream().forEach(org -> {
+            orgRepoMap.put(org, getRepos(org.getOrgName()));
+        });
+        return orgRepoMap;
+    }
+
+    public Map<Org, Set<Repo>> getOrgRepos(String orgName) {
+        Org org = getOrg(orgName);
+        Set<Repo> repos = getRepos(orgName);
+        return Collections.singletonMap(org, repos);
     }
 
     public com.ericdriggs.reportcard.gen.db.tables.pojos.Repo getRepo(String org, String repo) {
