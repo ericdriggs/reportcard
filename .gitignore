@@ -27,3 +27,5 @@ gradle-app.setting
 **/out/**
 **/out/**/**
 **/target/**
+
+.DS_Store
