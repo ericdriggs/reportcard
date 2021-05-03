@@ -85,23 +85,23 @@ public class ReportCardService {
         return orgs;
     }
 
-    public Org getOrg(String org) {
+    public Org getOrg(String orgName) {
         Record record = dsl.select().from(ORG)
-                .where(ORG.ORG_NAME.eq(org))
+                .where(ORG.ORG_NAME.eq(orgName))
                 .fetchOne();
         if (record == null) {
-            throwNotFound(org);
+            throwNotFound(orgName);
         }
         return record.into(Org.class);
     }
 
-    public Set<Repo> getRepos(String org) {
+    public Set<Repo> getRepos(String orgName) {
         Set<Repo> repos= new TreeSet<>(Comparators.REPO_CASE_INSENSITIVE_ORDER);
         repos.addAll( dsl.
                 select(REPO.fields())
                 .from(REPO.join(ORG)
                         .on(REPO.ORG_FK.eq(ORG.ORG_ID)))
-                .where(ORG.ORG_NAME.eq(org))
+                .where(ORG.ORG_NAME.eq(orgName))
                 .fetch()
                 .into(com.ericdriggs.reportcard.gen.db.tables.pojos.Repo.class));
         return repos;
@@ -137,11 +137,11 @@ public class ReportCardService {
         return ret;
     }
 
-    public Map<Repo, Set<Branch>> getReposBranches(String org) {
-        Set<Repo> repos = getRepos(org);
+    public Map<Repo, Set<Branch>> getReposBranches(String orgName) {
+        Set<Repo> repos = getRepos(orgName);
         Map<Repo,Set<Branch>> repoBranchMap= new ConcurrentSkipListMap<>(Comparators.REPO_CASE_INSENSITIVE_ORDER);
         repos.stream().forEach( repo-> {
-            repoBranchMap.put(repo, getBranches(org, repo.getRepoName()));
+            repoBranchMap.put(repo, getBranches(orgName, repo.getRepoName()));
         });
         return repoBranchMap;
     }
@@ -152,42 +152,42 @@ public class ReportCardService {
     }
 
 
-    public Set<Branch> getBranches(String org, String repo) {
+    public Set<Branch> getBranches(String orgName, String repoName) {
         Set<Branch> branches= new TreeSet<>(Comparators.BRANCH_CASE_INSENSITIVE_ORDER);
         branches.addAll( dsl.
                 select(BRANCH.fields())
                 .from(BRANCH
                         .join(REPO).on(BRANCH.REPO_FK.eq(REPO.REPO_ID))
                         .join(ORG).on(REPO.ORG_FK.eq(ORG.ORG_ID)))
-                .where(ORG.ORG_NAME.eq(org))
-                .and(REPO.REPO_NAME.eq(repo))
+                .where(ORG.ORG_NAME.eq(orgName))
+                .and(REPO.REPO_NAME.eq(repoName))
                 .fetch()
                 .into(Branch.class));
         return branches;
     }
 
-    public Branch getBranch(String org, String repo, String branch) {
+    public Branch getBranch(String orgName, String repoName, String branchName) {
         Branch ret = dsl.
                 select(BRANCH.fields())
                 .from(BRANCH
                         .join(REPO).on(BRANCH.REPO_FK.eq(REPO.REPO_ID))
                         .join(ORG).on(REPO.ORG_FK.eq(ORG.ORG_ID)))
-                .where(ORG.ORG_NAME.eq(org))
-                .and(REPO.REPO_NAME.eq(repo))
-                .and(BRANCH.BRANCH_NAME.eq(branch))
+                .where(ORG.ORG_NAME.eq(orgName))
+                .and(REPO.REPO_NAME.eq(repoName))
+                .and(BRANCH.BRANCH_NAME.eq(branchName))
                 .fetchOne()
                 .into(Branch.class);
         if (ret == null) {
-            throwNotFound(org, repo, branch);
+            throwNotFound(orgName, repoName, branchName);
         }
         return ret;
     }
 
-    public Map<Branch,Set<Sha>> getBranchesShas(String org, String repo) {
-        Set<Branch> branches = getBranches(org, repo);
+    public Map<Branch,Set<Sha>> getBranchesShas(String orgName, String repoName) {
+        Set<Branch> branches = getBranches(orgName, repoName);
         Map<Branch,Set<Sha>> branchShaMap = new ConcurrentSkipListMap<>(Comparators.BRANCH_CASE_INSENSITIVE_ORDER);
         branches.stream().forEach(branch ->
-                        branchShaMap.put(branch, getShas(org, repo, branch.getBranchName()))
+                        branchShaMap.put(branch, getShas(orgName, repoName, branch.getBranchName()))
                 );
         return branchShaMap;
     }
@@ -231,8 +231,23 @@ public class ReportCardService {
         return ret;
     }
 
-    public List<Context> getContexts(String org, String repo, String branch, String sha) {
-        return dsl.
+    public Map<Sha,Set<Context>> getShasContexts(String orgName, String repoName, String branchName) {
+        Set<Sha> shas = getShas(orgName, repoName, branchName);
+        Map<Sha,Set<Context>> shaContextMap  = new TreeMap<>(Comparators.SHA);
+        shas.stream().forEach(sha ->
+                shaContextMap.put(sha, getContexts(orgName, repoName, branchName, sha.getSha()))
+                );
+        return shaContextMap;
+    }
+
+    public Map<Sha,Set<Context>> getShaContexts(String orgName, String repoName, String branchName, String shaString) {
+        Sha sha = getSha(orgName, repoName, branchName, shaString);
+        return Collections.singletonMap(sha, getContexts(orgName, repoName, branchName, shaString));
+    }
+
+    public Set<Context> getContexts(String org, String repo, String branch, String sha) {
+        Set<Context> contexts = new TreeSet<>(Comparators.CONTEXT_CASE_INSENSITIVE_ORDER);
+        contexts.addAll(dsl.
                 select(CONTEXT.fields())
                 .from(CONTEXT
                         .join(SHA).on(CONTEXT.SHA_FK.eq(SHA.SHA_ID))
@@ -244,7 +259,8 @@ public class ReportCardService {
                 .and(BRANCH.BRANCH_NAME.eq(branch))
                 .and(SHA.SHA_.eq(sha))
                 .fetch()
-                .into(Context.class);
+                .into(Context.class));
+        return contexts;
     }
 
     protected static void addContextConditions(SelectConditionStep<Record> selectConditionStep, HostApplicationPipeline hostApplicatiionPipeline) {

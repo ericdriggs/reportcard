@@ -58,19 +58,19 @@ public class MetadataJsonController {
     }
 
     @GetMapping(path = "{org}/repos/{repo}/branches/{branch}/shas", produces = "application/json")
-    public ResponseEntity<Set<Sha>> getShas(
+    public ResponseEntity<Map<Sha, Set<Context>>> getShas(
             @PathVariable String org, @PathVariable String repo, @PathVariable String branch) {
-        return new ResponseEntity<>(reportCardService.getShas(org, repo, branch), HttpStatus.OK);
+        return new ResponseEntity<>(reportCardService.getShasContexts(org, repo, branch), HttpStatus.OK);
     }
 
     @GetMapping(path = "{org}/repos/{repo}/branches/{branch}/shas/{sha}", produces = "application/json")
-    public ResponseEntity<Sha> getSha(
+    public ResponseEntity<Map<Sha, Set<Context>>> getSha(
             @PathVariable String org, @PathVariable String repo, @PathVariable String branch, @PathVariable String sha) {
-        return new ResponseEntity<>(reportCardService.getSha(org, repo, branch, sha), HttpStatus.OK);
+        return new ResponseEntity<>(reportCardService.getShaContexts(org, repo, branch, sha), HttpStatus.OK);
     }
 
     @GetMapping(path = "{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts", produces = "application/json")
-    public ResponseEntity<List<Context>> getContexts(
+    public ResponseEntity<Set<Context>> getContexts(
             @PathVariable String org, @PathVariable String repo, @PathVariable String branch, @PathVariable String sha) {
         return new ResponseEntity<>(reportCardService.getContexts(org, repo, branch, sha), HttpStatus.OK);
     }
