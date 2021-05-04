@@ -16,6 +16,7 @@ plugins {
     id 'org.springframework.boot'
     id 'io.spring.dependency-management'
     id 'nu.studer.jooq' version '5.2.1'
+//    id "org.flywaydb.flyway" version "7.8.2"
 }
 
 configurations {
@@ -32,7 +33,7 @@ repositories {
 
 dependencies {
     //Lombok
-    compile 'org.projectlombok:lombok'
+    implementation 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
     //Swagger
@@ -57,12 +58,14 @@ dependencies {
     implementation 'org.jooq:jooq'
     implementation 'org.jooq:jooq-codegen'
     implementation 'org.springframework.boot:spring-boot-starter-jooq:2.3.1.RELEASE'
-
-    testImplementation 'com.wix:wix-embedded-mysql:4.6.1'
-
-
     implementation 'mysql:mysql-connector-java:8.0.20'
     jooqGenerator 'mysql:mysql-connector-java:8.0.20'
+
+    //DB Migration
+    implementation 'org.flywaydb:flyway-core:7.8.2'
+
+    //DB Test
+    testImplementation 'com.wix:wix-embedded-mysql:4.6.1'
 
     //Mapping
     implementation 'org.modelmapper:modelmapper:2.3.0'

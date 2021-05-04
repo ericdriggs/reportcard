@@ -5,7 +5,7 @@ plugins {
 }
 
 dependencies {
-    compile 'org.jooq:jooq-codegen'
+    implementation 'org.jooq:jooq-codegen'
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
