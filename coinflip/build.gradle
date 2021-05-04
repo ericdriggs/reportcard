@@ -11,9 +11,9 @@ plugins {
 }
 
 dependencies {
-    testCompile "com.intuit.karate:karate-junit5:${karateVersion}"
-    testCompile "com.intuit.karate:karate-apache:${karateVersion}"
-    compile "net.masterthought:cucumber-reporting:${masterThoughtVersion}"
+    testImplementation "com.intuit.karate:karate-junit5:${karateVersion}"
+    testImplementation "com.intuit.karate:karate-apache:${karateVersion}"
+    implementation "net.masterthought:cucumber-reporting:${masterThoughtVersion}"
 }
 
 repositories {

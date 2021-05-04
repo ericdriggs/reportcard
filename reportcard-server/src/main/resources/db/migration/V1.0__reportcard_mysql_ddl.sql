@@ -11,7 +11,7 @@ SHOW WARNINGS;
 -- -----------------------------------------------------
 -- Schema reportcard
 -- -----------------------------------------------------
-DROP SCHEMA IF EXISTS `reportcard`;
+-- DROP SCHEMA IF EXISTS `reportcard`;
 
 -- -----------------------------------------------------
 -- Schema reportcard
@@ -23,7 +23,7 @@ USE `reportcard`;
 -- -----------------------------------------------------
 -- Table `org`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `org`;
+-- DROP TABLE IF EXISTS `org`;
 
 SHOW WARNINGS;
 CREATE TABLE IF NOT EXISTS `org`
@@ -42,7 +42,7 @@ SHOW WARNINGS;
 -- -----------------------------------------------------
 -- Table `repo`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `repo`;
+-- DROP TABLE IF EXISTS `repo`;
 
 SHOW WARNINGS;
 CREATE TABLE IF NOT EXISTS `repo`
@@ -68,7 +68,7 @@ SHOW WARNINGS;
 -- -----------------------------------------------------
 -- Table `branch`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `branch`;
+-- DROP TABLE IF EXISTS `branch`;
 
 SHOW WARNINGS;
 CREATE TABLE IF NOT EXISTS `branch`
@@ -94,7 +94,7 @@ SHOW WARNINGS;
 -- -----------------------------------------------------
 -- Table `sha`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `sha`;
+-- DROP TABLE IF EXISTS `sha`;
 
 SHOW WARNINGS;
 CREATE TABLE IF NOT EXISTS `sha`
@@ -121,7 +121,7 @@ SHOW WARNINGS;
 -- -----------------------------------------------------
 -- Table `context`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `context`;
+-- DROP TABLE IF EXISTS `context`;
 
 SHOW WARNINGS;
 CREATE TABLE IF NOT EXISTS `context`
@@ -148,7 +148,7 @@ SHOW WARNINGS;
 -- -----------------------------------------------------
 -- Table `execution`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `execution`;
+-- DROP TABLE IF EXISTS `execution`;
 
 SHOW WARNINGS;
 CREATE TABLE IF NOT EXISTS `execution`
@@ -174,7 +174,7 @@ SHOW WARNINGS;
 -- -----------------------------------------------------
 -- Table `stage`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `stage`;
+-- DROP TABLE IF EXISTS `stage`;
 
 SHOW WARNINGS;
 CREATE TABLE IF NOT EXISTS `stage`
@@ -200,7 +200,7 @@ SHOW WARNINGS;
 -- -----------------------------------------------------
 -- Table `test_status`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `test_status`;
+-- DROP TABLE IF EXISTS `test_status`;
 
 SHOW WARNINGS;
 CREATE TABLE IF NOT EXISTS `test_status`
@@ -218,7 +218,7 @@ SHOW WARNINGS;
 -- -----------------------------------------------------
 -- Table `test_result`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `test_result`;
+-- DROP TABLE IF EXISTS `test_result`;
 
 SHOW WARNINGS;
 CREATE TABLE IF NOT EXISTS `test_result`
@@ -251,7 +251,7 @@ SHOW WARNINGS;
 -- -----------------------------------------------------
 -- Table `test_suite`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `test_suite`;
+-- DROP TABLE IF EXISTS `test_suite`;
 
 SHOW WARNINGS;
 CREATE TABLE IF NOT EXISTS `test_suite`
@@ -285,7 +285,7 @@ SHOW WARNINGS;
 -- -----------------------------------------------------
 -- Table `test_case`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `test_case`;
+-- DROP TABLE IF EXISTS `test_case`;
 
 SHOW WARNINGS;
 CREATE TABLE IF NOT EXISTS `test_case`
