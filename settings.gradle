@@ -6,7 +6,7 @@ pluginManagement {
 }
 
 rootProject.name = 'reportcard'
-//include 'coinflip' //coinflip generates failing tests -- not part of build
+//include 'test-data-generator' //est-data-generator generates failing tests -- not part of build
+include 'reportcard-client'
 include 'reportcard-jooq-generator'
 include 'reportcard-server'
-include 'reportcard-scanner'
