@@ -1,0 +1,1125 @@
+openapi: 3.0.1
+info:
+  title: OpenAPI definition
+  version: v0
+servers:
+- description: Generated server url
+  url: http://localhost:8080
+paths:
+  /api/v1/reports:
+    post:
+      operationId: postXml
+      parameters:
+      - explode: true
+        in: query
+        name: files
+        required: true
+        schema:
+          items:
+            format: binary
+            type: string
+          type: array
+        style: form
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReportMetaData'
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/TestResult'
+          description: OK
+      tags:
+      - report-controller
+  /api/v1/reports/surefire:
+    post:
+      operationId: postXmlSurefire
+      parameters:
+      - explode: true
+        in: query
+        name: reportMetaData
+        required: true
+        schema:
+          $ref: '#/components/schemas/ReportMetaData'
+        style: form
+      - explode: true
+        in: query
+        name: files
+        required: true
+        schema:
+          items:
+            format: binary
+            type: string
+          type: array
+        style: form
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/TestResult'
+          description: OK
+      tags:
+      - report-controller
+  /api/v1/reports/junit:
+    post:
+      operationId: postXmlJunit
+      parameters:
+      - explode: true
+        in: query
+        name: reportMetaData
+        required: true
+        schema:
+          $ref: '#/components/schemas/ReportMetaData'
+        style: form
+      requestBody:
+        $ref: '#/components/requestBodies/inline_object'
+        content:
+          application/json:
+            schema:
+              properties:
+                file:
+                  format: binary
+                  type: string
+              required:
+              - file
+              type: object
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/TestResult'
+          description: OK
+      tags:
+      - report-controller
+  /api/v1/reports/{testResultId}:
+    get:
+      operationId: getTestResult
+      parameters:
+      - explode: false
+        in: path
+        name: testResultId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestResult'
+          description: OK
+      tags:
+      - report-controller
+  /api/v1/orgs:
+    get:
+      operationId: getOrgs
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  items:
+                    $ref: '#/components/schemas/Repo'
+                  type: array
+                  uniqueItems: true
+                type: object
+          description: OK
+      tags:
+      - metadata-json-controller
+  /api/v1/orgs/{org}:
+    get:
+      operationId: getOrg
+      parameters:
+      - explode: false
+        in: path
+        name: org
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  items:
+                    $ref: '#/components/schemas/Repo'
+                  type: array
+                  uniqueItems: true
+                type: object
+          description: OK
+      tags:
+      - metadata-json-controller
+  /api/v1/orgs/{org}/repos:
+    get:
+      operationId: getRepos
+      parameters:
+      - explode: false
+        in: path
+        name: org
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  items:
+                    $ref: '#/components/schemas/Branch'
+                  type: array
+                  uniqueItems: true
+                type: object
+          description: OK
+      tags:
+      - metadata-json-controller
+  /api/v1/orgs/{org}/repos/{repo}:
+    get:
+      operationId: getRepo
+      parameters:
+      - explode: false
+        in: path
+        name: org
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: repo
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  items:
+                    $ref: '#/components/schemas/Branch'
+                  type: array
+                  uniqueItems: true
+                type: object
+          description: OK
+      tags:
+      - metadata-json-controller
+  /api/v1/orgs/{org}/repos/{repo}/branches:
+    get:
+      operationId: getBranches
+      parameters:
+      - explode: false
+        in: path
+        name: org
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: repo
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  items:
+                    $ref: '#/components/schemas/Sha'
+                  type: array
+                  uniqueItems: true
+                type: object
+          description: OK
+      tags:
+      - metadata-json-controller
+  /api/v1/orgs/{org}/repos/{repo}/branches/{branch}:
+    get:
+      operationId: getBranch
+      parameters:
+      - explode: false
+        in: path
+        name: org
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: repo
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: branch
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  items:
+                    $ref: '#/components/schemas/Sha'
+                  type: array
+                  uniqueItems: true
+                type: object
+          description: OK
+      tags:
+      - metadata-json-controller
+  /api/v1/orgs/{org}/repos/{repo}/branches/{branch}/shas:
+    get:
+      operationId: getShas
+      parameters:
+      - explode: false
+        in: path
+        name: org
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: repo
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: branch
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  items:
+                    $ref: '#/components/schemas/Context'
+                  type: array
+                  uniqueItems: true
+                type: object
+          description: OK
+      tags:
+      - metadata-json-controller
+  /api/v1/orgs/{org}/repos/{repo}/branches/{branch}/shas/{sha}:
+    get:
+      operationId: getSha
+      parameters:
+      - explode: false
+        in: path
+        name: org
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: repo
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: branch
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: sha
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  items:
+                    $ref: '#/components/schemas/Context'
+                  type: array
+                  uniqueItems: true
+                type: object
+          description: OK
+      tags:
+      - metadata-json-controller
+  /api/v1/orgs/{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts:
+    get:
+      operationId: getContexts
+      parameters:
+      - explode: false
+        in: path
+        name: org
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: repo
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: branch
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: sha
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  items:
+                    $ref: '#/components/schemas/Execution'
+                  type: array
+                  uniqueItems: true
+                type: object
+          description: OK
+      tags:
+      - metadata-json-controller
+  /api/v1/orgs/{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts/{host}:
+    get:
+      operationId: getContext
+      parameters:
+      - explode: false
+        in: path
+        name: org
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: repo
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: branch
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: sha
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: host
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: true
+        in: query
+        name: application
+        required: true
+        schema:
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: pipeline
+        required: true
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  items:
+                    $ref: '#/components/schemas/Execution'
+                  type: array
+                  uniqueItems: true
+                type: object
+          description: OK
+      tags:
+      - metadata-json-controller
+  /api/v1/orgs/{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts/{host}/executions:
+    get:
+      operationId: getExecutions
+      parameters:
+      - explode: false
+        in: path
+        name: org
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: repo
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: branch
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: sha
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: host
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: true
+        in: query
+        name: application
+        required: true
+        schema:
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: pipeline
+        required: true
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  items:
+                    $ref: '#/components/schemas/Stage'
+                  type: array
+                  uniqueItems: true
+                type: object
+          description: OK
+      tags:
+      - metadata-json-controller
+  /api/v1/orgs/{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts/{host}/executions/{externalExecutionId}:
+    get:
+      operationId: getExecution
+      parameters:
+      - explode: false
+        in: path
+        name: org
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: repo
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: branch
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: sha
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: host
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: externalExecutionId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: true
+        in: query
+        name: application
+        required: true
+        schema:
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: pipeline
+        required: true
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  items:
+                    $ref: '#/components/schemas/Stage'
+                  type: array
+                  uniqueItems: true
+                type: object
+          description: OK
+      tags:
+      - metadata-json-controller
+  /api/v1/orgs/{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts/{host}/executions/{executionName}/stages:
+    get:
+      operationId: getStages
+      parameters:
+      - explode: false
+        in: path
+        name: org
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: repo
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: branch
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: sha
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: host
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: executionName
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: true
+        in: query
+        name: application
+        required: true
+        schema:
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: pipeline
+        required: true
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  items:
+                    $ref: '#/components/schemas/TestResult'
+                  type: array
+                  uniqueItems: true
+                type: object
+          description: OK
+      tags:
+      - metadata-json-controller
+  /api/v1/orgs/{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts/{host}/executions/{executionName}/stages/{stage}:
+    get:
+      operationId: getStage
+      parameters:
+      - explode: false
+        in: path
+        name: org
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: repo
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: branch
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: sha
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: host
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: executionName
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: stage
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: true
+        in: query
+        name: application
+        required: true
+        schema:
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: pipeline
+        required: true
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  items:
+                    $ref: '#/components/schemas/TestResult'
+                  type: array
+                  uniqueItems: true
+                type: object
+          description: OK
+      tags:
+      - metadata-json-controller
+components:
+  requestBodies:
+    inline_object:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/inline_object'
+  schemas:
+    HostApplicationPipeline:
+      example:
+        pipeline: pipeline
+        application: application
+        host: host
+      properties:
+        host:
+          type: string
+        application:
+          type: string
+        pipeline:
+          type: string
+      type: object
+    ReportMetaData:
+      example:
+        stage: stage
+        org: org
+        repo: repo
+        hostApplicationPipeline:
+          pipeline: pipeline
+          application: application
+          host: host
+        externalLinks:
+          key: externalLinks
+        branch: branch
+        sha: sha
+        externalExecutionId: externalExecutionId
+      properties:
+        org:
+          type: string
+        repo:
+          type: string
+        branch:
+          type: string
+        sha:
+          type: string
+        hostApplicationPipeline:
+          $ref: '#/components/schemas/HostApplicationPipeline'
+        externalExecutionId:
+          type: string
+        stage:
+          type: string
+        externalLinks:
+          additionalProperties:
+            type: string
+          type: object
+      type: object
+    TestCase:
+      example:
+        testSuiteFk: 6
+        testStatusFk: testStatusFk
+        testStatus: SUCCESS
+        name: name
+        className: className
+        time: 7.457744773683766
+        testCaseId: 1
+      properties:
+        testCaseId:
+          format: int64
+          type: integer
+        testSuiteFk:
+          format: int64
+          type: integer
+        name:
+          type: string
+        className:
+          type: string
+        time:
+          type: number
+        testStatusFk:
+          format: byte
+          type: string
+        testStatus:
+          enum:
+          - SUCCESS
+          - SKIPPED
+          - FAILURE
+          - ERROR
+          - FLAKY_FAILURE
+          - RERUN_FAILURE
+          - FLAKY_ERROR
+          - RERUN_ERROR
+          type: string
+      type: object
+    TestResult:
+      example:
+        stageFk: 6
+        testResultCreated: 2000-01-23T04:56:07.000+00:00
+        testSuites:
+        - package: package
+          testResultFk: 3
+          testCases:
+          - testSuiteFk: 6
+            testStatusFk: testStatusFk
+            testStatus: SUCCESS
+            name: name
+            className: className
+            time: 7.457744773683766
+            testCaseId: 1
+          - testSuiteFk: 6
+            testStatusFk: testStatusFk
+            testStatus: SUCCESS
+            name: name
+            className: className
+            time: 7.457744773683766
+            testCaseId: 1
+          testSuiteId: 9
+          error: 7
+          skipped: 4
+          tests: 2
+          hasSkip: true
+          failure: 1
+          time: 1.0246457001441578
+          properties: properties
+          group: group
+          isSuccess: true
+        - package: package
+          testResultFk: 3
+          testCases:
+          - testSuiteFk: 6
+            testStatusFk: testStatusFk
+            testStatus: SUCCESS
+            name: name
+            className: className
+            time: 7.457744773683766
+            testCaseId: 1
+          - testSuiteFk: 6
+            testStatusFk: testStatusFk
+            testStatus: SUCCESS
+            name: name
+            className: className
+            time: 7.457744773683766
+            testCaseId: 1
+          testSuiteId: 9
+          error: 7
+          skipped: 4
+          tests: 2
+          hasSkip: true
+          failure: 1
+          time: 1.0246457001441578
+          properties: properties
+          group: group
+          isSuccess: true
+        error: 5
+        skipped: 5
+        tests: 1
+        hasSkip: true
+        failure: 2
+        testResultId: 0
+        externalLinks: externalLinks
+        time: 7.061401241503109
+        isSuccess: true
+      properties:
+        testResultId:
+          format: int64
+          type: integer
+        stageFk:
+          format: int64
+          type: integer
+        tests:
+          format: int32
+          type: integer
+        skipped:
+          format: int32
+          type: integer
+        error:
+          format: int32
+          type: integer
+        failure:
+          format: int32
+          type: integer
+        time:
+          type: number
+        testResultCreated:
+          format: date-time
+          type: string
+        externalLinks:
+          type: string
+        isSuccess:
+          type: boolean
+        hasSkip:
+          type: boolean
+        testSuites:
+          items:
+            $ref: '#/components/schemas/TestSuite'
+          type: array
+        externalLinksMap:
+          $ref: '#/components/schemas/TestResult'
+      type: object
+    TestSuite:
+      example:
+        package: package
+        testResultFk: 3
+        testCases:
+        - testSuiteFk: 6
+          testStatusFk: testStatusFk
+          testStatus: SUCCESS
+          name: name
+          className: className
+          time: 7.457744773683766
+          testCaseId: 1
+        - testSuiteFk: 6
+          testStatusFk: testStatusFk
+          testStatus: SUCCESS
+          name: name
+          className: className
+          time: 7.457744773683766
+          testCaseId: 1
+        testSuiteId: 9
+        error: 7
+        skipped: 4
+        tests: 2
+        hasSkip: true
+        failure: 1
+        time: 1.0246457001441578
+        properties: properties
+        group: group
+        isSuccess: true
+      properties:
+        testSuiteId:
+          format: int64
+          type: integer
+        testResultFk:
+          format: int64
+          type: integer
+        tests:
+          format: int32
+          type: integer
+        skipped:
+          format: int32
+          type: integer
+        error:
+          format: int32
+          type: integer
+        failure:
+          format: int32
+          type: integer
+        time:
+          type: number
+        group:
+          type: string
+        properties:
+          type: string
+        isSuccess:
+          type: boolean
+        hasSkip:
+          type: boolean
+        testCases:
+          items:
+            $ref: '#/components/schemas/TestCase'
+          type: array
+        package:
+          type: string
+      type: object
+    Repo:
+      properties:
+        repoId:
+          format: int32
+          type: integer
+        repoName:
+          type: string
+        orgFk:
+          format: int32
+          type: integer
+      type: object
+    Branch:
+      properties:
+        branchId:
+          format: int32
+          type: integer
+        branchName:
+          type: string
+        repoFk:
+          format: int32
+          type: integer
+      type: object
+    Sha:
+      properties:
+        shaId:
+          format: int64
+          type: integer
+        sha:
+          type: string
+        shaCreated:
+          format: date-time
+          type: string
+        branchFk:
+          format: int32
+          type: integer
+      type: object
+    Context:
+      properties:
+        contextId:
+          format: int64
+          type: integer
+        shaFk:
+          format: int64
+          type: integer
+        host:
+          type: string
+        application:
+          type: string
+        pipeline:
+          type: string
+      type: object
+    Execution:
+      properties:
+        executionId:
+          format: int64
+          type: integer
+        executionExternalId:
+          type: string
+        contextFk:
+          format: int64
+          type: integer
+      type: object
+    Stage:
+      properties:
+        stageId:
+          format: int64
+          type: integer
+        stageName:
+          type: string
+        executionFk:
+          format: int64
+          type: integer
+      type: object
+    inline_object:
+      properties:
+        file:
+          format: binary
+          type: string
+      required:
+      - file
+      type: object
