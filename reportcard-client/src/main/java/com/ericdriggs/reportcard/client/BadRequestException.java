@@ -1,4 +1,4 @@
-package com.ericdriggs.reportcard.scanner;
+package com.ericdriggs.reportcard.client;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;

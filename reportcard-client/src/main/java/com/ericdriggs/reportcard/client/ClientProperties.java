@@ -1,4 +1,4 @@
-package com.ericdriggs.reportcard.scanner;
+package com.ericdriggs.reportcard.client;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.ApplicationArguments;
@@ -19,20 +19,20 @@ import java.util.Properties;
  * 1. command-line argument
  * 2. environment variable
  * 3. property file
- * @see ScannerArg
+ * @see ClientArg
  */
 @Component
-public class ScannerProperties {
+public class ClientProperties {
 
-    public static ScannerPostRequest getReportPostPayload(ApplicationArguments applicationArguments) {
+    public static PostRequest getReportPostPayload(ApplicationArguments applicationArguments) {
         final Properties props = getProperties(applicationArguments);
 
-        Map<ScannerArg, String> argMap = new HashMap<>();
-        for (ScannerArg scannerArg : ScannerArg.values()) {
+        Map<ClientArg, String> argMap = new HashMap<>();
+        for (ClientArg scannerArg : ClientArg.values()) {
             argMap.put(scannerArg, props.getProperty(scannerArg.name()));
         }
 
-        ScannerPostRequest payload = new ScannerPostRequest(argMap);
+        PostRequest payload = new PostRequest(argMap);
         payload.prepare();
         return payload;
     }
@@ -45,7 +45,7 @@ public class ScannerProperties {
 
     public static Properties getArgProperties(ApplicationArguments args, Properties defaultProperties) {
         Properties properties = new Properties(defaultProperties);
-        for (ScannerArg argument : ScannerArg.values()) {
+        for (ClientArg argument : ClientArg.values()) {
             if (args.getOptionNames().contains(argument.name())) {
                 String value = getLastValue(args.getOptionValues(argument.name()));
                 if (!StringUtils.isEmpty(value) && !StringUtils.isBlank(value)) {
@@ -58,7 +58,7 @@ public class ScannerProperties {
 
     public static Properties getEnvProperties(Properties defaultProperties) {
         Properties properties = new Properties(defaultProperties);
-        for (ScannerArg argument : ScannerArg.values()) {
+        for (ClientArg argument : ClientArg.values()) {
             String value = System.getenv(argument.name());
             if (hasValue(value)) {
                 properties.put(argument.name(), value);

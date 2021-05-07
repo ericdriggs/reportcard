@@ -1,4 +1,4 @@
-package com.ericdriggs.reportcard.scanner;
+package com.ericdriggs.reportcard.client;
 
 /**
  * Required Arguments<br>
@@ -19,7 +19,7 @@ package com.ericdriggs.reportcard.scanner;
  *
  * {@link #EXTERNAL_LINKS}<br>
  */
-public enum ScannerArg {
+public enum ClientArg {
 
     /**
      * The base url of the reportcard host
@@ -116,7 +116,7 @@ public enum ScannerArg {
      */
     EXTERNAL_LINKS;
 
-    public static String getToken(ScannerArg scannerArg) {
+    public static String getToken(ClientArg scannerArg) {
         return "<" + scannerArg.name() + ">";
     }
 

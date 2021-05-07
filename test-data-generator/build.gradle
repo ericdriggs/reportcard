@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        karateVersion = '0.9.6.RC3'
+        karateVersion = '0.9.6'
         masterThoughtVersion = '4.7.0'
     }
 }

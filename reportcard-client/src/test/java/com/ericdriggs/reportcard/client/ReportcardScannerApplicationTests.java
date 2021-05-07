@@ -1,4 +1,4 @@
-package com.ericdriggs.reportcard.scanner;
+package com.ericdriggs.reportcard.client;
 
 
 import org.junit.jupiter.api.Disabled;

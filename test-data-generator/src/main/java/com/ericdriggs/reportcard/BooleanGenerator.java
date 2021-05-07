@@ -1,7 +1,7 @@
 package com.ericdriggs.reportcard;
 
 @SuppressWarnings("unused")
-public class Coin {
+public class BooleanGenerator {
 
     /**
      *
@@ -14,7 +14,7 @@ public class Coin {
      *     <dt> >=1 </dt>Always returns true<dd></dd>
      * </dl>
      */
-    public static boolean flip(double successRatio) {
+    public static boolean generateBoolean(double successRatio) {
         double rnd = random();
         if ( rnd >= (1-successRatio)) {
             return true;

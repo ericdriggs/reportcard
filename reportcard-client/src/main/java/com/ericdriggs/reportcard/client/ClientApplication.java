@@ -1,4 +1,4 @@
-package com.ericdriggs.reportcard.scanner;
+package com.ericdriggs.reportcard.client;
 
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -6,10 +6,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class ScannerApplication implements ApplicationRunner {
+public class ClientApplication implements ApplicationRunner {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ScannerApplication.class, args);
+		SpringApplication.run(ClientApplication.class, args);
 	}
 
 
@@ -26,7 +26,7 @@ public class ScannerApplication implements ApplicationRunner {
 
 		args.getOptionNames().forEach(optionName -> System.out.println(optionName + "=" + args.getOptionValues(optionName)));
 
-		ScannerPostRequest scannerPostRequest = ScannerProperties.getReportPostPayload(args);
+		PostRequest scannerPostRequest = ClientProperties.getReportPostPayload(args);
 
 
 

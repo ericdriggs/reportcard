@@ -4,4 +4,4 @@ Feature:
 
   Scenario:
 
-    * def Coin = Java.type('com.ericdriggs.reportcard.Coin')
+    * def Coin = Java.type('com.ericdriggs.reportcard.BooleanGenerator')

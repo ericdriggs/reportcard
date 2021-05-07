@@ -1,4 +1,4 @@
-package com.ericdriggs.reportcard.scanner;
+package com.ericdriggs.reportcard.client;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,9 +15,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-public class ReportCardPostClient {
+public class PostClient {
 
-    public static final ReportCardPostClient INSTANCE = new ReportCardPostClient();
+    public static final PostClient INSTANCE = new PostClient();
 
     protected static final HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY);
 
@@ -36,7 +36,7 @@ public class ReportCardPostClient {
 
     protected final ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
 
-    protected Response postTestReport(ScannerPostRequest scannerPostRequest) {
+    protected Response postTestReport(PostRequest scannerPostRequest) {
 
         try {
             //TOMAYBE: filter out fields not used by endpoint
@@ -59,8 +59,8 @@ public class ReportCardPostClient {
                     files = dir.listFiles(fileFilter);
                     if (files == null || files.length == 0) {
                         Map<String, String> validationErrors = new HashMap<>();
-                        validationErrors.put(ScannerArg.TEST_REPORT_PATH.name(), "no files found");
-                        validationErrors.put(ScannerArg.TEST_REPORT_REGEX.name(), "no files found");
+                        validationErrors.put(ClientArg.TEST_REPORT_PATH.name(), "no files found");
+                        validationErrors.put(ClientArg.TEST_REPORT_REGEX.name(), "no files found");
                         throw new BadRequestException(validationErrors);
                     }
                 }
