@@ -152,7 +152,7 @@ public class InsertTestResultTest extends AbstractDbTest {
                         .setRepo(repo)
                         .setBranch(branch)
                         .setSha(sha)
-                        .setHostApplicatiionPipeline(hostApplicationPipeline)
+                        .setHostApplicationPipeline(hostApplicationPipeline)
                         .setExternalExecutionId(externalExecutionId)
                         .setStage(stage);
         return reportMetatData;

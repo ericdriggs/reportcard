@@ -1,5 +1,6 @@
 package com.ericdriggs.reportcard.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
@@ -19,7 +20,7 @@ public class ReportMetaData {
     private String repo;
     private String branch;
     private String sha;
-    private HostApplicationPipeline hostApplicatiionPipeline;
+    private HostApplicationPipeline hostApplicationPipeline;
     private String externalExecutionId;
     private String stage;
     private Map<String,String> externalLinks = Collections.emptyMap();
@@ -30,12 +31,12 @@ public class ReportMetaData {
         addErrorIfMissing(errors, repo, "repo");
         addErrorIfMissing(errors, branch, "branch");
         addErrorIfMissing(errors, sha, "sha");
-        if (hostApplicatiionPipeline == null)  {
-            errors.put("hostApplicatiionPipeline", "missing required field");
+        if (hostApplicationPipeline == null)  {
+            errors.put("hostApplicationPipeline", "missing required field");
         }
 
-        if (hostApplicatiionPipeline.hasErrors()) {
-            errors.put("hostApplicationPipeline", String.join(", ", hostApplicatiionPipeline.getValidationErrors()));
+        if (hostApplicationPipeline.hasErrors()) {
+            errors.put("hostApplicationPipeline", String.join(", ", hostApplicationPipeline.getValidationErrors()));
         }
         addErrorIfMissing(errors, externalExecutionId, "externalExecutionId");
         addErrorIfMissing(errors, stage, "stage");
@@ -52,6 +53,8 @@ public class ReportMetaData {
     }
 
     final static ObjectMapper mapper = new ObjectMapper();
+
+    @JsonIgnore
     public String getExternalLinksJson() {
         if (externalLinks == null)  {
             return null;

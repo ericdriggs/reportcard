@@ -30,7 +30,7 @@ public class InsertBuildStagePathTest extends AbstractDbTest {
                         .setRepo("newRepo")
                         .setBranch("newBranch")
                         .setSha("newSha")
-                        .setHostApplicatiionPipeline(new HostApplicationPipeline("newHost", "newApplication", "newPipeline"))
+                        .setHostApplicationPipeline(new HostApplicationPipeline("newHost", "newApplication", "newPipeline"))
                         .setExternalExecutionId("64bb0231-9a2e-4492-bbd1-e0aeba24c982")
                         .setStage("newStage");
 
@@ -49,9 +49,9 @@ public class InsertBuildStagePathTest extends AbstractDbTest {
         Assertions.assertEquals(request.getRepo(), bsp.getRepo().getRepoName());
         Assertions.assertEquals(request.getBranch(), bsp.getBranch().getBranchName());
         Assertions.assertEquals(request.getSha(), bsp.getSha().getSha());
-        Assertions.assertEquals(request.getHostApplicatiionPipeline().getHost(), bsp.getContext().getHost());
-        Assertions.assertEquals(request.getHostApplicatiionPipeline().getApplication(), bsp.getContext().getApplication());
-        Assertions.assertEquals(request.getHostApplicatiionPipeline().getPipeline(), bsp.getContext().getPipeline());
+        Assertions.assertEquals(request.getHostApplicationPipeline().getHost(), bsp.getContext().getHost());
+        Assertions.assertEquals(request.getHostApplicationPipeline().getApplication(), bsp.getContext().getApplication());
+        Assertions.assertEquals(request.getHostApplicationPipeline().getPipeline(), bsp.getContext().getPipeline());
         Assertions.assertEquals(request.getExternalExecutionId(), bsp.getExecution().getExecutionExternalId());
         Assertions.assertEquals(request.getStage(), bsp.getStage().getStageName());
         assertNotNull(bsp.getStage().getStageId());

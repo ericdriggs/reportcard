@@ -109,7 +109,7 @@ public class ReportControllerTest {
                         .setRepo("repo" + randLong)
                         .setBranch("branch" + randLong)
                         .setSha("sha" + randLong)
-                        .setHostApplicatiionPipeline(new HostApplicationPipeline(
+                        .setHostApplicationPipeline(new HostApplicationPipeline(
                                 "host" + randLong,  "application"+ randLong, "pipeline" +randLong
                         ))
                         .setExternalExecutionId("externalExecutionId" + randLong)
@@ -125,9 +125,9 @@ public class ReportControllerTest {
         assertEquals(reportMetaData.getBranch(), executionStagePath.getBranch().getBranchName() );
         assertEquals(reportMetaData.getSha(), executionStagePath.getSha().getSha() );
 
-        assertEquals(reportMetaData.getHostApplicatiionPipeline().getHost(), executionStagePath.getContext().getHost() );
-        assertEquals(reportMetaData.getHostApplicatiionPipeline().getApplication(), executionStagePath.getContext().getApplication() );
-        assertEquals(reportMetaData.getHostApplicatiionPipeline().getPipeline(), executionStagePath.getContext().getPipeline() );
+        assertEquals(reportMetaData.getHostApplicationPipeline().getHost(), executionStagePath.getContext().getHost() );
+        assertEquals(reportMetaData.getHostApplicationPipeline().getApplication(), executionStagePath.getContext().getApplication() );
+        assertEquals(reportMetaData.getHostApplicationPipeline().getPipeline(), executionStagePath.getContext().getPipeline() );
 
         assertEquals(reportMetaData.getExternalExecutionId(), executionStagePath.getExecution().getExecutionExternalId() );
         assertEquals(reportMetaData.getStage(), executionStagePath.getStage().getStageName() );

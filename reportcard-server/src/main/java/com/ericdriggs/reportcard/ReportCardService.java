@@ -23,6 +23,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentSkipListMap;
 
 import static com.ericdriggs.reportcard.gen.db.Tables.*;
+import static org.jooq.impl.DSL.val;
 
 /**
  * Main db service class.
@@ -264,23 +265,23 @@ public class ReportCardService {
         return contexts;
     }
 
-    protected static void addContextConditions(SelectConditionStep<Record> selectConditionStep, HostApplicationPipeline hostApplicatiionPipeline) {
+    protected static void addContextConditions(SelectConditionStep<Record> selectConditionStep, HostApplicationPipeline hostApplicationPipeline) {
 
-        selectConditionStep.and(CONTEXT.HOST.eq(hostApplicatiionPipeline.getHost()));
-        if (hostApplicatiionPipeline.getApplication() == null) {
+        selectConditionStep.and(CONTEXT.HOST.eq(hostApplicationPipeline.getHost()));
+        if (hostApplicationPipeline.getApplication() == null) {
             selectConditionStep.and(CONTEXT.APPLICATION.isNull());
         } else {
-            selectConditionStep.and(CONTEXT.APPLICATION.eq(hostApplicatiionPipeline.getApplication()));
+            selectConditionStep.and(CONTEXT.APPLICATION.eq(hostApplicationPipeline.getApplication()));
         }
 
-        if (hostApplicatiionPipeline.getPipeline() == null) {
+        if (hostApplicationPipeline.getPipeline() == null) {
             selectConditionStep.and(CONTEXT.PIPELINE.isNull());
         } else {
-            selectConditionStep.and(CONTEXT.PIPELINE.eq(hostApplicatiionPipeline.getPipeline()));
+            selectConditionStep.and(CONTEXT.PIPELINE.eq(hostApplicationPipeline.getPipeline()));
         }
     }
 
-    public Context getContext(String orgName, String repoName, String branchName, String shaString, HostApplicationPipeline hostApplicatiionPipeline) {
+    public Context getContext(String orgName, String repoName, String branchName, String shaString, HostApplicationPipeline hostApplicationPipeline) {
         SelectConditionStep<Record> selectConditionStep = dsl.
                 select(CONTEXT.fields())
                 .from(CONTEXT
@@ -292,14 +293,14 @@ public class ReportCardService {
                 .and(REPO.REPO_NAME.eq(repoName))
                 .and(SHA.SHA_.eq(shaString));
 
-        addContextConditions(selectConditionStep, hostApplicatiionPipeline);
+        addContextConditions(selectConditionStep, hostApplicationPipeline);
 
         Context ret =
                 selectConditionStep
                 .fetchOne()
                 .into(Context.class);
         if (ret == null) {
-            throwNotFound(orgName, repoName, branchName, shaString, hostApplicatiionPipeline.toString());
+            throwNotFound(orgName, repoName, branchName, shaString, hostApplicationPipeline.toString());
         }
         return ret;
     }
@@ -322,7 +323,7 @@ public class ReportCardService {
 
     //
 
-    public Set<Execution> getExecutions(String org, String repo, String branch, String sha, HostApplicationPipeline hostApplicatiionPipeline) {
+    public Set<Execution> getExecutions(String org, String repo, String branch, String sha, HostApplicationPipeline hostApplicationPipeline) {
         SelectConditionStep<Record> selectConditionStep =  dsl.
                 select(EXECUTION.fields())
                 .from(EXECUTION
@@ -336,7 +337,7 @@ public class ReportCardService {
                 .and(BRANCH.BRANCH_NAME.eq(branch))
                 .and(SHA.SHA_.eq(sha));
 
-        addContextConditions(selectConditionStep, hostApplicatiionPipeline);
+        addContextConditions(selectConditionStep, hostApplicationPipeline);
 
         Set<Execution> executions = new TreeSet<>(Comparators.EXECUTION_CASE_INSENSITIVE_ORDER);
         executions.addAll(selectConditionStep
@@ -345,7 +346,7 @@ public class ReportCardService {
         return executions;
     }
 
-    public Execution getExecution(String org, String repo, String branch, String sha, HostApplicationPipeline hostApplicatiionPipeline, String executionExternalId) {
+    public Execution getExecution(String org, String repo, String branch, String sha, HostApplicationPipeline hostApplicationPipeline, String executionExternalId) {
         SelectConditionStep<Record> selectConditionStep = dsl.
                 select(EXECUTION.fields())
                 .from(EXECUTION
@@ -359,7 +360,7 @@ public class ReportCardService {
                 .and(BRANCH.BRANCH_NAME.eq(branch))
                 .and(SHA.SHA_.eq(sha));
 
-        addContextConditions(selectConditionStep, hostApplicatiionPipeline);
+        addContextConditions(selectConditionStep, hostApplicationPipeline);
         selectConditionStep.and(EXECUTION.EXECUTION_EXTERNAL_ID.eq(executionExternalId));
 
         Execution ret =
@@ -367,7 +368,7 @@ public class ReportCardService {
                         .fetchOne()
                         .into(Execution.class);
         if (ret == null) {
-            throwNotFound(org, repo, branch, sha, hostApplicatiionPipeline.toString(), executionExternalId);
+            throwNotFound(org, repo, branch, sha, hostApplicationPipeline.toString(), executionExternalId);
         }
         return ret;
     }
@@ -386,7 +387,7 @@ public class ReportCardService {
         return Collections.singletonMap(execution, getStages(orgName,   repoName,  branchName, shaString, hostApplicationPipeline,executionExternalId));
     }
 
-    public Set<Stage> getStages(String org, String repo, String branch, String sha, HostApplicationPipeline hostApplicatiionPipeline, String executionExternalId) {
+    public Set<Stage> getStages(String org, String repo, String branch, String sha, HostApplicationPipeline hostApplicationPipeline, String executionExternalId) {
         SelectConditionStep<Record> selectConditionStep =  dsl.
                 select(STAGE.fields())
                 .from(STAGE
@@ -401,7 +402,7 @@ public class ReportCardService {
                 .and(BRANCH.BRANCH_NAME.eq(branch))
                 .and(SHA.SHA_.eq(sha));
 
-        addContextConditions(selectConditionStep, hostApplicatiionPipeline);
+        addContextConditions(selectConditionStep, hostApplicationPipeline);
         selectConditionStep.and(EXECUTION.EXECUTION_EXTERNAL_ID.eq(executionExternalId));
 
         Set<Stage>stages = new TreeSet<>(Comparators.STAGE_CASE_INSENSITIVE_ORDER);
@@ -411,7 +412,7 @@ public class ReportCardService {
         return stages;
     }
 
-    public Stage getStage(String org, String repo, String branch, String sha, HostApplicationPipeline hostApplicatiionPipeline, String executionExternalId, String stage) {
+    public Stage getStage(String org, String repo, String branch, String sha, HostApplicationPipeline hostApplicationPipeline, String executionExternalId, String stage) {
         SelectConditionStep<Record> selectConditionStep = dsl.
                 select(STAGE.fields())
                 .from(STAGE
@@ -426,7 +427,7 @@ public class ReportCardService {
                 .and(BRANCH.BRANCH_NAME.eq(branch))
                 .and(SHA.SHA_.eq(sha));
 
-        addContextConditions(selectConditionStep, hostApplicatiionPipeline);
+        addContextConditions(selectConditionStep, hostApplicationPipeline);
         selectConditionStep.and(EXECUTION.EXECUTION_EXTERNAL_ID.eq(executionExternalId))
                 .and(STAGE.STAGE_NAME.eq(stage));
 
@@ -435,7 +436,7 @@ public class ReportCardService {
                         .fetchOne()
                         .into(Stage.class);
         if (ret == null) {
-            throwNotFound(org, repo, branch, sha, hostApplicatiionPipeline.toString(), executionExternalId, stage);
+            throwNotFound(org, repo, branch, sha, hostApplicationPipeline.toString(), executionExternalId, stage);
         }
         return ret;
     }
@@ -469,6 +470,7 @@ public class ReportCardService {
 
         //String org, String repo, String app, String branch, Integer buildOrdinal, String stage
 
+        HostApplicationPipeline hostApplicationPipeline = request.getHostApplicationPipeline();
         SelectConditionStep<Record> selectConditionStep = dsl.
                 select()
                 .from(ORG
@@ -476,10 +478,16 @@ public class ReportCardService {
                         .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)).and(BRANCH.BRANCH_NAME.eq(request.getBranch()))
                         .leftJoin(SHA).on(SHA.BRANCH_FK.eq(BRANCH.BRANCH_ID)).and(SHA.SHA_.eq(request.getSha()))
                         .leftJoin(CONTEXT).on(CONTEXT.SHA_FK.eq(SHA.SHA_ID))
+                            .and(CONTEXT.HOST.eq(request.getHostApplicationPipeline().getHost()))
+                            .and(
+                                CONTEXT.APPLICATION.eq(hostApplicationPipeline.getApplication())
+                                .or(CONTEXT.APPLICATION.isNull().and(val(hostApplicationPipeline.getApplication()).isNull())))
+                            .and(
+                                CONTEXT.PIPELINE.eq(hostApplicationPipeline.getPipeline())
+                                .or(CONTEXT.PIPELINE.isNull().and(val(hostApplicationPipeline.getPipeline()).isNull())))
                         .leftJoin(EXECUTION).on(EXECUTION.CONTEXT_FK.eq(CONTEXT.CONTEXT_ID)).and(EXECUTION.EXECUTION_EXTERNAL_ID.eq(request.getExternalExecutionId()))
                         .leftJoin(STAGE).on(STAGE.STAGE_NAME.eq(request.getStage())).and(STAGE.STAGE_NAME.eq(request.getStage()))
                 ).where(ORG.ORG_NAME.eq(request.getOrg()));
-        addContextConditions(selectConditionStep, request.getHostApplicatiionPipeline());
         Record record = selectConditionStep
                 .fetchOne();
 
@@ -596,9 +604,9 @@ public class ReportCardService {
 
         if (executionStagePath.getContext() == null) {
             Context context = new Context()
-                    .setHost(request.getHostApplicatiionPipeline().getHost())
-                    .setApplication(request.getHostApplicatiionPipeline().getApplication())
-                    .setPipeline(request.getHostApplicatiionPipeline().getPipeline())
+                    .setHost(request.getHostApplicationPipeline().getHost())
+                    .setApplication(request.getHostApplicationPipeline().getApplication())
+                    .setPipeline(request.getHostApplicationPipeline().getPipeline())
                     .setShaFk(executionStagePath.getSha().getShaId());
             contextDao.insert(context);
             executionStagePath.setContext(context);
