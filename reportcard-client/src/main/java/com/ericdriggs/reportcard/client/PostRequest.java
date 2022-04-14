@@ -1,7 +1,7 @@
 package com.ericdriggs.reportcard.client;
 
 import lombok.Data;
-import org.springframework.util.StringUtils;
+import org.springframework.util.ObjectUtils;
 
 import java.util.*;
 
@@ -10,26 +10,21 @@ import static com.ericdriggs.reportcard.client.ClientArg.getToken;
 @Data
 public class PostRequest {
 
+    private ReportMetaData reportMetaData;
+
     private String reportCardHost;
     private String reportCardUser;
     private String reportCardPass;
-    private String org;
-    private String repo;
-    private String branch;
-    private String sha;
-
-    private String contextHost;
-    private String contextApplication;
-    private String contextPipeline;
-
-    private String executionExternalId;
-    private String stage;
 
     private String testReportPath;
     private String testReportRegex;
     private Map<String, String> externalLinks;
 
-    public PostRequest() {
+    public String getPostUrl()  {
+        return reportCardHost + "/api/v1/reports/";
+    }
+    public PostRequest(ReportMetaData reportMetaData) {
+        this.reportMetaData = reportMetaData;
     }
 
     public PostRequest(Map<ClientArg, String> argMap) {
@@ -44,37 +39,6 @@ public class PostRequest {
             this.reportCardPass = argMap.get(ClientArg.REPORTCARD_PASS);
         }
 
-        if (argMap.get(ClientArg.SCM_ORG) != null) {
-            this.org = argMap.get(ClientArg.SCM_ORG);
-        }
-        if (argMap.get(ClientArg.SCM_REPO) != null) {
-            this.repo = argMap.get(ClientArg.SCM_REPO);
-        }
-        if (argMap.get(ClientArg.SCM_BRANCH) != null) {
-            this.branch = argMap.get(ClientArg.SCM_BRANCH);
-        }
-        if (argMap.get(ClientArg.SCM_SHA) != null) {
-            this.sha = argMap.get(ClientArg.SCM_SHA);
-        }
-
-
-        if (argMap.get(ClientArg.CONTEXT_HOST) != null) {
-            this.contextHost = argMap.get(ClientArg.CONTEXT_HOST);
-        }
-        if (argMap.get(ClientArg.CONTEXT_APPLICATION) != null) {
-            this.contextApplication = argMap.get(ClientArg.CONTEXT_APPLICATION);
-        }
-        if (argMap.get(ClientArg.CONTEXT_PIPELINE) != null) {
-            this.contextPipeline = argMap.get(ClientArg.CONTEXT_PIPELINE);
-        }
-
-        if (argMap.get(ClientArg.EXECUTION_EXTERNAL_ID) != null) {
-            this.executionExternalId = argMap.get(ClientArg.EXECUTION_EXTERNAL_ID);
-        }
-        if (argMap.get(ClientArg.STAGE) != null) {
-            this.stage = argMap.get(ClientArg.STAGE);
-        }
-
         if (argMap.get(ClientArg.TEST_REPORT_PATH) != null) {
             this.testReportPath = argMap.get(ClientArg.TEST_REPORT_PATH);
         }
@@ -84,33 +48,97 @@ public class PostRequest {
 
         this.externalLinks = buildExternalLinkMap(argMap.get(ClientArg.EXTERNAL_LINKS), argMap);
 
+        { //ReportMetadata
+            this.reportMetaData = new ReportMetaData();
+
+            //SCM Metadata
+            if (argMap.get(ClientArg.SCM_ORG) != null) {
+                reportMetaData.setOrg(argMap.get(ClientArg.SCM_ORG));
+            }
+
+            if (argMap.get(ClientArg.SCM_REPO) != null) {
+                reportMetaData.setRepo(argMap.get(ClientArg.SCM_REPO));
+            }
+
+            if (argMap.get(ClientArg.SCM_BRANCH) != null) {
+                reportMetaData.setBranch(argMap.get(ClientArg.SCM_BRANCH));
+            }
+
+            if (argMap.get(ClientArg.SCM_SHA) != null) {
+                reportMetaData.setSha(argMap.get(ClientArg.SCM_SHA));
+            }
+
+            { //Context Host Application Pipeline
+                HostApplicationPipeline hostApplicationPipeline = new HostApplicationPipeline();
+                if (argMap.get(ClientArg.CONTEXT_HOST) != null) {
+                    hostApplicationPipeline.setHost(argMap.get(ClientArg.CONTEXT_HOST));
+                }
+                if (argMap.get(ClientArg.CONTEXT_APPLICATION) != null) {
+                    hostApplicationPipeline.setApplication(argMap.get(ClientArg.CONTEXT_APPLICATION));
+                }
+                if (argMap.get(ClientArg.CONTEXT_PIPELINE) != null) {
+                    hostApplicationPipeline.setPipeline(argMap.get(ClientArg.CONTEXT_PIPELINE));
+                }
+                reportMetaData.setHostApplicationPipeline(hostApplicationPipeline);
+            }
+            { // External links
+                if (argMap.get(ClientArg.EXTERNAL_LINKS) != null) {
+                    Map<String, String> externalLinks = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+                    final String externalLinksString = argMap.get(ClientArg.EXTERNAL_LINKS);
+
+                    int linkCount = 1;
+                    for (String externalLink : externalLinksString.split("|")) {
+
+                        if (externalLink.contains(",")) {
+                            String[] keyValueArray = externalLink.split(",");
+
+                            externalLinks.put(keyValueArray[0], keyValueArray[1]);
+                        } else {
+                            externalLinks.put(String.valueOf(linkCount), externalLink);
+                        }
+                        linkCount++;
+                    }
+                    reportMetaData.setExternalLinks(externalLinks);
+                }
+
+
+            }
+
+
+            this.reportMetaData.setExternalExecutionId(argMap.get(ClientArg.EXECUTION_EXTERNAL_ID));
+            if (ObjectUtils.isEmpty(this.reportMetaData.getExternalExecutionId())) {
+
+                this.reportMetaData.setExternalExecutionId(UUID.randomUUID().toString());
+
+            }
+
+            if (argMap.get(ClientArg.STAGE) != null) {
+                reportMetaData.setStage(argMap.get(ClientArg.STAGE));
+            }
+
+            if (argMap.get(ClientArg.TEST_REPORT_PATH) != null) {
+                reportMetaData.setTestReportPath(argMap.get(ClientArg.TEST_REPORT_PATH));
+            }
+
+            if (argMap.get(ClientArg.TEST_REPORT_REGEX) != null) {
+                reportMetaData.setTestReportRegex(argMap.get(ClientArg.TEST_REPORT_REGEX));
+            }
+
+        }
     }
+
 
     public void prepare() {
 
-        if (StringUtils.isEmpty(executionExternalId)) {
-            executionExternalId = UUID.randomUUID().toString();
-        }
-        if (StringUtils.isEmpty(testReportRegex)) {
+
+        if (ObjectUtils.isEmpty(testReportRegex)) {
             testReportRegex = ".*[.]xml";
         }
 
         //Prepare errors
         Map<String, String> validationErrors = new TreeMap<>();
-        if (StringUtils.isEmpty(org)) {
-            validationErrors.put("org", "missing required field");
-        }
-        if (StringUtils.isEmpty(repo)) {
-            validationErrors.put("repo", "missing required field");
-        }
-        if (StringUtils.isEmpty(branch)) {
-            validationErrors.put("branch", "missing required field");
-        }
-
-        if (StringUtils.isEmpty(stage)) {
-            validationErrors.put("stage", "missing required field");
-        }
-        if (StringUtils.isEmpty(testReportPath)) {
+        validationErrors.putAll(reportMetaData.validate());
+        if (ObjectUtils.isEmpty(testReportPath)) {
             validationErrors.put("testReportPath", "missing required field");
         }
 
@@ -120,7 +148,7 @@ public class PostRequest {
     }
 
     protected Map<String, String> buildExternalLinkMap(String externalLinksArg, Map<ClientArg, String> argMap) {
-        if (StringUtils.isEmpty(externalLinksArg)) {
+        if (ObjectUtils.isEmpty(externalLinksArg)) {
             return Collections.emptyMap();
         }
 

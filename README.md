@@ -12,3 +12,4 @@ TODO MVP:
 * secure secrets (env vars ok, expiring tokens better)
 * db migration tool (flyway)
 * tests for uniqueness constraints all tables
+* Documentation explaining value proposition and usage

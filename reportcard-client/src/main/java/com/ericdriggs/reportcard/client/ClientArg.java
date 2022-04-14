@@ -1,4 +1,5 @@
 package com.ericdriggs.reportcard.client;
+//TODO: use a boolean for required and use that logic when validating arguments
 
 /**
  * Required Arguments<br>
@@ -110,6 +111,7 @@ public enum ClientArg {
      * A map of links in the form: <code>description1|url1,description2|url2</code>
      * If description is missing, an ordinal value will be used in its place.
      * Duplicate descriptions will cause map entries to be overwritten.
+     * Only 1 comma per description. Data after second commas will be ignored.
      * URL supports all ScannerArgs (Except EXTERNAL_LINKS) as token replacements, e,g. :
      * <code>api html|https://myreportserver.com/<SCM_ORG>/<SCM_REPO>/<SCM_BRANCH>/<BUILD_IDENTIFIER></code>
      * (Optional) defaults to null

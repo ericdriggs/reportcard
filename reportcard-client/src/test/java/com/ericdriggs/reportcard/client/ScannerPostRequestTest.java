@@ -40,6 +40,7 @@ public class ScannerPostRequestTest {
         argMap.put(ClientArg.SCM_ORG, ClientArg.SCM_ORG.name());
         argMap.put(ClientArg.SCM_REPO, ClientArg.SCM_REPO.name());
         argMap.put(ClientArg.SCM_BRANCH, ClientArg.SCM_BRANCH.name());
+        argMap.put(ClientArg.SCM_SHA, ClientArg.SCM_SHA.name());
 
         argMap.put(ClientArg.CONTEXT_HOST, ClientArg.CONTEXT_HOST.name());
         argMap.put(ClientArg.STAGE, ClientArg.STAGE.name());
@@ -57,17 +58,21 @@ public class ScannerPostRequestTest {
         assertNull(scannerPostRequest.getReportCardUser());
         assertNull(scannerPostRequest.getReportCardPass());
 
-        assertNull(scannerPostRequest.getOrg());
-        assertNull(scannerPostRequest.getRepo());
-        assertNull(scannerPostRequest.getBranch());
-        assertNull(scannerPostRequest.getSha());
+        ReportMetaData reportMetaData = scannerPostRequest.getReportMetaData();
+        assertNull(reportMetaData.getOrg());
+        assertNull(reportMetaData.getRepo());
+        assertNull(reportMetaData.getBranch());
+        assertNull(reportMetaData.getSha());
 
-        assertNull(scannerPostRequest.getContextHost());
-        assertNull(scannerPostRequest.getContextApplication());
-        assertNull(scannerPostRequest.getContextPipeline());
+        HostApplicationPipeline hostApplicationPipeline = reportMetaData.getHostApplicationPipeline();
+        assertNull(hostApplicationPipeline.getHost());
+        assertNull(hostApplicationPipeline.getHost());
+        assertNull(hostApplicationPipeline.getPipeline());
 
-        assertNull(scannerPostRequest.getExecutionExternalId());
-        assertNull(scannerPostRequest.getStage());
+        //Should be auto-gen
+        assertNotNull(reportMetaData.getExternalExecutionId());
+        assertEquals(36, reportMetaData.getExternalExecutionId().length());
+        assertNull(reportMetaData.getStage());
 
         assertNull(scannerPostRequest.getTestReportPath());
         assertNull(scannerPostRequest.getTestReportRegex());
@@ -76,7 +81,8 @@ public class ScannerPostRequestTest {
 
     @Test
     public void constructorAllArgsNoExternalLinkDescriptionTest() {
-        PostRequest scannerPostRequest = new PostRequest(getAllArgsNoExternalLinkDescription());
+        Map<ClientArg, String> clientArgMap = getAllArgsNoExternalLinkDescription();
+        PostRequest scannerPostRequest = new PostRequest(clientArgMap);
 
        validateAllArgsFixture(scannerPostRequest);
 
@@ -98,16 +104,24 @@ public class ScannerPostRequestTest {
 
     @Test
     public void prepareRequiredArgsTest() {
-        PostRequest scannerPostRequest = new PostRequest(getRequiredArgs());
+        Map<ClientArg, String> clientArgMap = getRequiredArgs();
+        PostRequest scannerPostRequest = new PostRequest(clientArgMap);
         scannerPostRequest.prepare();
 
-        assertEquals(ClientArg.SCM_ORG.name(), scannerPostRequest.getOrg());
-        assertEquals(ClientArg.SCM_REPO.name(), scannerPostRequest.getRepo());
-        assertEquals(ClientArg.SCM_BRANCH.name(), scannerPostRequest.getBranch());
+        ReportMetaData reportMetaData = scannerPostRequest.getReportMetaData();
 
+        HostApplicationPipeline hostApplicationPipeline = reportMetaData.getHostApplicationPipeline();
+        assertEquals(ClientArg.CONTEXT_HOST.name(), hostApplicationPipeline.getHost());
+        assertNull(hostApplicationPipeline.getApplication());
+        assertNull(hostApplicationPipeline.getPipeline());
 
-        assertEquals(36, scannerPostRequest.getExecutionExternalId().length());
-        assertEquals(ClientArg.STAGE.name(), scannerPostRequest.getStage());
+        assertEquals(ClientArg.SCM_ORG.name(), reportMetaData.getOrg());
+        assertEquals(ClientArg.SCM_REPO.name(), reportMetaData.getRepo());
+        assertEquals(ClientArg.SCM_BRANCH.name(), reportMetaData.getBranch());
+        assertEquals(ClientArg.SCM_SHA.name(), reportMetaData.getSha());
+
+        assertEquals(36, reportMetaData.getExternalExecutionId().length());
+        assertEquals(ClientArg.STAGE.name(), reportMetaData.getStage());
 
         assertEquals(ClientArg.REPORTCARD_HOST.name(), scannerPostRequest.getReportCardHost());
         assertEquals(ClientArg.REPORTCARD_USER.name(), scannerPostRequest.getReportCardUser());
@@ -123,7 +137,7 @@ public class ScannerPostRequestTest {
     @Test
     public void prepareNoArgsTest() {
         BadRequestException ex = assertThrows(BadRequestException.class, () -> {
-            PostRequest scannerPostRequest = new PostRequest();
+            PostRequest scannerPostRequest = new PostRequest(new ReportMetaData());
             scannerPostRequest.prepare();
         });
 
@@ -131,11 +145,11 @@ public class ScannerPostRequestTest {
         assertNotNull(message);
         assertTrue(message.contains("400 BAD_REQUEST"));
         final Map<String, String> validationErrors = ex.getValidationErrors();
-        assertEquals(5, validationErrors.size());
+        assertEquals(7, validationErrors.size());
         final Set<String> actualValidationErrorKeys = validationErrors.keySet();
 
         final Set<String> expectedValidationErrorKeys =
-                new HashSet<>(Arrays.asList("branch", "org", "repo", "stage", "testReportPath"));
+                new TreeSet<>(Arrays.asList("branch", "org", "repo", "sha", "stage", "testReportPath", "hostApplicationPipeline.getHost()"));
         assertEquals(expectedValidationErrorKeys, actualValidationErrorKeys);
 
     }
@@ -145,17 +159,20 @@ public class ScannerPostRequestTest {
         assertEquals(ClientArg.REPORTCARD_USER.name(), scannerPostRequest.getReportCardUser());
         assertEquals(ClientArg.REPORTCARD_PASS.name(), scannerPostRequest.getReportCardPass());
 
-        assertEquals(ClientArg.SCM_ORG.name(), scannerPostRequest.getOrg());
-        assertEquals(ClientArg.SCM_REPO.name(), scannerPostRequest.getRepo());
-        assertEquals(ClientArg.SCM_BRANCH.name(), scannerPostRequest.getBranch());
-        assertEquals(ClientArg.SCM_SHA.name(), scannerPostRequest.getSha());
+        ReportMetaData reportMetaData = scannerPostRequest.getReportMetaData();
+        assertNotNull(reportMetaData);
+        assertEquals(ClientArg.SCM_ORG.name(), reportMetaData.getOrg());
+        assertEquals(ClientArg.SCM_REPO.name(), reportMetaData.getRepo());
+        assertEquals(ClientArg.SCM_BRANCH.name(), reportMetaData.getBranch());
+        assertEquals(ClientArg.SCM_SHA.name(), reportMetaData.getSha());
 
-        assertEquals(ClientArg.CONTEXT_HOST.name(), scannerPostRequest.getContextHost());
-        assertEquals(ClientArg.CONTEXT_APPLICATION.name(), scannerPostRequest.getContextApplication());
-        assertEquals(ClientArg.CONTEXT_PIPELINE.name(), scannerPostRequest.getContextPipeline());
+        HostApplicationPipeline hostApplicationPipeline = reportMetaData.getHostApplicationPipeline();
+        assertEquals(ClientArg.CONTEXT_HOST.name(), hostApplicationPipeline.getHost());
+        assertEquals(ClientArg.CONTEXT_APPLICATION.name(), hostApplicationPipeline.getApplication());
+        assertEquals(ClientArg.CONTEXT_PIPELINE.name(), hostApplicationPipeline.getPipeline());
 
-        assertEquals(ClientArg.EXECUTION_EXTERNAL_ID.name(), scannerPostRequest.getExecutionExternalId());
-        assertEquals(ClientArg.STAGE.name(), scannerPostRequest.getStage());
+        assertEquals(ClientArg.EXECUTION_EXTERNAL_ID.name(), reportMetaData.getExternalExecutionId());
+        assertEquals(ClientArg.STAGE.name(), reportMetaData.getStage());
 
         assertEquals(ClientArg.TEST_REPORT_PATH.name(), scannerPostRequest.getTestReportPath());
         assertEquals(ClientArg.TEST_REPORT_REGEX.name(), scannerPostRequest.getTestReportRegex());

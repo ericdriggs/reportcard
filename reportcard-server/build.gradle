@@ -4,7 +4,6 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-        //classpath 'mysql:mysql-connector-java:8.0.20'
         classpath 'mysql:mysql-connector-java:8.0.20'
         classpath files('libs/reportcard-jooq-generator.jar')
     }
@@ -132,7 +131,7 @@ task generateJooqSchemaSource {
 }
 
 jooq {
-    version = '3.14.9'
+    version = '3.14.9' //latest 3.16.5
     edition = nu.studer.gradle.jooq.JooqEdition.OSS
     configurations {
         generated {
