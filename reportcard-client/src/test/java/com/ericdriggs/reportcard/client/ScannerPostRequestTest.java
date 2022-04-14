@@ -1,5 +1,6 @@
 package com.ericdriggs.reportcard.client;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -50,33 +51,19 @@ public class ScannerPostRequestTest {
         return argMap;
     }
 
+
     @Test
     public void constructorNoArgsTest() {
-        PostRequest scannerPostRequest = new PostRequest(new HashMap<>());
+        BadRequestException badRequestException = Assertions.assertThrows(BadRequestException.class, () -> {
+            new PostRequest(new HashMap<>());
+        });
 
-        assertNull(scannerPostRequest.getReportCardHost());
-        assertNull(scannerPostRequest.getReportCardUser());
-        assertNull(scannerPostRequest.getReportCardPass());
+        Map<String,String> validationErrors = badRequestException.getValidationErrors();
+        final Set<String> actualValidationErrorKeys = validationErrors.keySet();
 
-        ReportMetaData reportMetaData = scannerPostRequest.getReportMetaData();
-        assertNull(reportMetaData.getOrg());
-        assertNull(reportMetaData.getRepo());
-        assertNull(reportMetaData.getBranch());
-        assertNull(reportMetaData.getSha());
-
-        HostApplicationPipeline hostApplicationPipeline = reportMetaData.getHostApplicationPipeline();
-        assertNull(hostApplicationPipeline.getHost());
-        assertNull(hostApplicationPipeline.getHost());
-        assertNull(hostApplicationPipeline.getPipeline());
-
-        //Should be auto-gen
-        assertNotNull(reportMetaData.getExternalExecutionId());
-        assertEquals(36, reportMetaData.getExternalExecutionId().length());
-        assertNull(reportMetaData.getStage());
-
-        assertNull(scannerPostRequest.getTestReportPath());
-        assertNull(scannerPostRequest.getTestReportRegex());
-        assertEquals(Collections.emptyMap(), scannerPostRequest.getExternalLinks());
+        final Set<String> expectedValidationErrorKeys =
+                new TreeSet<>(Arrays.asList("CONTEXT_HOST", "REPORTCARD_HOST", "REPORTCARD_PASS", "REPORTCARD_USER", "SCM_BRANCH", "SCM_ORG", "SCM_REPO", "SCM_SHA", "STAGE", "TEST_REPORT_PATH"));
+        assertEquals(expectedValidationErrorKeys, actualValidationErrorKeys);
     }
 
     @Test

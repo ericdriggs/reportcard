@@ -1,6 +1,12 @@
 package com.ericdriggs.reportcard.client;
 //TODO: use a boolean for required and use that logic when validating arguments
 
+import org.springframework.util.ObjectUtils;
+
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.concurrent.ConcurrentSkipListMap;
+
 /**
  * Required Arguments<br>
  * {@link #REPORTCARD_HOST}<br>
@@ -12,101 +18,98 @@ package com.ericdriggs.reportcard.client;
  * {@link #SCM_SHA}<br>
  * {@link #CONTEXT_HOST}<br>
  * {@link #TEST_REPORT_PATH}<br>
- * {@link #TEST_REPORT_REGEX}<br>
- *
+
+ * <p>
  * Optional Arguments<br>
  * {@link #CONTEXT_APPLICATION}<br>
  * {@link #CONTEXT_PIPELINE}<br>
- *
  * {@link #EXTERNAL_LINKS}<br>
+ * {@link #TEST_REPORT_REGEX}<br>
  */
 public enum ClientArg {
 
     /**
-     * The base url of the reportcard host
-     * (Required)
+     * The base url of the reportcard host (Required)
      */
-    REPORTCARD_HOST,
+    REPORTCARD_HOST(true),
 
     /**
      * The user for the reportcard host
      * (Required)
      */
-    REPORTCARD_USER,
+    REPORTCARD_USER(true),
 
     /**
      * The pass for the reportcard host
      * (Required)
      */
-    REPORTCARD_PASS,
+    REPORTCARD_PASS(true),
 
     /**
-     * A source control organization. Organizations have repositories.
-     * (Required)
+     * A source control organization. Organizations have repositories.(Required)
      */
-    SCM_ORG,
+    SCM_ORG(true),
 
     /**
      * A source control repository. Repositories belong to an org. Repositories have branches.
      * (Required)
      */
-    SCM_REPO,
+    SCM_REPO(true),
 
     /**
      * A source control branch. Branches belong to a repo. Branches have SHAs.
      * (Required)
      */
-    SCM_BRANCH,
+    SCM_BRANCH(true),
 
     /**
-     * The source control sha. SHAs belong to a branch. Shas have contexts.
-     * (Required)
+     * The source control sha. SHAs belong to a branch. Shas have contexts. (Required)
      */
-    SCM_SHA,
+    SCM_SHA(true),
 
     /**
      * The host which the report was generated on.
      * A context includes host and optionally application/pipeline
      * (Required)
      */
-    CONTEXT_HOST,
+    CONTEXT_HOST(true),
 
     /**
      * The application which the report was generated on.
      * A context includes host and optionally application/pipeline
      * (Optional)
      */
-    CONTEXT_APPLICATION,
+    CONTEXT_APPLICATION(false),
 
     /**
      * The host which the report was generated on.
      * A context includes host and optionally application/pipeline
      * (Optional)
      */
-    CONTEXT_PIPELINE,
+    CONTEXT_PIPELINE(false),
 
     /**
      * The external identifier for the execution (build). E.g. run number, generated uuid
      * Executions belong to a context. Executions have stages.
-     * (Required)
+     * (Optional). Will default to generated UUID if not provided
      */
-    EXECUTION_EXTERNAL_ID,
+    EXECUTION_EXTERNAL_ID(false),
     /**
      * The stage, e.g. unit, integration, api.
      * Stages belong to an execution. A stage has a test result.
      * (Required)
      */
-    STAGE,
+    STAGE(true),
     /**
      * The path to a single folder containing all test reports. Will not search sub-folders.
      * (Required)
      */
-    TEST_REPORT_PATH,
+    TEST_REPORT_PATH(true),
     /**
      * A regex to restrict which xml filenames to publish
      * (Optional) Defaults to *.xml
      */
-    TEST_REPORT_REGEX,
+    TEST_REPORT_REGEX(false),
     /**
      * A map of links in the form: <code>description1|url1,description2|url2</code>
      * If description is missing, an ordinal value will be used in its place.
@@ -116,10 +119,51 @@ public enum ClientArg {
      * <code>api html|https://myreportserver.com/<SCM_ORG>/<SCM_REPO>/<SCM_BRANCH>/<BUILD_IDENTIFIER></code>
      * (Optional) defaults to null
      */
-    EXTERNAL_LINKS;
+    EXTERNAL_LINKS(false);
+
+    private boolean isRequired;
+
+    ClientArg(boolean isRequired) {
+        this.isRequired = isRequired;
+    }
 
     public static String getToken(ClientArg scannerArg) {
         return "<" + scannerArg.name() + ">";
+    }
+
+    public boolean isRequired() {
+        return isRequired;
+    }
+
+    /**
+     * Validates all required ClientArg have a value in the provided map.
+     *
+     * @param clientArgStringMap a map of ClientArg and their values
+     * @return a Map containing all validation errors. Will return empty map if all required args have value in map.
+     */
+
+    /**
+     * Validates all required ClientArg have a value in the provided map.
+     *
+     *       @param clientArgStringMap a map of ClientArg and their values
+     * @param clientArgStringMap
+     */
+    public static void validateRequiredArgsPresent(Map<ClientArg, String> clientArgStringMap) {
+
+        //Prepare errors
+        Map<String, String> validationErrors = new TreeMap<>();
+
+        for (ClientArg clientArg : ClientArg.values()) {
+            if (clientArg.isRequired) {
+                if (ObjectUtils.isEmpty(clientArgStringMap.get(clientArg))) {
+                    validationErrors.put(clientArg.name(), "missing required field");
+                }
+            }
+        }
+
+        if (!validationErrors.isEmpty()) {
+            throw new BadRequestException(validationErrors);
+        }
     }
 
 }

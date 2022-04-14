@@ -29,6 +29,8 @@ public class PostRequest {
 
     public PostRequest(Map<ClientArg, String> argMap) {
 
+        ClientArg.validateRequiredArgsPresent(argMap);
+
         if (argMap.get(ClientArg.REPORTCARD_HOST) != null) {
             this.reportCardHost = argMap.get(ClientArg.REPORTCARD_HOST);
         }
