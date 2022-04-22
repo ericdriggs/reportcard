@@ -8,8 +8,34 @@ TODO PROTOTYPE:
 
 * enum status
 
-TODO MVP:
-* secure secrets (env vars ok, expiring tokens better)
-* db migration tool (flyway)
-* tests for uniqueness constraints all tables
+Roadmaps
+V0.0 (MVP)
+GOAL: publish data for jive api test, report as json
+* [3] e2e manual test working locally
+* [2] provision nonprod db with access to credentials
+* [2] use to publish data for jive api test
+* [1] use hard-coded key (committed) to encode secrets so not plain text
+* [2] publish docker image for server
+* [1] publish java client as jar using github package https://blog.dipien.
+* [3] misc testing / cleanupcom/how-to-publish-your-internal-artifacts-to-github-packages-5447e7e82e80
+
+Est total: for mvp 14 points
+
+V0.1 (Phase 1 rollout)
+GOAL: html report, documentation explaining value proposition and usage
 * Documentation explaining value proposition and usage
+* render html report from json (manual strings or rocker templating engine)
+* secure db credentials using vault or aws
+
+v0.2 (Phase 2 maintenance)
+* retention cleanup (default 90 days for main/master/develop branch, 30 days for feature branch)
+* admin user
+
+v0.3 (Configuration)
+* retention configuration (specify global default retention duration and allow override duration for branches)
+* api for roles and permissions
+* tokens?
+
+Nice to have for later versions
+* see if we can distinguish between different failure reasons for the same test to assign a similarity score to failures so we can see if failing for multiple reasons.
+** test reports run over a fixed time period. Failures can be partioned by percent with same similarity (e.g. 90% for text A, 10% for text B)

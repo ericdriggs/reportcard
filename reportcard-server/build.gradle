@@ -31,6 +31,9 @@ repositories {
 }
 
 dependencies {
+    dependencies {
+        implementation project(':reportcard-model')
+    }
     //Lombok
     implementation 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
