@@ -1,5 +1,6 @@
 package com.ericdriggs.reportcard.model;
 
+import com.ericdriggs.reportcard.xml.ResultCount;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -8,8 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class TestResult extends com.ericdriggs.reportcard.gen.db.tables.pojos.TestResult {
-    private List<TestSuite> testSuites =  new ArrayList<>();
+public class TestResult extends com.ericdriggs.reportcard.pojos.TestResult {
+    private List<TestSuite> testSuites = new ArrayList<>();
 
     public List<TestSuite> getTestSuites() {
         return testSuites;
@@ -71,4 +72,12 @@ public class TestResult extends com.ericdriggs.reportcard.gen.db.tables.pojos.Te
         }
     }
 
+    public ResultCount getResultCount() {
+        ResultCount resultCount = new ResultCount();
+        for (TestSuite testSuite : testSuites) {
+            ResultCount testSuiteResultCount = testSuite.getResultCount();
+            resultCount.add(resultCount);
+        }
+        return resultCount;
+    }
 }

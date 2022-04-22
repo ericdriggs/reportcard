@@ -1,7 +1,8 @@
 package com.ericdriggs.reportcard.model;
 
-public class TestCase extends com.ericdriggs.reportcard.gen.db.tables.pojos.TestCase {
+import com.ericdriggs.reportcard.xml.ResultCount;
 
+public class TestCase extends com.ericdriggs.reportcard.pojos.TestCase {
     private TestStatus testStatus;
 
     public TestCase setTestStatus(TestStatus testStatus) {
@@ -21,5 +22,9 @@ public class TestCase extends com.ericdriggs.reportcard.gen.db.tables.pojos.Test
             setTestStatusFk(getTestStatusFk());
         }
         return testStatus;
+    }
+
+    public ResultCount getResultCount() {
+        return testStatus.getResultCount();
     }
 }

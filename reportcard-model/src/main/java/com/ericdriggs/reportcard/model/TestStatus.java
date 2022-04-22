@@ -1,5 +1,7 @@
 package com.ericdriggs.reportcard.model;
 
+import com.ericdriggs.reportcard.xml.ResultCount;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,4 +53,7 @@ public enum TestStatus {
         return testStatus;
     }
 
+    public ResultCount getResultCount() {
+        return this.getTestStatusType().getResultCount();
+    }
 }

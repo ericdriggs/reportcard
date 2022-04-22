@@ -15,6 +15,7 @@ public class ResultCount {
     private Integer errors;
     private Integer failures;
     private Integer skipped;
+    private Integer successes;
     private Integer tests;
     private BigDecimal time;
 
@@ -28,12 +29,14 @@ public class ResultCount {
         ResultCount resultCount = new ResultCount();
         resultCount.setErrors(addIntegers(this.getErrors(), that.getErrors()));
         resultCount.setFailures(addIntegers(this.getFailures(), that.getFailures()));
+        resultCount.setSkipped(addIntegers(this.getSkipped(), that.getSkipped()));
+        resultCount.setSuccesses(addIntegers(this.getSuccesses(), that.getSuccesses()));
         resultCount.setTests(addIntegers(this.getTests(), that.getTests()));
         resultCount.setTime(addBigDecimal(this.getTime(), that.getTime()));
         return resultCount;
     }
 
-    public ResultCount aggregate(List<ResultCount> resultCounts) {
+    public static ResultCount aggregate(List<ResultCount> resultCounts) {
         ResultCount resultCount = new ResultCount();
         for (ResultCount r : resultCounts) {
             resultCount = resultCount.add(r);
@@ -86,16 +89,15 @@ public class ResultCount {
      *
      * @param thiz an Integer, may be null
      * @param that an Integer, may be null
-     * @return an Integer sum of thiz and that, only <code>null</code> if both are null.
+     * @return an Integer sum of thiz and that, may be 0 but never null
      */
     private static Integer addIntegers(Integer thiz, Integer that) {
         if (thiz == null) {
-            return that;
-        } else if (that == null) {
-            return null;
-        } else {
-            return thiz + that;
+            thiz = 0;
+        }if (that == null) {
+            that = 0;
         }
+         return thiz + that;
     }
 
     /**
@@ -103,16 +105,16 @@ public class ResultCount {
      *
      * @param thiz an Integer, may be null
      * @param that an Integer, may be null
-     * @return an Integer sum of thiz and that, only <code>null</code> if both are null.
+     * @return an Integer sum of thiz and that, may be zero, never null
      */
     private static BigDecimal addBigDecimal(BigDecimal thiz, BigDecimal that) {
         if (thiz == null) {
-            return that;
-        } else if (that == null) {
-            return null;
-        } else {
-            return thiz.add(that);
+            thiz = BigDecimal.ZERO;
         }
+        if (that == null) {
+            that = BigDecimal.ZERO;
+        }
+        return thiz.add(that);
     }
 
 
