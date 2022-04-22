@@ -47,7 +47,7 @@ public class ReportMetaData {
     }
 
     protected void addErrorIfMissing(Map<String,String> errors,  String val, String variableName) {
-        if (StringUtils.hasText(val)) {
+        if (!StringUtils.hasText(val)) {
             errors.put(variableName, "missing required field");
         }
     }
