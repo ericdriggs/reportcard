@@ -18,19 +18,19 @@ import java.util.List;
 public class SurefireConvertersUtil {
 
     public final static Converter<Testcase, TestCase> fromSurefireToModelTestCase = new AbstractConverter<Testcase, TestCase>() {
-        protected com.ericdriggs.reportcard.model.TestCase convert(com.ericdriggs.reportcard.xml.surefire.Testcase source) {
+        protected TestCase convert(com.ericdriggs.reportcard.xml.surefire.Testcase source) {
             return doFromSurefireToModelTestCase(source);
         }
     };
 
     public final static Converter<Testsuite, TestSuite> fromSurefireToModelTestSuite = new AbstractConverter<Testsuite, TestSuite>() {
-        protected com.ericdriggs.reportcard.model.TestSuite convert(com.ericdriggs.reportcard.xml.surefire.Testsuite source) {
+        protected TestSuite convert(com.ericdriggs.reportcard.xml.surefire.Testsuite source) {
             return doFromSurefireToModelTestSuite(source);
         }
     };
 
     public final static Converter<Collection<Testsuite>, TestResult> fromSurefireToModelTestResult = new AbstractConverter<Collection<Testsuite>, TestResult>() {
-        protected com.ericdriggs.reportcard.model.TestResult convert(Collection<Testsuite> source) {
+        protected TestResult convert(Collection<Testsuite> source) {
             return doFromSurefireToModelTestResult(source);
         }
     };
@@ -44,7 +44,7 @@ public class SurefireConvertersUtil {
     }
 
     public static TestCase doFromSurefireToModelTestCase(Testcase source) {
-        com.ericdriggs.reportcard.model.TestCase modelTestCase = new com.ericdriggs.reportcard.model.TestCase();
+        TestCase modelTestCase = new TestCase();
         modelTestCase.setName(source.getName());
         modelTestCase.setClassName(source.getClassname());
         modelTestCase.setTime(new BigDecimal(source.getTime()));
@@ -70,7 +70,7 @@ public class SurefireConvertersUtil {
     }
 
     public static TestSuite doFromSurefireToModelTestSuite(Testsuite source) {
-        com.ericdriggs.reportcard.model.TestSuite modelTestSuite = new com.ericdriggs.reportcard.model.TestSuite();
+        TestSuite modelTestSuite = new TestSuite();
         modelTestSuite.setError(source.getErrors());
         if (modelTestSuite.getError() == null) {
             modelTestSuite.setError(0);
@@ -104,7 +104,7 @@ public class SurefireConvertersUtil {
     }
 
     public static TestResult doFromSurefireToModelTestResult(Collection<Testsuite> sources) {
-        com.ericdriggs.reportcard.model.TestResult modelTestResult = new com.ericdriggs.reportcard.model.TestResult();
+        TestResult modelTestResult = new TestResult();
         modelTestResult.setTestSuites(doFromSurefireToModelTestSuites(sources));
         modelTestResult.setTests(0);
         modelTestResult.setSkipped(0);

@@ -18,25 +18,25 @@ import java.util.List;
 public class JunitConvertersUtil {
 
     public final static Converter<Testcase, TestCase> fromJunitToModelTestCase = new AbstractConverter<Testcase, TestCase>() {
-        protected com.ericdriggs.reportcard.model.TestCase convert(com.ericdriggs.reportcard.xml.junit.Testcase source) {
+        protected TestCase convert(com.ericdriggs.reportcard.xml.junit.Testcase source) {
             return doFromJunitToModelTestCase(source);
         }
     };
     
     public final static Converter<Testsuite, TestSuite> fromJunitToModelTestSuite = new AbstractConverter<Testsuite, TestSuite>() {
-        protected com.ericdriggs.reportcard.model.TestSuite convert(com.ericdriggs.reportcard.xml.junit.Testsuite source) {
+        protected TestSuite convert(com.ericdriggs.reportcard.xml.junit.Testsuite source) {
             return doFromJunitToModelTestSuite(source);
         }
     };
 
     public final static Converter<Testsuites, TestResult> fromJunitToModelTestResult = new AbstractConverter<Testsuites, TestResult>() {
-        protected com.ericdriggs.reportcard.model.TestResult convert(com.ericdriggs.reportcard.xml.junit.Testsuites source) {
+        protected TestResult convert(com.ericdriggs.reportcard.xml.junit.Testsuites source) {
             return doFromJunitToModelTestResult(source);
         }
     };
 
     public static TestCase doFromJunitToModelTestCase(Testcase source) {
-        com.ericdriggs.reportcard.model.TestCase modelTestCase = new com.ericdriggs.reportcard.model.TestCase();
+        TestCase modelTestCase = new TestCase();
         modelTestCase.setName(source.getName());
         modelTestCase.setClassName(source.getClassname());
         modelTestCase.setTime(source.getTime());
@@ -74,7 +74,7 @@ public class JunitConvertersUtil {
     }
 
     public static TestSuite doFromJunitToModelTestSuite(Testsuite source) {
-        com.ericdriggs.reportcard.model.TestSuite modelTestSuite = new com.ericdriggs.reportcard.model.TestSuite();
+        TestSuite modelTestSuite = new TestSuite();
         modelTestSuite.setError(source.getErrors());
         if (modelTestSuite.getError() == null) {
             modelTestSuite.setError(0);
@@ -107,7 +107,7 @@ public class JunitConvertersUtil {
     }
 
     public static TestResult doFromJunitToModelTestResult(Testsuites sources) {
-        com.ericdriggs.reportcard.model.TestResult modelTestResult = new com.ericdriggs.reportcard.model.TestResult();
+        TestResult modelTestResult = new TestResult();
         modelTestResult.setTestSuites(doFromJunitToModelTestSuites(sources));
         modelTestResult.setTests(0);
         modelTestResult.setSkipped(0);

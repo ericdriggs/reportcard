@@ -183,6 +183,7 @@ jooq {
                     }
                     generate {
                         generatedAnnotation = true
+                        generatedSerialVersionUID = "HASH"
                         daos = true
                         relations = true
                         deprecated = false
