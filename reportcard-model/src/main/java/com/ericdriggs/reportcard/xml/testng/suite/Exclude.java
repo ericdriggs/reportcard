@@ -37,7 +37,6 @@ import javax.xml.bind.annotation.*;
 @AllArgsConstructor
 @Builder(builderMethodName = "builderForExclude")
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class Exclude
     extends Any
 {

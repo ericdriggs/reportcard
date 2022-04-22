@@ -38,7 +38,6 @@ import javax.xml.bind.annotation.*;
 @AllArgsConstructor
 @Builder(builderMethodName = "builderForParameter")
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class Parameter
     extends Any
 {

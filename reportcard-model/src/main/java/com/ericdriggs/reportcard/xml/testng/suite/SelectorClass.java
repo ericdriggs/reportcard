@@ -38,7 +38,6 @@ import javax.xml.bind.annotation.*;
 @AllArgsConstructor
 @Builder(builderMethodName = "builderForSelectorClass")
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class SelectorClass
     extends Any
 {

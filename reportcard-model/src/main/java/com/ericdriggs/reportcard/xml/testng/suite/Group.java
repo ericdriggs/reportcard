@@ -38,7 +38,6 @@ import javax.xml.bind.annotation.*;
 @AllArgsConstructor
 @Builder(builderMethodName = "builderForGroup")
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class Group
     extends Any
 {

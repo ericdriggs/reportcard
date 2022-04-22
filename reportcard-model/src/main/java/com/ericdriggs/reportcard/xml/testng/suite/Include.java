@@ -39,7 +39,6 @@ import javax.xml.bind.annotation.*;
 @AllArgsConstructor
 @Builder(builderMethodName = "builderForInclude")
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class Include
     extends Any
 {

@@ -37,7 +37,6 @@ import javax.xml.bind.annotation.*;
 @AllArgsConstructor
 @Builder(builderMethodName = "builderForScript")
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class Script
     extends Any
 {

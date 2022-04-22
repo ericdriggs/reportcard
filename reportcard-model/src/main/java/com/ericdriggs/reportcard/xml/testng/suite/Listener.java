@@ -34,7 +34,6 @@ import javax.xml.bind.annotation.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(builderMethodName = "builderForListener")
-@EqualsAndHashCode(callSuper = true)
 @Data
 public class Listener
         extends Any {

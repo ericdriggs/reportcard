@@ -37,7 +37,6 @@ import javax.xml.bind.annotation.*;
 @AllArgsConstructor
 @Builder(builderMethodName = "builderForSuiteFile")
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class SuiteFile
     extends Any
 {
