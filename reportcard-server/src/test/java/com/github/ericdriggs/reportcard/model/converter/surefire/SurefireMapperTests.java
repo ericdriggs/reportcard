@@ -1,13 +1,13 @@
-package com.github.ericdriggs.reportcard.model.converter.surefire;
+package io.github.ericdriggs.reportcard.model.converter.surefire;
 
-import com.github.ericdriggs.reportcard.model.TestCase;
-import com.github.ericdriggs.reportcard.model.TestStatus;
-import com.github.ericdriggs.reportcard.model.TestResult;
-import com.github.ericdriggs.reportcard.model.TestSuite;
-import com.github.ericdriggs.reportcard.xml.surefire.Testsuite;
-import com.github.ericdriggs.reportcard.xml.surefire.Properties;
-import com.github.ericdriggs.reportcard.xml.surefire.Property;
-import com.github.ericdriggs.reportcard.xml.surefire.Testcase;
+import io.github.ericdriggs.reportcard.model.TestCase;
+import io.github.ericdriggs.reportcard.model.TestStatus;
+import io.github.ericdriggs.reportcard.model.TestResult;
+import io.github.ericdriggs.reportcard.model.TestSuite;
+import io.github.ericdriggs.reportcard.xml.surefire.Testsuite;
+import io.github.ericdriggs.reportcard.xml.surefire.Properties;
+import io.github.ericdriggs.reportcard.xml.surefire.Property;
+import io.github.ericdriggs.reportcard.xml.surefire.Testcase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
@@ -118,7 +118,7 @@ public class SurefireMapperTests {
         testsuites.add(suite);
         testsuites.add(suite); //calculations are by value so add same twice is valid
 
-//        com.github.ericdriggs.reportcard.model.TestResult modelTestResult = modelMapper.map(testsuites, com.github.ericdriggs.reportcard.model.TestResult.class);
+//        io.github.ericdriggs.reportcard.model.TestResult modelTestResult = modelMapper.map(testsuites, io.github.ericdriggs.reportcard.model.TestResult.class);
         TestResult modelTestResult = SurefireConvertersUtil.doFromSurefireToModelTestResult(testsuites);
         Assertions.assertEquals(16, modelTestResult.getTests());
         Assertions.assertEquals(6, modelTestResult.getError());

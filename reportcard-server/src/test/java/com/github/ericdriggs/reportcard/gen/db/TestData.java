@@ -1,6 +1,6 @@
-package com.github.ericdriggs.reportcard.gen.db;
+package io.github.ericdriggs.reportcard.gen.db;
 
-import com.github.ericdriggs.reportcard.model.HostApplicationPipeline;
+import io.github.ericdriggs.reportcard.model.HostApplicationPipeline;
 
 public enum TestData {
     ;

@@ -1,6 +1,6 @@
-package com.github.ericdriggs.reportcard.model;
+package io.github.ericdriggs.reportcard.model;
 
-import com.github.ericdriggs.reportcard.gen.db.tables.pojos.Context;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.Context;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;

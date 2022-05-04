@@ -6,7 +6,7 @@
 //
 
 
-package com.github.ericdriggs.reportcard.xml.testng.suite;
+package io.github.ericdriggs.reportcard.xml.testng.suite;
 
 import javax.xml.bind.annotation.XmlRegistry;
 
@@ -14,7 +14,7 @@ import javax.xml.bind.annotation.XmlRegistry;
 /**
  * This object contains factory methods for each 
  * Java content interface and Java element interface 
- * generated in the com.github.ericdriggs.reportcard.gen.testng package.
+ * generated in the io.github.ericdriggs.reportcard.gen.testng package.
  * <p>An ObjectFactory allows you to programatically 
  * construct new instances of the Java representation 
  * for XML content. The Java representation of XML 
@@ -30,7 +30,7 @@ public class ObjectFactory {
 
 
     /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: com.github.ericdriggs.reportcard.gen.testng
+     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: io.github.ericdriggs.reportcard.gen.testng
      *
      */
     public ObjectFactory() {

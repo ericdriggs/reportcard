@@ -1,5 +1,5 @@
 
-package com.github.ericdriggs.reportcard.xml.testng.testresult;
+package io.github.ericdriggs.reportcard.xml.testng.testresult;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlElementDecl;
@@ -10,7 +10,7 @@ import javax.xml.namespace.QName;
 /**
  * This object contains factory methods for each 
  * Java content interface and Java element interface 
- * generated in the com.github.ericdriggs.reportcard.xml.testng.testresult package. 
+ * generated in the io.github.ericdriggs.reportcard.xml.testng.testresult package.
  * <p>An ObjectFactory allows you to programatically 
  * construct new instances of the Java representation 
  * for XML content. The Java representation of XML 
@@ -30,7 +30,7 @@ public class ObjectFactory {
     private final static QName _Value_QNAME = new QName("", "value");
 
     /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: com.github.ericdriggs.reportcard.xml.testng.testresult
+     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: io.github.ericdriggs.reportcard.xml.testng.testresult
      * 
      */
     public ObjectFactory() {

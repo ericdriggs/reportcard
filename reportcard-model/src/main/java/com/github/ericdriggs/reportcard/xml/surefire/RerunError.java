@@ -1,4 +1,4 @@
-package com.github.ericdriggs.reportcard.xml.surefire;
+package io.github.ericdriggs.reportcard.xml.surefire;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

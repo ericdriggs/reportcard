@@ -1,4 +1,4 @@
-//package com.github.ericdriggs.reportcard.config;
+//package io.github.ericdriggs.reportcard.config;
 //
 //
 //import org.jooq.impl.DataSourceConnectionProvider;

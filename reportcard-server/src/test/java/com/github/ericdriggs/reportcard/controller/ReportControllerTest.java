@@ -1,10 +1,10 @@
-package com.github.ericdriggs.reportcard.controller;
+package io.github.ericdriggs.reportcard.controller;
 
-import com.github.ericdriggs.reportcard.ReportCardService;
-import com.github.ericdriggs.reportcard.ReportcardApplication;
-import com.github.ericdriggs.reportcard.model.*;
-import com.github.ericdriggs.reportcard.xml.ResourceReader;
-import com.github.ericdriggs.reportcard.model.*;
+import io.github.ericdriggs.reportcard.ReportCardService;
+import io.github.ericdriggs.reportcard.ReportcardApplication;
+import io.github.ericdriggs.reportcard.model.*;
+import io.github.ericdriggs.reportcard.xml.ResourceReader;
+import io.github.ericdriggs.reportcard.model.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package com.github.ericdriggs.reportcard;
+package io.github.ericdriggs.reportcard;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.NameTokenizers;
@@ -11,8 +11,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @EnableTransactionManagement
 @SuppressWarnings("SpellCheckingInspection")
-@SpringBootApplication(scanBasePackages = {"com.github.ericdriggs.reportcard"})
-@EnableJpaRepositories(basePackages = "com.github.ericdriggs.reportcard")
+@SpringBootApplication(scanBasePackages = {"io.github.ericdriggs.reportcard"})
+@EnableJpaRepositories(basePackages = "io.github.ericdriggs.reportcard")
 public class ReportcardApplication {
 
 	public static void main(String[] args) {

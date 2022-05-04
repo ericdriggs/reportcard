@@ -1,4 +1,4 @@
-package com.github.ericdriggs.reportcard.xml.junit;
+package io.github.ericdriggs.reportcard.xml.junit;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;

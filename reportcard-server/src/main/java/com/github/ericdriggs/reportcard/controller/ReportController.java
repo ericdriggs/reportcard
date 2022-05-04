@@ -1,7 +1,7 @@
-package com.github.ericdriggs.reportcard.controller;
+package io.github.ericdriggs.reportcard.controller;
 
-import com.github.ericdriggs.reportcard.model.ReportMetaData;
-import com.github.ericdriggs.reportcard.model.TestResult;
+import io.github.ericdriggs.reportcard.model.ReportMetaData;
+import io.github.ericdriggs.reportcard.model.TestResult;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

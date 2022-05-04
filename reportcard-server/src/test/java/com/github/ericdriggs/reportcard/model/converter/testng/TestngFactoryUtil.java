@@ -1,10 +1,10 @@
-//package com.github.ericdriggs.reportcard.model.converter.testng;
+//package io.github.ericdriggs.reportcard.model.converter.testng;
 //
-//import com.github.ericdriggs.reportcard.model.TestStatus;
-//import com.github.ericdriggs.reportcard.model.TestStatusType;
-//import com.github.ericdriggs.reportcard.xml.testng.suite.Error;
-//import com.github.ericdriggs.reportcard.xml.testng.suite.Properties;
-//import com.github.ericdriggs.reportcard.xml.testng.suite.*;
+//import io.github.ericdriggs.reportcard.model.TestStatus;
+//import io.github.ericdriggs.reportcard.model.TestStatusType;
+//import io.github.ericdriggs.reportcard.xml.testng.suite.Error;
+//import io.github.ericdriggs.reportcard.xml.testng.suite.Properties;
+//import io.github.ericdriggs.reportcard.xml.testng.suite.*;
 //
 //import javax.xml.bind.JAXBElement;
 //import java.math.BigDecimal;

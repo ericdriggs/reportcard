@@ -1,17 +1,17 @@
-package com.github.ericdriggs.reportcard;
+package io.github.ericdriggs.reportcard;
 
-import com.github.ericdriggs.reportcard.gen.db.tables.daos.*;
-import com.github.ericdriggs.reportcard.gen.db.tables.pojos.*;
-import com.github.ericdriggs.reportcard.gen.db.tables.records.*;
-import com.github.ericdriggs.reportcard.gen.db.tables.daos.*;
-import com.github.ericdriggs.reportcard.gen.db.tables.pojos.*;
-import com.github.ericdriggs.reportcard.gen.db.tables.records.*;
-import com.github.ericdriggs.reportcard.model.Comparators;
-import com.github.ericdriggs.reportcard.model.TestCase;
-import com.github.ericdriggs.reportcard.model.TestResult;
-import com.github.ericdriggs.reportcard.model.TestSuite;
-import com.github.ericdriggs.reportcard.model.*;
-import com.github.ericdriggs.reportcard.model.*;
+import io.github.ericdriggs.reportcard.gen.db.tables.daos.*;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.*;
+import io.github.ericdriggs.reportcard.gen.db.tables.records.*;
+import io.github.ericdriggs.reportcard.gen.db.tables.daos.*;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.*;
+import io.github.ericdriggs.reportcard.gen.db.tables.records.*;
+import io.github.ericdriggs.reportcard.model.Comparators;
+import io.github.ericdriggs.reportcard.model.TestCase;
+import io.github.ericdriggs.reportcard.model.TestResult;
+import io.github.ericdriggs.reportcard.model.TestSuite;
+import io.github.ericdriggs.reportcard.model.*;
+import io.github.ericdriggs.reportcard.model.*;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.SelectConditionStep;
@@ -26,7 +26,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListMap;
 
-import static com.github.ericdriggs.reportcard.gen.db.Tables.*;
+import static io.github.ericdriggs.reportcard.gen.db.Tables.*;
 import static org.jooq.impl.DSL.val;
 
 /**

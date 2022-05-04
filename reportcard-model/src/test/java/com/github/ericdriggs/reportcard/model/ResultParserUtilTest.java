@@ -1,6 +1,6 @@
-package com.github.ericdriggs.reportcard.model;
+package io.github.ericdriggs.reportcard.model;
 
-import com.github.ericdriggs.file.FileUtils;
+import io.github.ericdriggs.file.FileUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

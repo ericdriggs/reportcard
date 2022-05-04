@@ -1,4 +1,4 @@
-package com.github.ericdriggs.file;
+package io.github.ericdriggs.file;
 
 import org.junit.jupiter.api.Test;
 

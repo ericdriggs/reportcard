@@ -1,4 +1,4 @@
-package com.github.ericdriggs.reportcard.client;
+package io.github.ericdriggs.reportcard.client;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;

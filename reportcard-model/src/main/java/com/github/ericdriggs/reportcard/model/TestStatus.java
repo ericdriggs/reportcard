@@ -1,6 +1,6 @@
-package com.github.ericdriggs.reportcard.model;
+package io.github.ericdriggs.reportcard.model;
 
-import com.github.ericdriggs.reportcard.xml.ResultCount;
+import io.github.ericdriggs.reportcard.xml.ResultCount;
 
 import java.util.HashMap;
 import java.util.Map;

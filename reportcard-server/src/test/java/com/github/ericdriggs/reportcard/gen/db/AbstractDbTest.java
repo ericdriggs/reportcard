@@ -1,8 +1,8 @@
-package com.github.ericdriggs.reportcard.gen.db;
+package io.github.ericdriggs.reportcard.gen.db;
 
 
-import com.github.ericdriggs.reportcard.ReportCardService;
-import com.github.ericdriggs.reportcard.ReportcardApplication;
+import io.github.ericdriggs.reportcard.ReportCardService;
+import io.github.ericdriggs.reportcard.ReportcardApplication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;

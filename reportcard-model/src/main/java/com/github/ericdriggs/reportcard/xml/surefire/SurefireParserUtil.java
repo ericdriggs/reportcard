@@ -1,7 +1,7 @@
-package com.github.ericdriggs.reportcard.xml.surefire;
+package io.github.ericdriggs.reportcard.xml.surefire;
 
 
-import com.github.ericdriggs.file.FileUtils;
+import io.github.ericdriggs.file.FileUtils;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;

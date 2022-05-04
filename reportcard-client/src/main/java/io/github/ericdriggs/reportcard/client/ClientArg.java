@@ -1,4 +1,4 @@
-package com.github.ericdriggs.reportcard.client;
+package io.github.ericdriggs.reportcard.client;
 //TODO: use a boolean for required and use that logic when validating arguments
 
 import org.springframework.util.ObjectUtils;

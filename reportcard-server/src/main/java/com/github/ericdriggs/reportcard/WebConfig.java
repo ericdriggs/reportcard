@@ -1,4 +1,4 @@
-package com.github.ericdriggs.reportcard;
+package io.github.ericdriggs.reportcard;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpInputMessage;

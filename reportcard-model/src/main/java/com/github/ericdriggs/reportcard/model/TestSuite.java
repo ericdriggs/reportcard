@@ -1,10 +1,10 @@
-package com.github.ericdriggs.reportcard.model;
+package io.github.ericdriggs.reportcard.model;
 
-import com.github.ericdriggs.reportcard.xml.ResultCount;
+import io.github.ericdriggs.reportcard.xml.ResultCount;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TestSuite extends com.github.ericdriggs.reportcard.pojos.TestSuite {
+public class TestSuite extends io.github.ericdriggs.reportcard.pojos.TestSuite {
     private List<TestCase> testCases = new ArrayList<>();
 
     public List<TestCase> getTestCases() {

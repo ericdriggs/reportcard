@@ -1,11 +1,11 @@
-package com.github.ericdriggs.reportcard.gen.db;
+package io.github.ericdriggs.reportcard.gen.db;
 
-import com.github.ericdriggs.reportcard.ReportCardService;
-import com.github.ericdriggs.reportcard.model.*;
+import io.github.ericdriggs.reportcard.ReportCardService;
+import io.github.ericdriggs.reportcard.model.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.ericdriggs.reportcard.model.*;
+import io.github.ericdriggs.reportcard.model.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

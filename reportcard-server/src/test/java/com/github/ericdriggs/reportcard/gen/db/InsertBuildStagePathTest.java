@@ -1,9 +1,9 @@
-package com.github.ericdriggs.reportcard.gen.db;
+package io.github.ericdriggs.reportcard.gen.db;
 
-import com.github.ericdriggs.reportcard.ReportCardService;
-import com.github.ericdriggs.reportcard.model.ExecutionStagePath;
-import com.github.ericdriggs.reportcard.model.HostApplicationPipeline;
-import com.github.ericdriggs.reportcard.model.ReportMetaData;
+import io.github.ericdriggs.reportcard.ReportCardService;
+import io.github.ericdriggs.reportcard.model.ExecutionStagePath;
+import io.github.ericdriggs.reportcard.model.HostApplicationPipeline;
+import io.github.ericdriggs.reportcard.model.ReportMetaData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

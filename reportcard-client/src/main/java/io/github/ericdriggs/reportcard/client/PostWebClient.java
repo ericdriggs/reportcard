@@ -1,4 +1,4 @@
-package com.github.ericdriggs.reportcard.client;
+package io.github.ericdriggs.reportcard.client;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
