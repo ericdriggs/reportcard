@@ -1,4 +1,4 @@
-package com.ericdriggs.reportcard;
+package com.github.ericdriggs.reportcard;
 
 @SuppressWarnings("unused")
 public class BooleanGenerator {

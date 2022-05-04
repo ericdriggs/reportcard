@@ -125,7 +125,7 @@ task generateJooqSchemaSource {
                                 .withFluentSetters(true)
                         )
                         .withTarget(new Target()
-                                .withPackageName('com.ericdriggs.reportcard.gen.db')
+                                .withPackageName('com.github.ericdriggs.reportcard.gen.db')
                                 .withDirectory('/Users/eric.r.driggs/github/ericdriggs/reportcard/reportcard-server/src/generated/java')
                         )
                 )
@@ -192,7 +192,7 @@ jooq {
                         fluentSetters = true
                     }
                     target {
-                        packageName = 'com.ericdriggs.reportcard.gen.db'
+                        packageName = 'com.github.ericdriggs.reportcard.gen.db'
                         directory = 'src/generated/java'
                     }
                 }
