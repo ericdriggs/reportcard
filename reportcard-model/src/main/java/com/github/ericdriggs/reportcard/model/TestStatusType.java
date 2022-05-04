@@ -1,6 +1,6 @@
-package com.github.ericdriggs.reportcard.model;
+package io.github.ericdriggs.reportcard.model;
 
-import com.github.ericdriggs.reportcard.xml.ResultCount;
+import io.github.ericdriggs.reportcard.xml.ResultCount;
 
 public enum TestStatusType {
     SUCCESS(new ResultCount().setTests(1).setSuccesses(1)),

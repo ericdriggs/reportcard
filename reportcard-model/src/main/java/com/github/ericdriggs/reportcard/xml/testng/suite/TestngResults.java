@@ -6,7 +6,7 @@
 //
 
 
-package com.github.ericdriggs.reportcard.xml.testng.suite;
+package io.github.ericdriggs.reportcard.xml.testng.suite;
 
 import lombok.Data;
 

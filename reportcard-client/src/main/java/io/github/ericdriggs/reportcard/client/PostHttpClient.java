@@ -1,5 +1,5 @@
 //TODO: delete?
-// package com.github.ericdriggs.reportcard.client;
+// package io.github.ericdriggs.reportcard.client;
 //
 //import com.fasterxml.jackson.databind.DeserializationFeature;
 //import com.fasterxml.jackson.databind.ObjectMapper;

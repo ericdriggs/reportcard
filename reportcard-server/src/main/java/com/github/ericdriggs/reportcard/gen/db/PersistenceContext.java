@@ -1,4 +1,4 @@
-package com.github.ericdriggs.reportcard.gen.db;
+package io.github.ericdriggs.reportcard.gen.db;
 
 import com.mysql.cj.jdbc.MysqlDataSource;
 import org.jooq.SQLDialect;
@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import javax.sql.DataSource;
 
 @Configuration
-@ComponentScan({ "com.github.ericdriggs.reportcard" })
+@ComponentScan({ "io.github.ericdriggs.reportcard" })
 @EnableTransactionManagement
 @PropertySource("classpath:application.properties")
 //TODO: can this class be removed? Don't know if it's still doing anything

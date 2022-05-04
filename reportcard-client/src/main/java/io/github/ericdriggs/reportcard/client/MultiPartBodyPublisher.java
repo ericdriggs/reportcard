@@ -1,6 +1,6 @@
 //TODO: delete after confirm not needed
 //
-//package com.github.ericdriggs.reportcard.client;
+//package io.github.ericdriggs.reportcard.client;
 //
 //import java.io.IOException;
 //import java.io.InputStream;

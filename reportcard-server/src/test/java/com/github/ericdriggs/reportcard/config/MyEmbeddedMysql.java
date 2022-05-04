@@ -1,4 +1,4 @@
-package com.github.ericdriggs.reportcard.config;
+package io.github.ericdriggs.reportcard.config;
 
 import com.wix.mysql.EmbeddedMysql;
 import com.wix.mysql.config.MysqldConfig;

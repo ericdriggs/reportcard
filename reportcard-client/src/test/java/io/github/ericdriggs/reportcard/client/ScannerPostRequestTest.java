@@ -1,11 +1,11 @@
-package com.github.ericdriggs.reportcard.client;
+package io.github.ericdriggs.reportcard.client;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
-import static com.github.ericdriggs.reportcard.client.ClientArg.EXTERNAL_LINKS;
+import static io.github.ericdriggs.reportcard.client.ClientArg.EXTERNAL_LINKS;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ScannerPostRequestTest {
@@ -16,7 +16,7 @@ public class ScannerPostRequestTest {
         for (ClientArg scannerArg : ClientArg.values()) {
             argMap.put(scannerArg, scannerArg.name());
         }
-        argMap.put(ClientArg.EXTERNAL_LINKS,
+        argMap.put(EXTERNAL_LINKS,
                 "https://" + EXTERNAL_LINKS.name());
         return argMap;
     }
@@ -26,7 +26,7 @@ public class ScannerPostRequestTest {
         for (ClientArg scannerArg : ClientArg.values()) {
             argMap.put(scannerArg, scannerArg.name());
         }
-        argMap.put(ClientArg.EXTERNAL_LINKS,
+        argMap.put(EXTERNAL_LINKS,
                 "foo|https://" + EXTERNAL_LINKS.name());
         return argMap;
     }

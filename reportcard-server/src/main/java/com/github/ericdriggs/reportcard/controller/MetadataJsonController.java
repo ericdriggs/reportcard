@@ -1,12 +1,12 @@
-package com.github.ericdriggs.reportcard.controller;
+package io.github.ericdriggs.reportcard.controller;
 
 import java.util.Map;
 import java.util.Set;
 
-import com.github.ericdriggs.reportcard.ReportCardService;
-import com.github.ericdriggs.reportcard.gen.db.tables.pojos.*;
-import com.github.ericdriggs.reportcard.model.HostApplicationPipeline;
-import com.github.ericdriggs.reportcard.model.TestResult;
+import io.github.ericdriggs.reportcard.ReportCardService;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.*;
+import io.github.ericdriggs.reportcard.model.HostApplicationPipeline;
+import io.github.ericdriggs.reportcard.model.TestResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

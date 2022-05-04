@@ -1,6 +1,6 @@
-package com.github.ericdriggs.reportcard.model;
+package io.github.ericdriggs.reportcard.model;
 
-import com.github.ericdriggs.reportcard.gen.db.tables.pojos.*;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.*;
 import org.apache.commons.lang3.ObjectUtils;
 
 import java.util.Comparator;

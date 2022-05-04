@@ -1,8 +1,8 @@
-//package com.github.ericdriggs.reportcard.model.converter.testng;
+//package io.github.ericdriggs.reportcard.model.converter.testng;
 //
-//import com.github.ericdriggs.reportcard.model.TestStatus;
-//import com.github.ericdriggs.reportcard.model.converter.surefire.SurefireConvertersUtil;
-//import com.github.ericdriggs.reportcard.xml.surefire.Testsuite;
+//import io.github.ericdriggs.reportcard.model.TestStatus;
+//import io.github.ericdriggs.reportcard.model.converter.surefire.SurefireConvertersUtil;
+//import io.github.ericdriggs.reportcard.xml.surefire.Testsuite;
 //import org.junit.jupiter.api.Test;
 //import org.modelmapper.ModelMapper;
 //
@@ -10,7 +10,7 @@
 //import java.util.ArrayList;
 //import java.util.List;
 //
-//import static com.github.ericdriggs.reportcard.model.converter.surefire.SurefireConvertersUtil.doFromSurefireToModelTestResult;
+//import static io.github.ericdriggs.reportcard.model.converter.surefire.SurefireConvertersUtil.doFromSurefireToModelTestResult;
 //import static org.junit.jupiter.api.Assertions.*;
 //
 //
@@ -21,12 +21,12 @@
 //    @Test
 //    public void testCaseTest() {
 //
-//        com.github.ericdriggs.reportcard.xml.surefire.Testcase surefireTestCase = TestngFactoryUtil.newTestCase(TestStatus.FAILURE);
+//        io.github.ericdriggs.reportcard.xml.surefire.Testcase surefireTestCase = TestngFactoryUtil.newTestCase(TestStatus.FAILURE);
 //        assertNotNull(surefireTestCase.getFailure());
 //        assertNull(surefireTestCase.getError());
 //        assertNull(surefireTestCase.getSkipped());
 //
-//        com.github.ericdriggs.reportcard.model.TestCase modelTestCase = modelMapper.map(surefireTestCase, com.github.ericdriggs.reportcard.model.TestCase.class);
+//        io.github.ericdriggs.reportcard.model.TestCase modelTestCase = modelMapper.map(surefireTestCase, io.github.ericdriggs.reportcard.model.TestCase.class);
 //        assertEquals(surefireTestCase.getClassname(), modelTestCase.getClassName());
 //        assertEquals(surefireTestCase.getName(), modelTestCase.getName());
 //        assertEquals(surefireTestCase.getTime(), modelTestCase.getTime().toPlainString());
@@ -60,21 +60,21 @@
 //            assertEquals("testSuiteName", suite.getName());
 //            {
 //                assertEquals(1, suite.getProperties().size());
-//                final com.github.ericdriggs.reportcard.xml.surefire.Properties properties = suite.getProperties().get(0);
+//                final io.github.ericdriggs.reportcard.xml.surefire.Properties properties = suite.getProperties().get(0);
 //                assertEquals(1, properties.getProperty().size());
-//                final com.github.ericdriggs.reportcard.xml.surefire.Property property = properties.getProperty().get(0);
+//                final io.github.ericdriggs.reportcard.xml.surefire.Property property = properties.getProperty().get(0);
 //                assertEquals("foo", property.getName());
 //                assertEquals("bar", property.getValue());
 //            }
 //            assertEquals(8, suite.getTests());
 //            assertEquals(new BigDecimal("9.84"), suite.getTime());
 //            {
-//                List<com.github.ericdriggs.reportcard.xml.surefire.Testcase> testcases = suite.getTestcase();
+//                List<io.github.ericdriggs.reportcard.xml.surefire.Testcase> testcases = suite.getTestcase();
 //                //TODO: assert testcases;
 //            }
 //        }
 ////
-//        com.github.ericdriggs.reportcard.model.TestSuite modelTestSuite = modelMapper.map(suite, com.github.ericdriggs.reportcard.model.TestSuite.class);
+//        io.github.ericdriggs.reportcard.model.TestSuite modelTestSuite = modelMapper.map(suite, io.github.ericdriggs.reportcard.model.TestSuite.class);
 //        {
 //            assertEquals(3, modelTestSuite.getError());
 //            assertEquals(3, modelTestSuite.getFailure());
@@ -93,7 +93,7 @@
 //            assertEquals(8, modelTestSuite.getTests());
 //            assertEquals(new BigDecimal("9.84"), modelTestSuite.getTime());
 //            {
-//                List<com.github.ericdriggs.reportcard.model.TestCase> testcases = modelTestSuite.getTestCases();
+//                List<io.github.ericdriggs.reportcard.model.TestCase> testcases = modelTestSuite.getTestCases();
 //                assertEquals(TestStatus.SUCCESS, testcases.get(0).getTestStatus());
 //                //TODO: assert testcases;
 //            }
@@ -113,8 +113,8 @@
 //        testsuites.add(suite);
 //        testsuites.add(suite); //calculations are by value so add same twice is valid
 //
-////        com.github.ericdriggs.reportcard.model.TestResult modelTestResult = modelMapper.map(testsuites, com.github.ericdriggs.reportcard.model.TestResult.class);
-//        com.github.ericdriggs.reportcard.model.TestResult modelTestResult = doFromSurefireToModelTestResult(testsuites);
+////        io.github.ericdriggs.reportcard.model.TestResult modelTestResult = modelMapper.map(testsuites, io.github.ericdriggs.reportcard.model.TestResult.class);
+//        io.github.ericdriggs.reportcard.model.TestResult modelTestResult = doFromSurefireToModelTestResult(testsuites);
 //        assertEquals(16, modelTestResult.getTests());
 //        assertEquals(6, modelTestResult.getError());
 //        assertEquals(6, modelTestResult.getFailure());

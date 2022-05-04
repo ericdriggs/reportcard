@@ -1,4 +1,4 @@
-package com.github.ericdriggs.reportcard.client;
+package io.github.ericdriggs.reportcard.client;
 
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;

@@ -1,4 +1,4 @@
-package com.github.ericdriggs.reportcard.xml;
+package io.github.ericdriggs.reportcard.xml;
 
 import lombok.Data;
 

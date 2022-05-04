@@ -1,4 +1,4 @@
-package com.github.ericdriggs.reportcard.client;
+package io.github.ericdriggs.reportcard.client;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.ApplicationArguments;

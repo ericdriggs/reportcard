@@ -1,6 +1,6 @@
-package com.github.ericdriggs.reportcard.model;
+package io.github.ericdriggs.reportcard.model;
 
-import com.github.ericdriggs.reportcard.xml.ResultCount;
+import io.github.ericdriggs.reportcard.xml.ResultCount;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class TestResult extends com.github.ericdriggs.reportcard.pojos.TestResult {
+public class TestResult extends io.github.ericdriggs.reportcard.pojos.TestResult {
     private List<TestSuite> testSuites = new ArrayList<>();
 
     public List<TestSuite> getTestSuites() {

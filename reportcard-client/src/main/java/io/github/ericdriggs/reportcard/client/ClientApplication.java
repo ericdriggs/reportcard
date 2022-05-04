@@ -1,4 +1,4 @@
-package com.github.ericdriggs.reportcard.client;
+package io.github.ericdriggs.reportcard.client;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

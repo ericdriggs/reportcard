@@ -1,6 +1,6 @@
-package com.github.ericdriggs.reportcard.xml.testng.suite;
+package io.github.ericdriggs.reportcard.xml.testng.suite;
 
-import com.github.ericdriggs.reportcard.xml.ResourceReader;
+import io.github.ericdriggs.reportcard.xml.ResourceReader;
 import org.junit.jupiter.api.Test;
 
 import javax.xml.bind.JAXBContext;
@@ -24,7 +24,7 @@ public class TestngUnmarshallTest {
             System.out.println(testngResults);
             assertEquals(1, testngResults.suites.size());
             assertEquals(1, testngResults.suites.get(0).listenersOrPackagesOrTest.size());
-            com.github.ericdriggs.reportcard.xml.testng.suite.Test test = (com.github.ericdriggs.reportcard.xml.testng.suite.Test)  testngResults.suites.get(0).listenersOrPackagesOrTest.get(0);
+            io.github.ericdriggs.reportcard.xml.testng.suite.Test test = (io.github.ericdriggs.reportcard.xml.testng.suite.Test)  testngResults.suites.get(0).listenersOrPackagesOrTest.get(0);
             assertEquals("Ant test", test.getName() );
         } catch (JAXBException e) {
             throw new RuntimeException(e);

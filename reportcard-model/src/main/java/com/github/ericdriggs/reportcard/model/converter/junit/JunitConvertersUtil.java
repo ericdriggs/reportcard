@@ -1,12 +1,12 @@
-package com.github.ericdriggs.reportcard.model.converter.junit;
+package io.github.ericdriggs.reportcard.model.converter.junit;
 
-import com.github.ericdriggs.reportcard.model.TestCase;
-import com.github.ericdriggs.reportcard.model.TestResult;
-import com.github.ericdriggs.reportcard.model.TestStatus;
-import com.github.ericdriggs.reportcard.model.TestSuite;
-import com.github.ericdriggs.reportcard.xml.junit.Testcase;
-import com.github.ericdriggs.reportcard.xml.junit.Testsuite;
-import com.github.ericdriggs.reportcard.xml.junit.Testsuites;
+import io.github.ericdriggs.reportcard.model.TestCase;
+import io.github.ericdriggs.reportcard.model.TestResult;
+import io.github.ericdriggs.reportcard.model.TestStatus;
+import io.github.ericdriggs.reportcard.model.TestSuite;
+import io.github.ericdriggs.reportcard.xml.junit.Testcase;
+import io.github.ericdriggs.reportcard.xml.junit.Testsuite;
+import io.github.ericdriggs.reportcard.xml.junit.Testsuites;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
@@ -18,19 +18,19 @@ import java.util.List;
 public class JunitConvertersUtil {
 
     public final static Converter<Testcase, TestCase> fromJunitToModelTestCase = new AbstractConverter<Testcase, TestCase>() {
-        protected TestCase convert(com.github.ericdriggs.reportcard.xml.junit.Testcase source) {
+        protected TestCase convert(io.github.ericdriggs.reportcard.xml.junit.Testcase source) {
             return doFromJunitToModelTestCase(source);
         }
     };
     
     public final static Converter<Testsuite, TestSuite> fromJunitToModelTestSuite = new AbstractConverter<Testsuite, TestSuite>() {
-        protected TestSuite convert(com.github.ericdriggs.reportcard.xml.junit.Testsuite source) {
+        protected TestSuite convert(io.github.ericdriggs.reportcard.xml.junit.Testsuite source) {
             return doFromJunitToModelTestSuite(source);
         }
     };
 
     public final static Converter<Testsuites, TestResult> fromJunitToModelTestResult = new AbstractConverter<Testsuites, TestResult>() {
-        protected TestResult convert(com.github.ericdriggs.reportcard.xml.junit.Testsuites source) {
+        protected TestResult convert(io.github.ericdriggs.reportcard.xml.junit.Testsuites source) {
             return doFromJunitToModelTestResult(source);
         }
     };
@@ -56,9 +56,9 @@ public class JunitConvertersUtil {
         return modelTestCase;
     }
 
-    public static List<TestCase> doFromJunitToModelTestCases(List<com.github.ericdriggs.reportcard.xml.junit.Testcase> source) {
+    public static List<TestCase> doFromJunitToModelTestCases(List<io.github.ericdriggs.reportcard.xml.junit.Testcase> source) {
         List<TestCase> testCases = new ArrayList<>();
-        for (com.github.ericdriggs.reportcard.xml.junit.Testcase testcase : source) {
+        for (io.github.ericdriggs.reportcard.xml.junit.Testcase testcase : source) {
             testCases.add(doFromJunitToModelTestCase(testcase));
         }
         return testCases;

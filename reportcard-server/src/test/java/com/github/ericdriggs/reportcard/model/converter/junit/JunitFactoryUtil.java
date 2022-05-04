@@ -1,11 +1,11 @@
-package com.github.ericdriggs.reportcard.model.converter.junit;
+package io.github.ericdriggs.reportcard.model.converter.junit;
 
-import com.github.ericdriggs.reportcard.model.TestStatus;
-import com.github.ericdriggs.reportcard.model.TestStatusType;
-import com.github.ericdriggs.reportcard.xml.junit.*;
-import com.github.ericdriggs.reportcard.xml.junit.*;
-import com.github.ericdriggs.reportcard.xml.junit.Error;
-import com.github.ericdriggs.reportcard.xml.junit.Properties;
+import io.github.ericdriggs.reportcard.model.TestStatus;
+import io.github.ericdriggs.reportcard.model.TestStatusType;
+import io.github.ericdriggs.reportcard.xml.junit.*;
+import io.github.ericdriggs.reportcard.xml.junit.*;
+import io.github.ericdriggs.reportcard.xml.junit.Error;
+import io.github.ericdriggs.reportcard.xml.junit.Properties;
 
 import java.math.BigDecimal;
 import java.util.*;

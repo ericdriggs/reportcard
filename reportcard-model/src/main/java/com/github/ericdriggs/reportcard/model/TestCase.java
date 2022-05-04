@@ -1,8 +1,8 @@
-package com.github.ericdriggs.reportcard.model;
+package io.github.ericdriggs.reportcard.model;
 
-import com.github.ericdriggs.reportcard.xml.ResultCount;
+import io.github.ericdriggs.reportcard.xml.ResultCount;
 
-public class TestCase extends com.github.ericdriggs.reportcard.pojos.TestCase {
+public class TestCase extends io.github.ericdriggs.reportcard.pojos.TestCase {
     private TestStatus testStatus;
 
     public TestCase setTestStatus(TestStatus testStatus) {

@@ -1,5 +1,5 @@
 
-package com.github.ericdriggs.reportcard.xml.testng.testresult;
+package io.github.ericdriggs.reportcard.xml.testng.testresult;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

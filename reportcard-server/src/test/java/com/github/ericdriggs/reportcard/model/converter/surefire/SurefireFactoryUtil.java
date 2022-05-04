@@ -1,10 +1,10 @@
-package com.github.ericdriggs.reportcard.model.converter.surefire;
+package io.github.ericdriggs.reportcard.model.converter.surefire;
 
-import com.github.ericdriggs.reportcard.model.TestStatus;
-import com.github.ericdriggs.reportcard.model.TestStatusType;
-import com.github.ericdriggs.reportcard.xml.surefire.*;
-import com.github.ericdriggs.reportcard.xml.surefire.Error;
-import com.github.ericdriggs.reportcard.xml.surefire.*;
+import io.github.ericdriggs.reportcard.model.TestStatus;
+import io.github.ericdriggs.reportcard.model.TestStatusType;
+import io.github.ericdriggs.reportcard.xml.surefire.*;
+import io.github.ericdriggs.reportcard.xml.surefire.Error;
+import io.github.ericdriggs.reportcard.xml.surefire.*;
 
 import javax.xml.bind.JAXBElement;
 import java.math.BigDecimal;
@@ -41,7 +41,7 @@ public class SurefireFactoryUtil {
         final long randLong = random.nextLong();
         final String testSuiteGroup = "testSuiteGroup";
         final String testSuiteName = "testSuiteName";
-        final List<com.github.ericdriggs.reportcard.xml.surefire.Properties> properties = newProperties(Collections.singletonMap("foo", "bar"));
+        final List<io.github.ericdriggs.reportcard.xml.surefire.Properties> properties = newProperties(Collections.singletonMap("foo", "bar"));
 
         Testsuite testsuite = new Testsuite();
         testsuite.setErrors(testStatusTypeCount.get(TestStatusType.ERROR));
@@ -57,8 +57,8 @@ public class SurefireFactoryUtil {
         return testsuite;
     }
 
-    public static List<com.github.ericdriggs.reportcard.xml.surefire.Properties> newProperties(Map<String, String> propertyMap) {
-        com.github.ericdriggs.reportcard.xml.surefire.Properties properties = new com.github.ericdriggs.reportcard.xml.surefire.Properties();
+    public static List<io.github.ericdriggs.reportcard.xml.surefire.Properties> newProperties(Map<String, String> propertyMap) {
+        io.github.ericdriggs.reportcard.xml.surefire.Properties properties = new io.github.ericdriggs.reportcard.xml.surefire.Properties();
         List<Property> propertyList = new ArrayList<>();
         for (Map.Entry<String, String> entry : propertyMap.entrySet()) {
             Property property = new Property();
@@ -115,7 +115,7 @@ public class SurefireFactoryUtil {
             elem.setValue(surefireFailureValue);
             surefireTestCase.setFailure(Collections.singletonList(elem));
         } else if (testStatus.equals(TestStatus.ERROR)) {
-            com.github.ericdriggs.reportcard.xml.surefire.Error elem = new com.github.ericdriggs.reportcard.xml.surefire.Error();
+            io.github.ericdriggs.reportcard.xml.surefire.Error elem = new io.github.ericdriggs.reportcard.xml.surefire.Error();
             elem.setMessage(surefireErrorMessage);
             elem.setType(surefireErrorType);
             elem.setValue(surefireErrorValue);

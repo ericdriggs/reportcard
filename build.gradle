@@ -14,7 +14,7 @@ targetCompatibility = javaVersion
 
 allprojects {
     apply plugin: 'jacoco'
-    group 'com.github.ericdriggs'
+    group 'io.github.ericdriggs'
     version '0.0.1-SNAPSHOT'
 
     repositories {

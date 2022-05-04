@@ -1,6 +1,6 @@
-package com.github.ericdriggs.reportcard.xml.junit;
+package io.github.ericdriggs.reportcard.xml.junit;
 
-import com.github.ericdriggs.reportcard.xml.ResourceReader;
+import io.github.ericdriggs.reportcard.xml.ResourceReader;
 import org.junit.jupiter.api.Test;
 
 import javax.xml.bind.JAXBContext;

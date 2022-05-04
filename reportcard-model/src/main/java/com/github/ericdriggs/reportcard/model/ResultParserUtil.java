@@ -1,8 +1,8 @@
-package com.github.ericdriggs.reportcard.model;
+package io.github.ericdriggs.reportcard.model;
 
-import com.github.ericdriggs.reportcard.model.converter.surefire.SurefireConvertersUtil;
-import com.github.ericdriggs.reportcard.xml.surefire.SurefireParserUtil;
-import com.github.ericdriggs.reportcard.xml.surefire.Testsuite;
+import io.github.ericdriggs.reportcard.model.converter.surefire.SurefireConvertersUtil;
+import io.github.ericdriggs.reportcard.xml.surefire.SurefireParserUtil;
+import io.github.ericdriggs.reportcard.xml.surefire.Testsuite;
 
 import java.util.List;
 

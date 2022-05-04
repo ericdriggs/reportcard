@@ -1,13 +1,13 @@
-package com.github.ericdriggs.reportcard.model.converter.junit;
+package io.github.ericdriggs.reportcard.model.converter.junit;
 
 
-import com.github.ericdriggs.reportcard.model.TestCase;
-import com.github.ericdriggs.reportcard.model.TestStatus;
-import com.github.ericdriggs.reportcard.xml.junit.Testsuite;
-import com.github.ericdriggs.reportcard.xml.junit.Testsuites;
-import com.github.ericdriggs.reportcard.model.TestResult;
-import com.github.ericdriggs.reportcard.model.TestSuite;
-import com.github.ericdriggs.reportcard.xml.junit.Testcase;
+import io.github.ericdriggs.reportcard.model.TestCase;
+import io.github.ericdriggs.reportcard.model.TestStatus;
+import io.github.ericdriggs.reportcard.xml.junit.Testsuite;
+import io.github.ericdriggs.reportcard.xml.junit.Testsuites;
+import io.github.ericdriggs.reportcard.model.TestResult;
+import io.github.ericdriggs.reportcard.model.TestSuite;
+import io.github.ericdriggs.reportcard.xml.junit.Testcase;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 

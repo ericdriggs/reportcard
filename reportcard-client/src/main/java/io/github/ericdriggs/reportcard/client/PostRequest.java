@@ -1,11 +1,11 @@
-package com.github.ericdriggs.reportcard.client;
+package io.github.ericdriggs.reportcard.client;
 
 import lombok.Data;
 import org.springframework.util.ObjectUtils;
 
 import java.util.*;
 
-import static com.github.ericdriggs.reportcard.client.ClientArg.getToken;
+import static io.github.ericdriggs.reportcard.client.ClientArg.getToken;
 
 @Data
 public class PostRequest {

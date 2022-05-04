@@ -1,11 +1,11 @@
-package com.github.ericdriggs.reportcard.model.converter.surefire;
+package io.github.ericdriggs.reportcard.model.converter.surefire;
 
-import com.github.ericdriggs.reportcard.model.TestCase;
-import com.github.ericdriggs.reportcard.model.TestResult;
-import com.github.ericdriggs.reportcard.model.TestStatus;
-import com.github.ericdriggs.reportcard.model.TestSuite;
-import com.github.ericdriggs.reportcard.xml.surefire.Testcase;
-import com.github.ericdriggs.reportcard.xml.surefire.Testsuite;
+import io.github.ericdriggs.reportcard.model.TestCase;
+import io.github.ericdriggs.reportcard.model.TestResult;
+import io.github.ericdriggs.reportcard.model.TestStatus;
+import io.github.ericdriggs.reportcard.model.TestSuite;
+import io.github.ericdriggs.reportcard.xml.surefire.Testcase;
+import io.github.ericdriggs.reportcard.xml.surefire.Testsuite;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
@@ -18,13 +18,13 @@ import java.util.List;
 public class SurefireConvertersUtil {
 
     public final static Converter<Testcase, TestCase> fromSurefireToModelTestCase = new AbstractConverter<Testcase, TestCase>() {
-        protected TestCase convert(com.github.ericdriggs.reportcard.xml.surefire.Testcase source) {
+        protected TestCase convert(io.github.ericdriggs.reportcard.xml.surefire.Testcase source) {
             return doFromSurefireToModelTestCase(source);
         }
     };
 
     public final static Converter<Testsuite, TestSuite> fromSurefireToModelTestSuite = new AbstractConverter<Testsuite, TestSuite>() {
-        protected TestSuite convert(com.github.ericdriggs.reportcard.xml.surefire.Testsuite source) {
+        protected TestSuite convert(io.github.ericdriggs.reportcard.xml.surefire.Testsuite source) {
             return doFromSurefireToModelTestSuite(source);
         }
     };

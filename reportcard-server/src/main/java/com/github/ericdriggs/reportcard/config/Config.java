@@ -1,4 +1,4 @@
-//package com.github.ericdriggs.reportcard.config;
+//package io.github.ericdriggs.reportcard.config;
 //
 //import javax.sql.DataSource;
 //import org.springframework.beans.factory.annotation.Value;

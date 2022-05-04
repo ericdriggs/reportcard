@@ -1,4 +1,4 @@
-package com.github.ericdriggs.reportcard.gen.db;
+package io.github.ericdriggs.reportcard.gen.db;
 
 import org.jooq.ExecuteContext;
 import org.jooq.SQLDialect;
