@@ -1,6 +1,8 @@
 package com.ericdriggs.reportcard.xml.surefire;
 
 
+import com.ericdriggs.file.FileUtils;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -11,6 +13,12 @@ import java.util.List;
 public class SurefireParserUtil {
     private SurefireParserUtil() {
         //call statically
+    }
+
+
+    public static List<Testsuite> parseTestSuites(String relativePath, String fileNameRegex) {
+        List<String> xmlStringList = FileUtils.findFileNamesForRelativeDir(relativePath, fileNameRegex);
+        return parseTestSuites(xmlStringList);
     }
 
     public static List<Testsuite> parseTestSuites(List<String> xmlStringList) {
@@ -33,4 +41,5 @@ public class SurefireParserUtil {
             throw new RuntimeException(e);
         }
     }
+
 }
