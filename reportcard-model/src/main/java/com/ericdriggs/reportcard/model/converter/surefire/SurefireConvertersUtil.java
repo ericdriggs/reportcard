@@ -123,10 +123,15 @@ public class SurefireConvertersUtil {
 
         if (modelTestResult.getSkipped() > 0) {
             modelTestResult.setHasSkip(true);
+        } else {
+            modelTestResult.setHasSkip(false);
         }
 
         if (modelTestResult.getFailure() > 0 || modelTestResult.getError() > 0) {
             modelTestResult.setIsSuccess(false);
+        }
+        else {
+            modelTestResult.setIsSuccess(true);
         }
 
         return modelTestResult;

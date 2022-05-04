@@ -1,7 +1,6 @@
-package com.ericdriggs.reportcard.model.converter.surefire;
+package com.ericdriggs.reportcard.model;
 
 import com.ericdriggs.file.FileUtils;
-import com.ericdriggs.reportcard.model.TestResult;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -9,15 +8,15 @@ import java.math.BigDecimal;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class SurefireUtilTest {
+public class ResultParserUtilTest {
 
-    final static String relativePath = "src/test/resources/format-samples/surefire-reports";
-    final static String absolutePath = FileUtils.absolutePathFromRelativePath(relativePath);
-    final static String xmlRegex = FileUtils.regexForExtension("xml");
 
     @Test
     public void resultTest() {
-        TestResult testResult = SurefireUtil.fromAbsolutePath(relativePath, xmlRegex);
+        final String relativePath = "src/test/resources/format-samples/surefire-reports";
+        final String absolutePath = FileUtils.absolutePathFromRelativePath(relativePath);
+
+        TestResult testResult = ResultParserUtil.fromSurefirePath(absolutePath);
         assertEquals(3, testResult.getTestSuites().size());
         assertEquals(24, testResult.getTests());
         assertEquals(2, testResult.getSkipped());
@@ -33,11 +32,6 @@ public class SurefireUtilTest {
         assertNull(testResult.getTestResultCreated());
 
         assertEquals(new BigDecimal(6).setScale(1), testResult.getTime().setScale(1));
-
     }
 
-    @Test
-    public void localTest() {
-        String path = "file:///Users/eric.r.driggs/git/sublife/sublife-api-test-util/build/test-results/test/";
-    }
 }
