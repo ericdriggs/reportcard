@@ -41,10 +41,10 @@ allprojects {
             try {
                 classDirectories.from = files(classDirectories.files.collect {
                     fileTree(dir: it, exclude: [
-                            'com/ericdriggs/reportcard/gen/**',
-                            'com/ericdriggs/reportcard/gen/db/**',
-                            'com/ericdriggs/reportcard/gen/db/tables/**',
-                            'com/ericdriggs/reportcard/gen/db/tables/records/**'
+                            'com/github/ericdriggs/reportcard/gen/**',
+                            'com/github/ericdriggs/reportcard/gen/db/**',
+                            'com/github/ericdriggs/reportcard/gen/db/tables/**',
+                            'com/github/ericdriggs/reportcard/gen/db/tables/records/**'
                     ])
                 })
             } catch (e) {
@@ -54,10 +54,10 @@ allprojects {
 //        afterEvaluate {
 //            classDirectories.from = files(classDirectories.files.collect {
 //                fileTree(dir: it, exclude: [
-//                        'com/ericdriggs/reportcard/gen/**',
-//                        'com/ericdriggs/reportcard/gen/db/**',
-//                        'com/ericdriggs/reportcard/gen/db/tables/**',
-//                        'com/ericdriggs/reportcard/gen/db/tables/records/**'
+//                        'com/github/ericdriggs/reportcard/gen/**',
+//                        'com/github/ericdriggs/reportcard/gen/db/**',
+//                        'com/github/ericdriggs/reportcard/gen/db/tables/**',
+//                        'com/github/ericdriggs/reportcard/gen/db/tables/records/**'
 //                ])
 //            })
 //        }
@@ -86,10 +86,10 @@ tasks.register("codeCoverageReport", JacocoReport) {
                 try {
                     classDirectories.from = files(classDirectories.files.collect {
                         fileTree(dir: it, exclude: [
-                                'com/ericdriggs/reportcard/gen/**',
-                                'com/ericdriggs/reportcard/gen/db/**',
-                                'com/ericdriggs/reportcard/gen/db/tables/**',
-                                'com/ericdriggs/reportcard/gen/db/tables/records/**'
+                                'com/github/ericdriggs/reportcard/gen/**',
+                                'com/github/ericdriggs/reportcard/gen/db/**',
+                                'com/github/ericdriggs/reportcard/gen/db/tables/**',
+                                'com/github/ericdriggs/reportcard/gen/db/tables/records/**'
                         ])
                     })
                 } catch (e) {
