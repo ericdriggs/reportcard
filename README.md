@@ -1,5 +1,8 @@
 # Reportcard
-Test XML reporting publishing, aggregation and querying
+
+Purpose: Test XML database and service for reporting publishing, aggregation and querying
+
+
 
 TODO PROTOTYPE:
 
