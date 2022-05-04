@@ -1,0 +1,125 @@
+<testsuite failures="4" name="features/never-gonna-give-you-up.feature" skipped="0" tests="8" time="2.0">
+  <testcase classname="features.never-gonna-give-you-up" name="You know the rules and so do I" time="0.014889">
+    <system-out>* match true == BooleanGenerator.generateBoolean(1) .............................................. passed</system-out>
+  </testcase>
+  <testcase classname="features.never-gonna-give-you-up" name="give you up" time="0.007996">
+    <failure message="never-gonna-give-you-up.feature:9 - path: $, actual: true, expected: false, reason: not equal (Boolean)">* match true == BooleanGenerator.generateBoolean(1) .............................................. passed
+* match true == BooleanGenerator.generateBoolean(.1) ............................................. failed
+
+Stack Trace:
+com.intuit.karate.exception.KarateException: never-gonna-give-you-up.feature:9 - path: $, actual: true, expected: false, reason: not equal (Boolean)
+	at ✽.* match true == BooleanGenerator.generateBoolean(.1) (never-gonna-give-you-up.feature:9)</failure>
+  </testcase>
+  <testcase classname="features.never-gonna-give-you-up" name="let you down" time="0.005669">
+    <system-out>* match true == BooleanGenerator.generateBoolean(1) .............................................. passed
+* match true == BooleanGenerator.generateBoolean(.1) ............................................. failed
+
+Stack Trace:
+com.intuit.karate.exception.KarateException: never-gonna-give-you-up.feature:9 - path: $, actual: true, expected: false, reason: not equal (Boolean)
+	at ✽.* match true == BooleanGenerator.generateBoolean(.1) (never-gonna-give-you-up.feature:9)
+
+* match true == BooleanGenerator.generateBoolean(.2) ............................................. passed</system-out>
+  </testcase>
+  <testcase classname="features.never-gonna-give-you-up" name="run around and desert you" time="0.000944">
+    <failure message="never-gonna-give-you-up.feature:15 - path: $, actual: true, expected: false, reason: not equal (Boolean)">* match true == BooleanGenerator.generateBoolean(1) .............................................. passed
+* match true == BooleanGenerator.generateBoolean(.1) ............................................. failed
+
+Stack Trace:
+com.intuit.karate.exception.KarateException: never-gonna-give-you-up.feature:9 - path: $, actual: true, expected: false, reason: not equal (Boolean)
+	at ✽.* match true == BooleanGenerator.generateBoolean(.1) (never-gonna-give-you-up.feature:9)
+
+* match true == BooleanGenerator.generateBoolean(.2) ............................................. passed
+* match true == BooleanGenerator.generateBoolean(0) .............................................. failed
+
+Stack Trace:
+com.intuit.karate.exception.KarateException: never-gonna-give-you-up.feature:15 - path: $, actual: true, expected: false, reason: not equal (Boolean)
+	at ✽.* match true == BooleanGenerator.generateBoolean(0) (never-gonna-give-you-up.feature:15)</failure>
+  </testcase>
+  <testcase classname="features.never-gonna-give-you-up" name="make you cry" time="0.004702">
+    <system-out>* match true == BooleanGenerator.generateBoolean(1) .............................................. passed
+* match true == BooleanGenerator.generateBoolean(.1) ............................................. failed
+
+Stack Trace:
+com.intuit.karate.exception.KarateException: never-gonna-give-you-up.feature:9 - path: $, actual: true, expected: false, reason: not equal (Boolean)
+	at ✽.* match true == BooleanGenerator.generateBoolean(.1) (never-gonna-give-you-up.feature:9)
+
+* match true == BooleanGenerator.generateBoolean(.2) ............................................. passed
+* match true == BooleanGenerator.generateBoolean(0) .............................................. failed
+
+Stack Trace:
+com.intuit.karate.exception.KarateException: never-gonna-give-you-up.feature:15 - path: $, actual: true, expected: false, reason: not equal (Boolean)
+	at ✽.* match true == BooleanGenerator.generateBoolean(0) (never-gonna-give-you-up.feature:15)
+
+* match true == BooleanGenerator.generateBoolean(.5) ............................................. passed</system-out>
+  </testcase>
+  <testcase classname="features.never-gonna-give-you-up" name="say goodbye" time="0.001818">
+    <system-out>* match true == BooleanGenerator.generateBoolean(1) .............................................. passed
+* match true == BooleanGenerator.generateBoolean(.1) ............................................. failed
+
+Stack Trace:
+com.intuit.karate.exception.KarateException: never-gonna-give-you-up.feature:9 - path: $, actual: true, expected: false, reason: not equal (Boolean)
+	at ✽.* match true == BooleanGenerator.generateBoolean(.1) (never-gonna-give-you-up.feature:9)
+
+* match true == BooleanGenerator.generateBoolean(.2) ............................................. passed
+* match true == BooleanGenerator.generateBoolean(0) .............................................. failed
+
+Stack Trace:
+com.intuit.karate.exception.KarateException: never-gonna-give-you-up.feature:15 - path: $, actual: true, expected: false, reason: not equal (Boolean)
+	at ✽.* match true == BooleanGenerator.generateBoolean(0) (never-gonna-give-you-up.feature:15)
+
+* match true == BooleanGenerator.generateBoolean(.5) ............................................. passed
+* match true == BooleanGenerator.generateBoolean(.6) ............................................. passed</system-out>
+  </testcase>
+  <testcase classname="features.never-gonna-give-you-up" name="tell a lie and hurt you" time="0.006194">
+    <failure message="never-gonna-give-you-up.feature:24 - path: $, actual: true, expected: false, reason: not equal (Boolean)">* match true == BooleanGenerator.generateBoolean(1) .............................................. passed
+* match true == BooleanGenerator.generateBoolean(.1) ............................................. failed
+
+Stack Trace:
+com.intuit.karate.exception.KarateException: never-gonna-give-you-up.feature:9 - path: $, actual: true, expected: false, reason: not equal (Boolean)
+	at ✽.* match true == BooleanGenerator.generateBoolean(.1) (never-gonna-give-you-up.feature:9)
+
+* match true == BooleanGenerator.generateBoolean(.2) ............................................. passed
+* match true == BooleanGenerator.generateBoolean(0) .............................................. failed
+
+Stack Trace:
+com.intuit.karate.exception.KarateException: never-gonna-give-you-up.feature:15 - path: $, actual: true, expected: false, reason: not equal (Boolean)
+	at ✽.* match true == BooleanGenerator.generateBoolean(0) (never-gonna-give-you-up.feature:15)
+
+* match true == BooleanGenerator.generateBoolean(.5) ............................................. passed
+* match true == BooleanGenerator.generateBoolean(.6) ............................................. passed
+* match true == BooleanGenerator.generateBoolean(.3) ............................................. failed
+
+Stack Trace:
+com.intuit.karate.exception.KarateException: never-gonna-give-you-up.feature:24 - path: $, actual: true, expected: false, reason: not equal (Boolean)
+	at ✽.* match true == BooleanGenerator.generateBoolean(.3) (never-gonna-give-you-up.feature:24)</failure>
+  </testcase>
+  <testcase classname="features.never-gonna-give-you-up" name="I'd run right into hell and back" time="0.001697">
+    <failure message="never-gonna-give-you-up.feature:27 - path: $, actual: true, expected: false, reason: not equal (Boolean)">* match true == BooleanGenerator.generateBoolean(1) .............................................. passed
+* match true == BooleanGenerator.generateBoolean(.1) ............................................. failed
+
+Stack Trace:
+com.intuit.karate.exception.KarateException: never-gonna-give-you-up.feature:9 - path: $, actual: true, expected: false, reason: not equal (Boolean)
+	at ✽.* match true == BooleanGenerator.generateBoolean(.1) (never-gonna-give-you-up.feature:9)
+
+* match true == BooleanGenerator.generateBoolean(.2) ............................................. passed
+* match true == BooleanGenerator.generateBoolean(0) .............................................. failed
+
+Stack Trace:
+com.intuit.karate.exception.KarateException: never-gonna-give-you-up.feature:15 - path: $, actual: true, expected: false, reason: not equal (Boolean)
+	at ✽.* match true == BooleanGenerator.generateBoolean(0) (never-gonna-give-you-up.feature:15)
+
+* match true == BooleanGenerator.generateBoolean(.5) ............................................. passed
+* match true == BooleanGenerator.generateBoolean(.6) ............................................. passed
+* match true == BooleanGenerator.generateBoolean(.3) ............................................. failed
+
+Stack Trace:
+com.intuit.karate.exception.KarateException: never-gonna-give-you-up.feature:24 - path: $, actual: true, expected: false, reason: not equal (Boolean)
+	at ✽.* match true == BooleanGenerator.generateBoolean(.3) (never-gonna-give-you-up.feature:24)
+
+* match true == BooleanGenerator.generateBoolean(.1) ............................................. failed
+
+Stack Trace:
+com.intuit.karate.exception.KarateException: never-gonna-give-you-up.feature:27 - path: $, actual: true, expected: false, reason: not equal (Boolean)
+	at ✽.* match true == BooleanGenerator.generateBoolean(.1) (never-gonna-give-you-up.feature:27)</failure>
+  </testcase>
+</testsuite>

@@ -31,6 +31,9 @@ repositories {
 }
 
 dependencies {
+    dependencies {
+        implementation project(':reportcard-model')
+    }
     //Lombok
     implementation 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
@@ -180,6 +183,7 @@ jooq {
                     }
                     generate {
                         generatedAnnotation = true
+                        generatedSerialVersionUID = "HASH"
                         daos = true
                         relations = true
                         deprecated = false

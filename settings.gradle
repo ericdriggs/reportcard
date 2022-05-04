@@ -6,7 +6,9 @@ pluginManagement {
 }
 
 rootProject.name = 'reportcard'
-//include 'test-data-generator' //est-data-generator generates failing tests -- not part of build
+// *** test-data-generator generates failing tests -- not part of build ***/
+//include 'test-data-generator'
 include 'reportcard-client'
 include 'reportcard-jooq-generator'
+include 'reportcard-model'
 include 'reportcard-server'

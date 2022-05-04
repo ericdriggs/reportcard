@@ -1,0 +1,46 @@
+buildscript {
+    ext {
+        jakartaVersion = '2.3.3'
+        lombokVersion = '1.18.20'
+        jacksonVersion = '2.13.2'
+        junitVersion = '5.7.1'
+    }
+}
+
+plugins {
+    id 'java'
+    id 'groovy'
+    id 'idea'
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    //Lombok
+    implementation "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+
+    //JSON
+    implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
+
+    //XML
+    compile "jakarta.xml.bind:jakarta.xml.bind-api:${jakartaVersion}"
+    runtime "com.sun.xml.bind:jaxb-impl:${jakartaVersion}"
+
+    //Mapping
+    implementation 'org.modelmapper:modelmapper:2.3.0'
+
+    //Test
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
+}
