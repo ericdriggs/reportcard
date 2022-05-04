@@ -1,6 +1,6 @@
 package com.ericdriggs.reportcard.model.converter.surefire;
 
-import com.ericdriggs.reportcard.pojos.TestResult;
+import com.ericdriggs.reportcard.model.TestResult;
 import com.ericdriggs.reportcard.xml.surefire.SurefireParserUtil;
 import com.ericdriggs.reportcard.xml.surefire.Testsuite;
 

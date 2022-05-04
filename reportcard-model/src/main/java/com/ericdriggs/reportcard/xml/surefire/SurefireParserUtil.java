@@ -17,7 +17,7 @@ public class SurefireParserUtil {
 
 
     public static List<Testsuite> parseTestSuites(String relativePath, String fileNameRegex) {
-        List<String> xmlStringList = FileUtils.findFileNamesForRelativeDir(relativePath, fileNameRegex);
+        List<String> xmlStringList = FileUtils.fileContentsFromRelativeDir(relativePath, fileNameRegex);
         return parseTestSuites(xmlStringList);
     }
 

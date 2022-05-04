@@ -112,6 +112,7 @@ public class SurefireConvertersUtil {
         modelTestResult.setError(0);
         modelTestResult.setTime(BigDecimal.ZERO);
 
+        boolean hasSkip = false;
         for (TestSuite testSuite : modelTestResult.getTestSuites()) {
             modelTestResult.setTime(modelTestResult.getTime().add(testSuite.getTime()));
             modelTestResult.setTests(modelTestResult.getTests() + testSuite.getTests());
@@ -119,6 +120,15 @@ public class SurefireConvertersUtil {
             modelTestResult.setFailure(modelTestResult.getFailure() + testSuite.getFailure());
             modelTestResult.setError(modelTestResult.getError() + testSuite.getError());
         }
+
+        if (modelTestResult.getSkipped() > 0) {
+            modelTestResult.setHasSkip(true);
+        }
+
+        if (modelTestResult.getFailure() > 0 || modelTestResult.getError() > 0) {
+            modelTestResult.setIsSuccess(false);
+        }
+
         return modelTestResult;
     }
 
