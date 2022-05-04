@@ -11,13 +11,13 @@ public enum SurefireUtil {
     ;//static methods only
     private static final String XML_EXTENSION_REGEX = ".*[.]xml";
 
-    public static TestResult fromRelativePath(String relativePath) {
-        return fromRelativePath(relativePath, XML_EXTENSION_REGEX);
+    public static TestResult fromPath(String absolutePath) {
+        return fromAbsolutePath(absolutePath, XML_EXTENSION_REGEX);
     }
 
-    public static TestResult fromRelativePath(String relativePath, String fileNameRegex) {
-        List<Testsuite> testsuites = SurefireParserUtil.parseTestSuites(relativePath, fileNameRegex);
-        return SurefireConvertersUtil.doFromSurefireToModelTestResult(testsuites);
 
+    public static TestResult fromAbsolutePath(String absolutePath, String fileNameRegex) {
+        List<Testsuite> testsuites = SurefireParserUtil.parseTestSuitesFromPathAndRegex(absolutePath, fileNameRegex);
+        return SurefireConvertersUtil.doFromSurefireToModelTestResult(testsuites);
     }
 }
