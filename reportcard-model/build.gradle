@@ -34,8 +34,8 @@ dependencies {
     implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
 
     //XML
-    compile "jakarta.xml.bind:jakarta.xml.bind-api:${jakartaVersion}"
-    runtime "com.sun.xml.bind:jaxb-impl:${jakartaVersion}"
+    implementation "jakarta.xml.bind:jakarta.xml.bind-api:${jakartaVersion}"
+    implementation "com.sun.xml.bind:jaxb-impl:${jakartaVersion}"
 
     //Mapping
     implementation 'org.modelmapper:modelmapper:2.3.0'
