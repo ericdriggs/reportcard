@@ -59,9 +59,9 @@ configure(
                 }
 
                 pom {
-                    name.set("aws-junit5 :: ${project.name}")
-                    description.set("aws-junit5 :: ${project.name}")
-                    url.set("https://github.com/madhead/aws-junit5")
+                    name.set("reportcard :: ${project.name}")
+                    description.set("test report metrics and trend analysis reporting :: ${project.name}")
+                    url.set("https://github.com/ericdriggs/reportcard")
                     licenses {
                         license {
                             name.set("MIT")
@@ -70,14 +70,14 @@ configure(
                     }
                     developers {
                         developer {
-                            id.set("madhead")
-                            name.set("Siarhei Krukau")
-                            email.set("siarhei.krukau@gmail.com")
+                            id.set("ericdriggs")
+                            name.set("Eric Driggs")
+                            email.set("open-a-github-issue@not-really-an-email-address.com")
                         }
                     }
                     scm {
-                        connection.set("scm:git:git@github.com:madhead/aws-junit5.git")
-                        url.set("https://github.com/madhead/aws-junit5")
+                        connection.set("scm:git@github.com:ericdriggs/reportcard.git")
+                        url.set("https://github.com/ericdriggs/reportcard")
                     }
                 }
             }
@@ -116,9 +116,9 @@ allprojects {
 
         withType<JacocoReport> {
             reports {
-                xml.isEnabled = true
-                html.isEnabled = true
-                csv.isEnabled = false
+                xml.required.set(true)
+                html.required.set(true)
+                csv.required.set(false)
             }
             classDirectories.setFrom(
                     files(classDirectories.files.map {
