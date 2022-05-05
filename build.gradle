@@ -2,11 +2,18 @@ buildscript {
     ext {
         javaVersion = JavaVersion.VERSION_11
     }
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
+    }
 }
 
 plugins {
     id 'java'
     id 'idea'
+    id "com.bmuschko.nexus" version "2.3.1"
 }
 
 sourceCompatibility = javaVersion
@@ -14,6 +21,7 @@ targetCompatibility = javaVersion
 
 allprojects {
     apply plugin: 'jacoco'
+    archivesBaseName = 'reportcard'
     group 'io.github.ericdriggs'
     version '0.0.1-SNAPSHOT'
 
@@ -110,5 +118,48 @@ tasks.register("codeCoverageReport", JacocoReport) {
         html.enabled true
 
 
+    }
+
+    modifyPom {
+        project {
+            name 'reportcard'
+            description 'test report metrics and trend analysis reporting'
+            url 'https://github.com/ericdriggs/reportcard'
+            inceptionYear '2022'
+
+            scm {
+                url 'https://github.com/ericdriggs/reportcard'
+                connection 'scm:https://github.com/ericdriggs/reportcard.git'
+                developerConnection 'scm:git@github.com:ericdriggs/reportcard.git'
+            }
+
+            licenses {
+                license {
+                    name 'The MIT License'
+                    url 'https://opensource.org/licenses/MIT'
+                    distribution 'repo'
+                }
+            }
+
+            developers {
+                developer {
+                    id 'ericdriggs'
+                    name 'Eric Driggs'
+                    email 'open-a-github-issue@not-really-an-email-address.com'
+                }
+            }
+        }
+    }
+
+    extraArchive {
+        sources = true
+        tests = true
+        javadoc = true
+    }
+
+    nexus {
+        sign = true
+        repositoryUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+        snapshotRepositoryUrl = 'https://oss.sonatype.org/content/repositories/snapshots/'
     }
 }
