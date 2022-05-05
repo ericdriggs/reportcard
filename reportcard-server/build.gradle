@@ -202,3 +202,10 @@ jooq {
 }
 sourceSets.main.java.srcDirs += ['src/generated/java']
 
+jar {
+    enabled = true
+}
+
+bootJar {
+    archiveClassifier = 'application'
+}

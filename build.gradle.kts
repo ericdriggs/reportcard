@@ -1,5 +1,6 @@
 plugins {
     id("java-library")
+    id("org.asciidoctor.jvm.convert").version("3.3.2")
     id("io.github.gradle-nexus.publish-plugin").version("1.1.0")
 }
 
@@ -26,6 +27,57 @@ configure(
                 - project(":reportcard-model")
                 - project(":reportcard-server")
 ) {
+
+
+}
+
+
+allprojects {
+
+    apply<JacocoPlugin>()
+
+    configure<JacocoPluginExtension> {
+        toolVersion = "0.8.7"
+    }
+
+
+    //archivesBaseName = "reportcard"
+    group = "io.github.ericdriggs"
+    version = "0.0.1-SNAPSHOT"
+
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+
+
+
+    tasks {
+        withType<Test> {
+            useJUnitPlatform()
+            systemProperties(System.getProperties().toMap() as Map<String, Object>)
+            systemProperties["user.dir"] = workingDir
+        }
+
+        withType<JacocoReport> {
+            reports {
+                xml.required.set(true)
+                html.required.set(true)
+                csv.required.set(false)
+            }
+            classDirectories.setFrom(
+                    files(classDirectories.files.map {
+                        fileTree(it) {
+                            exclude("io/github/ericdriggs/reportcard/gen/**",
+                                    "io/github/ericdriggs/reportcard/gen/db/**",
+                                    "io/github/ericdriggs/reportcard/gen/db/tables/**",
+                                    "io/github/ericdriggs/reportcard/gen/db/tables/records/**")
+                        }
+                    })
+            )
+        }
+    }
 
     apply<JavaLibraryPlugin>()
 
@@ -86,51 +138,37 @@ configure(
 }
 
 
-allprojects {
-
-    apply<JacocoPlugin>()
-
-    configure<JacocoPluginExtension> {
-        toolVersion = "0.8.7"
-    }
-
-
-    //archivesBaseName = "reportcard"
-    group = "io.github.ericdriggs"
-    version = "0.0.1-SNAPSHOT"
-
-
-    repositories {
-        mavenLocal()
-        mavenCentral()
-    }
-
-
-
-    tasks {
-        withType<Test> {
-            useJUnitPlatform()
-            systemProperties(System.getProperties().toMap() as Map<String, Object>)
-            systemProperties["user.dir"] = workingDir
-        }
-
-        withType<JacocoReport> {
-            reports {
-                xml.required.set(true)
-                html.required.set(true)
-                csv.required.set(false)
-            }
-            classDirectories.setFrom(
-                    files(classDirectories.files.map {
-                        fileTree(it) {
-                            exclude("io/github/ericdriggs/reportcard/gen/**",
-                                    "io/github/ericdriggs/reportcard/gen/db/**",
-                                    "io/github/ericdriggs/reportcard/gen/db/tables/**",
-                                    "io/github/ericdriggs/reportcard/gen/db/tables/records/**")
-                        }
-                    })
+tasks {
+    register<Javadoc>("javadocs") {
+        group = "Documentation"
+        //destinationDir = reporting.file("$buildDir/docs/javadoc")
+        title = project.name
+        //destinationDir = file("$buildDir/docs/javadoc")
+        with(options as StandardJavadocDocletOptions) {
+            links = listOf(
+                    "https://docs.oracle.com/javase/8/docs/api/",
+                    "https://junit.org/junit5/docs/current/api/",
+                    "https://sdk.amazonaws.com/java/api/latest/",
+                    "https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/"
             )
         }
+        subprojects.forEach { subproject ->
+            subproject.tasks.withType<Javadoc>().forEach { task ->
+                source += task.source
+                classpath += task.classpath
+                includes += task.includes
+                excludes += task.excludes
+            }
+        }
+    }
+
+    asciidoctor {
+        setSourceDir(file("docs"))
+        sources {
+            include("index.adoc")
+        }
+        setOutputDir(file("$buildDir/docs/asciidoc"))
+        setBaseDir(file("docs"))
     }
 }
 

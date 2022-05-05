@@ -1,6 +1,6 @@
 //TODO: delete after confirm not needed
 //
-//package io.github.ericdriggs.reportcard.client;
+package io.github.ericdriggs.reportcard.client;
 //
 //import java.io.IOException;
 //import java.io.InputStream;
@@ -12,7 +12,7 @@
 //import java.util.*;
 //import java.util.function.Supplier;
 //
-//public class MultiPartBodyPublisher {
+public class MultiPartBodyPublisher {
 //    private List<PartsSpecification> partsSpecificationList = new ArrayList<>();
 //    private String boundary = UUID.randomUUID().toString();
 //
@@ -185,4 +185,4 @@
 //            }
 //        }
 //    }
-//}
+}
