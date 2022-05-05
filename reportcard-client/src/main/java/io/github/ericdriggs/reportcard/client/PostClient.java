@@ -1,5 +1,5 @@
 ////TODO: delete?
-// package io.github.ericdriggs.reportcard.client;
+ package io.github.ericdriggs.reportcard.client;
 //
 //import com.fasterxml.jackson.databind.DeserializationFeature;
 //import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,7 +19,7 @@
 //
 //
 ////TODO: try with java net client using contnet type for each part //https://stackoverflow.com/questions/46392160/java-9-httpclient-send-a-multipart-form-data-request
-//public class PostClient {
+public class PostClient {
 //
 //    public static final PostClient INSTANCE = new PostClient();
 //    static {
@@ -96,4 +96,4 @@
 //            throw new RuntimeException(ex);
 //        }
 //    }
-//}
+}

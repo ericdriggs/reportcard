@@ -10,7 +10,7 @@ buildscript {
 plugins {
 	id 'org.springframework.boot'
 	id 'io.spring.dependency-management'
-	id 'java'
+	id 'java-library'
 	id 'idea'
 }
 
@@ -52,4 +52,12 @@ task integrationTest(type: Test) {
     testClassesDirs = sourceSets.integrationTest.output.classesDirs
     classpath = sourceSets.integrationTest.runtimeClasspath
     shouldRunAfter test
+}
+
+jar {
+    enabled = true
+}
+
+bootJar {
+    archiveClassifier = 'application'
 }

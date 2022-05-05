@@ -8,22 +8,22 @@ import java.util.TreeMap;
 
 /**
  * Required Arguments<br>
- * {@link #REPORTCARD_HOST}<br>
- * {@link #REPORTCARD_USER}<br>
- * {@link #REPORTCARD_PASS}<br>
- * {@link #SCM_ORG}<br>
- * {@link #SCM_REPO}<br>
- * {@link #SCM_BRANCH}<br>
- * {@link #SCM_SHA}<br>
- * {@link #CONTEXT_HOST}<br>
- * {@link #TEST_REPORT_PATH}<br>
+ * {@link ClientArg#REPORTCARD_HOST}<br>
+ * {@link ClientArg#REPORTCARD_USER}<br>
+ * {@link ClientArg#REPORTCARD_PASS}<br>
+ * {@link ClientArg#SCM_ORG}<br>
+ * {@link ClientArg#SCM_REPO}<br>
+ * {@link ClientArg#SCM_BRANCH}<br>
+ * {@link ClientArg#SCM_SHA}<br>
+ * {@link ClientArg#CONTEXT_HOST}<br>
+ * {@link ClientArg#TEST_REPORT_PATH}<br>
 
  * <p>
  * Optional Arguments<br>
- * {@link #CONTEXT_APPLICATION}<br>
- * {@link #CONTEXT_PIPELINE}<br>
- * {@link #EXTERNAL_LINKS}<br>
- * {@link #TEST_REPORT_REGEX}<br>
+ * {@link ClientArg#CONTEXT_APPLICATION}<br>
+ * {@link ClientArg#CONTEXT_PIPELINE}<br>
+ * {@link ClientArg#EXTERNAL_LINKS}<br>
+ * {@link ClientArg#TEST_REPORT_REGEX}<br>
  */
 public enum ClientArg {
 
@@ -115,7 +115,7 @@ public enum ClientArg {
      * Duplicate descriptions will cause map entries to be overwritten.
      * Only 1 comma per description. Data after second commas will be ignored.
      * URL supports all ScannerArgs (Except EXTERNAL_LINKS) as token replacements, e,g. :
-     * <code>api html|https://myreportserver.com/<SCM_ORG>/<SCM_REPO>/<SCM_BRANCH>/<BUILD_IDENTIFIER></code>
+     * <pre>api html|https://myreportserver.com/{SCM_ORG}/{SCM_REPO}/{SCM_BRANCH}{BUILD_IDENTIFIER}</pre>
      * (Optional) defaults to null
      */
     EXTERNAL_LINKS(false);
@@ -138,14 +138,6 @@ public enum ClientArg {
      * Validates all required ClientArg have a value in the provided map.
      *
      * @param clientArgStringMap a map of ClientArg and their values
-     * @return a Map containing all validation errors. Will return empty map if all required args have value in map.
-     */
-
-    /**
-     * Validates all required ClientArg have a value in the provided map.
-     *
-     *       @param clientArgStringMap a map of ClientArg and their values
-     * @param clientArgStringMap
      */
     public static void validateRequiredArgsPresent(Map<ClientArg, String> clientArgStringMap) {
 
