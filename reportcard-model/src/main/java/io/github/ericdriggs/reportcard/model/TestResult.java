@@ -21,6 +21,17 @@ public class TestResult extends io.github.ericdriggs.reportcard.pojos.TestResult
         return this;
     }
 
+    public void updateTotalsFromTestSuites() {
+        ResultCount resultCount = getResultCount();
+        this.setError(resultCount.getErrors());
+        this.setFailure(resultCount.getFailures());
+        this.setSkipped(resultCount.getSkipped());
+        this.setTests(resultCount.getTests());
+        this.setTime(resultCount.getTime());
+        this.setHasSkip(resultCount.getSkipped() > 0);
+        this.setIsSuccess(resultCount.getErrors() == 0 && resultCount.getFailures() == 0 );
+    }
+
     public TestResult setExternalLinksMap(Map<String,String> externalLinksMap) {
         this.setExternalLinks(getExternalLinksJson(externalLinksMap));
         return this;
@@ -76,7 +87,7 @@ public class TestResult extends io.github.ericdriggs.reportcard.pojos.TestResult
         ResultCount resultCount = new ResultCount();
         for (TestSuite testSuite : testSuites) {
             ResultCount testSuiteResultCount = testSuite.getResultCount();
-            resultCount.add(resultCount);
+            resultCount = resultCount.add(testSuiteResultCount);
         }
         return resultCount;
     }

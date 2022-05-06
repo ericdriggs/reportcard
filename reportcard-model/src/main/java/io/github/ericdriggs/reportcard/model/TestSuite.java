@@ -20,7 +20,7 @@ public class TestSuite extends io.github.ericdriggs.reportcard.pojos.TestSuite {
     public ResultCount getResultCount() {
         ResultCount resultCount = new ResultCount();
         for(TestCase testCase : testCases) {
-            resultCount.add(testCase.getResultCount());
+            resultCount = resultCount.add(testCase.getResultCount());
         }
         return resultCount;
     }

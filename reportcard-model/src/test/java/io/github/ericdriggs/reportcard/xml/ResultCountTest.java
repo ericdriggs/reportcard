@@ -21,7 +21,8 @@ public class ResultCountTest {
             .setErrors(ERRORS_COUNT)
             .setTime(TIME)
             .setSkipped(SKIPPED_COUNT)
-            .setFailures(FAILURES_COUNT);
+            .setFailures(FAILURES_COUNT)
+            .setSuccesses(SUCCESS_COUNT);
 
     @Test
     public void testResultCountMethods() {
@@ -35,5 +36,20 @@ public class ResultCountTest {
         assertEquals(PASSED_PERCENTAGE, RESULT_COUNT.getPassedPercent());
         assertEquals(TESTS_COUNT, RESULT_COUNT.getTests());
         assertEquals(TIME, RESULT_COUNT.getTime());
+    }
+
+    @Test
+    public void addResultCount() {
+        final ResultCount added = RESULT_COUNT.add(RESULT_COUNT);
+        final int copies = 2;
+        assertEquals(ERRORS_COUNT * copies, added.getErrors());
+        assertEquals(FAILURES_COUNT * copies, added.getFailures());
+        assertEquals(PASSED_PERCENTAGE, added.getPassedPercent());
+        assertEquals(SKIPPED_COUNT * copies, added.getSkipped());
+        assertEquals(SUCCESS_COUNT * copies, added.getSuccesses());
+        assertEquals(TESTS_COUNT * copies, added.getTests());
+        assertEquals(TIME.multiply(new BigDecimal(copies)), added.getTime());
+
+
     }
 }
