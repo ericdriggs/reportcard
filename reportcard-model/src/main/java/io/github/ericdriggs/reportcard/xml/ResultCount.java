@@ -12,12 +12,42 @@ public class ResultCount {
      * tests="3" skipped="1" failures="0" errors="0"
      */
 
-    private Integer errors;
-    private Integer failures;
-    private Integer skipped;
-    private Integer successes;
-    private Integer tests;
-    private BigDecimal time;
+    private Integer errors = 0;
+    private Integer failures = 0;
+    private Integer skipped = 0;
+    private Integer successes = 0;
+    private Integer tests = 0;
+    private BigDecimal time = BigDecimal.ZERO;
+
+    public ResultCount setErrors(Integer val) {
+        errors = zeroIfNull(val);
+        return this;
+    }
+
+    public ResultCount setFailures(Integer val) {
+        failures = zeroIfNull(val);
+        return this;
+    }
+
+    public ResultCount setSkipped(Integer val) {
+        this.skipped = zeroIfNull(val);
+        return this;
+    }
+
+    public ResultCount setSuccesses(Integer val) {
+        this.successes = zeroIfNull(val);
+        return this;
+    }
+
+    public ResultCount setTests(Integer val) {
+        this.tests = zeroIfNull(val);
+        return this;
+    }
+
+    public ResultCount setTime(BigDecimal val) {
+        this.time = zeroIfNull(val);
+        return this;
+    }
 
     /**
      * Sums the fields of a resultCount
@@ -49,39 +79,26 @@ public class ResultCount {
      */
     public BigDecimal getPassedPercent() {
 
-        final Integer passedCount = getPassedCount();
-        final Integer failureErrorsTotal = getFailuresCount() + getErrorsCount();
+        final Integer passedCount = getSuccesses();
+        final Integer failureErrorsTotal = getFailures() + getErrors();
         return BigDecimal.valueOf(
                         (100 * passedCount.doubleValue()) /
                                 (passedCount.doubleValue() + failureErrorsTotal.doubleValue())
                 ).setScale(2, RoundingMode.HALF_UP);
     }
 
-    public Integer getErrorsCount() {
-        return zeroIfNull(errors);
-    }
-
-    public Integer getFailuresCount() {
-        return zeroIfNull(failures);
-    }
-
-    public Integer getSkippedCount() {
-        return zeroIfNull(skipped);
-    }
-
-    public Integer getTestsCount() {
-        return zeroIfNull(tests);
-    }
-
-    public Integer getPassedCount() {
-        return getTestsCount() - getErrorsCount() - getFailuresCount() - getSkippedCount();
-    }
-
-    protected Integer zeroIfNull(Integer integer) {
-        if (integer == null) {
+    protected Integer zeroIfNull(Integer val) {
+        if (val == null) {
             return 0;
         }
-        return integer;
+        return val;
+    }
+
+    protected BigDecimal zeroIfNull(BigDecimal val) {
+        if (val == null) {
+            return BigDecimal.ZERO;
+        }
+        return val;
     }
 
     /**

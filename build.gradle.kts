@@ -14,6 +14,8 @@ java {
 nexusPublishing {
     repositories {
         sonatype {
+            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
             username.set(System.getenv("OSSRH_USER") ?: "")
             password.set(System.getenv("OSSRH_PASSWORD") ?: "")
         }
@@ -43,7 +45,7 @@ allprojects {
 
     //archivesBaseName = "reportcard"
     group = "io.github.ericdriggs"
-    version = "0.0.1-SNAPSHOT"
+    version = "0.0.3-SNAPSHOT"
 
 
     repositories {

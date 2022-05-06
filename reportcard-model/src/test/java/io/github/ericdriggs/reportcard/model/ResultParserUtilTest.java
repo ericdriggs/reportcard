@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.nio.file.NoSuchFileException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -35,4 +36,15 @@ public class ResultParserUtilTest {
         Assertions.assertEquals(new BigDecimal(6).setScale(1), testResult.getTime().setScale(1));
     }
 
+    @Test
+    public void invalidPathTest() {
+
+        final String invalidRelativePath = "src/test/resources/invalid/path";
+        final String invalidAbsolutePath = FileUtils.absolutePathFromRelativePath(invalidRelativePath);
+
+        NoSuchFileException thrown = Assertions.assertThrows(NoSuchFileException.class, () -> {
+            ResultParserUtil.fromSurefirePath(invalidAbsolutePath);
+        });
+
+    }
 }
