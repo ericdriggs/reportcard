@@ -2,6 +2,7 @@ package io.github.ericdriggs.reportcard.model;
 
 import io.github.ericdriggs.reportcard.xml.ResultCount;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,7 +54,7 @@ public enum TestStatus {
         return testStatus;
     }
 
-    public ResultCount getResultCount() {
-        return this.getTestStatusType().getResultCount();
+    public ResultCount getResultCount(BigDecimal time) {
+        return this.getTestStatusType().getResultCount(time);
     }
 }

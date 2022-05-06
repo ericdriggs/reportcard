@@ -25,6 +25,6 @@ public class TestCase extends io.github.ericdriggs.reportcard.pojos.TestCase {
     }
 
     public ResultCount getResultCount() {
-        return testStatus.getResultCount();
+        return testStatus.getResultCount(getTime());
     }
 }

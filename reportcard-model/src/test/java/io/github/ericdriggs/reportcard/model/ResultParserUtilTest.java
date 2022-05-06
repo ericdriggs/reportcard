@@ -1,10 +1,12 @@
 package io.github.ericdriggs.reportcard.model;
 
 import io.github.ericdriggs.file.FileUtils;
+import io.github.ericdriggs.reportcard.xml.ResultCount;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.nio.file.NoSuchFileException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -12,6 +14,14 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 public class ResultParserUtilTest {
 
 
+    private final static int ERROR_COUNT = 3;
+    private final static int FAILURE_COUNT = 9;
+    private final static int SKIPPED_COUNT = 2;
+    private final static int SUCCESS_COUNT = 10;
+    private final static int TEST_COUNT = 24;
+
+    private final static BigDecimal PASSED_PERCENTAGE = new BigDecimal(100).setScale(1);
+    private final static BigDecimal TIME_TOTAL = new BigDecimal(6).setScale(1);
     @Test
     public void resultTest() {
         final String relativePath = "src/test/resources/format-samples/surefire-reports";
@@ -19,10 +29,12 @@ public class ResultParserUtilTest {
 
         TestResult testResult = ResultParserUtil.fromSurefirePath(absolutePath);
         assertEquals(3, testResult.getTestSuites().size());
-        Assertions.assertEquals(24, testResult.getTests());
-        Assertions.assertEquals(2, testResult.getSkipped());
-        Assertions.assertEquals(3, testResult.getError());
-        Assertions.assertEquals(9, testResult.getFailure());
+
+        Assertions.assertEquals(ERROR_COUNT, testResult.getError());
+        Assertions.assertEquals(FAILURE_COUNT, testResult.getFailure());
+        Assertions.assertEquals(SKIPPED_COUNT, testResult.getSkipped());
+        Assertions.assertEquals(TEST_COUNT, testResult.getTests());
+
         assertEquals(false, testResult.getIsSuccess());
         assertEquals(true, testResult.getHasSkip());
 
@@ -32,7 +44,27 @@ public class ResultParserUtilTest {
         assertNull(testResult.getExternalLinks());
         assertNull(testResult.getTestResultCreated());
 
-        Assertions.assertEquals(new BigDecimal(6).setScale(1), testResult.getTime().setScale(1));
+        Assertions.assertEquals(TIME_TOTAL, testResult.getTime().setScale(1));
+
+        ResultCount resultCount = testResult.getResultCount();
+        assertEquals(ERROR_COUNT, resultCount.getErrors());
+        assertEquals(FAILURE_COUNT, resultCount.getFailures());
+        assertEquals(PASSED_PERCENTAGE, resultCount.getPassedPercent());
+        assertEquals(SKIPPED_COUNT, resultCount.getSkipped());
+        assertEquals(SUCCESS_COUNT, resultCount.getSuccesses());
+        assertEquals(TEST_COUNT, resultCount.getTests());
+        assertEquals(TIME_TOTAL, resultCount.getTime());
     }
 
+    @Test
+    public void invalidPathTest() {
+
+        final String invalidRelativePath = "src/test/resources/invalid/path";
+        final String invalidAbsolutePath = FileUtils.absolutePathFromRelativePath(invalidRelativePath);
+
+        NoSuchFileException thrown = Assertions.assertThrows(NoSuchFileException.class, () -> {
+            ResultParserUtil.fromSurefirePath(invalidAbsolutePath);
+        });
+
+    }
 }

@@ -2,6 +2,8 @@ package io.github.ericdriggs.reportcard.model;
 
 import io.github.ericdriggs.reportcard.xml.ResultCount;
 
+import java.math.BigDecimal;
+
 public enum TestStatusType {
     SUCCESS(new ResultCount().setTests(1).setSuccesses(1)),
     SKIPPED(new ResultCount().setTests(1).setSkipped(1)),
@@ -14,7 +16,7 @@ public enum TestStatusType {
         this.resultCount = resultCount;
     }
 
-    public ResultCount getResultCount() {
-        return resultCount;
+    public ResultCount getResultCount(BigDecimal time) {
+        return resultCount.setTime(time);
     }
 }
