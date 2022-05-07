@@ -1,4 +1,4 @@
-<testsuite name="features/i-would-do-anything-for-love.feature" errors="3" failures="1" skipped="2" tests="8" time="1.0">
+<testsuite name="features/i-would-do-anything-for-love.feature" errors="3" failures="1" skipped="2" tests="8" time="6.0">
 
   <testcase name="dont-run-me-1" classname="skipped.feature" time="0.0">
     <skipped/>
@@ -6,25 +6,25 @@
   <testcase name="dont-run-me-2" classname="skipped.feature" time="0.0">
     <skipped/>
   </testcase>
-  <testcase time="0.001" classname="org.apache.maven.surefire.test.Error" name="setTestAndRetrieveValue">
+  <testcase time="1.0" classname="org.apache.maven.surefire.test.Error" name="setTestAndRetrieveValue">
     <error message="fake error message" type="FakeError">java.lang.SomeStackTrace:
       at org.foo(foo.java:128)
       at org.foo(Bar.java:88)
     </error>
   </testcase>
-  <testcase time="0.001" classname="org.apache.maven.surefire.test.Error" name="setTestAndRetrieveValue2">
+  <testcase time="1.0" classname="org.apache.maven.surefire.test.Error" name="setTestAndRetrieveValue2">
     <error message="fake error message" type="FakeError">java.lang.SomeStackTrace:
       at org.foo(foo.java:128)
       at org.foo(Bar.java:88)
     </error>
   </testcase>
-  <testcase time="0.001" classname="org.apache.maven.surefire.test.Error" name="setTestAndRetrieveValue3">
+  <testcase time="1.0" classname="org.apache.maven.surefire.test.Error" name="setTestAndRetrieveValue3">
     <error message="fake error message" type="FakeError">java.lang.SomeStackTrace:
       at org.foo(foo.java:128)
       at org.foo(Bar.java:88)
     </error>
   </testcase>
-  <testcase classname="features.i-would-do-anything-for-love" name="I'd do that" time="0.006142">
+  <testcase classname="features.i-would-do-anything-for-love" name="I'd do that" time="1.0">
     <failure message="i-would-do-anything-for-love.feature:15 - path: $, actual: true, expected: false, reason: not equal (Boolean)">* match true == BooleanGenerator.generateBoolean(1) .............................................. passed
       * match true == BooleanGenerator.generateBoolean(1) .............................................. passed
       * match true == BooleanGenerator.generateBoolean(0) .............................................. failed
@@ -33,10 +33,10 @@
       com.intuit.karate.exception.KarateException: i-would-do-anything-for-love.feature:15 - path: $, actual: true, expected: false, reason: not equal (Boolean)
       at ✽.* match true == BooleanGenerator.generateBoolean(0) (i-would-do-anything-for-love.feature:15)</failure>
   </testcase>
-  <testcase classname="features.i-would-do-anything-for-love" name="I'd run right into hell and back" time="0.00083">
+  <testcase classname="features.i-would-do-anything-for-love" name="I'd run right into hell and back" time="1.0">
     <system-out>* match true == BooleanGenerator.generateBoolean(1) .............................................. passed</system-out>
   </testcase>
-  <testcase classname="features.i-would-do-anything-for-love" name="I'd never lie to you" time="0.003132">
+  <testcase classname="features.i-would-do-anything-for-love" name="I'd never lie to you" time="1.0">
     <system-out>* match true == BooleanGenerator.generateBoolean(1) .............................................. passed</system-out>
   </testcase>
 </testsuite>

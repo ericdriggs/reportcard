@@ -20,8 +20,10 @@ public class ResultParserUtilTest {
     private final static int SUCCESS_COUNT = 10;
     private final static int TEST_COUNT = 24;
 
-    private final static BigDecimal PASSED_PERCENTAGE = new BigDecimal(100).setScale(1);
-    private final static BigDecimal TIME_TOTAL = new BigDecimal(6).setScale(1);
+    private final static BigDecimal PASSED_PERCENTAGE = new BigDecimal("45.45");
+    private final static BigDecimal TIME_TOTAL = new BigDecimal(TEST_COUNT - SKIPPED_COUNT).setScale(1);
+    //private final static BigDecimal TIME_TOTAL = new BigDecimal("0.112229");
+
     @Test
     public void resultTest() {
         final String relativePath = "src/test/resources/format-samples/surefire-reports";
