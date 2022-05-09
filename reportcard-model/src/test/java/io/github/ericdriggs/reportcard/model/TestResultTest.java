@@ -56,6 +56,40 @@ public class TestResultTest {
     }
 
     @Test
+    public void addTest() {
+
+        final Integer suiteCopies = 2;
+        List<TestSuite> testSuites = getTestSuites(suiteCopies);
+
+
+        final Integer totalCopies = 2*suiteCopies;
+
+        TestResult testResult1 = new TestResult().setTestSuites(testSuites);
+        TestResult testResult2 = new TestResult().setTestSuites(testSuites);
+
+        TestResult testResult = testResult1.add(testResult2);
+
+        { //assert testResult
+            assertEquals(totalCopies * ERROR_COUNT, testResult.getError());
+            assertEquals(totalCopies * FAILURE_COUT, testResult.getFailure());
+            assertEquals(totalCopies * SKIPPED_COUNT, testResult.getSkipped());
+            assertEquals(TEST_TIME.multiply(new BigDecimal(totalCopies)), testResult.getTime());
+            assertEquals(false, testResult.getIsSuccess());
+            assertEquals(true, testResult.getHasSkip());
+        }
+
+        { //assert resultCout
+            ResultCount resultCout = testResult.getResultCount();
+
+            assertEquals(totalCopies * ERROR_COUNT, resultCout.getErrors());
+            assertEquals(totalCopies * FAILURE_COUT, resultCout.getFailures());
+            assertEquals(totalCopies * SKIPPED_COUNT, resultCout.getSkipped());
+            assertEquals(TEST_TIME.multiply(new BigDecimal(totalCopies)), resultCout.getTime());
+            assertEquals(new BigDecimal("57.14"), resultCout.getPassedPercent());
+        }
+    }
+
+    @Test
     public void getResultCountTest() {
 
         final Integer suiteCopies = 2;

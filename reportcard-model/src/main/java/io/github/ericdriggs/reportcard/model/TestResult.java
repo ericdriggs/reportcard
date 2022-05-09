@@ -21,6 +21,18 @@ public class TestResult extends io.github.ericdriggs.reportcard.pojos.TestResult
         return this;
     }
 
+    public TestResult() {
+    }
+
+    public TestResult (List<TestSuite> from) {
+        this.testSuites = new ArrayList<>(from);
+        this.updateTotalsFromTestSuites();
+    }
+
+    public TestResult copy() {
+        return new TestResult(this.getTestSuites());
+    }
+
     public void updateTotalsFromTestSuites() {
         ResultCount resultCount = getResultCount();
         this.setError(resultCount.getErrors());
@@ -90,5 +102,20 @@ public class TestResult extends io.github.ericdriggs.reportcard.pojos.TestResult
             resultCount = resultCount.add(testSuiteResultCount);
         }
         return resultCount;
+    }
+
+    public TestResult add( TestResult that) {
+        if (that == null ) {
+            throw new NullPointerException("that");
+        }
+
+        if (that.getTestSuites() == null) {
+            throw new NullPointerException("that.getTestSuites()");
+        }
+
+        List<TestSuite> combined = new ArrayList<>(this.getTestSuites());
+        combined.addAll(that.getTestSuites());
+
+        return new TestResult(combined);
     }
 }
