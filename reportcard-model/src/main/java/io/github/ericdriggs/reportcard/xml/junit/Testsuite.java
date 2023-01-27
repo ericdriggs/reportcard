@@ -19,7 +19,7 @@ import java.util.List;
 
 
 /**
- * Contains the results of exexuting a testsuite
+ * Contains the results of executing a testsuite
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "testsuite", propOrder = {
@@ -28,6 +28,7 @@ import java.util.List;
         "systemOut",
         "systemErr"
 })
+@XmlRootElement(name = "testsuite")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(builderMethodName = "builderForTestsuite")

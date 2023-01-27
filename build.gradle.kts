@@ -45,7 +45,7 @@ allprojects {
 
     //archivesBaseName = "reportcard"
     group = "io.github.ericdriggs"
-    version = "0.0.4"
+    version = "0.0.5"
 
 
     repositories {

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="io.github.ericdriggs.reportcard.xml.testng.suite.TestngUnmarshallTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2023-01-27T17:03:31" hostname="MAC-W43G39" time="0.044">
+  <properties/>
+  <testcase name="unmarshallXml()" classname="io.github.ericdriggs.reportcard.xml.testng.suite.TestngUnmarshallTest" time="0.044"/>
+  <system-out><![CDATA[TestngResults(suites=[Suite(groups=Groups(define=null, run=null, dependencies=null), listenersOrPackagesOrTest=[Test(methodSelectors=null, parameter=null, groups=null, packages=null, classes=null, name=Ant test, junit=null, verbose=null, parallel=null, threadCount=null, annotations=null, timeOut=null, enabled=null, skipfailedinvocationcounts=null, preserveOrder=null, groupByInstances=null, allowReturnValues=null)], name=Ant suite, junit=null, verbose=null, parallel=null, parentModule=null, guiceStage=null, configfailurepolicy=null, threadCount=null, annotations=null, timeOut=null, skipfailedinvocationcounts=null, dataProviderThreadCount=null, objectFactory=null, groupByInstances=null, preserveOrder=null, allowReturnValues=null)])
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

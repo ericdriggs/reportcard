@@ -23,8 +23,7 @@
         <property name="java.endorsed.dirs" value="c:\java\jdk1.7.0_09\jre\lib\endorsed"/>
         <property name="os.arch" value="amd64"/>
         <property name="java.io.tmpdir" value="C:\Users\krose\AppData\Local\Temp\"/>
-        <property name="line.separator" value="
-"/>
+        <property name="line.separator" value=""/>
         <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
         <property name="user.variant" value=""/>
         <property name="os.name" value="Windows 7"/>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="io.github.ericdriggs.reportcard.model.TestResultTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2023-01-27T17:03:31" hostname="MAC-W43G39" time="0.001">
+  <properties/>
+  <testcase name="addTest()" classname="io.github.ericdriggs.reportcard.model.TestResultTest" time="0.001"/>
+  <testcase name="getResultCountTest()" classname="io.github.ericdriggs.reportcard.model.TestResultTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
