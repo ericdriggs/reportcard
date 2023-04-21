@@ -22,11 +22,12 @@ VALUES (1, 'bdd15b6fae26738ca58f0b300fc43f5872b429bf', 1);
 INSERT INTO `reportcard`.`context`
 (`context_id`,
  `sha_fk`,
+ `branch_fk`,
  `host`,
  `application`,
  `pipeline`)
 VALUES
-(1, 1, 'host1',  'application1', 'pipeline1');
+(1, 1, 1, 'host1',  'application1', 'pipeline1');
 
 INSERT INTO `reportcard`.`execution`
 (`execution_id`,

@@ -88,8 +88,8 @@ engine = innodb DEFAULT CHARACTER SET = utf8mb4;
 (
     `context_id` BIGINT UNSIGNED NOT NULL auto_increment,
     `sha_fk`     BIGINT UNSIGNED NOT NULL,
-    `host`       VARCHAR(255) NOT NULL,
     `branch_fk`  INT UNSIGNED NOT NULL,
+    `host`       VARCHAR(255) NOT NULL,
     `metadata` JSON NULL DEFAULT NULL,
     PRIMARY KEY (`context_id`),
     INDEX `context_sha_fk` (`sha_fk` asc) visible,
