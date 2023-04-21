@@ -29,7 +29,7 @@ public class GetBuildStagePathTest extends AbstractDbTest {
                         .setRepo(TestData.repo)
                         .setBranch(TestData.branch)
                         .setSha(TestData.sha)
-                        .setHostApplicationPipeline(TestData.hostApplicationPipeline)
+                        .setMetadata(TestData.metadata)
                         .setExternalExecutionId(TestData.externalExecutionId)
                         .setStage(TestData.stage);
 
@@ -41,9 +41,8 @@ public class GetBuildStagePathTest extends AbstractDbTest {
         Assertions.assertEquals(bsp.getBranch().getBranchName(), request.getBranch());
         Assertions.assertEquals(bsp.getSha().getSha(), request.getSha());
 
-        Assertions.assertEquals(bsp.getContext().getHost(), request.getHostApplicationPipeline().getHost());
-        Assertions.assertEquals(bsp.getContext().getApplication(), request.getHostApplicationPipeline().getApplication());
-        Assertions.assertEquals(bsp.getContext().getPipeline(), request.getHostApplicationPipeline().getPipeline());
+        //TODO: json compare
+        Assertions.assertEquals(bsp.getContext().getMetadata(), request.getMetadataJson());
 
         Assertions.assertEquals(bsp.getExecution().getExecutionExternalId(), request.getExternalExecutionId());
         Assertions.assertEquals(bsp.getStage().getStageName(), request.getStage());
@@ -58,7 +57,7 @@ public class GetBuildStagePathTest extends AbstractDbTest {
                 .setRepo(TestData.repo)
                 .setBranch(TestData.branch)
                 .setSha(TestData.sha)
-                .setHostApplicationPipeline(TestData.hostApplicationPipeline)
+                .setMetadata(TestData.metadata)
                 .setExternalExecutionId("not_found");
 
         ExecutionStagePath bsp = reportCardService.getExecutionStagePath(request);
@@ -75,9 +74,9 @@ public class GetBuildStagePathTest extends AbstractDbTest {
         Assertions.assertEquals(bsp.getRepo().getRepoName(), request.getRepo());
         Assertions.assertEquals(bsp.getBranch().getBranchName(), request.getBranch());
         Assertions.assertEquals(bsp.getSha().getSha(), request.getSha());
-        Assertions.assertEquals(bsp.getContext().getHost(), request.getHostApplicationPipeline().getHost());
-        Assertions.assertEquals(bsp.getContext().getApplication(), request.getHostApplicationPipeline().getApplication());
-        Assertions.assertEquals(bsp.getContext().getPipeline(), request.getHostApplicationPipeline().getPipeline());
+        //TODO: json compare
+        Assertions.assertEquals(bsp.getContext().getMetadata(), request.getMetadataJson());
+
 
     }
 

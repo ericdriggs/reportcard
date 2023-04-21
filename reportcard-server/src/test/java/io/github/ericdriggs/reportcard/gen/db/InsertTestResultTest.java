@@ -29,7 +29,13 @@ public class InsertTestResultTest extends AbstractDbTest {
     final static String host = "www.foo.com";
     final static String application = "app1";
     final static String pipeline = "pipe1";
-    final static HostApplicationPipeline hostApplicationPipeline = new HostApplicationPipeline(host, application, pipeline);
+
+    final static Map<String,String> metadata = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+    static {
+        metadata.put("host", "foocorp.jenkins.com");
+        metadata.put("application", "fooapp");
+        metadata.put("pipeline", "foopipeline");
+    }
     final static String externalExecutionId = "run23";
     final static String stage = "stage10";
 
@@ -82,6 +88,7 @@ public class InsertTestResultTest extends AbstractDbTest {
         assertValues(testResultGet);
         assertIdsandFks(testResultGet);
         assertExternalLinks(testResultGet);
+        fail("assert metadata");
 
     }
 
@@ -152,7 +159,7 @@ public class InsertTestResultTest extends AbstractDbTest {
                         .setRepo(repo)
                         .setBranch(branch)
                         .setSha(sha)
-                        .setHostApplicationPipeline(hostApplicationPipeline)
+                        .setMetadata(metadata)
                         .setExternalExecutionId(externalExecutionId)
                         .setStage(stage);
         return reportMetatData;

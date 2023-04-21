@@ -2,7 +2,6 @@ package io.github.ericdriggs.reportcard.gen.db;
 
 import io.github.ericdriggs.reportcard.ReportCardService;
 import io.github.ericdriggs.reportcard.model.ExecutionStagePath;
-import io.github.ericdriggs.reportcard.model.HostApplicationPipeline;
 import io.github.ericdriggs.reportcard.model.ReportMetaData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -30,7 +29,7 @@ public class InsertBuildStagePathTest extends AbstractDbTest {
                         .setRepo("newRepo")
                         .setBranch("newBranch")
                         .setSha("newSha")
-                        .setHostApplicationPipeline(new HostApplicationPipeline("newHost", "newApplication", "newPipeline"))
+                        .setMetadata(TestData.metadata)
                         .setExternalExecutionId("64bb0231-9a2e-4492-bbd1-e0aeba24c982")
                         .setStage("newStage");
 
@@ -49,9 +48,8 @@ public class InsertBuildStagePathTest extends AbstractDbTest {
         Assertions.assertEquals(request.getRepo(), bsp.getRepo().getRepoName());
         Assertions.assertEquals(request.getBranch(), bsp.getBranch().getBranchName());
         Assertions.assertEquals(request.getSha(), bsp.getSha().getSha());
-        Assertions.assertEquals(request.getHostApplicationPipeline().getHost(), bsp.getContext().getHost());
-        Assertions.assertEquals(request.getHostApplicationPipeline().getApplication(), bsp.getContext().getApplication());
-        Assertions.assertEquals(request.getHostApplicationPipeline().getPipeline(), bsp.getContext().getPipeline());
+        //TODO: json compare not string compare
+        Assertions.assertEquals(request.getMetadataJson(), bsp.getContext().getMetadata());
         Assertions.assertEquals(request.getExternalExecutionId(), bsp.getExecution().getExecutionExternalId());
         Assertions.assertEquals(request.getStage(), bsp.getStage().getStageName());
         assertNotNull(bsp.getStage().getStageId());

@@ -119,7 +119,7 @@ public class Comparators {
 
     public static int compareSha(Sha val1, Sha val2) {
         return chainCompare(
-                Integer.compare(val1.getBranchFk(), val2.getBranchFk()),
+                Integer.compare(val1.getRepoFk(), val2.getRepoFk()),
                 ObjectUtils.compare(val1.getSha(), val2.getSha()),
                 Long.compare(val1.getShaId(), val2.getShaId())
         );
@@ -129,8 +129,7 @@ public class Comparators {
         return chainCompare(
                 Long.compare(val1.getShaFk(), val2.getShaFk()),
                 compareLowerNullSafe(val1.getHost(), val2.getHost()),
-                compareLowerNullSafe(val1.getApplication(), val2.getApplication()),
-                compareLowerNullSafe(val1.getPipeline(), val2.getPipeline()),
+                compareLowerNullSafe(val1.getMetadata(), val2.getMetadata()),
                 Long.compare(val1.getContextId(), val2.getContextId())
         );
     }
