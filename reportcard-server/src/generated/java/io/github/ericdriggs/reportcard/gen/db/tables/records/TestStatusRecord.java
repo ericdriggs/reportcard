@@ -20,14 +20,14 @@ import org.jooq.impl.UpdatableRecordImpl;
  */
 @Generated
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class TestStatusRecord extends UpdatableRecordImpl<TestStatusRecord> implements Record2<Byte, String> {
+public class TestStatusRecord extends UpdatableRecordImpl<TestStatusRecord> implements Record2<Short, String> {
 
     private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>reportcard.test_status.test_status_id</code>.
      */
-    public TestStatusRecord setTestStatusId(Byte value) {
+    public TestStatusRecord setTestStatusId(Short value) {
         set(0, value);
         return this;
     }
@@ -35,8 +35,8 @@ public class TestStatusRecord extends UpdatableRecordImpl<TestStatusRecord> impl
     /**
      * Getter for <code>reportcard.test_status.test_status_id</code>.
      */
-    public Byte getTestStatusId() {
-        return (Byte)get(0);
+    public Short getTestStatusId() {
+        return (Short) get(0);
     }
 
     /**
@@ -59,7 +59,7 @@ public class TestStatusRecord extends UpdatableRecordImpl<TestStatusRecord> impl
     // -------------------------------------------------------------------------
 
     @Override
-    public Record1<Boolean> key() {
+    public Record1<Short> key() {
         return (Record1) super.key();
     }
 
@@ -68,17 +68,17 @@ public class TestStatusRecord extends UpdatableRecordImpl<TestStatusRecord> impl
     // -------------------------------------------------------------------------
 
     @Override
-    public Row2<Byte, String> fieldsRow() {
+    public Row2<Short, String> fieldsRow() {
         return (Row2) super.fieldsRow();
     }
 
     @Override
-    public Row2<Byte, String> valuesRow() {
+    public Row2<Short, String> valuesRow() {
         return (Row2) super.valuesRow();
     }
 
     @Override
-    public Field<Byte> field1() {
+    public Field<Short> field1() {
         return TestStatus.TEST_STATUS.TEST_STATUS_ID;
     }
 
@@ -88,7 +88,7 @@ public class TestStatusRecord extends UpdatableRecordImpl<TestStatusRecord> impl
     }
 
     @Override
-    public Byte component1() {
+    public Short component1() {
         return getTestStatusId();
     }
 
@@ -98,7 +98,7 @@ public class TestStatusRecord extends UpdatableRecordImpl<TestStatusRecord> impl
     }
 
     @Override
-    public Byte value1() {
+    public Short value1() {
         return getTestStatusId();
     }
 
@@ -108,7 +108,7 @@ public class TestStatusRecord extends UpdatableRecordImpl<TestStatusRecord> impl
     }
 
     @Override
-    public TestStatusRecord value1(Byte value) {
+    public TestStatusRecord value1(Short value) {
         setTestStatusId(value);
         return this;
     }
@@ -120,7 +120,7 @@ public class TestStatusRecord extends UpdatableRecordImpl<TestStatusRecord> impl
     }
 
     @Override
-    public TestStatusRecord values(Byte value1, String value2) {
+    public TestStatusRecord values(Short value1, String value2) {
         value1(value1);
         value2(value2);
         return this;
@@ -140,7 +140,7 @@ public class TestStatusRecord extends UpdatableRecordImpl<TestStatusRecord> impl
     /**
      * Create a detached, initialised TestStatusRecord
      */
-    public TestStatusRecord(Byte testStatusId, String testStatusName) {
+    public TestStatusRecord(Short testStatusId, String testStatusName) {
         super(TestStatus.TEST_STATUS);
 
         setTestStatusId(testStatusId);

@@ -54,7 +54,7 @@ public class TestStatus extends TableImpl<TestStatusRecord> {
     /**
      * The column <code>reportcard.test_status.test_status_id</code>.
      */
-    public final TableField<TestStatusRecord, Byte> TEST_STATUS_ID = createField(DSL.name("test_status_id"), SQLDataType.TINYINT.nullable(false).identity(true), this, "");
+    public final TableField<TestStatusRecord, Short> TEST_STATUS_ID = createField(DSL.name("test_status_id"), SQLDataType.SMALLINT.nullable(false).identity(true), this, "");
 
     /**
      * The column <code>reportcard.test_status.test_status_name</code>.
@@ -100,8 +100,8 @@ public class TestStatus extends TableImpl<TestStatusRecord> {
     }
 
     @Override
-    public Identity<TestStatusRecord, Boolean> getIdentity() {
-        return (Identity<TestStatusRecord, Boolean>) super.getIdentity();
+    public Identity<TestStatusRecord, Short> getIdentity() {
+        return (Identity<TestStatusRecord, Short>) super.getIdentity();
     }
 
     @Override
@@ -145,7 +145,7 @@ public class TestStatus extends TableImpl<TestStatusRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row2<Boolean, String> fieldsRow() {
+    public Row2<Short, String> fieldsRow() {
         return (Row2) super.fieldsRow();
     }
 }

@@ -22,7 +22,7 @@ import org.jooq.impl.UpdatableRecordImpl;
  */
 @Generated
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class TestCaseRecord extends UpdatableRecordImpl<TestCaseRecord> implements Record6<Long, Long, String, String, BigDecimal, Byte> {
+public class TestCaseRecord extends UpdatableRecordImpl<TestCaseRecord> implements Record6<Long, Long, String, String, BigDecimal, Short> {
 
     private static final long serialVersionUID = 1L;
 
@@ -104,7 +104,7 @@ public class TestCaseRecord extends UpdatableRecordImpl<TestCaseRecord> implemen
     /**
      * Setter for <code>reportcard.test_case.test_status_fk</code>.
      */
-    public TestCaseRecord setTestStatusFk(Byte value) {
+    public TestCaseRecord setTestStatusFk(Short value) {
         set(5, value);
         return this;
     }
@@ -112,8 +112,8 @@ public class TestCaseRecord extends UpdatableRecordImpl<TestCaseRecord> implemen
     /**
      * Getter for <code>reportcard.test_case.test_status_fk</code>.
      */
-    public Byte getTestStatusFk() {
-        return (Byte) get(5);
+    public Short getTestStatusFk() {
+        return (Short) get(5);
     }
 
     // -------------------------------------------------------------------------
@@ -130,12 +130,12 @@ public class TestCaseRecord extends UpdatableRecordImpl<TestCaseRecord> implemen
     // -------------------------------------------------------------------------
 
     @Override
-    public Row6<Long, Long, String, String, BigDecimal, Byte> fieldsRow() {
+    public Row6<Long, Long, String, String, BigDecimal, Short> fieldsRow() {
         return (Row6) super.fieldsRow();
     }
 
     @Override
-    public Row6<Long, Long, String, String, BigDecimal, Byte> valuesRow() {
+    public Row6<Long, Long, String, String, BigDecimal, Short> valuesRow() {
         return (Row6) super.valuesRow();
     }
 
@@ -165,7 +165,7 @@ public class TestCaseRecord extends UpdatableRecordImpl<TestCaseRecord> implemen
     }
 
     @Override
-    public Field<Byte> field6() {
+    public Field<Short> field6() {
         return TestCase.TEST_CASE.TEST_STATUS_FK;
     }
 
@@ -195,7 +195,7 @@ public class TestCaseRecord extends UpdatableRecordImpl<TestCaseRecord> implemen
     }
 
     @Override
-    public Byte component6() {
+    public Short component6() {
         return getTestStatusFk();
     }
 
@@ -225,7 +225,7 @@ public class TestCaseRecord extends UpdatableRecordImpl<TestCaseRecord> implemen
     }
 
     @Override
-    public Byte value6() {
+    public Short value6() {
         return getTestStatusFk();
     }
 
@@ -260,13 +260,13 @@ public class TestCaseRecord extends UpdatableRecordImpl<TestCaseRecord> implemen
     }
 
     @Override
-    public TestCaseRecord value6(Byte value) {
+    public TestCaseRecord value6(Short value) {
         setTestStatusFk(value);
         return this;
     }
 
     @Override
-    public TestCaseRecord values(Long value1, Long value2, String value3, String value4, BigDecimal value5, Byte value6) {
+    public TestCaseRecord values(Long value1, Long value2, String value3, String value4, BigDecimal value5, Short value6) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -290,7 +290,7 @@ public class TestCaseRecord extends UpdatableRecordImpl<TestCaseRecord> implemen
     /**
      * Create a detached, initialised TestCaseRecord
      */
-    public TestCaseRecord(Long testCaseId, Long testSuiteFk, String name, String className, BigDecimal time, Byte testStatusFk) {
+    public TestCaseRecord(Long testCaseId, Long testSuiteFk, String name, String className, BigDecimal time, Short testStatusFk) {
         super(TestCase.TEST_CASE);
 
         setTestCaseId(testCaseId);

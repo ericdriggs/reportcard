@@ -20,7 +20,7 @@ import org.jooq.impl.DAOImpl;
  */
 @Generated
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class TestStatusDao extends DAOImpl<TestStatusRecord, io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestStatus, Boolean> {
+public class TestStatusDao extends DAOImpl<TestStatusRecord, io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestStatus, Short> {
 
     /**
      * Create a new TestStatusDao without any configuration
@@ -37,28 +37,28 @@ public class TestStatusDao extends DAOImpl<TestStatusRecord, io.github.ericdrigg
     }
 
     @Override
-    public Boolean getId(io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestStatus object) {
+    public Short getId(io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestStatus object) {
         return object.getTestStatusId();
     }
 
     /**
      * Fetch records that have <code>test_status_id BETWEEN lowerInclusive AND upperInclusive</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestStatus> fetchRangeOfTestStatusId(Byte lowerInclusive, Byte upperInclusive) {
+    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestStatus> fetchRangeOfTestStatusId(Short lowerInclusive, Short upperInclusive) {
         return fetchRange(TestStatus.TEST_STATUS.TEST_STATUS_ID, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>test_status_id IN (values)</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestStatus> fetchByTestStatusId(Byte... values) {
+    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestStatus> fetchByTestStatusId(Short... values) {
         return fetch(TestStatus.TEST_STATUS.TEST_STATUS_ID, values);
     }
 
     /**
      * Fetch a unique record that has <code>test_status_id = value</code>
      */
-    public io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestStatus fetchOneByTestStatusId(Byte value) {
+    public io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestStatus fetchOneByTestStatusId(Short value) {
         return fetchOne(TestStatus.TEST_STATUS.TEST_STATUS_ID, value);
     }
 

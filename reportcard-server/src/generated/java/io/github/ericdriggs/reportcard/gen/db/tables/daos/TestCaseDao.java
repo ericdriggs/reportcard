@@ -122,14 +122,14 @@ public class TestCaseDao extends DAOImpl<TestCaseRecord, io.github.ericdriggs.re
     /**
      * Fetch records that have <code>test_status_fk BETWEEN lowerInclusive AND upperInclusive</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCase> fetchRangeOfTestStatusFk(Byte lowerInclusive, Byte upperInclusive) {
+    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCase> fetchRangeOfTestStatusFk(Short lowerInclusive, Short upperInclusive) {
         return fetchRange(TestCase.TEST_CASE.TEST_STATUS_FK, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>test_status_fk IN (values)</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCase> fetchByTestStatusFk(Byte... values) {
+    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCase> fetchByTestStatusFk(Short... values) {
         return fetch(TestCase.TEST_CASE.TEST_STATUS_FK, values);
     }
 }

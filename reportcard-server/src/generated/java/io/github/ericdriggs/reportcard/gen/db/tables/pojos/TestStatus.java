@@ -18,8 +18,8 @@ public class TestStatus implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private Boolean testStatusId;
-    private String  testStatusName;
+    private Short  testStatusId;
+    private String testStatusName;
 
     public TestStatus() {}
 
@@ -29,8 +29,8 @@ public class TestStatus implements Serializable {
     }
 
     public TestStatus(
-        Boolean testStatusId,
-        String  testStatusName
+        Short  testStatusId,
+        String testStatusName
     ) {
         this.testStatusId = testStatusId;
         this.testStatusName = testStatusName;
@@ -39,14 +39,14 @@ public class TestStatus implements Serializable {
     /**
      * Getter for <code>reportcard.test_status.test_status_id</code>.
      */
-    public Boolean getTestStatusId() {
+    public Short getTestStatusId() {
         return this.testStatusId;
     }
 
     /**
      * Setter for <code>reportcard.test_status.test_status_id</code>.
      */
-    public TestStatus setTestStatusId(Boolean testStatusId) {
+    public TestStatus setTestStatusId(Short testStatusId) {
         this.testStatusId = testStatusId;
         return this;
     }

@@ -24,7 +24,7 @@ public class TestCase implements Serializable {
     private String     name;
     private String     className;
     private BigDecimal time;
-    private Boolean    testStatusFk;
+    private Short      testStatusFk;
 
     public TestCase() {}
 
@@ -43,7 +43,7 @@ public class TestCase implements Serializable {
         String     name,
         String     className,
         BigDecimal time,
-        Boolean    testStatusFk
+        Short      testStatusFk
     ) {
         this.testCaseId = testCaseId;
         this.testSuiteFk = testSuiteFk;
@@ -131,14 +131,14 @@ public class TestCase implements Serializable {
     /**
      * Getter for <code>reportcard.test_case.test_status_fk</code>.
      */
-    public Boolean getTestStatusFk() {
+    public Short getTestStatusFk() {
         return this.testStatusFk;
     }
 
     /**
      * Setter for <code>reportcard.test_case.test_status_fk</code>.
      */
-    public TestCase setTestStatusFk(Boolean testStatusFk) {
+    public TestCase setTestStatusFk(Short testStatusFk) {
         this.testStatusFk = testStatusFk;
         return this;
     }

@@ -82,7 +82,7 @@ public class TestCase extends TableImpl<TestCaseRecord> {
     /**
      * The column <code>reportcard.test_case.test_status_fk</code>.
      */
-    public final TableField<TestCaseRecord, Byte> TEST_STATUS_FK = createField(DSL.name("test_status_fk"), SQLDataType.TINYINT.nullable(false), this, "");
+    public final TableField<TestCaseRecord, Short> TEST_STATUS_FK = createField(DSL.name("test_status_fk"), SQLDataType.SMALLINT.nullable(false), this, "");
 
     private TestCase(Name alias, Table<TestCaseRecord> aliased) {
         this(alias, aliased, null);
@@ -124,7 +124,7 @@ public class TestCase extends TableImpl<TestCaseRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.TEST_CASE_FK_TEST_CASE_STATUS_IDX, Indexes.TEST_CASE_FK_TEST_CASE_TEST_SUITE_IDX);
+        return Arrays.<Index>asList(Indexes.TEST_CASE_FK_TEST_CASE_TEST_STATUS_IDX, Indexes.TEST_CASE_FK_TEST_CASE_TEST_SUITE_IDX);
     }
 
     @Override
@@ -195,7 +195,7 @@ public class TestCase extends TableImpl<TestCaseRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row6<Long, Long, String, String, BigDecimal, Boolean> fieldsRow() {
+    public Row6<Long, Long, String, String, BigDecimal, Short> fieldsRow() {
         return (Row6) super.fieldsRow();
     }
 }

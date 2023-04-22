@@ -37,7 +37,7 @@ public class Indexes {
     public static final Index SHA_BUILD_CREATED = Internal.createIndex(DSL.name("build_created"), Sha.SHA, new OrderField[] { Sha.SHA.SHA_CREATED }, false);
     public static final Index CONTEXT_CONTEXT_BRANCH_FK_IDX = Internal.createIndex(DSL.name("context_branch_fk_idx"), Context.CONTEXT, new OrderField[] { Context.CONTEXT.BRANCH_FK }, false);
     public static final Index EXECUTION_EXECUTION_CONTEXT_FK_IDX = Internal.createIndex(DSL.name("execution_context_fk_idx"), Execution.EXECUTION, new OrderField[] { Execution.EXECUTION.CONTEXT_FK }, false);
-    public static final Index TEST_CASE_FK_TEST_CASE_STATUS_IDX = Internal.createIndex(DSL.name("fk_test_case_status_idx"), TestCase.TEST_CASE, new OrderField[] { TestCase.TEST_CASE.TEST_STATUS_FK }, false);
+    public static final Index TEST_CASE_FK_TEST_CASE_TEST_STATUS_IDX = Internal.createIndex(DSL.name("fk_test_case_test_status_idx"), TestCase.TEST_CASE, new OrderField[] { TestCase.TEST_CASE.TEST_STATUS_FK }, false);
     public static final Index TEST_CASE_FK_TEST_CASE_TEST_SUITE_IDX = Internal.createIndex(DSL.name("fk_test_case_test_suite_idx"), TestCase.TEST_CASE, new OrderField[] { TestCase.TEST_CASE.TEST_SUITE_FK }, false);
     public static final Index REPO_ORG_IDX = Internal.createIndex(DSL.name("org_idx"), Repo.REPO, new OrderField[] { Repo.REPO.ORG_FK }, false);
     public static final Index SHA_REPO_FK_IDX = Internal.createIndex(DSL.name("repo_fk_idx"), Sha.SHA, new OrderField[] { Sha.SHA.REPO_FK }, false);
