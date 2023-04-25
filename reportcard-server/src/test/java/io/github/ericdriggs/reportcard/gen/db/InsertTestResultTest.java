@@ -151,7 +151,7 @@ public class InsertTestResultTest extends AbstractDbTest {
                         .setRepo(repo)
                         .setBranch(branch)
                         .setSha(sha)
-                        .setMetadata(metadata)
+                        .setJobInfo(metadata)
                         .setExecutionReference(executionReference)
                         .setStage(stage);
         return reportMetatData;

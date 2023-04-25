@@ -8,9 +8,7 @@ import io.github.ericdriggs.reportcard.model.TestCase;
 import io.github.ericdriggs.reportcard.model.TestResult;
 import io.github.ericdriggs.reportcard.model.TestSuite;
 import io.github.ericdriggs.reportcard.model.*;
-import org.jooq.DSLContext;
-import org.jooq.Record;
-import org.jooq.SelectConditionStep;
+import org.jooq.*;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +44,7 @@ public class ReportCardService {
     final RepoDao repoDao;
     final BranchDao branchDao;
     final ShaDao shaDao;
-    final ContextDao contextDao;
+    final JobDao jobDao;
     final ExecutionDao executionDao;
     final StageDao stageDao;
 
@@ -68,7 +66,7 @@ public class ReportCardService {
         repoDao = new RepoDao(dsl.configuration());
         branchDao = new BranchDao(dsl.configuration());
         shaDao = new ShaDao(dsl.configuration());
-        contextDao = new ContextDao(dsl.configuration());
+        jobDao = new JobDao(dsl.configuration());
         executionDao = new ExecutionDao(dsl.configuration());
         stageDao = new StageDao(dsl.configuration());
 
@@ -224,37 +222,37 @@ public class ReportCardService {
         return ret;
     }
 
-    public Set<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Context> getContexts(String orgName, String repoName, String branchName, String shaString) {
-        Set<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Context> contexts = new TreeSet<>(Comparators.CONTEXT_CASE_INSENSITIVE_ORDER);
+    public Set<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job> getContexts(String orgName, String repoName, String branchName, String shaString) {
+        Set<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job> contexts = new TreeSet<>(Comparators.CONTEXT_CASE_INSENSITIVE_ORDER);
         contexts.addAll(dsl.
-                select(CONTEXT.fields())
-                .from(CONTEXT)
-                .leftJoin(BRANCH).on(CONTEXT.BRANCH_FK.eq(BRANCH.BRANCH_ID).and(BRANCH.BRANCH_NAME.eq(branchName)))
-                .leftJoin(SHA).on(CONTEXT.SHA_FK.eq(SHA.SHA_ID).and(SHA.SHA_.eq(shaString)))
+                select(JOB.fields())
+                .from(JOB)
+                .leftJoin(BRANCH).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID).and(BRANCH.BRANCH_NAME.eq(branchName)))
+                .leftJoin(SHA).on(JOB.SHA_FK.eq(SHA.SHA_ID).and(SHA.SHA_.eq(shaString)))
                 .leftJoin(REPO).on(BRANCH.REPO_FK.eq(REPO.REPO_ID).or(SHA.REPO_FK.eq(REPO.REPO_ID)))
                 .join(ORG).on(REPO.ORG_FK.eq(ORG.ORG_ID).and(ORG.ORG_NAME.eq(orgName)))
                 .where(REPO.REPO_NAME.eq(repoName))
                 .and(SHA.SHA_.eq(shaString))
                 .fetch()
-                .into(io.github.ericdriggs.reportcard.gen.db.tables.pojos.Context.class));
+                .into(io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job.class));
         return contexts;
     }
 
-    public io.github.ericdriggs.reportcard.gen.db.tables.pojos.Context getContext(String orgName, String repoName, String branchName, String shaString) {
+    public io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job getContext(String orgName, String repoName, String branchName, String shaString) {
         SelectConditionStep<Record> selectConditionStep = dsl.
-                select(CONTEXT.fields())
-                .from(CONTEXT)
-                .leftJoin(BRANCH).on(BRANCH.BRANCH_ID.eq(CONTEXT.BRANCH_FK).and(BRANCH.BRANCH_NAME.eq(branchName)))
-                .leftJoin(SHA).on(SHA.SHA_ID.eq(CONTEXT.SHA_FK)).and(SHA.SHA_.eq(shaString))
+                select(JOB.fields())
+                .from(JOB)
+                .leftJoin(BRANCH).on(BRANCH.BRANCH_ID.eq(JOB.BRANCH_FK).and(BRANCH.BRANCH_NAME.eq(branchName)))
+                .leftJoin(SHA).on(SHA.SHA_ID.eq(JOB.SHA_FK)).and(SHA.SHA_.eq(shaString))
                 .leftJoin(REPO).on(REPO.REPO_ID.eq(BRANCH.REPO_FK).or(REPO.REPO_ID.eq(SHA.REPO_FK)))
                 .join(ORG).on(ORG.ORG_ID.eq(REPO.ORG_FK)).and(ORG.ORG_NAME.eq(orgName))
                 .where(REPO.REPO_NAME.eq(repoName))
                 .and(SHA.SHA_.eq(shaString));
 
-        io.github.ericdriggs.reportcard.gen.db.tables.pojos.Context ret =
+        io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job ret =
                 selectConditionStep
                         .fetchOne()
-                        .into(io.github.ericdriggs.reportcard.gen.db.tables.pojos.Context.class);
+                        .into(io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job.class);
         if (ret == null) {
             throwNotFound(orgName, repoName, branchName, shaString);
         }
@@ -262,18 +260,18 @@ public class ReportCardService {
     }
 
 
-    public Map<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Context, Set<Execution>> getContextsExecutions(String orgName, String repoName, String branchName, String shaString, Map<String,String> metadataFilters) {
-        Set<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Context> contexts = getContexts(orgName, repoName, branchName, shaString);
-        Map<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Context, Set<Execution>> contextExecutionsMap = new ConcurrentSkipListMap<>(Comparators.CONTEXT_CASE_INSENSITIVE_ORDER);
+    public Map<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job, Set<Execution>> getContextsExecutions(String orgName, String repoName, String branchName, String shaString, Map<String,String> metadataFilters) {
+        Set<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job> contexts = getContexts(orgName, repoName, branchName, shaString);
+        Map<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job, Set<Execution>> contextExecutionsMap = new ConcurrentSkipListMap<>(Comparators.CONTEXT_CASE_INSENSITIVE_ORDER);
         contexts.parallelStream().forEach(context -> {
             contextExecutionsMap.put(context, getExecutions(orgName, repoName, branchName, shaString));
         });
         return contextExecutionsMap;
     }
 
-    public Map<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Context,Set<Execution>> getContextExecutions(String orgName, String repoName, String branchName, String shaString) {
-        io.github.ericdriggs.reportcard.gen.db.tables.pojos.Context context = getContext(orgName,repoName,branchName,shaString);
-        Map<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Context,Set<Execution>> contextExecutionsMap = new ConcurrentSkipListMap<>(Comparators.CONTEXT_CASE_INSENSITIVE_ORDER);
+    public Map<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job,Set<Execution>> getContextExecutions(String orgName, String repoName, String branchName, String shaString) {
+        io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job context = getContext(orgName,repoName,branchName,shaString);
+        Map<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job,Set<Execution>> contextExecutionsMap = new ConcurrentSkipListMap<>(Comparators.CONTEXT_CASE_INSENSITIVE_ORDER);
         return Collections.singletonMap(context, getExecutions(orgName,   repoName,  branchName, shaString));
     }
 
@@ -283,9 +281,9 @@ public class ReportCardService {
         SelectConditionStep<Record> selectConditionStep =  dsl.
                 select(EXECUTION.fields())
                 .from(EXECUTION
-                        .join(CONTEXT).on(CONTEXT.CONTEXT_ID.eq(EXECUTION.CONTEXT_FK))
-                        .leftJoin(SHA).on(SHA.SHA_ID.eq(CONTEXT.SHA_FK)).and(SHA.SHA_.eq(sha))
-                        .leftJoin(BRANCH).on(BRANCH.BRANCH_ID.eq(CONTEXT.BRANCH_FK)).and(BRANCH.BRANCH_NAME.eq(branch))
+                        .join(JOB).on(JOB.JOB_ID.eq(EXECUTION.JOB_FK))
+                        .leftJoin(SHA).on(SHA.SHA_ID.eq(JOB.SHA_FK)).and(SHA.SHA_.eq(sha))
+                        .leftJoin(BRANCH).on(BRANCH.BRANCH_ID.eq(JOB.BRANCH_FK)).and(BRANCH.BRANCH_NAME.eq(branch))
                         .leftJoin(REPO).on(REPO.REPO_ID.eq(BRANCH.REPO_FK).or(REPO.REPO_ID.eq(SHA.REPO_FK)))
                         .join(ORG).on(REPO.ORG_FK.eq(ORG.ORG_ID)).and(ORG.ORG_NAME.eq(org)))
                 .where(REPO.REPO_NAME.eq(repo))
@@ -302,9 +300,9 @@ public class ReportCardService {
         SelectConditionStep<Record> selectConditionStep = dsl.
                 select(EXECUTION.fields())
                 .from(EXECUTION)
-                .join(CONTEXT).on(CONTEXT.CONTEXT_ID.eq(EXECUTION.CONTEXT_FK)).and(EXECUTION.EXECUTION_REFERENCE.eq(executionExternalId))
-                .leftJoin(SHA).on(SHA.SHA_ID.eq(CONTEXT.SHA_FK)).and(SHA.SHA_.eq(sha))
-                .leftJoin(BRANCH).on(BRANCH.BRANCH_ID.eq(CONTEXT.BRANCH_FK)).and(BRANCH.BRANCH_NAME.eq(branch))
+                .join(JOB).on(JOB.JOB_ID.eq(EXECUTION.JOB_FK)).and(EXECUTION.EXECUTION_REFERENCE.eq(executionExternalId))
+                .leftJoin(SHA).on(SHA.SHA_ID.eq(JOB.SHA_FK)).and(SHA.SHA_.eq(sha))
+                .leftJoin(BRANCH).on(BRANCH.BRANCH_ID.eq(JOB.BRANCH_FK)).and(BRANCH.BRANCH_NAME.eq(branch))
                 .leftJoin(REPO).on(REPO.REPO_ID.eq(BRANCH.REPO_FK).or(REPO.REPO_ID.eq(SHA.REPO_FK)))
                 .join(ORG).on(REPO.ORG_FK.eq(ORG.ORG_ID))
                 .where(REPO.REPO_NAME.eq(repo))
@@ -341,9 +339,9 @@ public class ReportCardService {
                 select(STAGE.fields())
                 .from(STAGE)
                 .join(EXECUTION).on(EXECUTION.EXECUTION_ID.eq(STAGE.EXECUTION_FK))
-                .join(CONTEXT).on(CONTEXT.CONTEXT_ID.eq(EXECUTION.CONTEXT_FK)).and(EXECUTION.EXECUTION_REFERENCE.eq(executionExternalId))
-                .leftJoin(SHA).on(SHA.SHA_ID.eq(CONTEXT.SHA_FK)).and(SHA.SHA_.eq(sha))
-                .leftJoin(BRANCH).on(BRANCH.BRANCH_ID.eq(CONTEXT.BRANCH_FK)).and(BRANCH.BRANCH_NAME.eq(branch))
+                .join(JOB).on(JOB.JOB_ID.eq(EXECUTION.JOB_FK)).and(EXECUTION.EXECUTION_REFERENCE.eq(executionExternalId))
+                .leftJoin(SHA).on(SHA.SHA_ID.eq(JOB.SHA_FK)).and(SHA.SHA_.eq(sha))
+                .leftJoin(BRANCH).on(BRANCH.BRANCH_ID.eq(JOB.BRANCH_FK)).and(BRANCH.BRANCH_NAME.eq(branch))
                 .leftJoin(REPO).on(REPO.REPO_ID.eq(BRANCH.REPO_FK).or(REPO.REPO_ID.eq(SHA.REPO_FK)))
                 .join(ORG).on(REPO.ORG_FK.eq(ORG.ORG_ID)).and(ORG.ORG_NAME.eq(org))
                 .where(REPO.REPO_NAME.eq(repo));
@@ -360,8 +358,8 @@ public class ReportCardService {
                 select(STAGE.fields())
                 .from(STAGE)
                 .join(EXECUTION).on(STAGE.EXECUTION_FK.eq(EXECUTION.EXECUTION_ID))
-                .join(CONTEXT).on(EXECUTION.CONTEXT_FK.eq(CONTEXT.CONTEXT_ID).or(CONTEXT.SHA_FK.eq(SHA.SHA_ID)))
-                .join(BRANCH).on(CONTEXT.BRANCH_FK.eq(BRANCH.BRANCH_ID))
+                .join(JOB).on(EXECUTION.JOB_FK.eq(JOB.JOB_ID).or(JOB.SHA_FK.eq(SHA.SHA_ID)))
+                .join(BRANCH).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
                 .join(REPO).on(BRANCH.REPO_FK.eq(REPO.REPO_ID))
                 .join(ORG).on(REPO.ORG_FK.eq(ORG.ORG_ID))
                 .where(ORG.ORG_NAME.eq(org))
@@ -411,15 +409,15 @@ public class ReportCardService {
 
         //String org, String repo, String app, String branch, Integer buildOrdinal, String stage
         //FIXME: filter on request.metadataFilter
-        Map<String,String> metadataFilters = request.getMetadata();
+        Map<String,String> metadataFilters = request.getJobInfo();
         SelectConditionStep<Record> selectConditionStep = dsl.
                 select()
                 .from(ORG
                         .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)).and(REPO.REPO_NAME.eq(request.getRepo()))
                         .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)).and(BRANCH.BRANCH_NAME.eq(request.getBranch()))
                         .leftJoin(SHA).on(SHA.REPO_FK.eq(REPO.REPO_ID)).and(SHA.SHA_.eq(request.getSha()))
-                        .leftJoin(CONTEXT).on(CONTEXT.BRANCH_FK.eq(BRANCH.BRANCH_ID).or(CONTEXT.SHA_FK.eq(SHA.SHA_ID)))
-                        .leftJoin(EXECUTION).on(EXECUTION.CONTEXT_FK.eq(CONTEXT.CONTEXT_ID)).and(EXECUTION.EXECUTION_REFERENCE.eq(request.getExecutionReference()))
+                        .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID).or(JOB.SHA_FK.eq(SHA.SHA_ID)))
+                        .leftJoin(EXECUTION).on(EXECUTION.JOB_FK.eq(JOB.JOB_ID)).and(EXECUTION.EXECUTION_REFERENCE.eq(request.getExecutionReference()))
                         .leftJoin(STAGE).on(STAGE.STAGE_NAME.eq(request.getStage())).and(STAGE.STAGE_NAME.eq(request.getStage()))
                 ).where(ORG.ORG_NAME.eq(request.getOrg()));
 
@@ -436,7 +434,7 @@ public class ReportCardService {
             Repo _repo = null;
             Branch _branch = null;
             Sha _sha = null;
-            Context _context = null;
+            Job _context = null;
             Execution _execution = null;
             Stage _stage = null;
 
@@ -452,8 +450,8 @@ public class ReportCardService {
             if (record.get(SHA.SHA_ID.getName()) != null) {
                 _sha = record.into(ShaRecord.class).into(Sha.class);
             }
-            if (record.get(CONTEXT.CONTEXT_ID.getName()) != null) {
-                _context = record.into(ContextRecord.class).into(io.github.ericdriggs.reportcard.gen.db.tables.pojos.Context.class);
+            if (record.get(JOB.JOB_ID.getName()) != null) {
+                _context = record.into(JobRecord.class).into(io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job.class);
             }
             if (record.get(EXECUTION.EXECUTION_ID.getName()) != null) {
                 _execution = record.into(ExecutionRecord.class).into(Execution.class);
@@ -467,7 +465,7 @@ public class ReportCardService {
             executionStagePath.setRepo(_repo);
             executionStagePath.setBranch(_branch);
             executionStagePath.setSha(_sha);
-            executionStagePath.setContext(_context);
+            executionStagePath.setJob(_context);
             executionStagePath.setExecution(_execution);
             executionStagePath.setStage(_stage);
 
@@ -537,19 +535,26 @@ public class ReportCardService {
             executionStagePath.setSha(sha);
         }
 
-        if (executionStagePath.getContext() == null) {
-            io.github.ericdriggs.reportcard.gen.db.tables.pojos.Context context = new io.github.ericdriggs.reportcard.gen.db.tables.pojos.Context()
-                    .setMetadata(request.getMetadataJson())
+        if (executionStagePath.getJob() == null) {
+            io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job job = new io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job()
+                    .setJobInfo(request.getJobInfoJson())
                     .setBranchFk(executionStagePath.getBranch().getBranchId())
                     .setShaFk(executionStagePath.getSha().getShaId());
-            contextDao.insert(context);
-            executionStagePath.setContext(context);
+            //jobDao.insert(job);
+
+            //user insert since DAO/POJO would incorrectly attempt to insert generated column job_info_str
+            Job insertedJob = dsl.insertInto(JOB, JOB.BRANCH_FK, JOB.SHA_FK, JOB.JOB_INFO)
+                            .values(executionStagePath.getBranch().getBranchId(), executionStagePath.getSha().getShaId(), request.getJobInfoJson())
+                    .returningResult(JOB.JOB_ID, JOB.JOB_INFO, JOB.BRANCH_FK, JOB.SHA_FK, JOB.JOB_INFO_STR)
+                    .fetchOne().into(Job.class);
+
+            executionStagePath.setJob(insertedJob);
         }
 
         if (executionStagePath.getExecution() == null) {
             Execution execution = new Execution()
                     .setExecutionReference(request.getExecutionReference())
-                    .setContextFk(executionStagePath.getContext().getContextId());
+                    .setJobFk(executionStagePath.getJob().getJobId());
             executionDao.insert(execution);
             executionStagePath.setExecution(execution);
         }

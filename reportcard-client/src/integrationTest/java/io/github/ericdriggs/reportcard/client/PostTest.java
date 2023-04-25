@@ -57,7 +57,7 @@ public class PostTest {
                         .setRepo(repo)
                         .setBranch(branch)
                         .setSha(sha)
-                        .setMetadata(metadata)
+                        .setJobInfo(metadata)
                         .setExecutionReference(executionReference)
                         .setExternalLinks(externalLinks)
                         .setStage(stage);

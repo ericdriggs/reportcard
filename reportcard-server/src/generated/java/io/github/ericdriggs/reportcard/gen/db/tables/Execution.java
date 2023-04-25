@@ -44,7 +44,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Execution extends TableImpl<ExecutionRecord> {
 
-    private static final long serialVersionUID = 473962173;
+    private static final long serialVersionUID = -1286736245;
 
     /**
      * The reference instance of <code>reportcard.execution</code>
@@ -70,9 +70,9 @@ public class Execution extends TableImpl<ExecutionRecord> {
     public final TableField<ExecutionRecord, String> EXECUTION_REFERENCE = createField(DSL.name("execution_reference"), SQLDataType.VARCHAR(255).nullable(false), this, "");
 
     /**
-     * The column <code>reportcard.execution.context_fk</code>.
+     * The column <code>reportcard.execution.job_fk</code>.
      */
-    public final TableField<ExecutionRecord, Long> CONTEXT_FK = createField(DSL.name("context_fk"), SQLDataType.BIGINT.nullable(false), this, "");
+    public final TableField<ExecutionRecord, Long> JOB_FK = createField(DSL.name("job_fk"), SQLDataType.BIGINT.nullable(false), this, "");
 
     private Execution(Name alias, Table<ExecutionRecord> aliased) {
         this(alias, aliased, null);
@@ -137,13 +137,13 @@ public class Execution extends TableImpl<ExecutionRecord> {
         return Arrays.<ForeignKey<ExecutionRecord, ?>>asList(Keys.EXECUTION_CONTEXT_FK);
     }
 
-    private transient Context _context;
+    private transient Job _job;
 
-    public Context context() {
-        if (_context == null)
-            _context = new Context(this, Keys.EXECUTION_CONTEXT_FK);
+    public Job job() {
+        if (_job == null)
+            _job = new Job(this, Keys.EXECUTION_CONTEXT_FK);
 
-        return _context;
+        return _job;
     }
 
     @Override

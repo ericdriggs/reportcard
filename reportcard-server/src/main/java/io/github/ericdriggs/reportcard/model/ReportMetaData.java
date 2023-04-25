@@ -21,7 +21,7 @@ public class ReportMetaData {
     private String repo;
     private String branch;
     private String sha;
-    private Map<String,String> metadata;
+    private Map<String,String> jobInfo;
     private String executionReference;
     private String stage;
     private Map<String,String> externalLinks;
@@ -63,7 +63,7 @@ public class ReportMetaData {
     }
 
     @SneakyThrows(JsonProcessingException.class)
-    public String getMetadataJson() {
-        return mapper.writeValueAsString(metadata);
+    public String getJobInfoJson() {
+        return mapper.writeValueAsString(jobInfo);
     }
 }

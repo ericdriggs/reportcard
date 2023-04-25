@@ -5,8 +5,8 @@ package io.github.ericdriggs.reportcard.gen.db;
 
 
 import io.github.ericdriggs.reportcard.gen.db.tables.Branch;
-import io.github.ericdriggs.reportcard.gen.db.tables.Context;
 import io.github.ericdriggs.reportcard.gen.db.tables.Execution;
+import io.github.ericdriggs.reportcard.gen.db.tables.Job;
 import io.github.ericdriggs.reportcard.gen.db.tables.Org;
 import io.github.ericdriggs.reportcard.gen.db.tables.Repo;
 import io.github.ericdriggs.reportcard.gen.db.tables.Sha;
@@ -38,14 +38,14 @@ public class Tables {
     public static final Branch BRANCH = Branch.BRANCH;
 
     /**
-     * The table <code>reportcard.context</code>.
-     */
-    public static final Context CONTEXT = Context.CONTEXT;
-
-    /**
      * The table <code>reportcard.execution</code>.
      */
     public static final Execution EXECUTION = Execution.EXECUTION;
+
+    /**
+     * The table <code>reportcard.job</code>.
+     */
+    public static final Job JOB = Job.JOB;
 
     /**
      * The table <code>reportcard.org</code>.

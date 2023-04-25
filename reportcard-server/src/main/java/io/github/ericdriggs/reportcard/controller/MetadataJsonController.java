@@ -69,7 +69,7 @@ public class MetadataJsonController {
     }
 
     @GetMapping(path = "{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts", produces = "application/json")
-    public ResponseEntity<Map<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Context,Set<Execution>>> getContexts(
+    public ResponseEntity<Map<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job,Set<Execution>>> getContexts(
             @PathVariable String org,
             @PathVariable String repo,
             @PathVariable String branch,

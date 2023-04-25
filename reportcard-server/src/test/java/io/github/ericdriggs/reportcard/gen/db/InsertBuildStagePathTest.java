@@ -30,7 +30,7 @@ public class InsertBuildStagePathTest extends AbstractDbTest {
                         .setRepo("newRepo")
                         .setBranch("newBranch")
                         .setSha("newSha")
-                        .setMetadata(TestData.metadata)
+                        .setJobInfo(TestData.metadata)
                         .setExecutionReference("64bb0231-9a2e-4492-bbd1-e0aeba24c982")
                         .setStage("newStage");
 
@@ -41,7 +41,7 @@ public class InsertBuildStagePathTest extends AbstractDbTest {
         assertNotNull(bsp.getRepo());
         assertNotNull(bsp.getBranch());
         assertNotNull(bsp.getSha());
-        assertNotNull(bsp.getContext());
+        assertNotNull(bsp.getJob());
         assertNotNull(bsp.getExecution());
         assertNotNull(bsp.getStage());
 
@@ -49,7 +49,7 @@ public class InsertBuildStagePathTest extends AbstractDbTest {
         Assertions.assertEquals(request.getRepo(), bsp.getRepo().getRepoName());
         Assertions.assertEquals(request.getBranch(), bsp.getBranch().getBranchName());
         Assertions.assertEquals(request.getSha(), bsp.getSha().getSha());
-        JsonCompare.assertJsonEquals(request.getMetadataJson(), bsp.getContext().getMetadata());
+        JsonCompare.assertJsonEquals(request.getJobInfo(), bsp.getJob().getJobInfo());
         Assertions.assertEquals(request.getExecutionReference(), bsp.getExecution().getExecutionReference());
         Assertions.assertEquals(request.getStage(), bsp.getStage().getStageName());
         assertNotNull(bsp.getStage().getStageId());

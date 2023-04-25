@@ -28,7 +28,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ExecutionRecord extends UpdatableRecordImpl<ExecutionRecord> implements Record3<Long, String, Long> {
 
-    private static final long serialVersionUID = 1498107979;
+    private static final long serialVersionUID = 1514254581;
 
     /**
      * Setter for <code>reportcard.execution.execution_id</code>.
@@ -61,17 +61,17 @@ public class ExecutionRecord extends UpdatableRecordImpl<ExecutionRecord> implem
     }
 
     /**
-     * Setter for <code>reportcard.execution.context_fk</code>.
+     * Setter for <code>reportcard.execution.job_fk</code>.
      */
-    public ExecutionRecord setContextFk(Long value) {
+    public ExecutionRecord setJobFk(Long value) {
         set(2, value);
         return this;
     }
 
     /**
-     * Getter for <code>reportcard.execution.context_fk</code>.
+     * Getter for <code>reportcard.execution.job_fk</code>.
      */
-    public Long getContextFk() {
+    public Long getJobFk() {
         return (Long) get(2);
     }
 
@@ -110,7 +110,7 @@ public class ExecutionRecord extends UpdatableRecordImpl<ExecutionRecord> implem
 
     @Override
     public Field<Long> field3() {
-        return Execution.EXECUTION.CONTEXT_FK;
+        return Execution.EXECUTION.JOB_FK;
     }
 
     @Override
@@ -125,7 +125,7 @@ public class ExecutionRecord extends UpdatableRecordImpl<ExecutionRecord> implem
 
     @Override
     public Long component3() {
-        return getContextFk();
+        return getJobFk();
     }
 
     @Override
@@ -140,7 +140,7 @@ public class ExecutionRecord extends UpdatableRecordImpl<ExecutionRecord> implem
 
     @Override
     public Long value3() {
-        return getContextFk();
+        return getJobFk();
     }
 
     @Override
@@ -157,7 +157,7 @@ public class ExecutionRecord extends UpdatableRecordImpl<ExecutionRecord> implem
 
     @Override
     public ExecutionRecord value3(Long value) {
-        setContextFk(value);
+        setJobFk(value);
         return this;
     }
 
@@ -183,11 +183,11 @@ public class ExecutionRecord extends UpdatableRecordImpl<ExecutionRecord> implem
     /**
      * Create a detached, initialised ExecutionRecord
      */
-    public ExecutionRecord(Long executionId, String executionReference, Long contextFk) {
+    public ExecutionRecord(Long executionId, String executionReference, Long jobFk) {
         super(Execution.EXECUTION);
 
         setExecutionId(executionId);
         setExecutionReference(executionReference);
-        setContextFk(contextFk);
+        setJobFk(jobFk);
     }
 }

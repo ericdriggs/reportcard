@@ -83,16 +83,16 @@ public class ExecutionDao extends DAOImpl<ExecutionRecord, io.github.ericdriggs.
     }
 
     /**
-     * Fetch records that have <code>context_fk BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>job_fk BETWEEN lowerInclusive AND upperInclusive</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Execution> fetchRangeOfContextFk(Long lowerInclusive, Long upperInclusive) {
-        return fetchRange(Execution.EXECUTION.CONTEXT_FK, lowerInclusive, upperInclusive);
+    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Execution> fetchRangeOfJobFk(Long lowerInclusive, Long upperInclusive) {
+        return fetchRange(Execution.EXECUTION.JOB_FK, lowerInclusive, upperInclusive);
     }
 
     /**
-     * Fetch records that have <code>context_fk IN (values)</code>
+     * Fetch records that have <code>job_fk IN (values)</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Execution> fetchByContextFk(Long... values) {
-        return fetch(Execution.EXECUTION.CONTEXT_FK, values);
+    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Execution> fetchByJobFk(Long... values) {
+        return fetch(Execution.EXECUTION.JOB_FK, values);
     }
 }

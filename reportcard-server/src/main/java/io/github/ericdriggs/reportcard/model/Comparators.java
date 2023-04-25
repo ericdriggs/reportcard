@@ -19,7 +19,7 @@ public class Comparators {
     public static final Comparator<Sha> SHA
             = new Comparators.ShaComparator();
 
-    public static final Comparator<Context> CONTEXT_CASE_INSENSITIVE_ORDER
+    public static final Comparator<Job> CONTEXT_CASE_INSENSITIVE_ORDER
             = new Comparators.ContextCaseInsensitiveComparator();
 
     public static final Comparator<Execution> EXECUTION_CASE_INSENSITIVE_ORDER
@@ -68,11 +68,11 @@ public class Comparators {
     }
 
     private static class ContextCaseInsensitiveComparator
-            implements Comparator<Context>, java.io.Serializable {
+            implements Comparator<Job>, java.io.Serializable {
         private static final long serialVersionUID = 9214266396218473015L;
 
-        public int compare(Context val1, Context val2) {
-            return compareContext(val1, val2);
+        public int compare(Job val1, Job val2) {
+            return compareJob(val1, val2);
         }
     }
 
@@ -125,17 +125,18 @@ public class Comparators {
         );
     }
 
-    public static int compareContext(Context val1, Context val2) {
+    public static int compareJob(Job val1, Job val2) {
         return chainCompare(
                 Long.compare(val1.getShaFk(), val2.getShaFk()),
-                compareLowerNullSafe(val1.getMetadata(), val2.getMetadata()),
-                Long.compare(val1.getContextId(), val2.getContextId())
+                //FIXME: compare json not string
+                compareLowerNullSafe(val1.getJobInfo(), val2.getJobInfo()),
+                Long.compare(val1.getJobId(), val2.getJobId())
         );
     }
 
     public static int compareExecution(Execution val1, Execution val2) {
         return chainCompare(
-                Long.compare(val1.getContextFk(), val2.getContextFk()),
+                Long.compare(val1.getJobFk(), val2.getJobFk()),
                 ObjectUtils.compare(val1.getExecutionReference(), val2.getExecutionReference()),
                 ObjectUtils.compare(val1.getExecutionId(), val2.getExecutionId()),
                 Long.compare(val1.getExecutionId(), val2.getExecutionId())

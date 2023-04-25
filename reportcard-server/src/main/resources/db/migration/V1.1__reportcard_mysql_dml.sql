@@ -17,17 +17,12 @@ INSERT INTO `reportcard`.`sha`
     (`sha_id`, `sha`, `repo_fk`)
 VALUES (1, 'bdd15b6fae26738ca58f0b300fc43f5872b429bf', 1);
 
-INSERT INTO `reportcard`.`context`
-(`context_id`,
- `sha_fk`,
- `branch_fk`,
- `metadata`)
+INSERT INTO `reportcard`.`job`
+(`job_id`, `sha_fk`, `branch_fk`, `job_info`)
 VALUES (1, 1, 1, '{ "application":"fooapp", "host": "foocorp.jenkins.com", "pipeline": "foopipeline" }');
 
 INSERT INTO `reportcard`.`execution`
-(`execution_id`,
- `execution_reference`,
- `context_fk`)
+(`execution_id`, `execution_reference`, `job_fk`)
 VALUES (1, "executionReference1", 1);
 
 

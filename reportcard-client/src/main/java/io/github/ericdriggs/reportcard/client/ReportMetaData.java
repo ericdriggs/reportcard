@@ -24,7 +24,7 @@ public class ReportMetaData {
     private String repo;
     private String branch;
     private String sha;
-    private Map<String,String> metadata = new HashMap<>();
+    private Map<String,String> jobInfo = new HashMap<>();
     private String executionReference;
     private String stage;
     private Map<String, String> externalLinks = new HashMap<>();
@@ -55,7 +55,7 @@ public class ReportMetaData {
         this.sha = sha;
 
         if (!StringUtils.isEmpty(metadataJson)) {
-            this.metadata.putAll(objectMapper.readValue(metadataJson, Map.class));
+            this.jobInfo.putAll(objectMapper.readValue(metadataJson, Map.class));
         }
 
         if (!StringUtils.isEmpty(externalLinks)) {

@@ -29,7 +29,7 @@ public class GetBuildStagePathTest extends AbstractDbTest {
                         .setRepo(TestData.repo)
                         .setBranch(TestData.branch)
                         .setSha(TestData.sha)
-                        .setMetadata(TestData.metadata)
+                        .setJobInfo(TestData.metadata)
                         .setExecutionReference(TestData.executionReference)
                         .setStage(TestData.stage);
 
@@ -41,7 +41,7 @@ public class GetBuildStagePathTest extends AbstractDbTest {
         Assertions.assertEquals(bsp.getBranch().getBranchName(), request.getBranch());
         Assertions.assertEquals(bsp.getSha().getSha(), request.getSha());
 
-        JsonCompare.assertJsonEquals(request.getMetadata(), bsp.getContext().getMetadata());
+        JsonCompare.assertJsonEquals(request.getJobInfo(), bsp.getJob().getJobInfo());
 
         Assertions.assertEquals(bsp.getExecution().getExecutionReference(), request.getExecutionReference());
         Assertions.assertEquals(bsp.getStage().getStageName(), request.getStage());
@@ -56,7 +56,7 @@ public class GetBuildStagePathTest extends AbstractDbTest {
                         .setRepo(TestData.repo)
                         .setBranch(TestData.branch)
                         .setSha(TestData.sha)
-                        .setMetadata(TestData.metadata)
+                        .setJobInfo(TestData.metadata)
                         .setExecutionReference("not_found");
 
         ExecutionStagePath bsp = reportCardService.getExecutionStagePath(request);
@@ -65,7 +65,7 @@ public class GetBuildStagePathTest extends AbstractDbTest {
         assertNotNull(bsp.getRepo());
         assertNotNull(bsp.getBranch());
         assertNotNull(bsp.getSha());
-        assertNotNull(bsp.getContext());
+        assertNotNull(bsp.getJob());
         assertNull(bsp.getExecution());
         assertNull(bsp.getStage());
 
@@ -73,7 +73,7 @@ public class GetBuildStagePathTest extends AbstractDbTest {
         Assertions.assertEquals(bsp.getRepo().getRepoName(), request.getRepo());
         Assertions.assertEquals(bsp.getBranch().getBranchName(), request.getBranch());
         Assertions.assertEquals(bsp.getSha().getSha(), request.getSha());
-        JsonCompare.assertJsonEquals(bsp.getContext().getMetadata(), request.getMetadataJson());
+        JsonCompare.assertJsonEquals(bsp.getJob().getJobInfo(), request.getJobInfo());
     }
 
 }

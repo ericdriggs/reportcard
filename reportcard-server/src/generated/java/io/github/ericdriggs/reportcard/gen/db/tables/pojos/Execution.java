@@ -22,28 +22,28 @@ import javax.annotation.processing.Generated;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Execution implements Serializable {
 
-    private static final long serialVersionUID = 1941611725;
+    private static final long serialVersionUID = -70013705;
 
     private Long   executionId;
     private String executionReference;
-    private Long   contextFk;
+    private Long   jobFk;
 
     public Execution() {}
 
     public Execution(Execution value) {
         this.executionId = value.executionId;
         this.executionReference = value.executionReference;
-        this.contextFk = value.contextFk;
+        this.jobFk = value.jobFk;
     }
 
     public Execution(
         Long   executionId,
         String executionReference,
-        Long   contextFk
+        Long   jobFk
     ) {
         this.executionId = executionId;
         this.executionReference = executionReference;
-        this.contextFk = contextFk;
+        this.jobFk = jobFk;
     }
 
     /**
@@ -77,17 +77,17 @@ public class Execution implements Serializable {
     }
 
     /**
-     * Getter for <code>reportcard.execution.context_fk</code>.
+     * Getter for <code>reportcard.execution.job_fk</code>.
      */
-    public Long getContextFk() {
-        return this.contextFk;
+    public Long getJobFk() {
+        return this.jobFk;
     }
 
     /**
-     * Setter for <code>reportcard.execution.context_fk</code>.
+     * Setter for <code>reportcard.execution.job_fk</code>.
      */
-    public Execution setContextFk(Long contextFk) {
-        this.contextFk = contextFk;
+    public Execution setJobFk(Long jobFk) {
+        this.jobFk = jobFk;
         return this;
     }
 
@@ -97,7 +97,7 @@ public class Execution implements Serializable {
 
         sb.append(executionId);
         sb.append(", ").append(executionReference);
-        sb.append(", ").append(contextFk);
+        sb.append(", ").append(jobFk);
 
         sb.append(")");
         return sb.toString();

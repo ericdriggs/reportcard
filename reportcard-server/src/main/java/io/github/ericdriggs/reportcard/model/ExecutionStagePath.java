@@ -7,13 +7,14 @@ import org.springframework.util.ObjectUtils;
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
 
+//TODO: rename to get jobStagePath
 @Data
 public class ExecutionStagePath {
     private Org org;
     private Repo repo;
     private Branch branch;
     private Sha sha;
-    private Context context;
+    private Job job;
     private Execution execution;
     private Stage stage;
 
@@ -43,8 +44,8 @@ public class ExecutionStagePath {
             validationErrors.put("sha", "missing required field");
         }
 
-        if (ObjectUtils.isEmpty(context)) {
-            validationErrors.put("context", "missing required field");
+        if (ObjectUtils.isEmpty(job)) {
+            validationErrors.put("job", "missing required field");
         }
 
         if (ObjectUtils.isEmpty(execution)) {
