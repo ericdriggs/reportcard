@@ -302,7 +302,7 @@ public class ReportCardService {
         SelectConditionStep<Record> selectConditionStep = dsl.
                 select(EXECUTION.fields())
                 .from(EXECUTION)
-                .join(CONTEXT).on(CONTEXT.CONTEXT_ID.eq(EXECUTION.CONTEXT_FK)).and(EXECUTION.EXECUTION_EXTERNAL_ID.eq(executionExternalId))
+                .join(CONTEXT).on(CONTEXT.CONTEXT_ID.eq(EXECUTION.CONTEXT_FK)).and(EXECUTION.EXECUTION_REFERENCE.eq(executionExternalId))
                 .leftJoin(SHA).on(SHA.SHA_ID.eq(CONTEXT.SHA_FK)).and(SHA.SHA_.eq(sha))
                 .leftJoin(BRANCH).on(BRANCH.BRANCH_ID.eq(CONTEXT.BRANCH_FK)).and(BRANCH.BRANCH_NAME.eq(branch))
                 .leftJoin(REPO).on(REPO.REPO_ID.eq(BRANCH.REPO_FK).or(REPO.REPO_ID.eq(SHA.REPO_FK)))
@@ -310,7 +310,7 @@ public class ReportCardService {
                 .where(REPO.REPO_NAME.eq(repo))
                 .and(ORG.ORG_NAME.eq(org));
 
-        selectConditionStep.and(EXECUTION.EXECUTION_EXTERNAL_ID.eq(executionExternalId));
+        selectConditionStep.and(EXECUTION.EXECUTION_REFERENCE.eq(executionExternalId));
 
         Execution ret =
                 selectConditionStep
@@ -326,7 +326,7 @@ public class ReportCardService {
         Set<Execution> contexts = getExecutions(orgName,repoName,branchName,shaString);
         Map<Execution,Set<Stage>> stageExecutionMap = new ConcurrentSkipListMap<>(Comparators.EXECUTION_CASE_INSENSITIVE_ORDER);
         contexts.parallelStream().forEach(  execution -> {
-            stageExecutionMap.put(execution, getStages(orgName,   repoName,  branchName, shaString, execution.getExecutionExternalId()));
+            stageExecutionMap.put(execution, getStages(orgName,   repoName,  branchName, shaString, execution.getExecutionReference()));
         });
         return stageExecutionMap;
     }
@@ -341,7 +341,7 @@ public class ReportCardService {
                 select(STAGE.fields())
                 .from(STAGE)
                 .join(EXECUTION).on(EXECUTION.EXECUTION_ID.eq(STAGE.EXECUTION_FK))
-                .join(CONTEXT).on(CONTEXT.CONTEXT_ID.eq(EXECUTION.CONTEXT_FK)).and(EXECUTION.EXECUTION_EXTERNAL_ID.eq(executionExternalId))
+                .join(CONTEXT).on(CONTEXT.CONTEXT_ID.eq(EXECUTION.CONTEXT_FK)).and(EXECUTION.EXECUTION_REFERENCE.eq(executionExternalId))
                 .leftJoin(SHA).on(SHA.SHA_ID.eq(CONTEXT.SHA_FK)).and(SHA.SHA_.eq(sha))
                 .leftJoin(BRANCH).on(BRANCH.BRANCH_ID.eq(CONTEXT.BRANCH_FK)).and(BRANCH.BRANCH_NAME.eq(branch))
                 .leftJoin(REPO).on(REPO.REPO_ID.eq(BRANCH.REPO_FK).or(REPO.REPO_ID.eq(SHA.REPO_FK)))
@@ -369,7 +369,7 @@ public class ReportCardService {
                 .and(BRANCH.BRANCH_NAME.eq(branch))
                 .and(SHA.SHA_.eq(sha));
 
-        selectConditionStep.and(EXECUTION.EXECUTION_EXTERNAL_ID.eq(executionExternalId))
+        selectConditionStep.and(EXECUTION.EXECUTION_REFERENCE.eq(executionExternalId))
                 .and(STAGE.STAGE_NAME.eq(stage));
 
         Stage ret =
@@ -419,7 +419,7 @@ public class ReportCardService {
                         .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)).and(BRANCH.BRANCH_NAME.eq(request.getBranch()))
                         .leftJoin(SHA).on(SHA.REPO_FK.eq(REPO.REPO_ID)).and(SHA.SHA_.eq(request.getSha()))
                         .leftJoin(CONTEXT).on(CONTEXT.BRANCH_FK.eq(BRANCH.BRANCH_ID).or(CONTEXT.SHA_FK.eq(SHA.SHA_ID)))
-                        .leftJoin(EXECUTION).on(EXECUTION.CONTEXT_FK.eq(CONTEXT.CONTEXT_ID)).and(EXECUTION.EXECUTION_EXTERNAL_ID.eq(request.getExecutionReference()))
+                        .leftJoin(EXECUTION).on(EXECUTION.CONTEXT_FK.eq(CONTEXT.CONTEXT_ID)).and(EXECUTION.EXECUTION_REFERENCE.eq(request.getExecutionReference()))
                         .leftJoin(STAGE).on(STAGE.STAGE_NAME.eq(request.getStage())).and(STAGE.STAGE_NAME.eq(request.getStage()))
                 ).where(ORG.ORG_NAME.eq(request.getOrg()));
 
@@ -548,7 +548,7 @@ public class ReportCardService {
 
         if (executionStagePath.getExecution() == null) {
             Execution execution = new Execution()
-                    .setExecutionExternalId(request.getExecutionReference())
+                    .setExecutionReference(request.getExecutionReference())
                     .setContextFk(executionStagePath.getContext().getContextId());
             executionDao.insert(execution);
             executionStagePath.setExecution(execution);

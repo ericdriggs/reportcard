@@ -138,7 +138,7 @@ DROP TABLE IF EXISTS `reportcard`.`execution` ;
 
 CREATE TABLE IF NOT EXISTS `reportcard`.`execution` (
   `execution_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `execution_external_id` VARCHAR(255) NOT NULL,
+  `execution_reference` VARCHAR(255) NOT NULL,
   `context_fk` BIGINT UNSIGNED NOT NULL,
   PRIMARY KEY (`execution_id`),
   UNIQUE INDEX `execution_id_unique` (`execution_id` ASC) VISIBLE,

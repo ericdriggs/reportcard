@@ -26,7 +26,7 @@ VALUES (1, 1, 1, '{ "application":"fooapp", "host": "foocorp.jenkins.com", "pipe
 
 INSERT INTO `reportcard`.`execution`
 (`execution_id`,
- `execution_external_id`,
+ `execution_reference`,
  `context_fk`)
 VALUES (1, "executionReference1", 1);
 

@@ -3,6 +3,7 @@ package io.github.ericdriggs.reportcard.gen.db;
 import io.github.ericdriggs.reportcard.ReportCardService;
 import io.github.ericdriggs.reportcard.model.ExecutionStagePath;
 import io.github.ericdriggs.reportcard.model.ReportMetaData;
+import io.github.ericdriggs.reportcard.util.JsonCompare;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,9 +49,8 @@ public class InsertBuildStagePathTest extends AbstractDbTest {
         Assertions.assertEquals(request.getRepo(), bsp.getRepo().getRepoName());
         Assertions.assertEquals(request.getBranch(), bsp.getBranch().getBranchName());
         Assertions.assertEquals(request.getSha(), bsp.getSha().getSha());
-        //TODO: json compare not string compare
-        Assertions.assertEquals(request.getMetadataJson(), bsp.getContext().getMetadata());
-        Assertions.assertEquals(request.getExecutionReference(), bsp.getExecution().getExecutionExternalId());
+        JsonCompare.assertJsonEquals(request.getMetadataJson(), bsp.getContext().getMetadata());
+        Assertions.assertEquals(request.getExecutionReference(), bsp.getExecution().getExecutionReference());
         Assertions.assertEquals(request.getStage(), bsp.getStage().getStageName());
         assertNotNull(bsp.getStage().getStageId());
     }

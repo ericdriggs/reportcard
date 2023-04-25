@@ -131,7 +131,7 @@ public class ReportControllerTest {
         JsonCompare.assertJsonEquals(reportMetaData.getMetadata(), executionStagePath.getContext().getMetadata());
 
 
-        Assertions.assertEquals(reportMetaData.getExecutionReference(), executionStagePath.getExecution().getExecutionExternalId() );
+        Assertions.assertEquals(reportMetaData.getExecutionReference(), executionStagePath.getExecution().getExecutionReference() );
         Assertions.assertEquals(reportMetaData.getStage(), executionStagePath.getStage().getStageName() );
     }
 

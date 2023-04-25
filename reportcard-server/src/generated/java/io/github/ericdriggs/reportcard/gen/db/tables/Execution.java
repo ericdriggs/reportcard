@@ -44,7 +44,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Execution extends TableImpl<ExecutionRecord> {
 
-    private static final long serialVersionUID = -1710484639;
+    private static final long serialVersionUID = 473962173;
 
     /**
      * The reference instance of <code>reportcard.execution</code>
@@ -65,9 +65,9 @@ public class Execution extends TableImpl<ExecutionRecord> {
     public final TableField<ExecutionRecord, Long> EXECUTION_ID = createField(DSL.name("execution_id"), SQLDataType.BIGINT.nullable(false).identity(true), this, "");
 
     /**
-     * The column <code>reportcard.execution.execution_external_id</code>.
+     * The column <code>reportcard.execution.execution_reference</code>.
      */
-    public final TableField<ExecutionRecord, String> EXECUTION_EXTERNAL_ID = createField(DSL.name("execution_external_id"), SQLDataType.VARCHAR(255).nullable(false), this, "");
+    public final TableField<ExecutionRecord, String> EXECUTION_REFERENCE = createField(DSL.name("execution_reference"), SQLDataType.VARCHAR(255).nullable(false), this, "");
 
     /**
      * The column <code>reportcard.execution.context_fk</code>.

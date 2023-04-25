@@ -136,7 +136,7 @@ public class Comparators {
     public static int compareExecution(Execution val1, Execution val2) {
         return chainCompare(
                 Long.compare(val1.getContextFk(), val2.getContextFk()),
-                ObjectUtils.compare(val1.getExecutionExternalId(), val2.getExecutionExternalId()),
+                ObjectUtils.compare(val1.getExecutionReference(), val2.getExecutionReference()),
                 ObjectUtils.compare(val1.getExecutionId(), val2.getExecutionId()),
                 Long.compare(val1.getExecutionId(), val2.getExecutionId())
         );

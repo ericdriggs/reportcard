@@ -43,7 +43,7 @@ public class GetBuildStagePathTest extends AbstractDbTest {
 
         JsonCompare.assertJsonEquals(request.getMetadata(), bsp.getContext().getMetadata());
 
-        Assertions.assertEquals(bsp.getExecution().getExecutionExternalId(), request.getExecutionReference());
+        Assertions.assertEquals(bsp.getExecution().getExecutionReference(), request.getExecutionReference());
         Assertions.assertEquals(bsp.getStage().getStageName(), request.getStage());
         assertNotNull(bsp.getStage().getStageId());
     }

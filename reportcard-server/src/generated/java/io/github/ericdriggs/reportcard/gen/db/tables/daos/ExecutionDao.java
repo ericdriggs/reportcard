@@ -69,17 +69,17 @@ public class ExecutionDao extends DAOImpl<ExecutionRecord, io.github.ericdriggs.
     }
 
     /**
-     * Fetch records that have <code>execution_external_id BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>execution_reference BETWEEN lowerInclusive AND upperInclusive</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Execution> fetchRangeOfExecutionExternalId(String lowerInclusive, String upperInclusive) {
-        return fetchRange(Execution.EXECUTION.EXECUTION_EXTERNAL_ID, lowerInclusive, upperInclusive);
+    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Execution> fetchRangeOfExecutionReference(String lowerInclusive, String upperInclusive) {
+        return fetchRange(Execution.EXECUTION.EXECUTION_REFERENCE, lowerInclusive, upperInclusive);
     }
 
     /**
-     * Fetch records that have <code>execution_external_id IN (values)</code>
+     * Fetch records that have <code>execution_reference IN (values)</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Execution> fetchByExecutionExternalId(String... values) {
-        return fetch(Execution.EXECUTION.EXECUTION_EXTERNAL_ID, values);
+    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Execution> fetchByExecutionReference(String... values) {
+        return fetch(Execution.EXECUTION.EXECUTION_REFERENCE, values);
     }
 
     /**

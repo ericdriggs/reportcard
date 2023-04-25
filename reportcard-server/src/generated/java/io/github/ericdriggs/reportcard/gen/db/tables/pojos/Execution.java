@@ -22,27 +22,27 @@ import javax.annotation.processing.Generated;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Execution implements Serializable {
 
-    private static final long serialVersionUID = -1469040466;
+    private static final long serialVersionUID = 1941611725;
 
     private Long   executionId;
-    private String executionExternalId;
+    private String executionReference;
     private Long   contextFk;
 
     public Execution() {}
 
     public Execution(Execution value) {
         this.executionId = value.executionId;
-        this.executionExternalId = value.executionExternalId;
+        this.executionReference = value.executionReference;
         this.contextFk = value.contextFk;
     }
 
     public Execution(
         Long   executionId,
-        String executionExternalId,
+        String executionReference,
         Long   contextFk
     ) {
         this.executionId = executionId;
-        this.executionExternalId = executionExternalId;
+        this.executionReference = executionReference;
         this.contextFk = contextFk;
     }
 
@@ -62,17 +62,17 @@ public class Execution implements Serializable {
     }
 
     /**
-     * Getter for <code>reportcard.execution.execution_external_id</code>.
+     * Getter for <code>reportcard.execution.execution_reference</code>.
      */
-    public String getExecutionExternalId() {
-        return this.executionExternalId;
+    public String getExecutionReference() {
+        return this.executionReference;
     }
 
     /**
-     * Setter for <code>reportcard.execution.execution_external_id</code>.
+     * Setter for <code>reportcard.execution.execution_reference</code>.
      */
-    public Execution setExecutionExternalId(String executionExternalId) {
-        this.executionExternalId = executionExternalId;
+    public Execution setExecutionReference(String executionReference) {
+        this.executionReference = executionReference;
         return this;
     }
 
@@ -96,7 +96,7 @@ public class Execution implements Serializable {
         StringBuilder sb = new StringBuilder("Execution (");
 
         sb.append(executionId);
-        sb.append(", ").append(executionExternalId);
+        sb.append(", ").append(executionReference);
         sb.append(", ").append(contextFk);
 
         sb.append(")");

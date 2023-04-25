@@ -28,7 +28,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ExecutionRecord extends UpdatableRecordImpl<ExecutionRecord> implements Record3<Long, String, Long> {
 
-    private static final long serialVersionUID = 1957316089;
+    private static final long serialVersionUID = 1498107979;
 
     /**
      * Setter for <code>reportcard.execution.execution_id</code>.
@@ -46,17 +46,17 @@ public class ExecutionRecord extends UpdatableRecordImpl<ExecutionRecord> implem
     }
 
     /**
-     * Setter for <code>reportcard.execution.execution_external_id</code>.
+     * Setter for <code>reportcard.execution.execution_reference</code>.
      */
-    public ExecutionRecord setExecutionExternalId(String value) {
+    public ExecutionRecord setExecutionReference(String value) {
         set(1, value);
         return this;
     }
 
     /**
-     * Getter for <code>reportcard.execution.execution_external_id</code>.
+     * Getter for <code>reportcard.execution.execution_reference</code>.
      */
-    public String getExecutionExternalId() {
+    public String getExecutionReference() {
         return (String) get(1);
     }
 
@@ -105,7 +105,7 @@ public class ExecutionRecord extends UpdatableRecordImpl<ExecutionRecord> implem
 
     @Override
     public Field<String> field2() {
-        return Execution.EXECUTION.EXECUTION_EXTERNAL_ID;
+        return Execution.EXECUTION.EXECUTION_REFERENCE;
     }
 
     @Override
@@ -120,7 +120,7 @@ public class ExecutionRecord extends UpdatableRecordImpl<ExecutionRecord> implem
 
     @Override
     public String component2() {
-        return getExecutionExternalId();
+        return getExecutionReference();
     }
 
     @Override
@@ -135,7 +135,7 @@ public class ExecutionRecord extends UpdatableRecordImpl<ExecutionRecord> implem
 
     @Override
     public String value2() {
-        return getExecutionExternalId();
+        return getExecutionReference();
     }
 
     @Override
@@ -151,7 +151,7 @@ public class ExecutionRecord extends UpdatableRecordImpl<ExecutionRecord> implem
 
     @Override
     public ExecutionRecord value2(String value) {
-        setExecutionExternalId(value);
+        setExecutionReference(value);
         return this;
     }
 
@@ -183,11 +183,11 @@ public class ExecutionRecord extends UpdatableRecordImpl<ExecutionRecord> implem
     /**
      * Create a detached, initialised ExecutionRecord
      */
-    public ExecutionRecord(Long executionId, String executionExternalId, Long contextFk) {
+    public ExecutionRecord(Long executionId, String executionReference, Long contextFk) {
         super(Execution.EXECUTION);
 
         setExecutionId(executionId);
-        setExecutionExternalId(executionExternalId);
+        setExecutionReference(executionReference);
         setContextFk(contextFk);
     }
 }
