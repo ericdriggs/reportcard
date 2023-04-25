@@ -59,14 +59,9 @@ public class PostTest {
                         .setSha(sha)
                         .setMetadata(metadata)
                         .setExecutionReference(executionReference)
+                        .setExternalLinks(externalLinks)
                         .setStage(stage);
 
-        return new PostRequest(reportMetaData)
-                .setReportCardHost(reportCardHost)
-                .setReportCardUser(reportCardUser)
-                .setReportCardPass(reportCardPass)
-                .setTestReportPath(testReportPath)
-                .setTestReportRegex(testReportRegex)
-                .setExternalLinks(externalLinks);
+        return new PostRequest(reportMetaData, new ReportCardServerData(reportCardHost, reportCardUser, reportCardPass));
     }
 }

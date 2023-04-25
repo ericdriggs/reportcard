@@ -8,6 +8,7 @@ import java.util.TreeMap;
 
 /**
  * Required Arguments<br>
+ * {@link ClientArg#REPORTCARD_HOST}<br>
  * {@link ClientArg#REPORTCARD_USER}<br>
  * {@link ClientArg#REPORTCARD_PASS}<br>
  * {@link ClientArg#SCM_ORG}<br>

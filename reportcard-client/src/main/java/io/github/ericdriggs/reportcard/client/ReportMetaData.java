@@ -27,7 +27,7 @@ public class ReportMetaData {
     private Map<String,String> metadata = new HashMap<>();
     private String executionReference;
     private String stage;
-    private Map<String, String> externalLinks;
+    private Map<String, String> externalLinks = new HashMap<>();
     private String testReportPath;
     private String testReportRegex;
 
@@ -47,6 +47,7 @@ public class ReportMetaData {
         final String testReportPath = argMap.get(ClientArg.TEST_REPORT_PATH);
         final String testReportRegex = argMap.get(ClientArg.TEST_REPORT_REGEX);
         final String executionReference = argMap.get(ClientArg.EXECUTION_REFERENCE);
+        final String externalLinks = argMap.get(ClientArg.EXTERNAL_LINKS);
 
         this.org = org;
         this.repo = repo;
@@ -55,6 +56,10 @@ public class ReportMetaData {
 
         if (!StringUtils.isEmpty(metadataJson)) {
             this.metadata.putAll(objectMapper.readValue(metadataJson, Map.class));
+        }
+
+        if (!StringUtils.isEmpty(externalLinks)) {
+            this.externalLinks.putAll(objectMapper.readValue(externalLinks, Map.class));
         }
 
         this.stage = stage;

@@ -3,46 +3,48 @@ package io.github.ericdriggs.reportcard.client;
 import lombok.Data;
 import org.springframework.util.ObjectUtils;
 
-import java.util.*;
-
-import static io.github.ericdriggs.reportcard.client.ClientArg.getToken;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.UUID;
 
 @Data
 public class PostRequest {
 
+    private ReportCardServerData reportCardServerData;
+
     private ReportMetaData reportMetaData;
 
-    private String reportCardHost;
-    private String reportCardUser;
-    private String reportCardPass;
-
-    private String testReportPath;
-    private String testReportRegex;
-    private Map<String, String> externalLinks;
-    private Map<String, String> metadata;
-
-    public String getPostUrl()  {
-        return reportCardHost + "/api/v1/reports/";
+    public String getPostUrl() {
+        return reportCardServerData.getReportCardHost() + "/api/v1/reports/";
     }
-    public PostRequest(ReportMetaData reportMetaData) {
+
+    public PostRequest(ReportMetaData reportMetaData, ReportCardServerData reportCardServerData) {
         this.reportMetaData = reportMetaData;
+        this.reportCardServerData = reportCardServerData;
+        prepare();
     }
 
     public PostRequest(Map<ClientArg, String> argMap) {
-        this(new ReportMetaData(argMap));
+        ClientArg.validateRequiredArgsPresent(argMap);
+        this.reportCardServerData = new ReportCardServerData(argMap);
+        this.reportMetaData = new ReportMetaData(argMap);
+        prepare();
     }
 
-    public void prepare() {
+    void prepare() {
 
+        if (ObjectUtils.isEmpty(reportMetaData.getTestReportRegex())) {
+            reportMetaData.setTestReportRegex(".*[.]xml");
+        }
 
-        if (ObjectUtils.isEmpty(testReportRegex)) {
-            testReportRegex = ".*[.]xml";
+        if (ObjectUtils.isEmpty(this.reportMetaData.getExecutionReference())) {
+            reportMetaData.setExecutionReference(UUID.randomUUID().toString());
         }
 
         //Prepare errors
         Map<String, String> validationErrors = new TreeMap<>();
         validationErrors.putAll(reportMetaData.validate());
-        if (ObjectUtils.isEmpty(testReportPath)) {
+        if (ObjectUtils.isEmpty(reportMetaData.getTestReportPath())) {
             validationErrors.put("testReportPath", "missing required field");
         }
 
@@ -50,49 +52,5 @@ public class PostRequest {
             throw new BadRequestException(validationErrors);
         }
     }
-
-    protected Map<String, String> buildExternalLinkMap(String externalLinksArg, Map<ClientArg, String> argMap) {
-        if (ObjectUtils.isEmpty(externalLinksArg)) {
-            return Collections.emptyMap();
-        }
-
-        String externalLinksDetokenized = replaceTokens(externalLinksArg, argMap);
-
-        Map<String, String> linkMap = new HashMap<>();
-        String[] links = externalLinksDetokenized.split(",");
-        int count = 0;
-        for (String link : links) {
-            count++;
-            String key;
-            String value;
-            if (!link.contains("|")) {
-                key = Integer.toString(count);
-                value = link;
-            } else {
-                int pos = link.indexOf("|");
-                key = link.substring(0, pos);
-                value = link.substring(pos + 1);
-            }
-
-            linkMap.put(key, value);
-        }
-        return linkMap;
-
-    }
-
-    protected String replaceTokens(String externalLinksString, Map<ClientArg, String> argMap) {
-        for (ClientArg scannerArg : ClientArg.values()) {
-            if (scannerArg == ClientArg.EXTERNAL_LINKS) {
-                continue;
-            }
-
-            final String token = getToken(scannerArg);
-            if (externalLinksString.contains(token)) {
-                externalLinksString = externalLinksString.replace(token, argMap.get(scannerArg));
-            }
-        }
-        return externalLinksString;
-    }
-
 
 }

@@ -49,8 +49,8 @@ public class PostHttpClient {
 //
 //                File[] files;
 //                {
-//                    File dir = new File(scannerPostRequest.getTestReportPath());
-//                    FileFilter fileFilter = new RegexFileFilter(scannerPostRequest.getTestReportRegex());
+//                    File dir = new File(scannerPostRequest.getReportMetaData().getTestReportPath());
+//                    FileFilter fileFilter = new RegexFileFilter(scannerPostRequest.getReportMetaData().getTestReportRegex());
 //                    files = dir.listFiles(fileFilter);
 //                    if (files == null || files.length == 0) {
 //                        Map<String, String> validationErrors = new HashMap<>();
@@ -64,7 +64,7 @@ public class PostHttpClient {
 //                    publisher.addPart("files",  file.getAbsolutePath(), "text/xml");
 //                }
 //                request = HttpRequest.newBuilder()
-//                        .uri(URI.create(scannerPostRequest.getPostUrl()))
+//                        .uri(URI.create(scannerPostRequest.getReportMetaData().getPostUrl()))
 //                        .header("Content-Type", "multipart/form-data; boundary=" + publisher.getBoundary())
 //                        .timeout(Duration.ofMinutes(1))
 //                        .POST(publisher.build())
