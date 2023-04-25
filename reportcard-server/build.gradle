@@ -69,7 +69,7 @@ dependencies {
     //implementation 'org.flywaydb:flyway-core:7.8.2'
 
     //DB Test
-    testImplementation 'com.wix:wix-embedded-mysql:4.6.3-SNAPSHOT'
+    testImplementation 'com.wix:wix-embedded-mysql:4.6.2'
 
     //Mapping
     implementation 'org.modelmapper:modelmapper:2.3.0'
