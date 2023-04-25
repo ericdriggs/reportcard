@@ -30,7 +30,7 @@ public class InsertBuildStagePathTest extends AbstractDbTest {
                         .setBranch("newBranch")
                         .setSha("newSha")
                         .setMetadata(TestData.metadata)
-                        .setExternalExecutionId("64bb0231-9a2e-4492-bbd1-e0aeba24c982")
+                        .setExecutionReference("64bb0231-9a2e-4492-bbd1-e0aeba24c982")
                         .setStage("newStage");
 
         ExecutionStagePath bsp = reportCardService.getOrInsertExecutionStagePath(request);
@@ -50,7 +50,7 @@ public class InsertBuildStagePathTest extends AbstractDbTest {
         Assertions.assertEquals(request.getSha(), bsp.getSha().getSha());
         //TODO: json compare not string compare
         Assertions.assertEquals(request.getMetadataJson(), bsp.getContext().getMetadata());
-        Assertions.assertEquals(request.getExternalExecutionId(), bsp.getExecution().getExecutionExternalId());
+        Assertions.assertEquals(request.getExecutionReference(), bsp.getExecution().getExecutionExternalId());
         Assertions.assertEquals(request.getStage(), bsp.getStage().getStageName());
         assertNotNull(bsp.getStage().getStageId());
     }

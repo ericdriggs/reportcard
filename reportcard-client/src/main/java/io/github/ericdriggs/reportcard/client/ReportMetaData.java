@@ -11,7 +11,6 @@ import org.springframework.util.ObjectUtils;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 
 //TODO: rename to ExecutionDetails
@@ -26,7 +25,7 @@ public class ReportMetaData {
     private String branch;
     private String sha;
     private Map<String,String> metadata = new HashMap<>();
-    private String externalExecutionId;
+    private String executionReference;
     private String stage;
     private Map<String, String> externalLinks;
     private String testReportPath;
@@ -47,7 +46,7 @@ public class ReportMetaData {
         final String stage = argMap.get(ClientArg.STAGE);
         final String testReportPath = argMap.get(ClientArg.TEST_REPORT_PATH);
         final String testReportRegex = argMap.get(ClientArg.TEST_REPORT_REGEX);
-        final String externalExecutionId = argMap.get(ClientArg.EXECUTION_EXTERNAL_ID);
+        final String executionReference = argMap.get(ClientArg.EXECUTION_REFERENCE);
 
         this.org = org;
         this.repo = repo;
@@ -61,7 +60,7 @@ public class ReportMetaData {
         this.stage = stage;
         this.testReportPath = testReportPath;
         this.testReportRegex = testReportRegex;
-        this.externalExecutionId = externalExecutionId;
+        this.executionReference = executionReference;
     }
 
     public Map<String,String> validate() {

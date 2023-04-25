@@ -44,7 +44,7 @@ public class PostTest {
 
     private static PostRequest getTestPostRequest() {
         long randomLong = random.nextLong();
-        final String externalExecutionId = Long.toString(randomLong);
+        final String executionReference = Long.toString(randomLong);
 
         final Map<String, String> externalLinks = new HashMap<>();
         externalLinks.put("build", "www.foo.com/build/" + randomLong);
@@ -58,7 +58,7 @@ public class PostTest {
                         .setBranch(branch)
                         .setSha(sha)
                         .setMetadata(metadata)
-                        .setExternalExecutionId(externalExecutionId)
+                        .setExecutionReference(executionReference)
                         .setStage(stage);
 
         return new PostRequest(reportMetaData)

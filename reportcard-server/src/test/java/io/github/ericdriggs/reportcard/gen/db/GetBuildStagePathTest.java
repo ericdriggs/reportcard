@@ -30,11 +30,11 @@ public class GetBuildStagePathTest extends AbstractDbTest {
                         .setBranch(TestData.branch)
                         .setSha(TestData.sha)
                         .setMetadata(TestData.metadata)
-                        .setExternalExecutionId(TestData.externalExecutionId)
+                        .setExecutionReference(TestData.executionReference)
                         .setStage(TestData.stage);
 
         ExecutionStagePath bsp = reportCardService.getExecutionStagePath(request);
-        assertTrue(bsp.isComplete());
+        assertTrue(bsp.isComplete(), bsp.validate().toString());
 
         Assertions.assertEquals(bsp.getOrg().getOrgName(), request.getOrg());
         Assertions.assertEquals(bsp.getRepo().getRepoName(), request.getRepo());
@@ -43,7 +43,7 @@ public class GetBuildStagePathTest extends AbstractDbTest {
 
         JsonCompare.assertJsonEquals(request.getMetadata(), bsp.getContext().getMetadata());
 
-        Assertions.assertEquals(bsp.getExecution().getExecutionExternalId(), request.getExternalExecutionId());
+        Assertions.assertEquals(bsp.getExecution().getExecutionExternalId(), request.getExecutionReference());
         Assertions.assertEquals(bsp.getStage().getStageName(), request.getStage());
         assertNotNull(bsp.getStage().getStageId());
     }
@@ -57,7 +57,7 @@ public class GetBuildStagePathTest extends AbstractDbTest {
                         .setBranch(TestData.branch)
                         .setSha(TestData.sha)
                         .setMetadata(TestData.metadata)
-                        .setExternalExecutionId("not_found");
+                        .setExecutionReference("not_found");
 
         ExecutionStagePath bsp = reportCardService.getExecutionStagePath(request);
         assertNotNull(bsp);

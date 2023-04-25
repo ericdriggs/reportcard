@@ -88,26 +88,26 @@ public class MetadataJsonController {
         return new ResponseEntity<>(reportCardService.getExecutionsStages(org, repo, branch, sha, metadataFilters), HttpStatus.OK);
     }
 
-    @GetMapping(path = "{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts/executions/{externalExecutionId}", produces = "application/json")
+    @GetMapping(path = "{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts/executions/{executionReference}", produces = "application/json")
     public ResponseEntity<Map<Execution,Set<Stage>>> getExecution (
             @PathVariable String org,
             @PathVariable String repo,
             @PathVariable String branch,
             @PathVariable String sha,
-            @PathVariable String externalExecutionId,
+            @PathVariable String executionReference,
             @RequestParam(required = false) Map<String,String> metadataFilters) {
-        return new ResponseEntity<>(reportCardService.getExecutionStages(org, repo, branch, sha, externalExecutionId), HttpStatus.OK);
+        return new ResponseEntity<>(reportCardService.getExecutionStages(org, repo, branch, sha, executionReference), HttpStatus.OK);
     }
 
-    @GetMapping(path = "{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts/executions/{executionName}/stages", produces = "application/json")
+    @GetMapping(path = "{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts/executions/{executionReference}/stages", produces = "application/json")
     public ResponseEntity<Map<Stage,Set<TestResult>>> getStages (
             @PathVariable String org,
             @PathVariable String repo,
             @PathVariable String branch,
             @PathVariable String sha,
-            @PathVariable String executionName,
+            @PathVariable String executionReference,
             @RequestParam(required = false) Map<String,String> metadataFilters) {
-        return new ResponseEntity<>(reportCardService.getStagesTestResults(org, repo, branch, sha, executionName), HttpStatus.OK);
+        return new ResponseEntity<>(reportCardService.getStagesTestResults(org, repo, branch, sha, executionReference), HttpStatus.OK);
     }
 
     @GetMapping(path = "{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts/executions/{executionName}/stages/{stage}", produces = "application/json")

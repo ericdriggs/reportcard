@@ -2,7 +2,6 @@ package io.github.ericdriggs.reportcard.gen.db;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
 
 public enum TestData {
     ;
@@ -19,9 +18,6 @@ public enum TestData {
         metadata.put("pipeline", "foopipeline");
     }
 
-    public final static String host = "host1";
-    public final static String application = "application1";
-    public final static String pipieline = "pipeline1";
-    public final static String externalExecutionId = "externalId1";
+    public final static String executionReference = "executionReference1";
     public final static String stage = "api";
 }

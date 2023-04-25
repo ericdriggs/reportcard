@@ -115,7 +115,7 @@ public class ReportControllerTest {
                         .setBranch("branch" + randLong)
                         .setSha("sha" + randLong)
                         .setMetadata(TestData.metadata)
-                        .setExternalExecutionId("externalExecutionId" + randLong)
+                        .setExecutionReference("executionReference" + randLong)
                         .setStage("stage" + randLong);
         return request;
 
@@ -131,7 +131,7 @@ public class ReportControllerTest {
         JsonCompare.assertJsonEquals(reportMetaData.getMetadata(), executionStagePath.getContext().getMetadata());
 
 
-        Assertions.assertEquals(reportMetaData.getExternalExecutionId(), executionStagePath.getExecution().getExecutionExternalId() );
+        Assertions.assertEquals(reportMetaData.getExecutionReference(), executionStagePath.getExecution().getExecutionExternalId() );
         Assertions.assertEquals(reportMetaData.getStage(), executionStagePath.getStage().getStageName() );
     }
 

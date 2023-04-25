@@ -2,6 +2,10 @@ package io.github.ericdriggs.reportcard.model;
 
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.*;
 import lombok.Data;
+import org.springframework.util.ObjectUtils;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 @Data
 public class ExecutionStagePath {
@@ -13,19 +17,44 @@ public class ExecutionStagePath {
     private Execution execution;
     private Stage stage;
 
-
     public boolean isEmpty() {
         return org == null;
     }
 
     public boolean isComplete() {
-        return org != null
-                && repo != null
-                && branch != null
-                && sha != null
-                && context != null
-                && execution != null
-                && stage != null
-                ;
+        return validate().isEmpty();
+    }
+
+    public Map<String, String> validate() {
+
+        //Prepare errors
+        Map<String, String> validationErrors = new ConcurrentSkipListMap<>();
+        if (ObjectUtils.isEmpty(org)) {
+            validationErrors.put("org", "missing required field");
+        }
+        if (ObjectUtils.isEmpty(repo)) {
+            validationErrors.put("repo", "missing required field");
+        }
+        if (ObjectUtils.isEmpty(branch)) {
+            validationErrors.put("branch", "missing required field");
+        }
+
+        if (ObjectUtils.isEmpty(sha)) {
+            validationErrors.put("sha", "missing required field");
+        }
+
+        if (ObjectUtils.isEmpty(context)) {
+            validationErrors.put("context", "missing required field");
+        }
+
+        if (ObjectUtils.isEmpty(execution)) {
+            validationErrors.put("execution", "missing required field");
+        }
+
+        if (ObjectUtils.isEmpty(stage)) {
+            validationErrors.put("stage", "missing required field");
+        }
+
+        return validationErrors;
     }
 }

@@ -382,8 +382,8 @@ public class ReportCardService {
         return ret;
     }
 
-    public Map<Stage,Set<TestResult>> getStagesTestResults(String orgName, String repoName, String branchName, String shaString, String executionExternalId) {
-        Set<Stage> stages = getStages(orgName,repoName,branchName,shaString, executionExternalId);
+    public Map<Stage,Set<TestResult>> getStagesTestResults(String orgName, String repoName, String branchName, String shaString, String executionReference) {
+        Set<Stage> stages = getStages(orgName,repoName,branchName,shaString, executionReference);
         Map<Stage,Set<TestResult>> stageTestResultsMap = new ConcurrentSkipListMap<>(Comparators.STAGE_CASE_INSENSITIVE_ORDER);
         stages.parallelStream().forEach(  stage -> {
             stageTestResultsMap.put(stage, getTestResults(stage.getStageId()));
@@ -419,7 +419,7 @@ public class ReportCardService {
                         .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)).and(BRANCH.BRANCH_NAME.eq(request.getBranch()))
                         .leftJoin(SHA).on(SHA.REPO_FK.eq(REPO.REPO_ID)).and(SHA.SHA_.eq(request.getSha()))
                         .leftJoin(CONTEXT).on(CONTEXT.BRANCH_FK.eq(BRANCH.BRANCH_ID).or(CONTEXT.SHA_FK.eq(SHA.SHA_ID)))
-                        .leftJoin(EXECUTION).on(EXECUTION.CONTEXT_FK.eq(CONTEXT.CONTEXT_ID)).and(EXECUTION.EXECUTION_EXTERNAL_ID.eq(request.getExternalExecutionId()))
+                        .leftJoin(EXECUTION).on(EXECUTION.CONTEXT_FK.eq(CONTEXT.CONTEXT_ID)).and(EXECUTION.EXECUTION_EXTERNAL_ID.eq(request.getExecutionReference()))
                         .leftJoin(STAGE).on(STAGE.STAGE_NAME.eq(request.getStage())).and(STAGE.STAGE_NAME.eq(request.getStage()))
                 ).where(ORG.ORG_NAME.eq(request.getOrg()));
 
@@ -548,7 +548,7 @@ public class ReportCardService {
 
         if (executionStagePath.getExecution() == null) {
             Execution execution = new Execution()
-                    .setExecutionExternalId(request.getExternalExecutionId())
+                    .setExecutionExternalId(request.getExecutionReference())
                     .setContextFk(executionStagePath.getContext().getContextId());
             executionDao.insert(execution);
             executionStagePath.setExecution(execution);

@@ -23,7 +23,7 @@ public class ReportMetaData {
     private String branch;
     private String sha;
     private Map<String,String> metadata;
-    private String externalExecutionId;
+    private String executionReference;
     private String stage;
     private Map<String,String> externalLinks;
 
@@ -33,7 +33,7 @@ public class ReportMetaData {
         addErrorIfMissing(errors, repo, "repo");
         addErrorIfMissing(errors, branch, "branch");
         addErrorIfMissing(errors, sha, "sha");
-        addErrorIfMissing(errors, externalExecutionId, "externalExecutionId");
+        addErrorIfMissing(errors, executionReference, "executionReference");
         addErrorIfMissing(errors, stage, "stage");
         if (!errors.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,

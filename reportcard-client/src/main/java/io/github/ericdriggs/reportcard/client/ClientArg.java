@@ -76,7 +76,7 @@ public enum ClientArg {
      * Executions belong to a context. Executions have stages.
      * (Optional). Will default to generated UUID if not provided.
      */
-    EXECUTION_EXTERNAL_ID(false),
+    EXECUTION_REFERENCE(false),
     /**
      * The stage, e.g. unit, integration, api.
      * Stages belong to an execution. A stage has a test result.

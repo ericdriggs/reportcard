@@ -30,7 +30,7 @@ public class InsertTestResultTest extends AbstractDbTest {
     final static String pipeline = "pipe1";
 
     final static Map<String, String> metadata = TestData.metadata;
-    final static String externalExecutionId = "run23";
+    final static String executionReference = "run23";
     final static String stage = "stage10";
 
     final static int testResultErrorCount = 10;
@@ -152,7 +152,7 @@ public class InsertTestResultTest extends AbstractDbTest {
                         .setBranch(branch)
                         .setSha(sha)
                         .setMetadata(metadata)
-                        .setExternalExecutionId(externalExecutionId)
+                        .setExecutionReference(executionReference)
                         .setStage(stage);
         return reportMetatData;
     }
