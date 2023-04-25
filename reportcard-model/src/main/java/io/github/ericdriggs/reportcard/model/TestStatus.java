@@ -7,29 +7,28 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum TestStatus {
-    SUCCESS(1, TestStatusType.SUCCESS),
-    SKIPPED(2, TestStatusType.SKIPPED),
-    FAILURE(3, TestStatusType.FAILURE),
-    ERROR(4, TestStatusType.ERROR),
-    FLAKY_FAILURE(5, TestStatusType.FAILURE),
-    RERUN_FAILURE(6, TestStatusType.FAILURE),
-    FLAKY_ERROR(7, TestStatusType.ERROR),
-    RERUN_ERROR(8, TestStatusType.ERROR);
+    SUCCESS((byte)1, TestStatusType.SUCCESS),
+    SKIPPED((byte)2, TestStatusType.SKIPPED),
+    FAILURE((byte)3, TestStatusType.FAILURE),
+    ERROR((byte)4, TestStatusType.ERROR),
+    FLAKY_FAILURE((byte)5, TestStatusType.FAILURE),
+    RERUN_FAILURE((byte)6, TestStatusType.FAILURE),
+    FLAKY_ERROR((byte)7, TestStatusType.ERROR),
+    RERUN_ERROR((byte)8, TestStatusType.ERROR);
 
-    TestStatus(int statusId, TestStatusType testStatusType) {
+    TestStatus(byte statusId, TestStatusType testStatusType) {
         this.statusId = statusId;
         this.testStatusType = testStatusType;
-
     }
 
-    private final int statusId;
+    private final byte statusId;
     private final TestStatusType testStatusType;
 
-    public Integer getStatusId() {
+    public byte getStatusId() {
         return statusId;
     }
 
-    private static final Map<Integer, TestStatus> testStatusMap = new HashMap<>();
+    private static final Map<Byte, TestStatus> testStatusMap = new HashMap<>();
 
     private static void initMap() {
         if (testStatusMap.isEmpty()) {
@@ -45,7 +44,7 @@ public enum TestStatus {
         return testStatusType;
     }
 
-    public static TestStatus fromStatusId(int statusId) {
+    public static TestStatus fromStatusId(byte statusId) {
         initMap();
         TestStatus testStatus = testStatusMap.get(statusId);
         if (testStatus == null) {

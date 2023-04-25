@@ -6,6 +6,7 @@ import reactor.core.publisher.Mono;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.TreeMap;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -21,10 +22,12 @@ public class PostTest {
     final static String branch = "branch1";
     final static String sha = "83c1593bb6e785437bb55dd3de787ab6b09a0a37";
 
-    final static String contextHost = "www.foo.com";
-    final static String contextApplication = "app1";
-    final static String contextPipeline = "pipeline1";
-
+    final static Map<String,String> metadata = new HashMap<>();
+    static {
+        metadata.put("host","www.foo.com");
+        metadata.put("application","app1");
+        metadata.put("pipeline","pipeline1");
+    }
     final static String stage = "apiTest";
     final static String testReportPath = "src/integrationTest/resources/format-samples/surefire-reports/";
     final static String testReportRegex = ".*[.]xml";
@@ -54,12 +57,8 @@ public class PostTest {
                         .setRepo(repo)
                         .setBranch(branch)
                         .setSha(sha)
-                        .setHostApplicationPipeline(
-                                new HostApplicationPipeline()
-                                        .setHost(contextHost)
-                                        .setApplication(contextApplication)
-                                        .setPipeline(contextPipeline)
-                        ).setExternalExecutionId(externalExecutionId)
+                        .setMetadata(metadata)
+                        .setExternalExecutionId(externalExecutionId)
                         .setStage(stage);
 
         return new PostRequest(reportMetaData)

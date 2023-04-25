@@ -5,25 +5,27 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 
+import lombok.SneakyThrows;
+import netscape.javascript.JSException;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
+//TODO: rename to StageDetails
 @Data
 public class ReportMetaData {
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
     private String org;
     private String repo;
     private String branch;
     private String sha;
-    private HostApplicationPipeline hostApplicationPipeline;
+    private Map<String,String> metadata;
     private String externalExecutionId;
     private String stage;
-    private Map<String,String> externalLinks = Collections.emptyMap();
+    private Map<String,String> externalLinks;
 
     public void validateAndSetDefaults() {
         Map<String,String> errors = new LinkedHashMap<>();
@@ -31,13 +33,6 @@ public class ReportMetaData {
         addErrorIfMissing(errors, repo, "repo");
         addErrorIfMissing(errors, branch, "branch");
         addErrorIfMissing(errors, sha, "sha");
-        if (hostApplicationPipeline == null)  {
-            errors.put("hostApplicationPipeline", "missing required field");
-        }
-
-        if (hostApplicationPipeline.hasErrors()) {
-            errors.put("hostApplicationPipeline", String.join(", ", hostApplicationPipeline.getValidationErrors()));
-        }
         addErrorIfMissing(errors, externalExecutionId, "externalExecutionId");
         addErrorIfMissing(errors, stage, "stage");
         if (!errors.isEmpty()) {
@@ -66,5 +61,10 @@ public class ReportMetaData {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @SneakyThrows(JsonProcessingException.class)
+    public String getMetadataJson() {
+        return mapper.writeValueAsString(metadata);
     }
 }

@@ -6,11 +6,13 @@ import org.junit.jupiter.api.Test;
 import java.util.*;
 
 import static io.github.ericdriggs.reportcard.client.ClientArg.EXTERNAL_LINKS;
+import static io.github.ericdriggs.reportcard.client.ClientArg.METADATA;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ScannerPostRequestTest {
 
 
+    final String hostMetadata = "{ \"host\", \"http://www.foojenkins.com\" }";
     private Map<ClientArg, String> getAllArgsNoExternalLinkDescription() {
         Map<ClientArg, String> argMap = new HashMap<>();
         for (ClientArg scannerArg : ClientArg.values()) {
@@ -18,6 +20,7 @@ public class ScannerPostRequestTest {
         }
         argMap.put(EXTERNAL_LINKS,
                 "https://" + EXTERNAL_LINKS.name());
+        argMap.put(METADATA, hostMetadata);
         return argMap;
     }
 
@@ -28,6 +31,7 @@ public class ScannerPostRequestTest {
         }
         argMap.put(EXTERNAL_LINKS,
                 "foo|https://" + EXTERNAL_LINKS.name());
+        argMap.put(METADATA, hostMetadata);
         return argMap;
     }
 
@@ -43,7 +47,6 @@ public class ScannerPostRequestTest {
         argMap.put(ClientArg.SCM_BRANCH, ClientArg.SCM_BRANCH.name());
         argMap.put(ClientArg.SCM_SHA, ClientArg.SCM_SHA.name());
 
-        argMap.put(ClientArg.CONTEXT_HOST, ClientArg.CONTEXT_HOST.name());
         argMap.put(ClientArg.STAGE, ClientArg.STAGE.name());
 
         argMap.put(ClientArg.TEST_REPORT_PATH, ClientArg.TEST_REPORT_PATH.name());
@@ -71,7 +74,7 @@ public class ScannerPostRequestTest {
         Map<ClientArg, String> clientArgMap = getAllArgsNoExternalLinkDescription();
         PostRequest scannerPostRequest = new PostRequest(clientArgMap);
 
-       validateAllArgsFixture(scannerPostRequest);
+        validateAllArgsFixture(scannerPostRequest);
 
         assertEquals(Collections.singletonMap("1", "https://EXTERNAL_LINKS"),
                 scannerPostRequest.getExternalLinks());
@@ -96,11 +99,6 @@ public class ScannerPostRequestTest {
         scannerPostRequest.prepare();
 
         ReportMetaData reportMetaData = scannerPostRequest.getReportMetaData();
-
-        HostApplicationPipeline hostApplicationPipeline = reportMetaData.getHostApplicationPipeline();
-        assertEquals(ClientArg.CONTEXT_HOST.name(), hostApplicationPipeline.getHost());
-        assertNull(hostApplicationPipeline.getApplication());
-        assertNull(hostApplicationPipeline.getPipeline());
 
         assertEquals(ClientArg.SCM_ORG.name(), reportMetaData.getOrg());
         assertEquals(ClientArg.SCM_REPO.name(), reportMetaData.getRepo());
@@ -153,10 +151,7 @@ public class ScannerPostRequestTest {
         assertEquals(ClientArg.SCM_BRANCH.name(), reportMetaData.getBranch());
         assertEquals(ClientArg.SCM_SHA.name(), reportMetaData.getSha());
 
-        HostApplicationPipeline hostApplicationPipeline = reportMetaData.getHostApplicationPipeline();
-        assertEquals(ClientArg.CONTEXT_HOST.name(), hostApplicationPipeline.getHost());
-        assertEquals(ClientArg.CONTEXT_APPLICATION.name(), hostApplicationPipeline.getApplication());
-        assertEquals(ClientArg.CONTEXT_PIPELINE.name(), hostApplicationPipeline.getPipeline());
+        assertEquals(ClientArg.METADATA, hostMetadata);
 
         assertEquals(ClientArg.EXECUTION_EXTERNAL_ID.name(), reportMetaData.getExternalExecutionId());
         assertEquals(ClientArg.STAGE.name(), reportMetaData.getStage());
