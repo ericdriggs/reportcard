@@ -8,6 +8,8 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Properties;
 
 @Data
 public class TestSuite implements Serializable {
@@ -23,7 +25,7 @@ public class TestSuite implements Serializable {
     private BigDecimal time;
     private String     package_;
     private String     group;
-    private String     properties;
+    private List<Properties> properties;
     private Boolean    isSuccess;
     private Boolean    hasSkip;
 
