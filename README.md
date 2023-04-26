@@ -13,10 +13,10 @@ TODO PROTOTYPE:
 
 Roadmaps
 V0.0 (MVP)
-GOAL: publish data for jive api test, report as json
+GOAL: publish data for api test, report as json
 * [3] e2e manual test working locally
 * [2] provision nonprod db with access to credentials
-* [2] use to publish data for jive api test
+* [2] use to publish data for api test
 * [1] use hard-coded key (committed) to encode secrets so not plain text
 * [2] publish docker image for server
 * [1] publish java client as jar using github package https://blog.dipien.
