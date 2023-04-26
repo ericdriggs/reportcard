@@ -25,7 +25,7 @@ public class TestSuite implements Serializable {
     private BigDecimal time;
     private String     package_;
     private String     group;
-    private List<Properties> properties;
+    private String     properties;
     private Boolean    isSuccess;
     private Boolean    hasSkip;
 
