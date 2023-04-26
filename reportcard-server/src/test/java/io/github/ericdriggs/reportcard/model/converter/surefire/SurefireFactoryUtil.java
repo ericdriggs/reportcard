@@ -154,7 +154,7 @@ public class SurefireFactoryUtil {
             elem.setSystemOut(systemOut);
             surefireTestCase.setFlakyFailure(Collections.singletonList(elem));
         } else {
-            throw new UnsupportedOperationException("FIXME: handle TestStatus." + testStatus.name());
+            throw new IllegalArgumentException("unrecognized: TestStatus." + testStatus.name());
         }
 
         return surefireTestCase;

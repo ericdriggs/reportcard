@@ -155,7 +155,7 @@
 //            elem.setSystemOut(systemOut);
 //            testngTestCase.setFlakyFailure(Collections.singletonList(elem));
 //        } else {
-//            throw new UnsupportedOperationException("FIXME: handle TestStatus." + testStatus.name());
+//            throw new IllegalArgumentException("unrecognized: TestStatus." + testStatus.name());
 //        }
 //
 //        return testngTestCase;
