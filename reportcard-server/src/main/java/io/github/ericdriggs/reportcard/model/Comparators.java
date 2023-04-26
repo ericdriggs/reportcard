@@ -1,6 +1,7 @@
 package io.github.ericdriggs.reportcard.model;
 
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.*;
+import io.github.ericdriggs.reportcard.util.JsonCompare;
 import org.apache.commons.lang3.ObjectUtils;
 
 import java.util.Comparator;
@@ -128,7 +129,7 @@ public class Comparators {
     public static int compareJob(Job val1, Job val2) {
         return chainCompare(
                 Long.compare(val1.getShaFk(), val2.getShaFk()),
-                //FIXME: compare json not string
+                JsonCompare.compareTo(val1.getJobInfo(), val2.getJobInfo()),
                 compareLowerNullSafe(val1.getJobInfo(), val2.getJobInfo()),
                 Long.compare(val1.getJobId(), val2.getJobId())
         );

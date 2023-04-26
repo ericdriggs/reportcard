@@ -32,9 +32,8 @@ repositories {
 }
 
 dependencies {
-    dependencies {
-        implementation project(':reportcard-model')
-    }
+    implementation project(':reportcard-model')
+    testImplementation 'net.javacrumbs.json-unit:json-unit:2.37.0'
     //Lombok
     implementation 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
@@ -78,7 +77,6 @@ dependencies {
     //Test
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
-    testImplementation 'net.javacrumbs.json-unit:json-unit:2.37.0'
     jooqGenerator("jakarta.xml.bind:jakarta.xml.bind-api:3.0.1")
 }
 

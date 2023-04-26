@@ -407,8 +407,6 @@ public class ReportCardService {
 
     public ExecutionStagePath getExecutionStagePath(ReportMetaData request) {
 
-        //String org, String repo, String app, String branch, Integer buildOrdinal, String stage
-        //FIXME: filter on request.metadataFilter
         Map<String,String> metadataFilters = request.getJobInfo();
         SelectConditionStep<Record> selectConditionStep = dsl.
                 select()

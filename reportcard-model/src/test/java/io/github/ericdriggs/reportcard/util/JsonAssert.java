@@ -3,19 +3,19 @@ package io.github.ericdriggs.reportcard.util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
+import net.javacrumbs.jsonunit.core.Option;
 
 import java.util.Map;
 
 import static net.javacrumbs.jsonunit.JsonAssert.when;
-import static net.javacrumbs.jsonunit.core.Option.IGNORING_ARRAY_ORDER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class JsonCompare {
+public class JsonAssert {
 
     final static ObjectMapper objectMapper = new ObjectMapper();
 
     public static void assertJsonEquals(final String expected, final String actual) {
-        net.javacrumbs.jsonunit.JsonAssert.assertJsonEquals(expected, actual, when(IGNORING_ARRAY_ORDER));
+        net.javacrumbs.jsonunit.JsonAssert.assertJsonEquals(expected, actual, when(Option.IGNORING_ARRAY_ORDER));
     }
 
     public static void assertJsonEquals(Map<String, String> map, String json) {

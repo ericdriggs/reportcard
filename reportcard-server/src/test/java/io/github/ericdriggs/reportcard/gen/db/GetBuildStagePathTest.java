@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import io.github.ericdriggs.reportcard.ReportCardService;
 import io.github.ericdriggs.reportcard.model.ExecutionStagePath;
 import io.github.ericdriggs.reportcard.model.ReportMetaData;
-import io.github.ericdriggs.reportcard.util.JsonCompare;
+import net.javacrumbs.jsonunit.JsonAssert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +41,7 @@ public class GetBuildStagePathTest extends AbstractDbTest {
         Assertions.assertEquals(bsp.getBranch().getBranchName(), request.getBranch());
         Assertions.assertEquals(bsp.getSha().getSha(), request.getSha());
 
-        JsonCompare.assertJsonEquals(request.getJobInfo(), bsp.getJob().getJobInfo());
+        JsonAssert.assertJsonEquals(request.getJobInfo(), bsp.getJob().getJobInfo());
 
         Assertions.assertEquals(bsp.getExecution().getExecutionReference(), request.getExecutionReference());
         Assertions.assertEquals(bsp.getStage().getStageName(), request.getStage());
@@ -73,7 +73,7 @@ public class GetBuildStagePathTest extends AbstractDbTest {
         Assertions.assertEquals(bsp.getRepo().getRepoName(), request.getRepo());
         Assertions.assertEquals(bsp.getBranch().getBranchName(), request.getBranch());
         Assertions.assertEquals(bsp.getSha().getSha(), request.getSha());
-        JsonCompare.assertJsonEquals(bsp.getJob().getJobInfo(), request.getJobInfo());
+        JsonAssert.assertJsonEquals(bsp.getJob().getJobInfo(), request.getJobInfo());
     }
 
 }

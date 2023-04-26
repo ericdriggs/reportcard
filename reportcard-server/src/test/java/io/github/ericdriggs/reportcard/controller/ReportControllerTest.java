@@ -5,8 +5,8 @@ import io.github.ericdriggs.reportcard.ReportCardService;
 import io.github.ericdriggs.reportcard.ReportcardApplication;
 import io.github.ericdriggs.reportcard.gen.db.TestData;
 import io.github.ericdriggs.reportcard.model.*;
-import io.github.ericdriggs.reportcard.util.JsonCompare;
 import io.github.ericdriggs.reportcard.xml.ResourceReader;
+import net.javacrumbs.jsonunit.JsonAssert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -127,7 +127,7 @@ public class ReportControllerTest {
         Assertions.assertEquals(reportMetaData.getBranch(), executionStagePath.getBranch().getBranchName() );
         Assertions.assertEquals(reportMetaData.getSha(), executionStagePath.getSha().getSha() );
 
-        JsonCompare.assertJsonEquals(reportMetaData.getJobInfo(), executionStagePath.getJob().getJobInfo());
+        JsonAssert.assertJsonEquals(reportMetaData.getJobInfo(), executionStagePath.getJob().getJobInfo());
 
 
         Assertions.assertEquals(reportMetaData.getExecutionReference(), executionStagePath.getExecution().getExecutionReference() );
