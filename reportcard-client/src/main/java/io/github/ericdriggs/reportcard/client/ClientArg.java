@@ -15,13 +15,11 @@ import java.util.TreeMap;
  * {@link ClientArg#SCM_REPO}<br>
  * {@link ClientArg#SCM_BRANCH}<br>
  * {@link ClientArg#SCM_SHA}<br>
- * {@link ClientArg#CONTEXT_HOST}<br>
  * {@link ClientArg#TEST_REPORT_PATH}<br>
 
  * <p>
  * Optional Arguments<br>
- * {@link ClientArg#CONTEXT_APPLICATION}<br>
- * {@link ClientArg#CONTEXT_PIPELINE}<br>
+ * {@link ClientArg#METADATA}<br>
  * {@link ClientArg#EXTERNAL_LINKS}<br>
  * {@link ClientArg#TEST_REPORT_REGEX}<br>
  */
@@ -67,32 +65,19 @@ public enum ClientArg {
     SCM_SHA(true),
 
     /**
-     * The host which the report was generated on.
-     * A context includes host and optionally application/pipeline
-     * (Required)
-     */
-    CONTEXT_HOST(true),
-
-    /**
-     * The application which the report was generated on.
-     * A context includes host and optionally application/pipeline
+     * Single layer map of metadata about execution, e.g. host, application, pipeline, committer
      * (Optional)
      */
-    CONTEXT_APPLICATION(false),
+    METADATA(false),
 
+    //TODO: rename to EXECUTION_REFERENCE here and all other places
+    //
     /**
-     * The host which the report was generated on.
-     * A context includes host and optionally application/pipeline
-     * (Optional)
-     */
-    CONTEXT_PIPELINE(false),
-
-    /**
-     * The external identifier for the execution (build). E.g. run number, generated uuid
+     * A string identifier for an execution (build) in a given context.  E.g. run number, generated uuid
      * Executions belong to a context. Executions have stages.
-     * (Optional). Will default to generated UUID if not provided
+     * (Optional). Will default to generated UUID if not provided.
      */
-    EXECUTION_EXTERNAL_ID(false),
+    EXECUTION_REFERENCE(false),
     /**
      * The stage, e.g. unit, integration, api.
      * Stages belong to an execution. A stage has a test result.

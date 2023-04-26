@@ -2,8 +2,8 @@ package io.github.ericdriggs.reportcard.gen.db;
 
 import io.github.ericdriggs.reportcard.ReportCardService;
 import io.github.ericdriggs.reportcard.model.ExecutionStagePath;
-import io.github.ericdriggs.reportcard.model.HostApplicationPipeline;
 import io.github.ericdriggs.reportcard.model.ReportMetaData;
+import net.javacrumbs.jsonunit.JsonAssert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +30,8 @@ public class InsertBuildStagePathTest extends AbstractDbTest {
                         .setRepo("newRepo")
                         .setBranch("newBranch")
                         .setSha("newSha")
-                        .setHostApplicationPipeline(new HostApplicationPipeline("newHost", "newApplication", "newPipeline"))
-                        .setExternalExecutionId("64bb0231-9a2e-4492-bbd1-e0aeba24c982")
+                        .setJobInfo(TestData.metadata)
+                        .setExecutionReference("64bb0231-9a2e-4492-bbd1-e0aeba24c982")
                         .setStage("newStage");
 
         ExecutionStagePath bsp = reportCardService.getOrInsertExecutionStagePath(request);
@@ -41,7 +41,7 @@ public class InsertBuildStagePathTest extends AbstractDbTest {
         assertNotNull(bsp.getRepo());
         assertNotNull(bsp.getBranch());
         assertNotNull(bsp.getSha());
-        assertNotNull(bsp.getContext());
+        assertNotNull(bsp.getJob());
         assertNotNull(bsp.getExecution());
         assertNotNull(bsp.getStage());
 
@@ -49,10 +49,8 @@ public class InsertBuildStagePathTest extends AbstractDbTest {
         Assertions.assertEquals(request.getRepo(), bsp.getRepo().getRepoName());
         Assertions.assertEquals(request.getBranch(), bsp.getBranch().getBranchName());
         Assertions.assertEquals(request.getSha(), bsp.getSha().getSha());
-        Assertions.assertEquals(request.getHostApplicationPipeline().getHost(), bsp.getContext().getHost());
-        Assertions.assertEquals(request.getHostApplicationPipeline().getApplication(), bsp.getContext().getApplication());
-        Assertions.assertEquals(request.getHostApplicationPipeline().getPipeline(), bsp.getContext().getPipeline());
-        Assertions.assertEquals(request.getExternalExecutionId(), bsp.getExecution().getExecutionExternalId());
+        JsonAssert.assertJsonEquals(request.getJobInfo(), bsp.getJob().getJobInfo());
+        Assertions.assertEquals(request.getExecutionReference(), bsp.getExecution().getExecutionReference());
         Assertions.assertEquals(request.getStage(), bsp.getStage().getStageName());
         assertNotNull(bsp.getStage().getStageId());
     }

@@ -6,20 +6,14 @@ import org.junit.jupiter.api.Test;
 import java.util.*;
 
 import static io.github.ericdriggs.reportcard.client.ClientArg.EXTERNAL_LINKS;
+import static io.github.ericdriggs.reportcard.client.ClientArg.METADATA;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ScannerPostRequestTest {
 
 
-    private Map<ClientArg, String> getAllArgsNoExternalLinkDescription() {
-        Map<ClientArg, String> argMap = new HashMap<>();
-        for (ClientArg scannerArg : ClientArg.values()) {
-            argMap.put(scannerArg, scannerArg.name());
-        }
-        argMap.put(EXTERNAL_LINKS,
-                "https://" + EXTERNAL_LINKS.name());
-        return argMap;
-    }
+    final String hostMetadata = "{ \"host\": \"http://www.foojenkins.com\" }";
+
 
     private Map<ClientArg, String> getAllArgsWithDescription() {
         Map<ClientArg, String> argMap = new HashMap<>();
@@ -27,7 +21,8 @@ public class ScannerPostRequestTest {
             argMap.put(scannerArg, scannerArg.name());
         }
         argMap.put(EXTERNAL_LINKS,
-                "foo|https://" + EXTERNAL_LINKS.name());
+                "{\"foo\":\"https://EXTERNAL_LINKS\"}");
+        argMap.put(METADATA, hostMetadata);
         return argMap;
     }
 
@@ -43,7 +38,6 @@ public class ScannerPostRequestTest {
         argMap.put(ClientArg.SCM_BRANCH, ClientArg.SCM_BRANCH.name());
         argMap.put(ClientArg.SCM_SHA, ClientArg.SCM_SHA.name());
 
-        argMap.put(ClientArg.CONTEXT_HOST, ClientArg.CONTEXT_HOST.name());
         argMap.put(ClientArg.STAGE, ClientArg.STAGE.name());
 
         argMap.put(ClientArg.TEST_REPORT_PATH, ClientArg.TEST_REPORT_PATH.name());
@@ -62,20 +56,8 @@ public class ScannerPostRequestTest {
         final Set<String> actualValidationErrorKeys = validationErrors.keySet();
 
         final Set<String> expectedValidationErrorKeys =
-                new TreeSet<>(Arrays.asList("CONTEXT_HOST", "REPORTCARD_HOST", "REPORTCARD_PASS", "REPORTCARD_USER", "SCM_BRANCH", "SCM_ORG", "SCM_REPO", "SCM_SHA", "STAGE", "TEST_REPORT_PATH"));
+                new TreeSet<>(Arrays.asList("REPORTCARD_HOST", "REPORTCARD_PASS", "REPORTCARD_USER", "SCM_BRANCH", "SCM_ORG", "SCM_REPO", "SCM_SHA", "STAGE", "TEST_REPORT_PATH"));
         assertEquals(expectedValidationErrorKeys, actualValidationErrorKeys);
-    }
-
-    @Test
-    public void constructorAllArgsNoExternalLinkDescriptionTest() {
-        Map<ClientArg, String> clientArgMap = getAllArgsNoExternalLinkDescription();
-        PostRequest scannerPostRequest = new PostRequest(clientArgMap);
-
-       validateAllArgsFixture(scannerPostRequest);
-
-        assertEquals(Collections.singletonMap("1", "https://EXTERNAL_LINKS"),
-                scannerPostRequest.getExternalLinks());
-
     }
 
     @Test
@@ -85,7 +67,7 @@ public class ScannerPostRequestTest {
         validateAllArgsFixture(scannerPostRequest);
 
         assertEquals(Collections.singletonMap("foo","https://EXTERNAL_LINKS"),
-                scannerPostRequest.getExternalLinks());
+                scannerPostRequest.getReportMetaData().getExternalLinks());
 
     }
 
@@ -97,26 +79,21 @@ public class ScannerPostRequestTest {
 
         ReportMetaData reportMetaData = scannerPostRequest.getReportMetaData();
 
-        HostApplicationPipeline hostApplicationPipeline = reportMetaData.getHostApplicationPipeline();
-        assertEquals(ClientArg.CONTEXT_HOST.name(), hostApplicationPipeline.getHost());
-        assertNull(hostApplicationPipeline.getApplication());
-        assertNull(hostApplicationPipeline.getPipeline());
-
         assertEquals(ClientArg.SCM_ORG.name(), reportMetaData.getOrg());
         assertEquals(ClientArg.SCM_REPO.name(), reportMetaData.getRepo());
         assertEquals(ClientArg.SCM_BRANCH.name(), reportMetaData.getBranch());
         assertEquals(ClientArg.SCM_SHA.name(), reportMetaData.getSha());
 
-        assertEquals(36, reportMetaData.getExternalExecutionId().length());
+        assertEquals(36, reportMetaData.getExecutionReference().length());
         assertEquals(ClientArg.STAGE.name(), reportMetaData.getStage());
 
-        assertEquals(ClientArg.REPORTCARD_HOST.name(), scannerPostRequest.getReportCardHost());
-        assertEquals(ClientArg.REPORTCARD_USER.name(), scannerPostRequest.getReportCardUser());
-        assertEquals(ClientArg.REPORTCARD_PASS.name(), scannerPostRequest.getReportCardPass());
+        assertEquals(ClientArg.REPORTCARD_HOST.name(), scannerPostRequest.getReportCardServerData().getReportCardHost());
+        assertEquals(ClientArg.REPORTCARD_USER.name(), scannerPostRequest.getReportCardServerData().getReportCardUser());
+        assertEquals(ClientArg.REPORTCARD_PASS.name(), scannerPostRequest.getReportCardServerData().getReportCardPass());
 
-        assertEquals(ClientArg.TEST_REPORT_PATH.name(), scannerPostRequest.getTestReportPath());
-        assertEquals(".*[.]xml", scannerPostRequest.getTestReportRegex());
-        assertEquals(Collections.emptyMap(), scannerPostRequest.getExternalLinks());
+        assertEquals(ClientArg.TEST_REPORT_PATH.name(), scannerPostRequest.getReportMetaData().getTestReportPath());
+        assertEquals(".*[.]xml", scannerPostRequest.getReportMetaData().getTestReportRegex());
+        assertEquals(Collections.emptyMap(), scannerPostRequest.getReportMetaData().getExternalLinks());
 
     }
 
@@ -124,7 +101,7 @@ public class ScannerPostRequestTest {
     @Test
     public void prepareNoArgsTest() {
         BadRequestException ex = assertThrows(BadRequestException.class, () -> {
-            PostRequest scannerPostRequest = new PostRequest(new ReportMetaData());
+            PostRequest scannerPostRequest = new PostRequest(new ReportMetaData(), new ReportCardServerData());
             scannerPostRequest.prepare();
         });
 
@@ -132,19 +109,19 @@ public class ScannerPostRequestTest {
         assertNotNull(message);
         assertTrue(message.contains("400 BAD_REQUEST"));
         final Map<String, String> validationErrors = ex.getValidationErrors();
-        assertEquals(7, validationErrors.size());
+        assertEquals(6, validationErrors.size());
         final Set<String> actualValidationErrorKeys = validationErrors.keySet();
 
         final Set<String> expectedValidationErrorKeys =
-                new TreeSet<>(Arrays.asList("branch", "org", "repo", "sha", "stage", "testReportPath", "hostApplicationPipeline.getHost()"));
+                new TreeSet<>(Arrays.asList("branch", "org", "repo", "sha", "stage", "testReportPath"));
         assertEquals(expectedValidationErrorKeys, actualValidationErrorKeys);
 
     }
 
     private void validateAllArgsFixture(PostRequest scannerPostRequest) {
-        assertEquals(ClientArg.REPORTCARD_HOST.name(), scannerPostRequest.getReportCardHost());
-        assertEquals(ClientArg.REPORTCARD_USER.name(), scannerPostRequest.getReportCardUser());
-        assertEquals(ClientArg.REPORTCARD_PASS.name(), scannerPostRequest.getReportCardPass());
+        assertEquals(ClientArg.REPORTCARD_HOST.name(), scannerPostRequest.getReportCardServerData().getReportCardHost());
+        assertEquals(ClientArg.REPORTCARD_USER.name(), scannerPostRequest.getReportCardServerData().getReportCardUser());
+        assertEquals(ClientArg.REPORTCARD_PASS.name(), scannerPostRequest.getReportCardServerData().getReportCardPass());
 
         ReportMetaData reportMetaData = scannerPostRequest.getReportMetaData();
         assertNotNull(reportMetaData);
@@ -153,15 +130,12 @@ public class ScannerPostRequestTest {
         assertEquals(ClientArg.SCM_BRANCH.name(), reportMetaData.getBranch());
         assertEquals(ClientArg.SCM_SHA.name(), reportMetaData.getSha());
 
-        HostApplicationPipeline hostApplicationPipeline = reportMetaData.getHostApplicationPipeline();
-        assertEquals(ClientArg.CONTEXT_HOST.name(), hostApplicationPipeline.getHost());
-        assertEquals(ClientArg.CONTEXT_APPLICATION.name(), hostApplicationPipeline.getApplication());
-        assertEquals(ClientArg.CONTEXT_PIPELINE.name(), hostApplicationPipeline.getPipeline());
+        assertEquals("{ \"host\": \"http://www.foojenkins.com\" }", hostMetadata);
 
-        assertEquals(ClientArg.EXECUTION_EXTERNAL_ID.name(), reportMetaData.getExternalExecutionId());
+        assertEquals(ClientArg.EXECUTION_REFERENCE.name(), reportMetaData.getExecutionReference());
         assertEquals(ClientArg.STAGE.name(), reportMetaData.getStage());
 
-        assertEquals(ClientArg.TEST_REPORT_PATH.name(), scannerPostRequest.getTestReportPath());
-        assertEquals(ClientArg.TEST_REPORT_REGEX.name(), scannerPostRequest.getTestReportRegex());
+        assertEquals(ClientArg.TEST_REPORT_PATH.name(), scannerPostRequest.getReportMetaData().getTestReportPath());
+        assertEquals(ClientArg.TEST_REPORT_REGEX.name(), scannerPostRequest.getReportMetaData().getTestReportRegex());
     }
 }

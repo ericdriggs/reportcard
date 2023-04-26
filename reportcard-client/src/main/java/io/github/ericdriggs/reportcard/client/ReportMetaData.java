@@ -1,22 +1,33 @@
 package io.github.ericdriggs.reportcard.client;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
+import lombok.SneakyThrows;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.ObjectUtils;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
 
+//TODO: rename to ExecutionDetails
 @Data
 public class ReportMetaData {
+
+    @JsonIgnore
+    private static ObjectMapper objectMapper = new ObjectMapper();
 
     private String org;
     private String repo;
     private String branch;
     private String sha;
-    private HostApplicationPipeline hostApplicationPipeline = new HostApplicationPipeline();
-    private String externalExecutionId;
+    private Map<String,String> jobInfo = new HashMap<>();
+    private String executionReference;
     private String stage;
-    private Map<String, String> externalLinks;
+    private Map<String, String> externalLinks = new HashMap<>();
     private String testReportPath;
     private String testReportRegex;
 
@@ -24,49 +35,37 @@ public class ReportMetaData {
     public ReportMetaData() {
         this(Collections.EMPTY_MAP);
     }
+
+    @SneakyThrows(JsonProcessingException.class)
     public ReportMetaData(Map<ClientArg, String> argMap) {
-        if (argMap.get(ClientArg.SCM_ORG) != null) {
-            this.org = argMap.get(ClientArg.SCM_ORG);
-        }
-        if (argMap.get(ClientArg.SCM_REPO) != null) {
-            this.repo = argMap.get(ClientArg.SCM_REPO);
-        }
-        if (argMap.get(ClientArg.SCM_BRANCH) != null) {
-            this.branch = argMap.get(ClientArg.SCM_BRANCH);
-        }
-        if (argMap.get(ClientArg.SCM_SHA) != null) {
-            this.sha = argMap.get(ClientArg.SCM_SHA);
+        final String org = argMap.get(ClientArg.SCM_ORG);
+        final String repo = argMap.get(ClientArg.SCM_REPO);
+        final String branch = argMap.get(ClientArg.SCM_BRANCH);
+        final String sha = argMap.get(ClientArg.SCM_SHA);
+        final String metadataJson = argMap.get(ClientArg.METADATA);
+        final String stage = argMap.get(ClientArg.STAGE);
+        final String testReportPath = argMap.get(ClientArg.TEST_REPORT_PATH);
+        final String testReportRegex = argMap.get(ClientArg.TEST_REPORT_REGEX);
+        final String executionReference = argMap.get(ClientArg.EXECUTION_REFERENCE);
+        final String externalLinks = argMap.get(ClientArg.EXTERNAL_LINKS);
+
+        this.org = org;
+        this.repo = repo;
+        this.branch = branch;
+        this.sha = sha;
+
+        if (!StringUtils.isEmpty(metadataJson)) {
+            this.jobInfo.putAll(objectMapper.readValue(metadataJson, Map.class));
         }
 
-        if (argMap.get(ClientArg.CONTEXT_HOST) != null) {
-            this.getHostApplicationPipeline().setHost(argMap.get(ClientArg.CONTEXT_HOST));
-        }
-        if (argMap.get(ClientArg.CONTEXT_APPLICATION) != null) {
-            this.getHostApplicationPipeline().setApplication(argMap.get(ClientArg.CONTEXT_APPLICATION));
-
-        }
-        if (argMap.get(ClientArg.CONTEXT_PIPELINE) != null) {
-            this.getHostApplicationPipeline().setPipeline(argMap.get(ClientArg.CONTEXT_PIPELINE));
+        if (!StringUtils.isEmpty(externalLinks)) {
+            this.externalLinks.putAll(objectMapper.readValue(externalLinks, Map.class));
         }
 
-
-        if (argMap.get(ClientArg.STAGE) != null) {
-            this.stage = argMap.get(ClientArg.STAGE);
-        }
-
-        if (argMap.get(ClientArg.TEST_REPORT_PATH) != null) {
-            this.testReportPath = argMap.get(ClientArg.TEST_REPORT_PATH);
-        }
-
-        if (argMap.get(ClientArg.TEST_REPORT_REGEX) != null) {
-            this.testReportRegex = argMap.get(ClientArg.TEST_REPORT_REGEX);
-        }
-
-        this.externalExecutionId = argMap.get(ClientArg.EXECUTION_EXTERNAL_ID);
-        if (ObjectUtils.isEmpty(this.getExternalExecutionId())) {
-            this.externalExecutionId = UUID.randomUUID().toString();
-        }
-
+        this.stage = stage;
+        this.testReportPath = testReportPath;
+        this.testReportRegex = testReportRegex;
+        this.executionReference = executionReference;
     }
 
     public Map<String,String> validate() {
@@ -89,13 +88,6 @@ public class ReportMetaData {
 
         if (ObjectUtils.isEmpty(stage)) {
             validationErrors.put("stage", "missing required field");
-        }
-
-        if (ObjectUtils.isEmpty(hostApplicationPipeline)) {
-            validationErrors.put("hostApplicationPipeline", "missing required hostApplicationPipeline");
-        }
-        else if (ObjectUtils.isEmpty(hostApplicationPipeline.getHost())) {
-            validationErrors.put("hostApplicationPipeline.getHost()", "missing required hostApplicationPipeline.getHost()");
         }
 
         return validationErrors;

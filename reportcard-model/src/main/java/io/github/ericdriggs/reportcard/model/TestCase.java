@@ -7,13 +7,13 @@ public class TestCase extends io.github.ericdriggs.reportcard.pojos.TestCase {
 
     public TestCase setTestStatus(TestStatus testStatus) {
         this.testStatus = testStatus;
-        setTestStatusFk(testStatus.getStatusId().byteValue());
+        this.testStatusFk = testStatus.getStatusId();
         return this;
     }
 
-    public TestCase setTestStatusFk(Integer testStatusFk) {
-        setTestStatusFk(testStatusFk.byteValue());
-        setTestStatus(TestStatus.fromStatusId(testStatusFk));
+    public TestCase setTestStatusFk(Byte testStatusFk) {
+        this.testStatus = TestStatus.fromStatusId(testStatusFk);
+        this.testStatusFk = testStatusFk;
         return this;
     }
 

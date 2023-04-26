@@ -1,6 +1,7 @@
 buildscript {
     ext {
         jaxbVersion = '2.3.1'
+        mysqlPassword=System.getenv("MYSQL_PASSWORD")
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
@@ -31,12 +32,12 @@ repositories {
 }
 
 dependencies {
-    dependencies {
-        implementation project(':reportcard-model')
-    }
+    implementation project(':reportcard-model')
+    testImplementation 'net.javacrumbs.json-unit:json-unit:2.37.0'
     //Lombok
     implementation 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
 
     //Swagger
     implementation 'org.springdoc:springdoc-openapi-ui:1.5.8'
@@ -64,18 +65,19 @@ dependencies {
     jooqGenerator 'mysql:mysql-connector-java:8.0.20'
 
     //DB Migration
-    implementation 'org.flywaydb:flyway-core:7.8.2'
+    //implementation 'org.flywaydb:flyway-core:7.8.2'
 
     //DB Test
-    testImplementation 'com.wix:wix-embedded-mysql:4.6.1'
+    testImplementation 'com.wix:wix-embedded-mysql:4.6.2'
 
     //Mapping
     implementation 'org.modelmapper:modelmapper:2.3.0'
-    implementation 'org.modelmapper.extensions:modelmapper-jooq:2.3.0'
+    implementation 'org.modelmapper.extensions:modelmapper-jooq:3.1.1'
 
     //Test
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    jooqGenerator("jakarta.xml.bind:jakarta.xml.bind-api:3.0.1")
 }
 
 import org.jooq.codegen.GenerationTool
@@ -89,7 +91,7 @@ task generateJooqSchemaSource {
                         .withDriver('com.mysql.cj.jdbc.Driver')
                         .withUrl('jdbc:mysql://127.0.0.1:3306/reportcard?serverTimezone=UTC')
                         .withUser('root')
-                        .withPassword('')
+                        .withPassword(mysqlPassword)
                         .withProperties(Arrays.asList(new Property().withKey("ssl").withValue("true")))
                 )
                 .withGenerator(new Generator()
@@ -144,7 +146,7 @@ jooq {
                     driver = 'com.mysql.cj.jdbc.Driver'
                     url = 'jdbc:mysql://127.0.0.1:3306/reportcard?serverTimezone=UTC'
                     user = 'root'
-                    password = ''
+                    password = mysqlPassword
                     properties {
                         property {
                             key = 'ssl'

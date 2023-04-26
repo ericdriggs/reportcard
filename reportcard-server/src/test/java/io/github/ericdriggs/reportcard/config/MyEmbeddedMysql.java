@@ -2,6 +2,8 @@ package io.github.ericdriggs.reportcard.config;
 
 import com.wix.mysql.EmbeddedMysql;
 import com.wix.mysql.config.MysqldConfig;
+import com.wix.mysql.distribution.Version;
+import de.flapdoodle.embed.process.distribution.IVersion;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -14,7 +16,7 @@ import static com.wix.mysql.EmbeddedMysql.anEmbeddedMysql;
 import static com.wix.mysql.ScriptResolver.classPathScript;
 import static com.wix.mysql.config.Charset.UTF8;
 import static com.wix.mysql.config.MysqldConfig.aMysqldConfig;
-import static com.wix.mysql.distribution.Version.*;
+
 
 @Component
 @Profile("test")
@@ -53,7 +55,9 @@ public class MyEmbeddedMysql {
 
 //        Integer port = FreePortFinder.findFreeLocalPort();
         int port = 13306;
-        MysqldConfig config = aMysqldConfig(v5_7_27)
+        //IVersion v8_0_33_macos13_arm64 = () -> "https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-8.0.33-macos13-arm64.dmg";
+
+        MysqldConfig config = aMysqldConfig(Version.v8_0_17)
                 .withCharset(UTF8)
                 .withUser(username, password)
                 .withTimeZone("UTC")

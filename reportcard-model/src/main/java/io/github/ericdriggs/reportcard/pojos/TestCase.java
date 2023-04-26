@@ -14,10 +14,10 @@ public class TestCase implements Serializable {
 
     private static final long serialVersionUID = -3938894842199056311L;
 
-    private Long testCaseId;
-    private Long testSuiteFk;
-    private String name;
-    private String className;
-    private BigDecimal time;
-    private Byte testStatusFk;
+    protected Long testCaseId;
+    protected Long testSuiteFk;
+    protected String name;
+    protected String className;
+    protected BigDecimal time;
+    protected Byte testStatusFk;
 }

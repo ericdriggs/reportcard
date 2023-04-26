@@ -60,8 +60,8 @@ public class PostClient {
 //
 //                File[] files;
 //                {
-//                    File dir = new File(scannerPostRequest.getTestReportPath());
-//                    FileFilter fileFilter = new RegexFileFilter(scannerPostRequest.getTestReportRegex());
+//                    File dir = new File(scannerPostRequest.getReportMetaData().getTestReportPath());
+//                    FileFilter fileFilter = new RegexFileFilter(scannerPostRequest.getReportMetaData().getTestReportRegex());
 //                    files = dir.listFiles(fileFilter);
 //                    if (files == null || files.length == 0) {
 //                        Map<String, String> validationErrors = new HashMap<>();
@@ -75,7 +75,7 @@ public class PostClient {
 //                    requestBuilder.addFormDataPart("files", file.getName(), RequestBody.create(
 //                            file, MediaType.parse("text/xml")));
 //                }
-//                request = new Request.Builder().url(scannerPostRequest.getPostUrl())
+//                request = new Request.Builder().url(scannerPostRequest.getReportMetaData().getPostUrl())
 //                        .post(requestBuilder.build()).build();
 //            }
 //

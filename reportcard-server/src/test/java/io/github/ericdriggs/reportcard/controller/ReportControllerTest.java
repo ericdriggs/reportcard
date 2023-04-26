@@ -1,9 +1,12 @@
 package io.github.ericdriggs.reportcard.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.github.ericdriggs.reportcard.ReportCardService;
 import io.github.ericdriggs.reportcard.ReportcardApplication;
+import io.github.ericdriggs.reportcard.gen.db.TestData;
 import io.github.ericdriggs.reportcard.model.*;
 import io.github.ericdriggs.reportcard.xml.ResourceReader;
+import net.javacrumbs.jsonunit.JsonAssert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +47,7 @@ public class ReportControllerTest {
 
     @Test
     public void testStatusTest() {
-        Map<Integer, String> statuses = reportCardService.getTestStatusMap();
+        Map<Byte, String> statuses = reportCardService.getTestStatusMap();
         assertEquals(8, statuses.size());
         for (TestStatus testStatus : TestStatus.values()) {
             assertEquals(testStatus.name(), statuses.get(testStatus.getStatusId()));
@@ -52,7 +55,7 @@ public class ReportControllerTest {
     }
 
     @Test
-    public void insertJunitTest() {
+    public void insertJunitTest() throws JsonProcessingException {
 
         final ReportMetaData reportMetatData = generateRandomReportMetaData();
         TestResult inserted = reportControllerUtil.doPostXmlJunit(reportMetatData, xmlJunit);
@@ -76,7 +79,7 @@ public class ReportControllerTest {
 
 
     @Test
-    public void insertSurefireTest() {
+    public void insertSurefireTest() throws JsonProcessingException {
 
 
         final ReportMetaData reportMetatData = generateRandomReportMetaData();
@@ -110,27 +113,24 @@ public class ReportControllerTest {
                         .setRepo("repo" + randLong)
                         .setBranch("branch" + randLong)
                         .setSha("sha" + randLong)
-                        .setHostApplicationPipeline(new HostApplicationPipeline(
-                                "host" + randLong,  "application"+ randLong, "pipeline" +randLong
-                        ))
-                        .setExternalExecutionId("externalExecutionId" + randLong)
+                        .setJobInfo(TestData.metadata)
+                        .setExecutionReference("executionReference" + randLong)
                         .setStage("stage" + randLong);
         return request;
 
     }
 
-    private  void validateMetadata(ReportMetaData reportMetaData) {
+    private void validateMetadata(ReportMetaData reportMetaData) throws JsonProcessingException {
         ExecutionStagePath executionStagePath =  reportCardService.getExecutionStagePath(reportMetaData);
         Assertions.assertEquals(reportMetaData.getOrg(), executionStagePath.getOrg().getOrgName() );
         Assertions.assertEquals(reportMetaData.getRepo(), executionStagePath.getRepo().getRepoName() );
         Assertions.assertEquals(reportMetaData.getBranch(), executionStagePath.getBranch().getBranchName() );
         Assertions.assertEquals(reportMetaData.getSha(), executionStagePath.getSha().getSha() );
 
-        Assertions.assertEquals(reportMetaData.getHostApplicationPipeline().getHost(), executionStagePath.getContext().getHost() );
-        Assertions.assertEquals(reportMetaData.getHostApplicationPipeline().getApplication(), executionStagePath.getContext().getApplication() );
-        Assertions.assertEquals(reportMetaData.getHostApplicationPipeline().getPipeline(), executionStagePath.getContext().getPipeline() );
+        JsonAssert.assertJsonEquals(reportMetaData.getJobInfo(), executionStagePath.getJob().getJobInfo());
 
-        Assertions.assertEquals(reportMetaData.getExternalExecutionId(), executionStagePath.getExecution().getExecutionExternalId() );
+
+        Assertions.assertEquals(reportMetaData.getExecutionReference(), executionStagePath.getExecution().getExecutionReference() );
         Assertions.assertEquals(reportMetaData.getStage(), executionStagePath.getStage().getStageName() );
     }
 

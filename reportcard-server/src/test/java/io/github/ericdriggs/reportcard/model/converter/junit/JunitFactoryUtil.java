@@ -114,7 +114,7 @@ public class JunitFactoryUtil {
             elem.setValue(junitErrorValue);
             junitTestCase.setError(elem);
         } else {
-            throw new UnsupportedOperationException("FIXME: handle TestStatus." + testStatus.name());
+            throw new IllegalArgumentException("unrecognized: TestStatus." + testStatus.name());
         }
         return junitTestCase;
     }

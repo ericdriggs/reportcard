@@ -1,10 +1,10 @@
 package io.github.ericdriggs.reportcard.gen.db;
 
-import io.github.ericdriggs.reportcard.ReportCardService;
-import io.github.ericdriggs.reportcard.model.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.ericdriggs.reportcard.ReportCardService;
+import io.github.ericdriggs.reportcard.model.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @Profile("test")
 public class InsertTestResultTest extends AbstractDbTest {
 
-
     final static String org = "org10";
     final static String repo = "repo10";
     final static String branch = "branch10";
@@ -29,8 +28,9 @@ public class InsertTestResultTest extends AbstractDbTest {
     final static String host = "www.foo.com";
     final static String application = "app1";
     final static String pipeline = "pipe1";
-    final static HostApplicationPipeline hostApplicationPipeline = new HostApplicationPipeline(host, application, pipeline);
-    final static String externalExecutionId = "run23";
+
+    final static Map<String, String> metadata = TestData.metadata;
+    final static String executionReference = "run23";
     final static String stage = "stage10";
 
     final static int testResultErrorCount = 10;
@@ -51,19 +51,18 @@ public class InsertTestResultTest extends AbstractDbTest {
     final static TestStatus testCaseStatus = TestStatus.FAILURE;
     final static BigDecimal testCaseTime = new BigDecimal("0.500");
 
-    final static Map<String,String> externalLinksMap;
+    final static Map<String, String> externalLinksMap;
+
     static {
         externalLinksMap = new HashMap<>();
         externalLinksMap.put("foo", "http://www.foo.com");
         externalLinksMap.put("bar", "http://www.bar.com");
     }
 
-
     @Autowired
     public InsertTestResultTest(ReportCardService reportCardService) {
         super(reportCardService);
     }
-
 
     @Test
     public void insertTestResultTest() {
@@ -82,7 +81,6 @@ public class InsertTestResultTest extends AbstractDbTest {
         assertValues(testResultGet);
         assertIdsandFks(testResultGet);
         assertExternalLinks(testResultGet);
-
     }
 
     private void assertValues(TestResult testResult) {
@@ -113,7 +111,7 @@ public class InsertTestResultTest extends AbstractDbTest {
         Assertions.assertEquals(testCaseClassName, testCase.getClassName());
         Assertions.assertEquals(testCaseName, testCase.getName());
         assertEquals(testCaseStatus, testCase.getTestStatus());
-        Assertions.assertEquals(testCaseStatus.getStatusId().byteValue(), testCase.getTestStatusFk());
+        Assertions.assertEquals(testCaseStatus.getStatusId(), testCase.getTestStatusFk());
         Assertions.assertEquals(testCaseTime, testCase.getTime());
     }
 
@@ -131,9 +129,11 @@ public class InsertTestResultTest extends AbstractDbTest {
     }
 
     final static ObjectMapper objectMapper = new ObjectMapper();
+
     private void assertExternalLinks(TestResult testResult) {
         String jsonString = testResult.getExternalLinks();
-        TypeReference<HashMap<String, String>> typeRef = new TypeReference<>() {};
+        TypeReference<HashMap<String, String>> typeRef = new TypeReference<>() {
+        };
         try {
             Map<String, String> actualExternalLinksMap = objectMapper.readValue(jsonString, typeRef);
             assertEquals(externalLinksMap, actualExternalLinksMap);
@@ -143,7 +143,6 @@ public class InsertTestResultTest extends AbstractDbTest {
 
     }
 
-
     private ReportMetaData getReportMetaData() {
 
         ReportMetaData reportMetatData =
@@ -152,8 +151,8 @@ public class InsertTestResultTest extends AbstractDbTest {
                         .setRepo(repo)
                         .setBranch(branch)
                         .setSha(sha)
-                        .setHostApplicationPipeline(hostApplicationPipeline)
-                        .setExternalExecutionId(externalExecutionId)
+                        .setJobInfo(metadata)
+                        .setExecutionReference(executionReference)
                         .setStage(stage);
         return reportMetatData;
     }
@@ -187,10 +186,8 @@ public class InsertTestResultTest extends AbstractDbTest {
             testSuite.setTests(testSuiteTestCount);
             testSuite.setTime(testSuiteTime);
 
-
             List<TestCase> testCases = new ArrayList<>();
             {//TestCase
-
 
                 TestCase testCase = new TestCase();
                 testCase.setClassName(testCaseClassName);

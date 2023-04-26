@@ -1,8 +1,10 @@
 package io.github.ericdriggs.reportcard.gen.db;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.github.ericdriggs.reportcard.ReportCardService;
 import io.github.ericdriggs.reportcard.model.ExecutionStagePath;
 import io.github.ericdriggs.reportcard.model.ReportMetaData;
+import net.javacrumbs.jsonunit.JsonAssert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,38 +16,34 @@ import static org.junit.jupiter.api.Assertions.*;
 //@EnableConfigurationProperties
 public class GetBuildStagePathTest extends AbstractDbTest {
 
-
     @Autowired
-    public GetBuildStagePathTest(ReportCardService reportCardService ) {
+    public GetBuildStagePathTest(ReportCardService reportCardService) {
         super(reportCardService);
     }
 
-
     @Test
-    public void getBuildStagePathAllFound() {
+    public void getBuildStagePathAllFound() throws JsonProcessingException {
         ReportMetaData request =
                 new ReportMetaData()
                         .setOrg(TestData.org)
                         .setRepo(TestData.repo)
                         .setBranch(TestData.branch)
                         .setSha(TestData.sha)
-                        .setHostApplicationPipeline(TestData.hostApplicationPipeline)
-                        .setExternalExecutionId(TestData.externalExecutionId)
+                        .setJobInfo(TestData.metadata)
+                        .setExecutionReference(TestData.executionReference)
                         .setStage(TestData.stage);
 
         ExecutionStagePath bsp = reportCardService.getExecutionStagePath(request);
-        assertTrue(bsp.isComplete());
+        assertTrue(bsp.isComplete(), bsp.validate().toString());
 
         Assertions.assertEquals(bsp.getOrg().getOrgName(), request.getOrg());
         Assertions.assertEquals(bsp.getRepo().getRepoName(), request.getRepo());
         Assertions.assertEquals(bsp.getBranch().getBranchName(), request.getBranch());
         Assertions.assertEquals(bsp.getSha().getSha(), request.getSha());
 
-        Assertions.assertEquals(bsp.getContext().getHost(), request.getHostApplicationPipeline().getHost());
-        Assertions.assertEquals(bsp.getContext().getApplication(), request.getHostApplicationPipeline().getApplication());
-        Assertions.assertEquals(bsp.getContext().getPipeline(), request.getHostApplicationPipeline().getPipeline());
+        JsonAssert.assertJsonEquals(request.getJobInfo(), bsp.getJob().getJobInfo());
 
-        Assertions.assertEquals(bsp.getExecution().getExecutionExternalId(), request.getExternalExecutionId());
+        Assertions.assertEquals(bsp.getExecution().getExecutionReference(), request.getExecutionReference());
         Assertions.assertEquals(bsp.getStage().getStageName(), request.getStage());
         assertNotNull(bsp.getStage().getStageId());
     }
@@ -53,13 +51,13 @@ public class GetBuildStagePathTest extends AbstractDbTest {
     @Test
     public void getBuildStagePath_Missing_build() {
         ReportMetaData request =
-        new ReportMetaData()
-                .setOrg(TestData.org)
-                .setRepo(TestData.repo)
-                .setBranch(TestData.branch)
-                .setSha(TestData.sha)
-                .setHostApplicationPipeline(TestData.hostApplicationPipeline)
-                .setExternalExecutionId("not_found");
+                new ReportMetaData()
+                        .setOrg(TestData.org)
+                        .setRepo(TestData.repo)
+                        .setBranch(TestData.branch)
+                        .setSha(TestData.sha)
+                        .setJobInfo(TestData.metadata)
+                        .setExecutionReference("not_found");
 
         ExecutionStagePath bsp = reportCardService.getExecutionStagePath(request);
         assertNotNull(bsp);
@@ -67,7 +65,7 @@ public class GetBuildStagePathTest extends AbstractDbTest {
         assertNotNull(bsp.getRepo());
         assertNotNull(bsp.getBranch());
         assertNotNull(bsp.getSha());
-        assertNotNull(bsp.getContext());
+        assertNotNull(bsp.getJob());
         assertNull(bsp.getExecution());
         assertNull(bsp.getStage());
 
@@ -75,10 +73,7 @@ public class GetBuildStagePathTest extends AbstractDbTest {
         Assertions.assertEquals(bsp.getRepo().getRepoName(), request.getRepo());
         Assertions.assertEquals(bsp.getBranch().getBranchName(), request.getBranch());
         Assertions.assertEquals(bsp.getSha().getSha(), request.getSha());
-        Assertions.assertEquals(bsp.getContext().getHost(), request.getHostApplicationPipeline().getHost());
-        Assertions.assertEquals(bsp.getContext().getApplication(), request.getHostApplicationPipeline().getApplication());
-        Assertions.assertEquals(bsp.getContext().getPipeline(), request.getHostApplicationPipeline().getPipeline());
-
+        JsonAssert.assertJsonEquals(bsp.getJob().getJobInfo(), request.getJobInfo());
     }
 
 }

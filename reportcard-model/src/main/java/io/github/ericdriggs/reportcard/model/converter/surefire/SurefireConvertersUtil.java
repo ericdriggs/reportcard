@@ -1,11 +1,15 @@
 package io.github.ericdriggs.reportcard.model.converter.surefire;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.ericdriggs.reportcard.model.TestCase;
 import io.github.ericdriggs.reportcard.model.TestResult;
 import io.github.ericdriggs.reportcard.model.TestStatus;
 import io.github.ericdriggs.reportcard.model.TestSuite;
+import io.github.ericdriggs.reportcard.xml.surefire.Property;
 import io.github.ericdriggs.reportcard.xml.surefire.Testcase;
 import io.github.ericdriggs.reportcard.xml.surefire.Testsuite;
+import lombok.SneakyThrows;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
@@ -14,8 +18,11 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Properties;
 
 public class SurefireConvertersUtil {
+
+    private final static ObjectMapper mapper = new ObjectMapper();
 
     public final static Converter<Testcase, TestCase> fromSurefireToModelTestCase = new AbstractConverter<Testcase, TestCase>() {
         protected TestCase convert(io.github.ericdriggs.reportcard.xml.surefire.Testcase source) {
@@ -93,7 +100,7 @@ public class SurefireConvertersUtil {
         }
         modelTestSuite.setGroup(source.getGroup());
         modelTestSuite.setPackage(null);
-        modelTestSuite.setProperties(null); //TODO: support properties;
+        modelTestSuite.setProperties(convertPropertiesList(source.getProperties()));
         modelTestSuite.setTestCases(doFromSurefireToModelTestCases(source.getTestcase()));
         modelTestSuite.setTime(source.getTime());
         if (modelTestSuite.getTime() == null) {
@@ -101,6 +108,25 @@ public class SurefireConvertersUtil {
         }
 
         return modelTestSuite;
+    }
+
+    @SneakyThrows(JsonProcessingException.class)
+    public static String convertPropertiesList(List<io.github.ericdriggs.reportcard.xml.surefire.Properties> surefirePropertiesList) {
+        if (surefirePropertiesList == null) {
+            return null;
+        }
+
+        List<Properties> propertiesList = new ArrayList<>();
+        for (io.github.ericdriggs.reportcard.xml.surefire.Properties surefireProperties : surefirePropertiesList) {
+
+            Properties properties = new Properties();
+            List<Property> surefirePropertyList = surefireProperties.getProperty();
+            for (Property property : surefirePropertyList) {
+                properties.setProperty(property.getName(), property.getValue());
+            }
+            propertiesList.add(properties);
+        }
+        return mapper.writeValueAsString(propertiesList);
     }
 
     public static TestResult doFromSurefireToModelTestResult(Collection<Testsuite> sources) {
@@ -129,8 +155,7 @@ public class SurefireConvertersUtil {
 
         if (modelTestResult.getFailure() > 0 || modelTestResult.getError() > 0) {
             modelTestResult.setIsSuccess(false);
-        }
-        else {
+        } else {
             modelTestResult.setIsSuccess(true);
         }
 

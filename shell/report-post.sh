@@ -12,16 +12,12 @@ set -x #todo: remove to hide password
 : "${SCM_BRANCH:?SCM_BRANCH not set or empty}"
 : "${SCM_SHA:?SCM_SHA not set or empty}"
 
-: "${CONTEXT_HOST:?CONTEXT_HOST not set or empty}"
 : "${EXECUTION_STAGE:?EXECUTION_STAGE not set or empty}"
 
-#required with defaults
-EXECUTION_EXTERNAL_ID="${EXECUTION_EXTERNAL_ID:-$(uuidgen)}"
+#optional with defaults
+CONTEXT_METADATA="${CONTEXT_METADATA:-{}"
+EXECUTION_REFERENCE="${EXECUTION_REFERENCE:-$(uuidgen)}"
 TEST_REPORT_REGEX="${TEST_REPORT_REGEX:-*.xml}"
-
-#optional args which can be empty/null
-CONTEXT_APPLICATION="${CONTEXT_APPLICATION:-}"
-CONTEXT_PIPELINE="${CONTEXT_PIPELINE:-}"
 EXTERNAL_LINKS_JSON="${EXTERNAL_LINKS_JSON:-{}"
 
 #build curl command
@@ -42,31 +38,26 @@ do
 done
 # echo "REPORT_FILES_FLAGS${REPORT_FILES_FLAGS[*]}"
 
-REPORT_METADATA=$(cat <<EOT
+STAGE_DETAILS=$(cat <<EOT
 {
   \"org\": \"$SCM_ORG\",
   \"repo\": \"$SCM_REPO\",
   \"branch\": \"$SCM_BRANCH\",
   \"sha\": \"$SCM_SHA\",
-  \"hostApplicationPipeline\": {
-    \"host\": \"$CONTEXT_HOST\",
-    \"application\": \"$CONTEXT_APPLICATION\",
-    \"pipeline\": \"$CONTEXT_PIPELINE\"
-  },
-  \"externalExecutionId\": \"$EXECUTION_EXTERNAL_ID\",
+  \"metadata\": \"$METADATA\",
+  \"executionReference\": \"executionReference\",
   \"stage\": \"$EXECUTION_STAGE\",
   \"externalLinks\": $EXTERNAL_LINKS_JSON
 }
 EOT
 )
-# echo "\n\nREPORT_METADATA:\n$REPORT_METADATA\n\n"
 
 
 CURL_CMD="curl \
 --user $REPORTCARD_USER:$REPORTCARD_PASS \
 --verbose \
 --request POST "$REPORTCARD_HOST/api/v1/reports" \
---form reportMetaData=${REPORT_METADATA};type=application/json \
+--form stageDetails=${STAGE_DETAILS};type=application/json \
 $REPORT_FILES_FLAGS"
 
 echo "\n\n\n####  CURL_CMD  ###\n\n\n"

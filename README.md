@@ -42,3 +42,8 @@ v0.3 (Configuration)
 Nice to have for later versions
 * see if we can distinguish between different failure reasons for the same test to assign a similarity score to failures so we can see if failing for multiple reasons.
 ** test reports run over a fixed time period. Failures can be partioned by percent with same similarity (e.g. 90% for text A, 10% for text B)
+
+
+Release process (internal use): 
+
+* https://central.sonatype.org/publish/release/#close-and-drop-or-release-your-staging-repository

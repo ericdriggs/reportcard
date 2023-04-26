@@ -5,7 +5,6 @@ import java.util.Set;
 
 import io.github.ericdriggs.reportcard.ReportCardService;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.*;
-import io.github.ericdriggs.reportcard.model.HostApplicationPipeline;
 import io.github.ericdriggs.reportcard.model.TestResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -47,96 +46,80 @@ public class MetadataJsonController {
     }
 
     @GetMapping(path = "{org}/repos/{repo}/branches", produces = "application/json")
-    public ResponseEntity<Map<Branch,Set<Sha>>> getBranches(@PathVariable String org, @PathVariable String repo) {
-        return new ResponseEntity<>(reportCardService.getBranchesShas(org, repo), HttpStatus.OK);
+    public ResponseEntity<Set<Branch>> getBranches(@PathVariable String org, @PathVariable String repo) {
+        return new ResponseEntity<>(reportCardService.getBranches(org, repo), HttpStatus.OK);
     }
 
     @GetMapping(path = "{org}/repos/{repo}/branches/{branch}", produces = "application/json")
-    public ResponseEntity<Map<Branch,Set<Sha>>> getBranch(
+    public ResponseEntity<Branch> getBranch(
             @PathVariable String org, @PathVariable String repo, @PathVariable String branch) {
-        return new ResponseEntity<>(reportCardService.getBranchShas(org, repo, branch), HttpStatus.OK);
+        return new ResponseEntity<>(reportCardService.getBranch(org, repo, branch), HttpStatus.OK);
     }
 
-    @GetMapping(path = "{org}/repos/{repo}/branches/{branch}/shas", produces = "application/json")
-    public ResponseEntity<Map<Sha, Set<Context>>> getShas(
+    @GetMapping(path = "{org}/repos/{repo}/shas", produces = "application/json")
+    public ResponseEntity<Set<Sha>> getShas(
             @PathVariable String org, @PathVariable String repo, @PathVariable String branch) {
-        return new ResponseEntity<>(reportCardService.getShasContexts(org, repo, branch), HttpStatus.OK);
+        return new ResponseEntity<>(reportCardService.getShas(org, repo), HttpStatus.OK);
     }
 
-    @GetMapping(path = "{org}/repos/{repo}/branches/{branch}/shas/{sha}", produces = "application/json")
-    public ResponseEntity<Map<Sha, Set<Context>>> getSha(
+    @GetMapping(path = "{org}/repos/{repo}/shas/{sha}", produces = "application/json")
+    public ResponseEntity<Sha> getSha(
             @PathVariable String org, @PathVariable String repo, @PathVariable String branch, @PathVariable String sha) {
-        return new ResponseEntity<>(reportCardService.getShaContexts(org, repo, branch, sha), HttpStatus.OK);
+        return new ResponseEntity<>(reportCardService.getSha(org, repo, sha), HttpStatus.OK);
     }
 
     @GetMapping(path = "{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts", produces = "application/json")
-    public ResponseEntity<Map<Context,Set<Execution>>> getContexts(
-            @PathVariable String org, @PathVariable String repo, @PathVariable String branch, @PathVariable String sha) {
-        return new ResponseEntity<>(reportCardService.getContextsExecutions(org, repo, branch, sha), HttpStatus.OK);
-    }
-
-    @GetMapping(path = "{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts/{host}", produces = "application/json")
-    public ResponseEntity<Map<Context,Set<Execution>>> getContext (
+    public ResponseEntity<Map<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job,Set<Execution>>> getContexts(
             @PathVariable String org,
             @PathVariable String repo,
             @PathVariable String branch,
             @PathVariable String sha,
-            @PathVariable String host,
-            @RequestParam String application,  @RequestParam String pipeline) {
-        HostApplicationPipeline hostApplicationPipeline  = new HostApplicationPipeline(host, application,  pipeline);
-        return new ResponseEntity<>(reportCardService.getContextExecutions(org, repo, branch, sha, hostApplicationPipeline), HttpStatus.OK);
+            @RequestParam(required = false) Map<String,String> metadataFilters) {
+        return new ResponseEntity<>(reportCardService.getContextsExecutions(org, repo, branch, sha, metadataFilters), HttpStatus.OK);
     }
 
-    @GetMapping(path = "{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts/{host}/executions", produces = "application/json")
+    @GetMapping(path = "{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts/executions", produces = "application/json")
     public ResponseEntity<Map<Execution,Set<Stage>>> getExecutions (
             @PathVariable String org,
             @PathVariable String repo,
             @PathVariable String branch,
             @PathVariable String sha,
-            @PathVariable String host,
-            @RequestParam String application,  @RequestParam String pipeline) {
-        HostApplicationPipeline hostApplicationPipeline  = new HostApplicationPipeline(host, application,  pipeline);
-        return new ResponseEntity<>(reportCardService.getExecutionsStages(org, repo, branch, sha, hostApplicationPipeline), HttpStatus.OK);
+            @RequestParam(required = false) Map<String,String> metadataFilters) {
+        return new ResponseEntity<>(reportCardService.getExecutionsStages(org, repo, branch, sha, metadataFilters), HttpStatus.OK);
     }
 
-    @GetMapping(path = "{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts/{host}/executions/{externalExecutionId}", produces = "application/json")
+    @GetMapping(path = "{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts/executions/{executionReference}", produces = "application/json")
     public ResponseEntity<Map<Execution,Set<Stage>>> getExecution (
             @PathVariable String org,
             @PathVariable String repo,
             @PathVariable String branch,
             @PathVariable String sha,
-            @PathVariable String host,
-            @PathVariable String externalExecutionId,
-            @RequestParam String application,  @RequestParam String pipeline) {
-        HostApplicationPipeline hostApplicationPipeline  = new HostApplicationPipeline(host, application,  pipeline);
-        return new ResponseEntity<>(reportCardService.getExecutionStages(org, repo, branch, sha, hostApplicationPipeline, externalExecutionId), HttpStatus.OK);
+            @PathVariable String executionReference,
+            @RequestParam(required = false) Map<String,String> metadataFilters) {
+        return new ResponseEntity<>(reportCardService.getExecutionStages(org, repo, branch, sha, executionReference), HttpStatus.OK);
     }
 
-    @GetMapping(path = "{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts/{host}/executions/{executionName}/stages", produces = "application/json")
+    @GetMapping(path = "{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts/executions/{executionReference}/stages", produces = "application/json")
     public ResponseEntity<Map<Stage,Set<TestResult>>> getStages (
             @PathVariable String org,
             @PathVariable String repo,
             @PathVariable String branch,
             @PathVariable String sha,
-            @PathVariable String host,
-            @PathVariable String executionName,
-            @RequestParam String application,  @RequestParam String pipeline) {
-        HostApplicationPipeline hostApplicationPipeline  = new HostApplicationPipeline(host, application,  pipeline);
-        return new ResponseEntity<>(reportCardService.getStagesTestResults(org, repo, branch, sha, hostApplicationPipeline, executionName), HttpStatus.OK);
+            @PathVariable String executionReference,
+            @RequestParam(required = false) Map<String,String> metadataFilters) {
+        return new ResponseEntity<>(reportCardService.getStagesTestResults(org, repo, branch, sha, executionReference), HttpStatus.OK);
     }
 
-    @GetMapping(path = "{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts/{host}/executions/{executionName}/stages/{stage}", produces = "application/json")
+    @GetMapping(path = "{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts/executions/{executionName}/stages/{stage}", produces = "application/json")
     public ResponseEntity<Map<Stage,Set<TestResult>>> getStage (
             @PathVariable String org,
             @PathVariable String repo,
             @PathVariable String branch,
             @PathVariable String sha,
-            @PathVariable String host,
             @PathVariable String executionName,
             @PathVariable String stage,
-            @RequestParam String application,  @RequestParam String pipeline) {
-        HostApplicationPipeline hostApplicationPipeline  = new HostApplicationPipeline(host, application,  pipeline);
-        return new ResponseEntity<>(reportCardService.getStageTestResults(org, repo, branch, sha, hostApplicationPipeline, executionName, stage), HttpStatus.OK);
+            @RequestParam(required = false) Map<String,String> metadataFilters) {
+        return new ResponseEntity<>(reportCardService.getStageTestResults(org, repo, branch, sha, executionName, stage), HttpStatus.OK);
     }
 
 }

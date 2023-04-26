@@ -29,7 +29,9 @@ dependencies {
     //Lombok
     implementation "org.projectlombok:lombok:${lombokVersion}"
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 
+    implementation "org.apache.commons:commons-lang3:3.11"
     //JSON
     implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
 
@@ -43,4 +45,6 @@ dependencies {
     //Test
     testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
+    implementation 'net.javacrumbs.json-unit:json-unit:2.37.0'
+
 }

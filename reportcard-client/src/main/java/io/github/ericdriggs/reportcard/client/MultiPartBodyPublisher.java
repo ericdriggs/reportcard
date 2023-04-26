@@ -163,7 +163,7 @@ public class MultiPartBodyPublisher {
 //                    filename = nextPart.filename;
 //                    contentType = nextPart.contentType;
 //                    if (contentType == null) contentType = "application/octet-stream";
-//                    currentFileInput = nextPart.stream.get();
+//                    currentFileInput = nextPart.stream.get;
 //                }
 //                String partHeader =
 //                        "--" + boundary + "\r\n" +
