@@ -1,0 +1,52 @@
+== Supported Test Result Data Formats
+
+=== HTML
+
+* Stored in s3
+* link stored in database, correlated to test execution
+
+
+=== Junit XML
+
+https://github.com/junit-team/junit5/blob/main/platform-tests/src/test/resources/jenkins-junit.xsd
+
+==== Junit XML Entity Relationships
+
+|===
+|testsuites ← testsuite ← testcase
+|===
+
+=== Surefire XML
+
+https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd
+
+=== JUnit XML vs Surefire XML
+JUnit in most respects is a superset of surefire. In most cases they can be treated interchangeably and produce almost identical results, with a single XML per testsuite.
+
+Junit supports aggregating multiple testsuites into a single XML file with a testsuites root element.
+
+For this document, when referring to junit XML, support for surefire XML is assumed.
+
+== Unsupported Test Result Data Formats
+
+==== TestNG
+
+TestNG does not have a published DTD or XSD for testng-results.xml.
+https://github.com/cbeust/testng/issues/2371
+
+Workaround Recommendation: TestNG projects should generate test results in Junit XML format.
+
+[caption=" "]
+[cols="1,5,1"]
+.How to generate junit xml when using testng
+|===
+|*Build System* |*Goal/Task* |*Link*
+
+|Maven |testng:junit-report |https://testng.org/doc/maven.html
+
+|Gradle
+
+
+| test
+(defaults to Junit format) | https://docs.gradle.org/current/javadoc/org/gradle/api/tasks/testing/testng/TestNGOptions.html#isUseDefaultListeners--[TestNGOptions.html#isUseDefaultListeners] |
+|===

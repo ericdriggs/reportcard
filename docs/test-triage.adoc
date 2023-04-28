@@ -1,0 +1,27 @@
+
+= Test Triage Questions
+
+Reports, metrics and tools may improve test failure validation and debugging efficiency by helping to answer questions such as:
+
+. Is this test failing consistently (deterministically)?
+. When did this test start failing?
+. Is this failure specific to a certain branch? (e.g. master, feature branch)
+. Does this test have a history of previous failures?
+
+== Test Trend Failure Categorization
+
+Tools which help answer triage questions help testers more efficiently categorize failing tests and identify the appropriate remediation. By definition, trend analysis can only be done on an aggregation of related reports.
+
+|===
+|*Failure Type* |*Definition* |*False Positive* |*True Positive* |*Deterministic* |*Remediation*
+
+|*Valid** |deterministically fails on a valid assertion |*-* |*Y* , always |*Y* |Fix bug in software under test
+|*Invalid* (broken)* |deterministically fails on an assertion no longer valid |*Y* , always |*-* |*Y* |Update test assertion to valid and passing
+
+| *Flaky* | sometimes but not always fails. | *Y* , sometimes | - | *N* | Address underlying race condition
+OR
+Exclude/remove test until race condition has been addressed |
+
+* Investigation still required to distinguishing between invalid and valid failing tests
+
+|===

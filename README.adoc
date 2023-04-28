@@ -1,0 +1,22 @@
+= Reportcard
+:table-caption!:
+:toc: macro
+:hide-uri-scheme:
+:sectlinks:
+
+toc::[]
+
+Test result metrics APIs and dashboards
+
+*** link:docs/requirements.adoc[requirements]
+*** link:docs/roadmap.adoc[roadmap]
+*** link:docs/data-model.adoc[data-model]
+*** link:docs/supported-data-fomats.adoc[supported-data-fomats]
+
+
+TODOs:
+
+* link to browsable openapi spec
+* create github issues for TODOs
+* planning for additional TODOs
+* size issues and assign to milestones
