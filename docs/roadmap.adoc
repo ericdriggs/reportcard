@@ -1,14 +1,10 @@
-# Reportcard
-
-Purpose: Test XML database and service for reporting publishing, aggregation and querying
-
+= Reportcard roadmap
 
 
 TODO PROTOTYPE:
 
 * implement reportcard-scanner with reportcard-scanner.properties file format and read env
 * implement UI GET endpoints for hierarchy after POST
-
 * enum status
 
 Roadmaps
@@ -43,7 +39,6 @@ Nice to have for later versions
 * see if we can distinguish between different failure reasons for the same test to assign a similarity score to failures so we can see if failing for multiple reasons.
 ** test reports run over a fixed time period. Failures can be partioned by percent with same similarity (e.g. 90% for text A, 10% for text B)
 
-
-Release process (internal use): 
+Release process (internal use):
 
 * https://central.sonatype.org/publish/release/#close-and-drop-or-release-your-staging-repository
