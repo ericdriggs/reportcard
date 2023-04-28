@@ -1,16 +1,28 @@
 == Supported Test Result Data Formats
 
-=== HTML
+---
+=== S3 Storage
 
-* Stored in s3
-* link stored in database, correlated to test execution
+* should have lifecycle which expires objects, e.g. migrate to glacier IR after X days and delete after X days
 
+* may have multiple lifecycles depending on prefixes
 
-=== Junit XML
+==== HTML
+
+* link also stored in database, correlated to test execution
+
+==== Logs/text
+
+* link also stored in database, correlated to test execution
+
+---
+=== Database Import
+
+==== Junit XML
 
 https://github.com/junit-team/junit5/blob/main/platform-tests/src/test/resources/jenkins-junit.xsd
 
-==== Junit XML Entity Relationships
+===== Junit XML Entity Relationships
 
 |===
 |testsuites ← testsuite ← testcase
