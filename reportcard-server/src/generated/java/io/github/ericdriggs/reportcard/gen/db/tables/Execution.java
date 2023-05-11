@@ -45,7 +45,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Execution extends TableImpl<ExecutionRecord> {
 
-    private static final long serialVersionUID = -1299926826;
+    private static final long serialVersionUID = 1469760164;
 
     /**
      * The reference instance of <code>reportcard.execution</code>
@@ -83,7 +83,7 @@ public class Execution extends TableImpl<ExecutionRecord> {
     /**
      * The column <code>reportcard.execution.sha</code>.
      */
-    public final TableField<ExecutionRecord, String> SHA = createField(DSL.name("sha"), SQLDataType.VARCHAR(32), this, "");
+    public final TableField<ExecutionRecord, String> SHA = createField(DSL.name("sha"), SQLDataType.VARCHAR(128), this, "");
 
     /**
      * The column <code>reportcard.execution.created</code>.

@@ -32,9 +32,12 @@ public class PersistenceContext {
     public DataSource dataSource() {
         MysqlDataSource dataSource = new MysqlDataSource();
 
-        dataSource.setUrl(environment.getRequiredProperty("db.url"));
         dataSource.setUser(environment.getRequiredProperty("db.username"));
         dataSource.setPassword(environment.getRequiredProperty("db.password"));
+
+        String jdbcUrl = "jdbc:mysql://localhost:{port}/reportcard?serverTimezone=UTC".replace("{port}", environment.getRequiredProperty("db.port"));
+        dataSource.setUrl(jdbcUrl);
+        dataSource.setPort(Integer.parseInt(environment.getRequiredProperty("db.port")));
 
         return dataSource;
     }

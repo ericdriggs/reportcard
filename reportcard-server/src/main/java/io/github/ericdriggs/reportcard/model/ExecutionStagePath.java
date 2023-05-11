@@ -7,7 +7,6 @@ import org.springframework.util.ObjectUtils;
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
 
-//TODO: rename to get jobStagePath
 @Data
 public class ExecutionStagePath {
     private Org org;
