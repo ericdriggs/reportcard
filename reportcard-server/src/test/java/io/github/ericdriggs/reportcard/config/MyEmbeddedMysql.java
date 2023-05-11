@@ -1,25 +1,21 @@
 package io.github.ericdriggs.reportcard.config;
 
-import com.wix.mysql.EmbeddedMysql;
-import com.wix.mysql.config.MysqldConfig;
-import com.wix.mysql.distribution.Version;
-import de.flapdoodle.embed.process.distribution.IVersion;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.TestPropertySource;
+import org.testcontainers.containers.MySQLContainer;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.MountableFile;
 
-import java.util.concurrent.TimeUnit;
-
-import static com.wix.mysql.EmbeddedMysql.anEmbeddedMysql;
-import static com.wix.mysql.ScriptResolver.classPathScript;
-import static com.wix.mysql.config.Charset.UTF8;
-import static com.wix.mysql.config.MysqldConfig.aMysqldConfig;
-
+import static org.testcontainers.containers.MySQLContainer.MYSQL_PORT;
 
 @Component
 @Profile("test")
+@Testcontainers
 @TestPropertySource(locations = "classpath:application-test.properties")
 public class MyEmbeddedMysql {
 
@@ -32,19 +28,31 @@ public class MyEmbeddedMysql {
     final String dmlsql;
 
     final DriverManagerDataSource dataSource;
-    final EmbeddedMysql mysqld;
+
+    //@Container
+    MySQLContainer mySQLContainer;
+
+    @Autowired
+    private Environment environment;
 
 
     public MyEmbeddedMysql(@Value("${db.driverClassName}") String driverClassName,
-                           @Value("${db.url}") String url,
                            @Value("${db.username}") String username,
                            @Value("${db.password}") String password,
                            @Value("${db.schema}") String schema,
                            @Value("${db.ddlsql}") String ddlsql,
                            @Value("${db.dmlsql}") String dmlsql
     ) {
+        mySQLContainer = new MySQLContainer<>("mysql:8.0.33")
+                .withDatabaseName(schema)
+                .withUsername(username)
+                .withPassword(password)
+                .withCopyFileToContainer(MountableFile.forClasspathResource(ddlsql), "/docker-entrypoint-initdb.d/schema.sql")
+                .withCopyFileToContainer(MountableFile.forClasspathResource(dmlsql), "/docker-entrypoint-initdb.d/z_data.sql")
+        ;
+        mySQLContainer.start();
         this.driverClassName = driverClassName;
-        this.url = url;
+        this.url = mySQLContainer.getJdbcUrl();
         this.password = password;
         this.username = username;
         this.schema = schema;
@@ -53,31 +61,16 @@ public class MyEmbeddedMysql {
 
         System.out.println("##### LOADING TestEmbeddedMysql #######");
 
-//        Integer port = FreePortFinder.findFreeLocalPort();
-        int port = 13306;
-        //IVersion v8_0_33_macos13_arm64 = () -> "https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-8.0.33-macos13-arm64.dmg";
-
-        MysqldConfig config = aMysqldConfig(Version.v8_0_17)
-                .withCharset(UTF8)
-                .withUser(username, password)
-                .withTimeZone("UTC")
-                .withTimeout(2, TimeUnit.MINUTES)
-                .withServerVariable("max_connect_errors", 666)
-                .withPort(port)
-                .build();
-
-        mysqld = anEmbeddedMysql(config)
-                .addSchema(schema,
-                        classPathScript(ddlsql),
-                        classPathScript(dmlsql)
-                ).start();
-
         dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        dataSource.setUrl(url);
-
+        dataSource.setUrl(mySQLContainer.getJdbcUrl());
         dataSource.setUsername(username);
         dataSource.setPassword(password);
+
+
+
+        System.setProperty("db.url", mySQLContainer.getJdbcUrl());
+        System.setProperty("db.port", Integer.toString(mySQLContainer.getMappedPort(MYSQL_PORT)));
     }
 
     public DriverManagerDataSource getDataSource() {
@@ -85,14 +78,18 @@ public class MyEmbeddedMysql {
     }
 
     public void reloadSchema() {
-        mysqld.reloadSchema(schema,
-                classPathScript(ddlsql),
-                classPathScript(dmlsql)
-        );
+        String tag = mySQLContainer.getContainerId();
+        mySQLContainer.getDockerClient().commitCmd(mySQLContainer.getContainerId())
+                .withRepository("tempImg")
+                .withTag(tag).exec();
+        mySQLContainer.stop();
+        mySQLContainer.setDockerImageName("tempImg:" + tag);
+        mySQLContainer.start();
+        dataSource.setUrl(mySQLContainer.getJdbcUrl());
     }
 
     public void close() {
-        mysqld.stop();
+        mySQLContainer.stop();
     }
 
 }

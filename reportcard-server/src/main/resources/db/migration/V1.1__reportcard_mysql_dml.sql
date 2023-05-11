@@ -68,7 +68,7 @@ INSERT `reportcard`.`test_case`
     (`test_suite_fk`, `name`, `class_name`, `time`, `test_status_fk`)
 values (1, 'testCaseName1', 'testCaseClassName1', 0.500, 1);
 
-# INSERT `reportcard`.`test_case`
-#     (`test_suite_fk`, `name`, `class_name`, `time`, `test_status_fk`)
-# values (1, 'testCaseName2', 'testCaseClassName2', 0.500, 3);
-#
+INSERT `reportcard`.`test_case`
+    (`test_suite_fk`, `name`, `class_name`, `time`, `test_status_fk`)
+values (1, 'testCaseName2', 'testCaseClassName2', 0.500, 3);
+
