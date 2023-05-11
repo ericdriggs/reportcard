@@ -125,7 +125,7 @@ public class ReportControllerTest {
         Assertions.assertEquals(reportMetaData.getOrg(), executionStagePath.getOrg().getOrgName() );
         Assertions.assertEquals(reportMetaData.getRepo(), executionStagePath.getRepo().getRepoName() );
         Assertions.assertEquals(reportMetaData.getBranch(), executionStagePath.getBranch().getBranchName() );
-        Assertions.assertEquals(reportMetaData.getSha(), executionStagePath.getSha().getSha() );
+        Assertions.assertEquals(reportMetaData.getSha(), executionStagePath.getExecution().getSha() );
 
         JsonAssert.assertJsonEquals(reportMetaData.getJobInfo(), executionStagePath.getJob().getJobInfo());
 

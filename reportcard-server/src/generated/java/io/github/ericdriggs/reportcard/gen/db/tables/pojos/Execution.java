@@ -5,6 +5,7 @@ package io.github.ericdriggs.reportcard.gen.db.tables.pojos;
 
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 import javax.annotation.processing.Generated;
 
@@ -22,11 +23,14 @@ import javax.annotation.processing.Generated;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Execution implements Serializable {
 
-    private static final long serialVersionUID = -70013705;
+    private static final long serialVersionUID = -169707669;
 
-    private Long   executionId;
-    private String executionReference;
-    private Long   jobFk;
+    private Long          executionId;
+    private String        executionReference;
+    private Long          jobFk;
+    private Integer       jobExecutionCount;
+    private String        sha;
+    private LocalDateTime created;
 
     public Execution() {}
 
@@ -34,16 +38,25 @@ public class Execution implements Serializable {
         this.executionId = value.executionId;
         this.executionReference = value.executionReference;
         this.jobFk = value.jobFk;
+        this.jobExecutionCount = value.jobExecutionCount;
+        this.sha = value.sha;
+        this.created = value.created;
     }
 
     public Execution(
-        Long   executionId,
-        String executionReference,
-        Long   jobFk
+        Long          executionId,
+        String        executionReference,
+        Long          jobFk,
+        Integer       jobExecutionCount,
+        String        sha,
+        LocalDateTime created
     ) {
         this.executionId = executionId;
         this.executionReference = executionReference;
         this.jobFk = jobFk;
+        this.jobExecutionCount = jobExecutionCount;
+        this.sha = sha;
+        this.created = created;
     }
 
     /**
@@ -91,6 +104,51 @@ public class Execution implements Serializable {
         return this;
     }
 
+    /**
+     * Getter for <code>reportcard.execution.job_execution_count</code>.
+     */
+    public Integer getJobExecutionCount() {
+        return this.jobExecutionCount;
+    }
+
+    /**
+     * Setter for <code>reportcard.execution.job_execution_count</code>.
+     */
+    public Execution setJobExecutionCount(Integer jobExecutionCount) {
+        this.jobExecutionCount = jobExecutionCount;
+        return this;
+    }
+
+    /**
+     * Getter for <code>reportcard.execution.sha</code>.
+     */
+    public String getSha() {
+        return this.sha;
+    }
+
+    /**
+     * Setter for <code>reportcard.execution.sha</code>.
+     */
+    public Execution setSha(String sha) {
+        this.sha = sha;
+        return this;
+    }
+
+    /**
+     * Getter for <code>reportcard.execution.created</code>.
+     */
+    public LocalDateTime getCreated() {
+        return this.created;
+    }
+
+    /**
+     * Setter for <code>reportcard.execution.created</code>.
+     */
+    public Execution setCreated(LocalDateTime created) {
+        this.created = created;
+        return this;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("Execution (");
@@ -98,6 +156,9 @@ public class Execution implements Serializable {
         sb.append(executionId);
         sb.append(", ").append(executionReference);
         sb.append(", ").append(jobFk);
+        sb.append(", ").append(jobExecutionCount);
+        sb.append(", ").append(sha);
+        sb.append(", ").append(created);
 
         sb.append(")");
         return sb.toString();

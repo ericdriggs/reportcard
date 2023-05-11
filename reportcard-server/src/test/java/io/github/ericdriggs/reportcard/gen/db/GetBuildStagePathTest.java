@@ -39,7 +39,7 @@ public class GetBuildStagePathTest extends AbstractDbTest {
         Assertions.assertEquals(bsp.getOrg().getOrgName(), request.getOrg());
         Assertions.assertEquals(bsp.getRepo().getRepoName(), request.getRepo());
         Assertions.assertEquals(bsp.getBranch().getBranchName(), request.getBranch());
-        Assertions.assertEquals(bsp.getSha().getSha(), request.getSha());
+        Assertions.assertEquals(bsp.getExecution().getSha(), request.getSha());
 
         JsonAssert.assertJsonEquals(request.getJobInfo(), bsp.getJob().getJobInfo());
 
@@ -57,14 +57,14 @@ public class GetBuildStagePathTest extends AbstractDbTest {
                         .setBranch(TestData.branch)
                         .setSha(TestData.sha)
                         .setJobInfo(TestData.metadata)
-                        .setExecutionReference("not_found");
+                        .setExecutionReference("not_found")
+                        .setStage(TestData.stage);
 
         ExecutionStagePath bsp = reportCardService.getExecutionStagePath(request);
         assertNotNull(bsp);
         assertNotNull(bsp.getOrg());
         assertNotNull(bsp.getRepo());
         assertNotNull(bsp.getBranch());
-        assertNotNull(bsp.getSha());
         assertNotNull(bsp.getJob());
         assertNull(bsp.getExecution());
         assertNull(bsp.getStage());
@@ -72,8 +72,11 @@ public class GetBuildStagePathTest extends AbstractDbTest {
         Assertions.assertEquals(bsp.getOrg().getOrgName(), request.getOrg());
         Assertions.assertEquals(bsp.getRepo().getRepoName(), request.getRepo());
         Assertions.assertEquals(bsp.getBranch().getBranchName(), request.getBranch());
-        Assertions.assertEquals(bsp.getSha().getSha(), request.getSha());
         JsonAssert.assertJsonEquals(bsp.getJob().getJobInfo(), request.getJobInfo());
+
+        //downstream of not found
+        assertNull(bsp.getExecution());
+        Assertions.assertNull( bsp.getStage());
     }
 
 }

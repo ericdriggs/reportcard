@@ -83,20 +83,6 @@ public class JobDao extends DAOImpl<JobRecord, io.github.ericdriggs.reportcard.g
     }
 
     /**
-     * Fetch records that have <code>sha_fk BETWEEN lowerInclusive AND upperInclusive</code>
-     */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job> fetchRangeOfShaFk(Long lowerInclusive, Long upperInclusive) {
-        return fetchRange(Job.JOB.SHA_FK, lowerInclusive, upperInclusive);
-    }
-
-    /**
-     * Fetch records that have <code>sha_fk IN (values)</code>
-     */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job> fetchByShaFk(Long... values) {
-        return fetch(Job.JOB.SHA_FK, values);
-    }
-
-    /**
      * Fetch records that have <code>branch_fk BETWEEN lowerInclusive AND upperInclusive</code>
      */
     public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job> fetchRangeOfBranchFk(Integer lowerInclusive, Integer upperInclusive) {

@@ -44,7 +44,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Branch extends TableImpl<BranchRecord> {
 
-    private static final long serialVersionUID = -601694492;
+    private static final long serialVersionUID = -1662122028;
 
     /**
      * The reference instance of <code>reportcard.branch</code>
@@ -129,7 +129,7 @@ public class Branch extends TableImpl<BranchRecord> {
 
     @Override
     public List<UniqueKey<BranchRecord>> getKeys() {
-        return Arrays.<UniqueKey<BranchRecord>>asList(Keys.KEY_BRANCH_PRIMARY, Keys.KEY_BRANCH_REPO_BRANCH_NAME_IDX);
+        return Arrays.<UniqueKey<BranchRecord>>asList(Keys.KEY_BRANCH_PRIMARY);
     }
 
     @Override

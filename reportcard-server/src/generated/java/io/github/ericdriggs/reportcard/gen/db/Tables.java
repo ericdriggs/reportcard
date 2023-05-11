@@ -9,8 +9,8 @@ import io.github.ericdriggs.reportcard.gen.db.tables.Execution;
 import io.github.ericdriggs.reportcard.gen.db.tables.Job;
 import io.github.ericdriggs.reportcard.gen.db.tables.Org;
 import io.github.ericdriggs.reportcard.gen.db.tables.Repo;
-import io.github.ericdriggs.reportcard.gen.db.tables.Sha;
 import io.github.ericdriggs.reportcard.gen.db.tables.Stage;
+import io.github.ericdriggs.reportcard.gen.db.tables.Storage;
 import io.github.ericdriggs.reportcard.gen.db.tables.TestCase;
 import io.github.ericdriggs.reportcard.gen.db.tables.TestResult;
 import io.github.ericdriggs.reportcard.gen.db.tables.TestStatus;
@@ -58,14 +58,14 @@ public class Tables {
     public static final Repo REPO = Repo.REPO;
 
     /**
-     * The table <code>reportcard.sha</code>.
-     */
-    public static final Sha SHA = Sha.SHA;
-
-    /**
      * The table <code>reportcard.stage</code>.
      */
     public static final Stage STAGE = Stage.STAGE;
+
+    /**
+     * The table <code>reportcard.storage</code>.
+     */
+    public static final Storage STORAGE = Storage.STORAGE;
 
     /**
      * The table <code>reportcard.test_case</code>.

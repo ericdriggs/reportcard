@@ -17,8 +17,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.math.BigInteger;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 import static io.github.ericdriggs.reportcard.gen.db.Tables.*;
 
@@ -43,7 +45,6 @@ public class ReportCardService {
     final OrgDao orgDao;
     final RepoDao repoDao;
     final BranchDao branchDao;
-    final ShaDao shaDao;
     final JobDao jobDao;
     final ExecutionDao executionDao;
     final StageDao stageDao;
@@ -51,7 +52,6 @@ public class ReportCardService {
     final TestResultDao testResultDao;
     final TestSuiteDao testSuiteDao;
     final TestCaseDao testCaseDao;
-
 
     private ReportCardService() {
         throw new RuntimeException("needs dsl in constructor");
@@ -65,7 +65,6 @@ public class ReportCardService {
         orgDao = new OrgDao(dsl.configuration());
         repoDao = new RepoDao(dsl.configuration());
         branchDao = new BranchDao(dsl.configuration());
-        shaDao = new ShaDao(dsl.configuration());
         jobDao = new JobDao(dsl.configuration());
         executionDao = new ExecutionDao(dsl.configuration());
         stageDao = new StageDao(dsl.configuration());
@@ -74,7 +73,6 @@ public class ReportCardService {
         testSuiteDao = new TestSuiteDao(dsl.configuration());
         testCaseDao = new TestCaseDao(dsl.configuration());
     }
-
 
     public Set<Org> getOrgs() {
         Set<Org> orgs = new TreeSet<>(Comparators.ORG_CASE_INSENSITIVE_ORDER);
@@ -85,9 +83,10 @@ public class ReportCardService {
     }
 
     public Org getOrg(String orgName) {
-        Record record = dsl.select().from(ORG)
-                .where(ORG.ORG_NAME.eq(orgName))
-                .fetchOne();
+        Record record =
+                dsl.select(ORG.fields()).from(ORG)
+                        .where(ORG.ORG_NAME.eq(orgName))
+                        .fetchOne();
         if (record == null) {
             throwNotFound(orgName);
         }
@@ -95,12 +94,12 @@ public class ReportCardService {
     }
 
     public Set<Repo> getRepos(String orgName) {
-        Set<Repo> repos= new TreeSet<>(Comparators.REPO_CASE_INSENSITIVE_ORDER);
-        repos.addAll( dsl.
+        Set<Repo> repos = new TreeSet<>(Comparators.REPO_CASE_INSENSITIVE_ORDER);
+        repos.addAll(dsl.
                 select(REPO.fields())
-                .from(REPO.join(ORG)
-                        .on(REPO.ORG_FK.eq(ORG.ORG_ID)))
-                .where(ORG.ORG_NAME.eq(orgName))
+                .from(ORG)
+                .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
+                        .and(ORG.ORG_NAME.eq(orgName)))
                 .fetch()
                 .into(Repo.class));
         return repos;
@@ -109,10 +108,24 @@ public class ReportCardService {
     public Map<Org, Set<Repo>> getOrgsRepos() {
 
         Map<Org, Set<Repo>> orgRepoMap = new ConcurrentSkipListMap<>(Comparators.ORG_CASE_INSENSITIVE_ORDER);
-        Set<Org> orgs = getOrgs();
-        orgs.parallelStream().forEach(org -> {
-            orgRepoMap.put(org, getRepos(org.getOrgName()));
-        });
+        Result<Record> recordResult = dsl.select()
+                .from(ORG)
+                .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID))
+                .fetch();
+
+        for (Record record : recordResult) {
+            Org org = record.into(Org.class);
+            Repo repo = record.into(Repo.class);
+
+            if (!orgRepoMap.containsKey(org)) {
+                synchronized (org.getOrgName() + ":" + repo.getRepoName()) {
+                    if (!orgRepoMap.containsKey(org)) {
+                        orgRepoMap.put(org, new TreeSet<>(Comparators.REPO_CASE_INSENSITIVE_ORDER));
+                    }
+                }
+            }
+            orgRepoMap.get(org).add(repo);
+        }
         return orgRepoMap;
     }
 
@@ -122,36 +135,29 @@ public class ReportCardService {
         return Collections.singletonMap(org, repos);
     }
 
-    public Repo getRepo(String org, String repo) {
+    public Repo getRepo(String orgName, String repoName) {
         Repo ret = dsl.
-                select(REPO.fields()).from(REPO)
-                .join(ORG).on(REPO.ORG_FK.eq(ORG.ORG_ID))
-                .where(ORG.ORG_NAME.eq(org))
-                .and(REPO.REPO_NAME.eq(repo))
+                select(REPO.fields())
+                .from(ORG)
+                .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
+                        .and(ORG.ORG_NAME.eq(orgName))
+                        .and(REPO.REPO_NAME.eq(repoName)))
                 .fetchOne()
                 .into(Repo.class);
         if (ret == null) {
-            throwNotFound(org, repo);
+            throwNotFound(orgName, repoName);
         }
         return ret;
     }
 
+    //TODO: refactor to use single select
     public Map<Repo, Set<Branch>> getReposBranches(String orgName) {
         Set<Repo> repos = getRepos(orgName);
-        Map<Repo,Set<Branch>> repoBranchMap= new ConcurrentSkipListMap<>(Comparators.REPO_CASE_INSENSITIVE_ORDER);
-        repos.parallelStream().forEach( repo-> {
+        Map<Repo, Set<Branch>> repoBranchMap = new ConcurrentSkipListMap<>(Comparators.REPO_CASE_INSENSITIVE_ORDER);
+        repos.parallelStream().forEach(repo -> {
             repoBranchMap.put(repo, getBranches(orgName, repo.getRepoName()));
         });
         return repoBranchMap;
-    }
-
-    public Map<Repo, Set<Sha>> getRepoShas(String orgName) {
-        Set<Repo> repos = getRepos(orgName);
-        Map<Repo,Set<Sha>> repoShaMap= new ConcurrentSkipListMap<>(Comparators.REPO_CASE_INSENSITIVE_ORDER);
-        repos.parallelStream().forEach( repo-> {
-            repoShaMap.put(repo, getShas(orgName, repo.getRepoName()));
-        });
-        return repoShaMap;
     }
 
     public Map<Repo, Set<Branch>> getRepoBranches(String orgName, String repoName) {
@@ -159,30 +165,22 @@ public class ReportCardService {
         return Collections.singletonMap(repo, getBranches(orgName, repoName));
     }
 
-
     public Set<Branch> getBranches(String orgName, String repoName) {
-        Set<Branch> branches= new TreeSet<>(Comparators.BRANCH_CASE_INSENSITIVE_ORDER);
-        branches.addAll( dsl.
+        Set<Branch> branches = new TreeSet<>(Comparators.BRANCH_CASE_INSENSITIVE_ORDER);
+        branches.addAll(dsl.
                 select(BRANCH.fields())
-                .from(BRANCH
-                        .join(REPO).on(BRANCH.REPO_FK.eq(REPO.REPO_ID))
-                        .join(ORG).on(REPO.ORG_FK.eq(ORG.ORG_ID)))
-                .where(ORG.ORG_NAME.eq(orgName))
-                .and(REPO.REPO_NAME.eq(repoName))
+                .from(ORG)
+                .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
+                        .and(ORG.ORG_NAME.eq(orgName))
+                        .and(REPO.REPO_NAME.eq(repoName)))
+                .join(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID))
                 .fetch()
                 .into(Branch.class));
         return branches;
     }
 
     public Branch getBranch(String orgName, String repoName, String branchName) {
-        Branch ret = dsl.
-                select(BRANCH.fields())
-                .from(BRANCH
-                        .join(REPO).on(BRANCH.REPO_FK.eq(REPO.REPO_ID))
-                        .join(ORG).on(REPO.ORG_FK.eq(ORG.ORG_ID)))
-                .where(ORG.ORG_NAME.eq(orgName))
-                .and(REPO.REPO_NAME.eq(repoName))
-                .and(BRANCH.BRANCH_NAME.eq(branchName))
+        Branch ret = getBranchSelect(orgName, repoName, branchName, BRANCH.fields())
                 .fetchOne()
                 .into(Branch.class);
         if (ret == null) {
@@ -191,206 +189,259 @@ public class ReportCardService {
         return ret;
     }
 
-    public Set<Sha> getShas(String org, String repo) {
-        Set<Sha> shas = new TreeSet<>(Comparators.SHA);
-        shas.addAll(dsl.
-                select(SHA.fields())
-                .from(SHA
-                        .join(REPO).on(BRANCH.REPO_FK.eq(REPO.REPO_ID))
-                        .join(ORG).on(REPO.ORG_FK.eq(ORG.ORG_ID)))
-                .where(ORG.ORG_NAME.eq(org))
-                .and(REPO.REPO_NAME.eq(repo))
-                .fetch()
-                .into(Sha.class));
-        return shas;
+    protected SelectOnConditionStep<Record> getBranchSelect(String orgName, String repoName, String branchName, SelectFieldOrAsterisk... fields) {
+        return  dsl.select(fields)
+                .from(BRANCH)
+                .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
+                        .and(ORG.ORG_NAME.eq(orgName))
+                        .and(REPO.REPO_NAME.eq(repoName)))
+                .join(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
+                        .and(BRANCH.BRANCH_NAME.eq(branchName)));
     }
 
-    public Sha getSha(String org, String repo, String sha) {
-        Sha ret = dsl.
-                select(SHA.fields())
-                .from(SHA
-                        .join(REPO).on(BRANCH.REPO_FK.eq(REPO.REPO_ID))
-                        .join(ORG).on(REPO.ORG_FK.eq(ORG.ORG_ID)))
-                .where(ORG.ORG_NAME.eq(org))
-                .and(REPO.REPO_NAME.eq(repo))
-                .and(SHA.SHA_.eq(sha))
+    protected SelectOnConditionStep<Record> getJobsSelect(String orgName, String repoName, String branchName, SelectFieldOrAsterisk... fields) {
+        return dsl.select(fields)
+                .from(ORG)
+                .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
+                        .and(ORG.ORG_NAME.eq(orgName))
+                        .and(REPO.REPO_NAME.eq(repoName)))
+                .join(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
+                        .and(BRANCH.BRANCH_NAME.eq(branchName)))
+                .join(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID));
+    }
+
+    public Set<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job> getJobs(String orgName, String repoName, String branchName, Map<String,String> jobInfoFilters) {
+        Set<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job> jobs = new TreeSet<>(Comparators.JOB_CASE_INSENSITIVE_ORDER);
+        jobs.addAll(
+                getJobsSelect(orgName, repoName, branchName, JOB.fields()).fetch()
+                        .into(io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job.class));
+
+        //TODO: filter json based on metadata
+        return jobs;
+    }
+
+    public io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job getJob(String orgName, String repoName, String branchName, Long jobId) {
+        Set<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job> jobs = new TreeSet<>(Comparators.JOB_CASE_INSENSITIVE_ORDER);
+
+        io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job ret = dsl.select(JOB.fields())
+                .from(ORG)
+                .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
+                        .and(ORG.ORG_NAME.eq(orgName))
+                        .and(REPO.REPO_NAME.eq(repoName)))
+                .join(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
+                        .and(BRANCH.BRANCH_NAME.eq(branchName)))
+                .join(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID)
+                        .and(JOB.JOB_ID.eq(jobId)))
                 .fetchOne()
-                .into(Sha.class);
+                .into(io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job.class);
+
         if (ret == null) {
-            throwNotFound(org, repo, sha);
+            throwNotFound(orgName, repoName, branchName, Long.toString(jobId));
         }
         return ret;
     }
 
-    public Set<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job> getContexts(String orgName, String repoName, String branchName, String shaString) {
-        Set<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job> contexts = new TreeSet<>(Comparators.CONTEXT_CASE_INSENSITIVE_ORDER);
-        contexts.addAll(dsl.
-                select(JOB.fields())
-                .from(JOB)
-                .leftJoin(BRANCH).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID).and(BRANCH.BRANCH_NAME.eq(branchName)))
-                .leftJoin(SHA).on(JOB.SHA_FK.eq(SHA.SHA_ID).and(SHA.SHA_.eq(shaString)))
-                .leftJoin(REPO).on(BRANCH.REPO_FK.eq(REPO.REPO_ID).or(SHA.REPO_FK.eq(REPO.REPO_ID)))
-                .join(ORG).on(REPO.ORG_FK.eq(ORG.ORG_ID).and(ORG.ORG_NAME.eq(orgName)))
-                .where(REPO.REPO_NAME.eq(repoName))
-                .and(SHA.SHA_.eq(shaString))
-                .fetch()
-                .into(io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job.class));
-        return contexts;
-    }
-
-    public io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job getContext(String orgName, String repoName, String branchName, String shaString) {
-        SelectConditionStep<Record> selectConditionStep = dsl.
-                select(JOB.fields())
-                .from(JOB)
-                .leftJoin(BRANCH).on(BRANCH.BRANCH_ID.eq(JOB.BRANCH_FK).and(BRANCH.BRANCH_NAME.eq(branchName)))
-                .leftJoin(SHA).on(SHA.SHA_ID.eq(JOB.SHA_FK)).and(SHA.SHA_.eq(shaString))
-                .leftJoin(REPO).on(REPO.REPO_ID.eq(BRANCH.REPO_FK).or(REPO.REPO_ID.eq(SHA.REPO_FK)))
-                .join(ORG).on(ORG.ORG_ID.eq(REPO.ORG_FK)).and(ORG.ORG_NAME.eq(orgName))
-                .where(REPO.REPO_NAME.eq(repoName))
-                .and(SHA.SHA_.eq(shaString));
-
-        io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job ret =
-                selectConditionStep
-                        .fetchOne()
-                        .into(io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job.class);
-        if (ret == null) {
-            throwNotFound(orgName, repoName, branchName, shaString);
-        }
-        return ret;
-    }
-
-
-    public Map<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job, Set<Execution>> getContextsExecutions(String orgName, String repoName, String branchName, String shaString, Map<String,String> metadataFilters) {
-        Set<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job> contexts = getContexts(orgName, repoName, branchName, shaString);
-        Map<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job, Set<Execution>> contextExecutionsMap = new ConcurrentSkipListMap<>(Comparators.CONTEXT_CASE_INSENSITIVE_ORDER);
-        contexts.parallelStream().forEach(context -> {
-            contextExecutionsMap.put(context, getExecutions(orgName, repoName, branchName, shaString));
-        });
-        return contextExecutionsMap;
-    }
-
-    public Map<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job,Set<Execution>> getContextExecutions(String orgName, String repoName, String branchName, String shaString) {
-        io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job context = getContext(orgName,repoName,branchName,shaString);
-        Map<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job,Set<Execution>> contextExecutionsMap = new ConcurrentSkipListMap<>(Comparators.CONTEXT_CASE_INSENSITIVE_ORDER);
-        return Collections.singletonMap(context, getExecutions(orgName,   repoName,  branchName, shaString));
-    }
-
-    //
-
-    public Set<Execution> getExecutions(String org, String repo, String branch, String sha) {
-        SelectConditionStep<Record> selectConditionStep =  dsl.
-                select(EXECUTION.fields())
-                .from(EXECUTION
-                        .join(JOB).on(JOB.JOB_ID.eq(EXECUTION.JOB_FK))
-                        .leftJoin(SHA).on(SHA.SHA_ID.eq(JOB.SHA_FK)).and(SHA.SHA_.eq(sha))
-                        .leftJoin(BRANCH).on(BRANCH.BRANCH_ID.eq(JOB.BRANCH_FK)).and(BRANCH.BRANCH_NAME.eq(branch))
-                        .leftJoin(REPO).on(REPO.REPO_ID.eq(BRANCH.REPO_FK).or(REPO.REPO_ID.eq(SHA.REPO_FK)))
-                        .join(ORG).on(REPO.ORG_FK.eq(ORG.ORG_ID)).and(ORG.ORG_NAME.eq(org)))
-                .where(REPO.REPO_NAME.eq(repo))
-                .and(REPO.REPO_NAME.eq(repo));
-
-        Set<Execution> executions = new TreeSet<>(Comparators.EXECUTION_CASE_INSENSITIVE_ORDER);
-        executions.addAll(selectConditionStep
-                .fetch()
-                .into(Execution.class));
+    public Set<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Execution> getExecutions(String orgName, String repoName, String branchName, Long jobId, Map<String,String> jobInfoFilters) {
+        Set<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Execution> executions = new TreeSet<>(Comparators.EXECUTION_CASE_INSENSITIVE_ORDER);
+        //TODO: use filters
+        executions.addAll(
+                dsl.select(JOB.fields())
+                        .from(ORG)
+                        .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
+                                .and(ORG.ORG_NAME.eq(orgName))
+                                .and(REPO.REPO_NAME.eq(repoName)))
+                        .join(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
+                                .and(BRANCH.BRANCH_NAME.eq(branchName)))
+                        .join(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID)
+                                .and(JOB.JOB_ID.eq(jobId)))
+                        .join(EXECUTION).on(EXECUTION.JOB_FK.eq(JOB.JOB_ID))
+                        .fetch()
+                        .into(io.github.ericdriggs.reportcard.gen.db.tables.pojos.Execution.class)
+        );
         return executions;
     }
 
-    public Execution getExecution(String org, String repo, String branch, String sha, String executionExternalId) {
-        SelectConditionStep<Record> selectConditionStep = dsl.
-                select(EXECUTION.fields())
-                .from(EXECUTION)
-                .join(JOB).on(JOB.JOB_ID.eq(EXECUTION.JOB_FK)).and(EXECUTION.EXECUTION_REFERENCE.eq(executionExternalId))
-                .leftJoin(SHA).on(SHA.SHA_ID.eq(JOB.SHA_FK)).and(SHA.SHA_.eq(sha))
-                .leftJoin(BRANCH).on(BRANCH.BRANCH_ID.eq(JOB.BRANCH_FK)).and(BRANCH.BRANCH_NAME.eq(branch))
-                .leftJoin(REPO).on(REPO.REPO_ID.eq(BRANCH.REPO_FK).or(REPO.REPO_ID.eq(SHA.REPO_FK)))
-                .join(ORG).on(REPO.ORG_FK.eq(ORG.ORG_ID))
-                .where(REPO.REPO_NAME.eq(repo))
-                .and(ORG.ORG_NAME.eq(org));
+    public Set<Execution> getExecutionsForSha(String orgName, String repoName, String branchName, String sha, Map<String,String> jobInfoFilters) {
+        Set<Execution> executions = new TreeSet<>(Comparators.EXECUTION_CASE_INSENSITIVE_ORDER);
+        //TODO: use filters
+        executions.addAll(
+                dsl.select(JOB.fields())
+                        .from(ORG)
+                        .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
+                                .and(ORG.ORG_NAME.eq(orgName))
+                                .and(REPO.REPO_NAME.eq(repoName)))
+                        .join(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
+                                .and(BRANCH.BRANCH_NAME.eq(branchName)))
+                        .join(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
+                        .join(EXECUTION).on(EXECUTION.JOB_FK.eq(JOB.JOB_ID)
+                                .and(EXECUTION.SHA.eq(sha)))
+                        .fetch()
+                        .into(io.github.ericdriggs.reportcard.gen.db.tables.pojos.Execution.class)
+        );
+        return executions;
+    }
 
-        selectConditionStep.and(EXECUTION.EXECUTION_REFERENCE.eq(executionExternalId));
+    public Execution getExecutionFromReference(String orgName, String repoName, String branchName, String sha, String executionReference) {
 
-        Execution ret =
-                selectConditionStep
-                        .fetchOne()
-                        .into(Execution.class);
+        Execution ret = dsl.select(JOB.fields())
+                .from(ORG)
+                .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
+                        .and(ORG.ORG_NAME.eq(orgName))
+                        .and(REPO.REPO_NAME.eq(repoName)))
+                .join(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
+                        .and(BRANCH.BRANCH_NAME.eq(branchName)))
+                .join(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
+                .join(EXECUTION).on(EXECUTION.JOB_FK.eq(JOB.JOB_ID)
+                        .and(EXECUTION.SHA.eq(sha))
+                        .and(EXECUTION.EXECUTION_REFERENCE.eq(executionReference)))
+                .fetchOne()
+                .into(io.github.ericdriggs.reportcard.gen.db.tables.pojos.Execution.class);
+
         if (ret == null) {
-            throwNotFound(org, repo, branch, sha, executionExternalId);
+            throwNotFound(orgName, repoName, branchName, sha, executionReference);
         }
         return ret;
     }
 
-    public Map<Execution,Set<Stage>> getExecutionsStages(String orgName, String repoName, String branchName, String shaString, Map<String,String> metadataFilters) {
-        Set<Execution> contexts = getExecutions(orgName,repoName,branchName,shaString);
-        Map<Execution,Set<Stage>> stageExecutionMap = new ConcurrentSkipListMap<>(Comparators.EXECUTION_CASE_INSENSITIVE_ORDER);
-        contexts.parallelStream().forEach(  execution -> {
-            stageExecutionMap.put(execution, getStages(orgName,   repoName,  branchName, shaString, execution.getExecutionReference()));
-        });
-        return stageExecutionMap;
+    public Execution getExecution(String orgName, String repoName, String branchName, Long jobId, Long executionId) {
+
+        Execution ret = dsl.select(JOB.fields())
+                .from(ORG)
+                .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
+                        .and(ORG.ORG_NAME.eq(orgName))
+                        .and(REPO.REPO_NAME.eq(repoName)))
+                .join(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
+                        .and(BRANCH.BRANCH_NAME.eq(branchName)))
+                .join(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID)
+                        .and (JOB.JOB_ID.eq(jobId)))
+                .join(EXECUTION).on(EXECUTION.JOB_FK.eq(JOB.JOB_ID)
+                        .and(EXECUTION.EXECUTION_ID.eq(executionId)))
+                .fetchOne()
+                .into(io.github.ericdriggs.reportcard.gen.db.tables.pojos.Execution.class);
+
+        if (ret == null) {
+            throwNotFound(orgName, repoName, branchName, Long.toString(jobId), Long.toString(executionId));
+        }
+        return ret;
     }
 
-    public Map<Execution,Set<Stage>> getExecutionStages(String orgName, String repoName, String branchName, String shaString, String executionExternalId) {
-        Execution execution = getExecution(orgName,repoName,branchName,shaString, executionExternalId);
-        return Collections.singletonMap(execution, getStages(orgName,   repoName,  branchName, shaString, executionExternalId));
-    }
+//    public Map<Execution, Set<Stage>> getExecutionsStages(String orgName, String repoName, String branchName, String shaString, Map<String, String> metadataFilters) {
+//        Set<Execution> contexts = getExecutions(orgName, repoName, branchName, shaString);
+//        Map<Execution, Set<Stage>> stageExecutionMap = new ConcurrentSkipListMap<>(Comparators.EXECUTION_CASE_INSENSITIVE_ORDER);
+//        contexts.parallelStream().forEach(execution -> {
+//            stageExecutionMap.put(execution, getStages(orgName, repoName, branchName, shaString, execution.getExecutionReference()));
+//        });
+//        return stageExecutionMap;
+//    }
+//
+//    public Map<Execution, Set<Stage>> getExecutionStages(String orgName, String repoName, String branchName, String shaString, String executionExternalId) {
+//        Execution execution = getExecution(orgName, repoName, branchName, shaString, executionExternalId);
+//        return Collections.singletonMap(execution, getStages(orgName, repoName, branchName, shaString, executionExternalId));
+//    }
 
-    public Set<Stage> getStages(String org, String repo, String branch, String sha, String executionExternalId) {
-        SelectConditionStep<Record> selectConditionStep =  dsl.
-                select(STAGE.fields())
-                .from(STAGE)
-                .join(EXECUTION).on(EXECUTION.EXECUTION_ID.eq(STAGE.EXECUTION_FK))
-                .join(JOB).on(JOB.JOB_ID.eq(EXECUTION.JOB_FK)).and(EXECUTION.EXECUTION_REFERENCE.eq(executionExternalId))
-                .leftJoin(SHA).on(SHA.SHA_ID.eq(JOB.SHA_FK)).and(SHA.SHA_.eq(sha))
-                .leftJoin(BRANCH).on(BRANCH.BRANCH_ID.eq(JOB.BRANCH_FK)).and(BRANCH.BRANCH_NAME.eq(branch))
-                .leftJoin(REPO).on(REPO.REPO_ID.eq(BRANCH.REPO_FK).or(REPO.REPO_ID.eq(SHA.REPO_FK)))
-                .join(ORG).on(REPO.ORG_FK.eq(ORG.ORG_ID)).and(ORG.ORG_NAME.eq(org))
-                .where(REPO.REPO_NAME.eq(repo));
+    public Set<Stage> getStages(String orgName, String repoName, String branchName, String sha, String executionReference) {
 
-        Set<Stage>stages = new TreeSet<>(Comparators.STAGE_CASE_INSENSITIVE_ORDER);
-        stages.addAll (selectConditionStep
-                .fetch()
-                .into(Stage.class));
+        Set<Stage> stages = new TreeSet<>(Comparators.STAGE_CASE_INSENSITIVE_ORDER);
+        stages.addAll(
+                dsl.select(STAGE.fields())
+                        .from(ORG)
+                        .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
+                                .and(ORG.ORG_NAME.eq(orgName))
+                                .and(REPO.REPO_NAME.eq(repoName)))
+                        .join(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
+                                .and(BRANCH.BRANCH_NAME.eq(branchName)))
+                        .join(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
+                        .join(EXECUTION).on(EXECUTION.JOB_FK.eq(JOB.JOB_ID)
+                                .and(EXECUTION.SHA.eq(sha))
+                                .and(EXECUTION.EXECUTION_REFERENCE.eq(executionReference)))
+                        .join(STAGE).on(STAGE.EXECUTION_FK.eq(EXECUTION.EXECUTION_ID))
+                        .fetch()
+                        .into(Stage.class)
+        );
+
         return stages;
     }
 
-    public Stage getStage(String org, String repo, String branch, String sha, String executionExternalId, String stage) {
-        SelectConditionStep<Record> selectConditionStep = dsl.
-                select(STAGE.fields())
-                .from(STAGE)
-                .join(EXECUTION).on(STAGE.EXECUTION_FK.eq(EXECUTION.EXECUTION_ID))
-                .join(JOB).on(EXECUTION.JOB_FK.eq(JOB.JOB_ID).or(JOB.SHA_FK.eq(SHA.SHA_ID)))
-                .join(BRANCH).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
-                .join(REPO).on(BRANCH.REPO_FK.eq(REPO.REPO_ID))
-                .join(ORG).on(REPO.ORG_FK.eq(ORG.ORG_ID))
-                .where(ORG.ORG_NAME.eq(org))
-                .and(REPO.REPO_NAME.eq(repo))
-                .and(BRANCH.BRANCH_NAME.eq(branch))
-                .and(SHA.SHA_.eq(sha));
+    public Set<Stage> getStagesFromIds(String orgName, String repoName, String branchName, Long jobId, Long executionId) {
 
-        selectConditionStep.and(EXECUTION.EXECUTION_REFERENCE.eq(executionExternalId))
-                .and(STAGE.STAGE_NAME.eq(stage));
+        Set<Stage> stages = new TreeSet<>(Comparators.STAGE_CASE_INSENSITIVE_ORDER);
+        stages.addAll(
+                dsl.select(STAGE.fields())
+                        .from(ORG)
+                        .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
+                                .and(ORG.ORG_NAME.eq(orgName))
+                                .and(REPO.REPO_NAME.eq(repoName)))
+                        .join(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
+                                .and(BRANCH.BRANCH_NAME.eq(branchName)))
+                        .join(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID)
+                                .and(JOB.JOB_ID.eq(jobId)))
+                        .join(EXECUTION).on(EXECUTION.JOB_FK.eq(JOB.JOB_ID)
+                                .and(EXECUTION.EXECUTION_ID.eq(executionId)))
+                        .join(STAGE).on(STAGE.EXECUTION_FK.eq(EXECUTION.EXECUTION_ID))
+                        .fetch()
+                        .into(Stage.class)
+        );
+        return stages;
+    }
+
+    public Stage getStageFromIds(String orgName, String repoName, String branchName, Long jobId, Long executionId, String stageName) {
 
         Stage ret =
-                selectConditionStep
+                dsl.select(STAGE.fields())
+                        .from(ORG)
+                        .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
+                                .and(ORG.ORG_NAME.eq(orgName))
+                                .and(REPO.REPO_NAME.eq(repoName)))
+                        .join(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
+                                .and(BRANCH.BRANCH_NAME.eq(branchName)))
+                        .join(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID)
+                                .and(JOB.JOB_ID.eq(jobId)))
+                        .join(EXECUTION).on(EXECUTION.JOB_FK.eq(JOB.JOB_ID)
+                                .and(EXECUTION.EXECUTION_ID.eq(executionId)))
+                        .join(STAGE).on(STAGE.EXECUTION_FK.eq(EXECUTION.EXECUTION_ID)
+                                .and(STAGE.STAGE_NAME.eq(stageName)))
                         .fetchOne()
                         .into(Stage.class);
+
         if (ret == null) {
-            throwNotFound(org, repo, branch, sha, executionExternalId, stage);
+            throwNotFound(orgName, repoName, branchName, Long.toString(jobId), Long.toString(executionId), stageName);
         }
         return ret;
     }
 
-    public Map<Stage,Set<TestResult>> getStagesTestResults(String orgName, String repoName, String branchName, String shaString, String executionReference) {
-        Set<Stage> stages = getStages(orgName,repoName,branchName,shaString, executionReference);
-        Map<Stage,Set<TestResult>> stageTestResultsMap = new ConcurrentSkipListMap<>(Comparators.STAGE_CASE_INSENSITIVE_ORDER);
-        stages.parallelStream().forEach(  stage -> {
+    public Stage getStage(String orgName, String repoName, String branchName, String sha, String executionReference, String stageName) {
+        Stage ret =  dsl.select(STAGE.fields())
+                .from(ORG)
+                .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
+                        .and(ORG.ORG_NAME.eq(orgName))
+                        .and(REPO.REPO_NAME.eq(repoName)))
+                .join(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
+                        .and(BRANCH.BRANCH_NAME.eq(branchName)))
+                .join(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
+                .join(EXECUTION).on(EXECUTION.JOB_FK.eq(JOB.JOB_ID)
+                        .and(EXECUTION.SHA.eq(sha))
+                        .and(EXECUTION.EXECUTION_REFERENCE.eq(executionReference)))
+                .join(STAGE).on(STAGE.EXECUTION_FK.eq(EXECUTION.EXECUTION_ID)
+                        .and(STAGE.STAGE_NAME.eq(stageName)))
+                .fetchOne()
+                .into(Stage.class);
+        if (ret == null) {
+            throwNotFound(orgName, repoName, branchName, sha, executionReference, stageName);
+        }
+        return ret;
+    }
+
+    public Map<Stage, Set<TestResult>> getStagesTestResults(String orgName, String repoName, String branchName, String shaString, String executionReference) {
+        Set<Stage> stages = getStages(orgName, repoName, branchName, shaString, executionReference);
+        Map<Stage, Set<TestResult>> stageTestResultsMap = new ConcurrentSkipListMap<>(Comparators.STAGE_CASE_INSENSITIVE_ORDER);
+        stages.parallelStream().forEach(stage -> {
             stageTestResultsMap.put(stage, getTestResults(stage.getStageId()));
         });
         return stageTestResultsMap;
     }
 
-    public Map<Stage,Set<TestResult>> getStageTestResults(String orgName, String repoName, String branchName, String shaString, String executionExternalId, String stageName) {
-        Stage stage = getStage(orgName,repoName,branchName,shaString, executionExternalId, stageName);
+    public Map<Stage, Set<TestResult>> getStageTestResults(String orgName, String repoName, String branchName, String shaString, String executionExternalId, String stageName) {
+        Stage stage = getStage(orgName, repoName, branchName, shaString, executionExternalId, stageName);
         return Collections.singletonMap(stage, getTestResults(stage.getStageId()));
     }
 
@@ -399,25 +450,30 @@ public class ReportCardService {
                 getNotFoundMessage(args));
     }
 
+    //TODO: refactor to take tuple of variable name and value
     protected static String getNotFoundMessage(String... args) {
         return "Unable to find " + String.join(" <- ", args);
     }
 
-
-
     public ExecutionStagePath getExecutionStagePath(ReportMetaData request) {
 
-        Map<String,String> metadataFilters = request.getJobInfo();
+        Map<String, String> metadataFilters = request.getJobInfo();
         SelectConditionStep<Record> selectConditionStep = dsl.
                 select()
-                .from(ORG
-                        .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)).and(REPO.REPO_NAME.eq(request.getRepo()))
-                        .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)).and(BRANCH.BRANCH_NAME.eq(request.getBranch()))
-                        .leftJoin(SHA).on(SHA.REPO_FK.eq(REPO.REPO_ID)).and(SHA.SHA_.eq(request.getSha()))
-                        .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID).or(JOB.SHA_FK.eq(SHA.SHA_ID)))
-                        .leftJoin(EXECUTION).on(EXECUTION.JOB_FK.eq(JOB.JOB_ID)).and(EXECUTION.EXECUTION_REFERENCE.eq(request.getExecutionReference()))
-                        .leftJoin(STAGE).on(STAGE.STAGE_NAME.eq(request.getStage())).and(STAGE.STAGE_NAME.eq(request.getStage()))
-                ).where(ORG.ORG_NAME.eq(request.getOrg()));
+                .from(ORG)
+                .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
+                        .and(ORG.ORG_NAME.eq(request.getOrg()))
+                        .and(REPO.REPO_NAME.eq(request.getRepo()))
+                )
+                .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
+                        .and(BRANCH.BRANCH_NAME.eq(request.getBranch())))
+                .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
+                .leftJoin(EXECUTION).on(EXECUTION.JOB_FK.eq(JOB.JOB_ID)
+                        .and(EXECUTION.SHA.eq(request.getSha()))
+                        .and(EXECUTION.EXECUTION_REFERENCE.eq(request.getExecutionReference())))
+                .leftJoin(STAGE).on(STAGE.EXECUTION_FK.eq(EXECUTION.EXECUTION_ID)
+                        .and(STAGE.STAGE_NAME.eq(request.getStage())))
+                .where(ORG.ORG_NAME.eq(request.getOrg()));
 
         Record record = selectConditionStep
                 .fetchOne();
@@ -431,7 +487,6 @@ public class ReportCardService {
             Org _org = null;
             Repo _repo = null;
             Branch _branch = null;
-            Sha _sha = null;
             Job _context = null;
             Execution _execution = null;
             Stage _stage = null;
@@ -445,9 +500,7 @@ public class ReportCardService {
             if (record.get(BRANCH.BRANCH_ID.getName()) != null) {
                 _branch = record.into(BranchRecord.class).into(Branch.class);
             }
-            if (record.get(SHA.SHA_ID.getName()) != null) {
-                _sha = record.into(ShaRecord.class).into(Sha.class);
-            }
+
             if (record.get(JOB.JOB_ID.getName()) != null) {
                 _context = record.into(JobRecord.class).into(io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job.class);
             }
@@ -458,11 +511,9 @@ public class ReportCardService {
                 _stage = record.into(StageRecord.class).into(Stage.class);
             }
 
-
             executionStagePath.setOrg(_org);
             executionStagePath.setRepo(_repo);
             executionStagePath.setBranch(_branch);
-            executionStagePath.setSha(_sha);
             executionStagePath.setJob(_context);
             executionStagePath.setExecution(_execution);
             executionStagePath.setStage(_stage);
@@ -485,11 +536,10 @@ public class ReportCardService {
      *     2) the existing data is returned
      */
 
-
     /**
      * prefer public method. The ability to inject an executionStagePath is for testing purposes.
      *
-     * @param request        a ReportMetaData
+     * @param request            a ReportMetaData
      * @param executionStagePath normally null, only values passed for testing
      * @return the ExecutionStagePath for the provided report metadata.
      */
@@ -516,7 +566,6 @@ public class ReportCardService {
             executionStagePath.setRepo(repo);
         }
 
-
         if (executionStagePath.getBranch() == null) {
             Branch branch = new Branch()
                     .setBranchName(request.getBranch())
@@ -525,25 +574,16 @@ public class ReportCardService {
             executionStagePath.setBranch(branch);
         }
 
-        if (executionStagePath.getSha() == null) {
-            Sha sha = new Sha()
-                    .setSha(request.getSha())
-                    .setRepoFk(executionStagePath.getRepo().getRepoId());
-            shaDao.insert(sha);
-            executionStagePath.setSha(sha);
-        }
 
         if (executionStagePath.getJob() == null) {
             io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job job = new io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job()
                     .setJobInfo(request.getJobInfoJson())
-                    .setBranchFk(executionStagePath.getBranch().getBranchId())
-                    .setShaFk(executionStagePath.getSha().getShaId());
+                    .setBranchFk(executionStagePath.getBranch().getBranchId());
             //jobDao.insert(job);
-
             //user insert since DAO/POJO would incorrectly attempt to insert generated column job_info_str
-            Job insertedJob = dsl.insertInto(JOB, JOB.BRANCH_FK, JOB.SHA_FK, JOB.JOB_INFO)
-                            .values(executionStagePath.getBranch().getBranchId(), executionStagePath.getSha().getShaId(), request.getJobInfoJson())
-                    .returningResult(JOB.JOB_ID, JOB.JOB_INFO, JOB.BRANCH_FK, JOB.SHA_FK, JOB.JOB_INFO_STR)
+            Job insertedJob = dsl.insertInto(JOB, JOB.BRANCH_FK, JOB.JOB_INFO)
+                    .values(executionStagePath.getBranch().getBranchId(), request.getJobInfoJson())
+                    .returningResult(JOB.JOB_ID, JOB.JOB_INFO, JOB.BRANCH_FK, JOB.JOB_INFO_STR)
                     .fetchOne().into(Job.class);
 
             executionStagePath.setJob(insertedJob);
@@ -552,6 +592,7 @@ public class ReportCardService {
         if (executionStagePath.getExecution() == null) {
             Execution execution = new Execution()
                     .setExecutionReference(request.getExecutionReference())
+                    .setSha(request.getSha())
                     .setJobFk(executionStagePath.getJob().getJobId());
             executionDao.insert(execution);
             executionStagePath.setExecution(execution);
@@ -574,7 +615,6 @@ public class ReportCardService {
                 .from(TEST_RESULT)
                 .where(TEST_RESULT.TEST_RESULT_ID.eq(testResultId))
                 .fetchOne().into(TestResult.class);
-
 
         List<TestSuite> testSuites = dsl.
                 select(TEST_SUITE.fields())
@@ -634,9 +674,6 @@ public class ReportCardService {
         }
         return testResults;
     }
-
-
-
 
     public TestResult insertTestResult(TestResult testResult) {
 

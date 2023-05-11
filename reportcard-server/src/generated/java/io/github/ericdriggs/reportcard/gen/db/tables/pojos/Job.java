@@ -22,11 +22,10 @@ import javax.annotation.processing.Generated;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Job implements Serializable {
 
-    private static final long serialVersionUID = -702906061;
+    private static final long serialVersionUID = 1948625296;
 
     private Long    jobId;
     private String  jobInfo;
-    private Long    shaFk;
     private Integer branchFk;
     private String  jobInfoStr;
 
@@ -35,7 +34,6 @@ public class Job implements Serializable {
     public Job(Job value) {
         this.jobId = value.jobId;
         this.jobInfo = value.jobInfo;
-        this.shaFk = value.shaFk;
         this.branchFk = value.branchFk;
         this.jobInfoStr = value.jobInfoStr;
     }
@@ -43,13 +41,11 @@ public class Job implements Serializable {
     public Job(
         Long    jobId,
         String  jobInfo,
-        Long    shaFk,
         Integer branchFk,
         String  jobInfoStr
     ) {
         this.jobId = jobId;
         this.jobInfo = jobInfo;
-        this.shaFk = shaFk;
         this.branchFk = branchFk;
         this.jobInfoStr = jobInfoStr;
     }
@@ -81,21 +77,6 @@ public class Job implements Serializable {
      */
     public Job setJobInfo(String jobInfo) {
         this.jobInfo = jobInfo;
-        return this;
-    }
-
-    /**
-     * Getter for <code>reportcard.job.sha_fk</code>.
-     */
-    public Long getShaFk() {
-        return this.shaFk;
-    }
-
-    /**
-     * Setter for <code>reportcard.job.sha_fk</code>.
-     */
-    public Job setShaFk(Long shaFk) {
-        this.shaFk = shaFk;
         return this;
     }
 
@@ -135,7 +116,6 @@ public class Job implements Serializable {
 
         sb.append(jobId);
         sb.append(", ").append(jobInfo);
-        sb.append(", ").append(shaFk);
         sb.append(", ").append(branchFk);
         sb.append(", ").append(jobInfoStr);
 

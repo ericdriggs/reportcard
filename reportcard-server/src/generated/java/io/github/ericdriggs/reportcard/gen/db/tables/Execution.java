@@ -9,6 +9,7 @@ import io.github.ericdriggs.reportcard.gen.db.Keys;
 import io.github.ericdriggs.reportcard.gen.db.Reportcard;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.ExecutionRecord;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -20,7 +21,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row3;
+import org.jooq.Row6;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -44,7 +45,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Execution extends TableImpl<ExecutionRecord> {
 
-    private static final long serialVersionUID = -1286736245;
+    private static final long serialVersionUID = -1299926826;
 
     /**
      * The reference instance of <code>reportcard.execution</code>
@@ -73,6 +74,21 @@ public class Execution extends TableImpl<ExecutionRecord> {
      * The column <code>reportcard.execution.job_fk</code>.
      */
     public final TableField<ExecutionRecord, Long> JOB_FK = createField(DSL.name("job_fk"), SQLDataType.BIGINT.nullable(false), this, "");
+
+    /**
+     * The column <code>reportcard.execution.job_execution_count</code>.
+     */
+    public final TableField<ExecutionRecord, Integer> JOB_EXECUTION_COUNT = createField(DSL.name("job_execution_count"), SQLDataType.INTEGER, this, "");
+
+    /**
+     * The column <code>reportcard.execution.sha</code>.
+     */
+    public final TableField<ExecutionRecord, String> SHA = createField(DSL.name("sha"), SQLDataType.VARCHAR(32), this, "");
+
+    /**
+     * The column <code>reportcard.execution.created</code>.
+     */
+    public final TableField<ExecutionRecord, LocalDateTime> CREATED = createField(DSL.name("created"), SQLDataType.LOCALDATETIME(0).nullable(false).defaultValue(DSL.field("CURRENT_TIMESTAMP", SQLDataType.LOCALDATETIME)), this, "");
 
     private Execution(Name alias, Table<ExecutionRecord> aliased) {
         this(alias, aliased, null);
@@ -114,7 +130,7 @@ public class Execution extends TableImpl<ExecutionRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.EXECUTION_EXECUTION_CONTEXT_FK_IDX);
+        return Arrays.<Index>asList(Indexes.EXECUTION_EXECUTION_JOB_FK_IDX, Indexes.EXECUTION_EXECUTION_JOB_SHA);
     }
 
     @Override
@@ -129,7 +145,7 @@ public class Execution extends TableImpl<ExecutionRecord> {
 
     @Override
     public List<UniqueKey<ExecutionRecord>> getKeys() {
-        return Arrays.<UniqueKey<ExecutionRecord>>asList(Keys.KEY_EXECUTION_PRIMARY, Keys.KEY_EXECUTION_EXECUTION_ID_UNIQUE);
+        return Arrays.<UniqueKey<ExecutionRecord>>asList(Keys.KEY_EXECUTION_PRIMARY, Keys.KEY_EXECUTION_EXECUTION_ID_UNIQUE, Keys.KEY_EXECUTION_UQ_EXECUTION_JOB_REFERENCE);
     }
 
     @Override
@@ -173,11 +189,11 @@ public class Execution extends TableImpl<ExecutionRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row3 type methods
+    // Row6 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row3<Long, String, Long> fieldsRow() {
-        return (Row3) super.fieldsRow();
+    public Row6<Long, String, Long, Integer, String, LocalDateTime> fieldsRow() {
+        return (Row6) super.fieldsRow();
     }
 }

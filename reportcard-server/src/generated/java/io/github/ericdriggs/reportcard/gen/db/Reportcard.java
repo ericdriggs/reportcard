@@ -9,8 +9,8 @@ import io.github.ericdriggs.reportcard.gen.db.tables.Execution;
 import io.github.ericdriggs.reportcard.gen.db.tables.Job;
 import io.github.ericdriggs.reportcard.gen.db.tables.Org;
 import io.github.ericdriggs.reportcard.gen.db.tables.Repo;
-import io.github.ericdriggs.reportcard.gen.db.tables.Sha;
 import io.github.ericdriggs.reportcard.gen.db.tables.Stage;
+import io.github.ericdriggs.reportcard.gen.db.tables.Storage;
 import io.github.ericdriggs.reportcard.gen.db.tables.TestCase;
 import io.github.ericdriggs.reportcard.gen.db.tables.TestResult;
 import io.github.ericdriggs.reportcard.gen.db.tables.TestStatus;
@@ -39,7 +39,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Reportcard extends SchemaImpl {
 
-    private static final long serialVersionUID = 2006995204;
+    private static final long serialVersionUID = -31741152;
 
     /**
      * The reference instance of <code>reportcard</code>
@@ -72,14 +72,14 @@ public class Reportcard extends SchemaImpl {
     public final Repo REPO = Repo.REPO;
 
     /**
-     * The table <code>reportcard.sha</code>.
-     */
-    public final Sha SHA = Sha.SHA;
-
-    /**
      * The table <code>reportcard.stage</code>.
      */
     public final Stage STAGE = Stage.STAGE;
+
+    /**
+     * The table <code>reportcard.storage</code>.
+     */
+    public final Storage STORAGE = Storage.STORAGE;
 
     /**
      * The table <code>reportcard.test_case</code>.
@@ -122,8 +122,8 @@ public class Reportcard extends SchemaImpl {
             Job.JOB,
             Org.ORG,
             Repo.REPO,
-            Sha.SHA,
             Stage.STAGE,
+            Storage.STORAGE,
             TestCase.TEST_CASE,
             TestResult.TEST_RESULT,
             TestStatus.TEST_STATUS,

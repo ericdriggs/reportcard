@@ -40,7 +40,6 @@ public class InsertBuildStagePathTest extends AbstractDbTest {
         assertNotNull(bsp.getOrg());
         assertNotNull(bsp.getRepo());
         assertNotNull(bsp.getBranch());
-        assertNotNull(bsp.getSha());
         assertNotNull(bsp.getJob());
         assertNotNull(bsp.getExecution());
         assertNotNull(bsp.getStage());
@@ -48,7 +47,7 @@ public class InsertBuildStagePathTest extends AbstractDbTest {
         Assertions.assertEquals(request.getOrg(), bsp.getOrg().getOrgName());
         Assertions.assertEquals(request.getRepo(), bsp.getRepo().getRepoName());
         Assertions.assertEquals(request.getBranch(), bsp.getBranch().getBranchName());
-        Assertions.assertEquals(request.getSha(), bsp.getSha().getSha());
+        Assertions.assertEquals(request.getSha(), bsp.getExecution().getSha());
         JsonAssert.assertJsonEquals(request.getJobInfo(), bsp.getJob().getJobInfo());
         Assertions.assertEquals(request.getExecutionReference(), bsp.getExecution().getExecutionReference());
         Assertions.assertEquals(request.getStage(), bsp.getStage().getStageName());

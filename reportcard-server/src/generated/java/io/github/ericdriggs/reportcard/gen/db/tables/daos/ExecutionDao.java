@@ -7,6 +7,7 @@ package io.github.ericdriggs.reportcard.gen.db.tables.daos;
 import io.github.ericdriggs.reportcard.gen.db.tables.Execution;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.ExecutionRecord;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.annotation.processing.Generated;
@@ -94,5 +95,47 @@ public class ExecutionDao extends DAOImpl<ExecutionRecord, io.github.ericdriggs.
      */
     public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Execution> fetchByJobFk(Long... values) {
         return fetch(Execution.EXECUTION.JOB_FK, values);
+    }
+
+    /**
+     * Fetch records that have <code>job_execution_count BETWEEN lowerInclusive AND upperInclusive</code>
+     */
+    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Execution> fetchRangeOfJobExecutionCount(Integer lowerInclusive, Integer upperInclusive) {
+        return fetchRange(Execution.EXECUTION.JOB_EXECUTION_COUNT, lowerInclusive, upperInclusive);
+    }
+
+    /**
+     * Fetch records that have <code>job_execution_count IN (values)</code>
+     */
+    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Execution> fetchByJobExecutionCount(Integer... values) {
+        return fetch(Execution.EXECUTION.JOB_EXECUTION_COUNT, values);
+    }
+
+    /**
+     * Fetch records that have <code>sha BETWEEN lowerInclusive AND upperInclusive</code>
+     */
+    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Execution> fetchRangeOfSha(String lowerInclusive, String upperInclusive) {
+        return fetchRange(Execution.EXECUTION.SHA, lowerInclusive, upperInclusive);
+    }
+
+    /**
+     * Fetch records that have <code>sha IN (values)</code>
+     */
+    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Execution> fetchBySha(String... values) {
+        return fetch(Execution.EXECUTION.SHA, values);
+    }
+
+    /**
+     * Fetch records that have <code>created BETWEEN lowerInclusive AND upperInclusive</code>
+     */
+    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Execution> fetchRangeOfCreated(LocalDateTime lowerInclusive, LocalDateTime upperInclusive) {
+        return fetchRange(Execution.EXECUTION.CREATED, lowerInclusive, upperInclusive);
+    }
+
+    /**
+     * Fetch records that have <code>created IN (values)</code>
+     */
+    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Execution> fetchByCreated(LocalDateTime... values) {
+        return fetch(Execution.EXECUTION.CREATED, values);
     }
 }

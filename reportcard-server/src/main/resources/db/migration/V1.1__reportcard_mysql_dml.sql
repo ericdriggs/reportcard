@@ -13,18 +13,19 @@ INSERT `reportcard`.`branch`
     (`branch_id`, `branch_name`, `repo_fk`)
 VALUES (1, 'master', '1 ');
 
-INSERT INTO `reportcard`.`sha`
-    (`sha_id`, `sha`, `repo_fk`)
-VALUES (1, 'bdd15b6fae26738ca58f0b300fc43f5872b429bf', 1);
 
 INSERT INTO `reportcard`.`job`
-(`job_id`, `sha_fk`, `branch_fk`, `job_info`)
-VALUES (1, 1, 1, '{ "application":"fooapp", "host": "foocorp.jenkins.com", "pipeline": "foopipeline" }');
+(`job_id`, `branch_fk`, `job_info`)
+VALUES (1, 1, '{ "application":"fooapp", "host": "foocorp.jenkins.com", "pipeline": "foopipeline" }');
+
 
 INSERT INTO `reportcard`.`execution`
-(`execution_id`, `execution_reference`, `job_fk`)
-VALUES (1, "executionReference1", 1);
-
+(`execution_id`,
+ `execution_reference`,
+ `job_fk`,
+ `sha`,
+ `job_execution_count`)
+VALUES (1, "executionReference1", 1, 'bdd15b6fae26738ca58f0b300fc43f5872b429bf', 1 );
 
 INSERT INTO `reportcard`.`stage`
 (`stage_id`,
@@ -67,7 +68,7 @@ INSERT `reportcard`.`test_case`
     (`test_suite_fk`, `name`, `class_name`, `time`, `test_status_fk`)
 values (1, 'testCaseName1', 'testCaseClassName1', 0.500, 1);
 
-INSERT `reportcard`.`test_case`
-    (`test_suite_fk`, `name`, `class_name`, `time`, `test_status_fk`)
-values (1, 'testCaseName2', 'testCaseClassName2', 0.500, 3);
-
+# INSERT `reportcard`.`test_case`
+#     (`test_suite_fk`, `name`, `class_name`, `time`, `test_status_fk`)
+# values (1, 'testCaseName2', 'testCaseClassName2', 0.500, 3);
+#
