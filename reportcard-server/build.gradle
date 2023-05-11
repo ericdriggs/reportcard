@@ -95,6 +95,7 @@ task generateJooqSchemaSource {
                         .withProperties(Arrays.asList(new Property().withKey("ssl").withValue("true")))
                 )
                 .withGenerator(new Generator()
+
                         .withName('org.jooq.codegen.JavaLombokGenerator')
                         .withStrategy(new Strategy()
                                 .withName('org.jooq.codegen.DefaultGeneratorStrategy')
@@ -125,6 +126,7 @@ task generateJooqSchemaSource {
                                 .withPojos(true)
                                 .withImmutablePojos(false)
                                 .withFluentSetters(true)
+                                .withJavaTimeTypes(true)
                         )
                         .withTarget(new Target()
                                 .withPackageName('io.github.ericdriggs.reportcard.gen.db')
@@ -192,6 +194,7 @@ jooq {
                         records = true
                         immutablePojos = false
                         fluentSetters = true
+                        javaTimeTypes = true
                     }
                     target {
                         packageName = 'io.github.ericdriggs.reportcard.gen.db'

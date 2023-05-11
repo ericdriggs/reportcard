@@ -18,7 +18,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row5;
+import org.jooq.Row4;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -42,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Job extends TableImpl<JobRecord> {
 
-    private static final long serialVersionUID = 356559969;
+    private static final long serialVersionUID = 1879259265;
 
     /**
      * The reference instance of <code>reportcard.job</code>
@@ -66,11 +66,6 @@ public class Job extends TableImpl<JobRecord> {
      * The column <code>reportcard.job.job_info</code>.
      */
     public final TableField<JobRecord, String> JOB_INFO = createField(DSL.name("job_info"), SQLDataType.VARCHAR, this, "");
-
-    /**
-     * The column <code>reportcard.job.sha_fk</code>.
-     */
-    public final TableField<JobRecord, Long> SHA_FK = createField(DSL.name("sha_fk"), SQLDataType.BIGINT.nullable(false), this, "");
 
     /**
      * The column <code>reportcard.job.branch_fk</code>.
@@ -132,23 +127,15 @@ public class Job extends TableImpl<JobRecord> {
 
     @Override
     public List<UniqueKey<JobRecord>> getKeys() {
-        return Arrays.<UniqueKey<JobRecord>>asList(Keys.KEY_JOB_PRIMARY, Keys.KEY_JOB_UQ_JOB_BRANCH_SHA_INFO);
+        return Arrays.<UniqueKey<JobRecord>>asList(Keys.KEY_JOB_PRIMARY);
     }
 
     @Override
     public List<ForeignKey<JobRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<JobRecord, ?>>asList(Keys.FK_JOB_SHA, Keys.FK_JOB_BRANCH);
+        return Arrays.<ForeignKey<JobRecord, ?>>asList(Keys.FK_JOB_BRANCH);
     }
 
-    private transient Sha _sha;
     private transient Branch _branch;
-
-    public Sha sha() {
-        if (_sha == null)
-            _sha = new Sha(this, Keys.FK_JOB_SHA);
-
-        return _sha;
-    }
 
     public Branch branch() {
         if (_branch == null)
@@ -184,11 +171,11 @@ public class Job extends TableImpl<JobRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row5 type methods
+    // Row4 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row5<Long, String, Long, Integer, String> fieldsRow() {
-        return (Row5) super.fieldsRow();
+    public Row4<Long, String, Integer, String> fieldsRow() {
+        return (Row4) super.fieldsRow();
     }
 }

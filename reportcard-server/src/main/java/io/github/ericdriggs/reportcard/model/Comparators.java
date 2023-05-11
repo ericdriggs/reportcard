@@ -17,10 +17,7 @@ public class Comparators {
     public static final Comparator<Branch> BRANCH_CASE_INSENSITIVE_ORDER
             = new Comparators.BranchCaseInsensitiveComparator();
 
-    public static final Comparator<Sha> SHA
-            = new Comparators.ShaComparator();
-
-    public static final Comparator<Job> CONTEXT_CASE_INSENSITIVE_ORDER
+    public static final Comparator<Job> JOB_CASE_INSENSITIVE_ORDER
             = new Comparators.ContextCaseInsensitiveComparator();
 
     public static final Comparator<Execution> EXECUTION_CASE_INSENSITIVE_ORDER
@@ -57,14 +54,6 @@ public class Comparators {
 
         public int compare(Branch val1, Branch val2) {
             return compareBranch(val1, val2);
-        }
-    }
-
-    private static class ShaComparator
-            implements Comparator<Sha>, java.io.Serializable {
-        private static final long serialVersionUID = 4527771070609844606L;
-        public int compare(Sha val1, Sha val2) {
-            return compareSha(val1, val2);
         }
     }
 
@@ -118,17 +107,8 @@ public class Comparators {
         );
     }
 
-    public static int compareSha(Sha val1, Sha val2) {
-        return chainCompare(
-                Integer.compare(val1.getRepoFk(), val2.getRepoFk()),
-                ObjectUtils.compare(val1.getSha(), val2.getSha()),
-                Long.compare(val1.getShaId(), val2.getShaId())
-        );
-    }
-
     public static int compareJob(Job val1, Job val2) {
         return chainCompare(
-                Long.compare(val1.getShaFk(), val2.getShaFk()),
                 JsonCompare.compareTo(val1.getJobInfo(), val2.getJobInfo()),
                 compareLowerNullSafe(val1.getJobInfo(), val2.getJobInfo()),
                 Long.compare(val1.getJobId(), val2.getJobId())
@@ -140,6 +120,7 @@ public class Comparators {
                 Long.compare(val1.getJobFk(), val2.getJobFk()),
                 ObjectUtils.compare(val1.getExecutionReference(), val2.getExecutionReference()),
                 ObjectUtils.compare(val1.getExecutionId(), val2.getExecutionId()),
+                ObjectUtils.compare(val1.getSha(), val2.getSha()),
                 Long.compare(val1.getExecutionId(), val2.getExecutionId())
         );
     }

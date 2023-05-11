@@ -44,7 +44,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Stage extends TableImpl<StageRecord> {
 
-    private static final long serialVersionUID = -771129155;
+    private static final long serialVersionUID = -1792824402;
 
     /**
      * The reference instance of <code>reportcard.stage</code>
@@ -129,7 +129,7 @@ public class Stage extends TableImpl<StageRecord> {
 
     @Override
     public List<UniqueKey<StageRecord>> getKeys() {
-        return Arrays.<UniqueKey<StageRecord>>asList(Keys.KEY_STAGE_PRIMARY, Keys.KEY_STAGE_STAGE_ID_UNIQUE);
+        return Arrays.<UniqueKey<StageRecord>>asList(Keys.KEY_STAGE_PRIMARY, Keys.KEY_STAGE_STAGE_ID_UNIQUE, Keys.KEY_STAGE_UQ_EXECUTION_STAGE_NAME);
     }
 
     @Override
