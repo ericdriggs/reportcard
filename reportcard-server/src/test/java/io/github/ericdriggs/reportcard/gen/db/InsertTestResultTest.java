@@ -46,6 +46,7 @@ public class InsertTestResultTest extends AbstractDbTest {
     final static BigDecimal testSuiteTime = new BigDecimal("1.690");
     final static String testSuitePackage = "com.foo.bar";
 
+    final static String testSuiteName = "testSuiteName10";
     final static String testCaseClassName = "testCaseClassName10";
     final static String testCaseName = "testCaseName10";
     final static TestStatus testCaseStatus = TestStatus.FAILURE;

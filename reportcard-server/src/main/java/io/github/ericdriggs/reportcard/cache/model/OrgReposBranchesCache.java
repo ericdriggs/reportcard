@@ -18,7 +18,7 @@ public class OrgReposBranchesCache extends AbstractAsyncCache<OrgName, Map<Org,M
 
     @Override
     protected SyncAsyncDuration getSyncAsyncDuration() {
-        return CacheDuration.MINUTE;
+        return CacheDuration.MINUTES(5);
     }
 
     @Override

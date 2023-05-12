@@ -4,17 +4,17 @@ import io.github.ericdriggs.reportcard.cache.AbstractAsyncCache;
 import io.github.ericdriggs.reportcard.cache.CacheDuration;
 import io.github.ericdriggs.reportcard.cache.SyncAsyncDuration;
 import io.github.ericdriggs.reportcard.cache.dto.OrgRepoBranchJob;
+import io.github.ericdriggs.reportcard.cache.dto.OrgRepoBranchJobExecution;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.Execution;
-import io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.Stage;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestResult;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
-public class JobExecutionsStagesCache extends AbstractAsyncCache<OrgRepoBranchJob, Map<Job,Map<Execution, Set<Stage>>>> {
+public class ExecutionStagesTestResultsCache extends AbstractAsyncCache<OrgRepoBranchJobExecution, Map<Execution,Map<Stage, Set<TestResult>>>> {
 
-    public JobExecutionsStagesCache(OrgRepoBranchJob key) {
+    public ExecutionStagesTestResultsCache(OrgRepoBranchJobExecution key) {
         super(key);
     }
 
@@ -24,7 +24,7 @@ public class JobExecutionsStagesCache extends AbstractAsyncCache<OrgRepoBranchJo
     }
 
     @Override
-    protected Map<Job,Map<Execution, Set<Stage>>> getUpdatedCacheValue() {
-        return StaticReportCardService.INSTANCE.getJobExecutionsStages(key.getOrg(), key.getRepo(), key.getBranch(), key.getJobId());
+    protected Map<Execution,Map<Stage, Set<TestResult>>> getUpdatedCacheValue() {
+        return StaticReportCardService.INSTANCE.getExecutionStagesTestResults(key.getOrg(), key.getRepo(), key.getBranch(), key.getJobId(), key.getExecutionId());
     }
 }

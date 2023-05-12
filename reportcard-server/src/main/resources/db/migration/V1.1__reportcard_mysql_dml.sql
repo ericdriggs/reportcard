@@ -61,14 +61,14 @@ VALUES (1, --       <{test_result_id: }>
         3.300); --   <{time: }>,
 
 INSERT `reportcard`.`test_suite`
-(`test_result_fk`, `package`, `tests`, `skipped`, `error`, `failure`, `time`)
-values (1, 'com.foo.baz', 8, 7, 5, 6, 1.010);
+(`test_result_fk`, `name`, `package`, `tests`, `skipped`, `error`, `failure`, `time`)
+values (1, `testSuiteName1`, 'com.foo.baz', 8, 7, 5, 6, 1.010);
 
 INSERT `reportcard`.`test_case`
     (`test_suite_fk`, `name`, `class_name`, `time`, `test_status_fk`)
 values (1, 'testCaseName1', 'testCaseClassName1', 0.500, 1);
 
-# INSERT `reportcard`.`test_case`
-#     (`test_suite_fk`, `name`, `class_name`, `time`, `test_status_fk`)
-# values (1, 'testCaseName2', 'testCaseClassName2', 0.500, 3);
-#
+INSERT `reportcard`.`test_case`
+    (`test_suite_fk`, `name`, `class_name`, `time`, `test_status_fk`)
+values (1, 'testCaseName2', 'testCaseClassName2', 0.500, 3);
+

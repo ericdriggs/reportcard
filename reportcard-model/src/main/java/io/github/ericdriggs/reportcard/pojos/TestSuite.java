@@ -3,7 +3,6 @@
  */
 package io.github.ericdriggs.reportcard.pojos;
 
-
 import lombok.Data;
 
 import java.io.Serializable;
@@ -16,18 +15,19 @@ public class TestSuite implements Serializable {
 
     private static final long serialVersionUID = -200588524670176256L;
 
-    private Long       testSuiteId;
-    private Long       testResultFk;
-    private Integer    tests;
-    private Integer    skipped;
-    private Integer    error;
-    private Integer    failure;
+    private Long testSuiteId;
+    private Long testResultFk;
+    private String name;
+    private Integer tests;
+    private Integer skipped;
+    private Integer error;
+    private Integer failure;
     private BigDecimal time;
-    private String     package_;
-    private String     group;
-    private String     properties;
-    private Boolean    isSuccess;
-    private Boolean    hasSkip;
+    private String package_;
+    private String group;
+    private String properties;
+    private Boolean isSuccess;
+    private Boolean hasSkip;
 
     public String getPackage() {
         return package_;

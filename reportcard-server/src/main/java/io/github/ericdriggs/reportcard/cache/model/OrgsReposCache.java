@@ -20,7 +20,7 @@ public class OrgsReposCache extends AbstractAsyncCache<String, Map<Org,Set<Repo>
 
     @Override
     protected SyncAsyncDuration getSyncAsyncDuration() {
-        return CacheDuration.MINUTE;
+        return CacheDuration.MINUTES(5);
     }
 
     @Override

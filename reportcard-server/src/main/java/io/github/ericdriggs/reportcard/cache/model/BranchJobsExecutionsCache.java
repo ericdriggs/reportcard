@@ -19,7 +19,7 @@ public class BranchJobsExecutionsCache extends AbstractAsyncCache<OrgRepoBranch,
 
     @Override
     protected SyncAsyncDuration getSyncAsyncDuration() {
-        return CacheDuration.MINUTE;
+        return CacheDuration.MINUTES(5);
     }
 
     @Override

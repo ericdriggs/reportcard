@@ -21,7 +21,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row12;
+import org.jooq.Row13;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -45,7 +45,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestSuite extends TableImpl<TestSuiteRecord> {
 
-    private static final long serialVersionUID = 1790513106;
+    private static final long serialVersionUID = -940751344;
 
     /**
      * The reference instance of <code>reportcard.test_suite</code>
@@ -69,6 +69,11 @@ public class TestSuite extends TableImpl<TestSuiteRecord> {
      * The column <code>reportcard.test_suite.test_result_fk</code>.
      */
     public final TableField<TestSuiteRecord, Long> TEST_RESULT_FK = createField(DSL.name("test_result_fk"), SQLDataType.BIGINT.nullable(false), this, "");
+
+    /**
+     * The column <code>reportcard.test_suite.name</code>.
+     */
+    public final TableField<TestSuiteRecord, String> NAME = createField(DSL.name("name"), SQLDataType.VARCHAR(1024).nullable(false), this, "");
 
     /**
      * The column <code>reportcard.test_suite.tests</code>.
@@ -219,11 +224,11 @@ public class TestSuite extends TableImpl<TestSuiteRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row12 type methods
+    // Row13 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row12<Long, Long, Integer, Integer, Integer, Integer, BigDecimal, String, String, String, Boolean, Boolean> fieldsRow() {
-        return (Row12) super.fieldsRow();
+    public Row13<Long, Long, String, Integer, Integer, Integer, Integer, BigDecimal, String, String, String, Boolean, Boolean> fieldsRow() {
+        return (Row13) super.fieldsRow();
     }
 }

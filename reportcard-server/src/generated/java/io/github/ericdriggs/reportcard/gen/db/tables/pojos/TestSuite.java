@@ -23,10 +23,11 @@ import javax.annotation.processing.Generated;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestSuite implements Serializable {
 
-    private static final long serialVersionUID = -289714241;
+    private static final long serialVersionUID = 2120486675;
 
     private Long       testSuiteId;
     private Long       testResultFk;
+    private String     name;
     private Integer    tests;
     private Integer    skipped;
     private Integer    error;
@@ -43,6 +44,7 @@ public class TestSuite implements Serializable {
     public TestSuite(TestSuite value) {
         this.testSuiteId = value.testSuiteId;
         this.testResultFk = value.testResultFk;
+        this.name = value.name;
         this.tests = value.tests;
         this.skipped = value.skipped;
         this.error = value.error;
@@ -58,6 +60,7 @@ public class TestSuite implements Serializable {
     public TestSuite(
         Long       testSuiteId,
         Long       testResultFk,
+        String     name,
         Integer    tests,
         Integer    skipped,
         Integer    error,
@@ -71,6 +74,7 @@ public class TestSuite implements Serializable {
     ) {
         this.testSuiteId = testSuiteId;
         this.testResultFk = testResultFk;
+        this.name = name;
         this.tests = tests;
         this.skipped = skipped;
         this.error = error;
@@ -110,6 +114,21 @@ public class TestSuite implements Serializable {
      */
     public TestSuite setTestResultFk(Long testResultFk) {
         this.testResultFk = testResultFk;
+        return this;
+    }
+
+    /**
+     * Getter for <code>reportcard.test_suite.name</code>.
+     */
+    public String getName() {
+        return this.name;
+    }
+
+    /**
+     * Setter for <code>reportcard.test_suite.name</code>.
+     */
+    public TestSuite setName(String name) {
+        this.name = name;
         return this;
     }
 
@@ -269,6 +288,7 @@ public class TestSuite implements Serializable {
 
         sb.append(testSuiteId);
         sb.append(", ").append(testResultFk);
+        sb.append(", ").append(name);
         sb.append(", ").append(tests);
         sb.append(", ").append(skipped);
         sb.append(", ").append(error);

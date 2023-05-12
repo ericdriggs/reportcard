@@ -18,7 +18,7 @@ public class RepoBranchesJobsCache extends AbstractAsyncCache<OrgRepo, Map<Repo,
 
     @Override
     protected SyncAsyncDuration getSyncAsyncDuration() {
-        return CacheDuration.MINUTE;
+        return CacheDuration.MINUTES(5);
     }
 
     @Override

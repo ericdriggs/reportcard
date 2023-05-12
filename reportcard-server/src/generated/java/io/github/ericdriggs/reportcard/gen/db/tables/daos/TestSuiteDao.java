@@ -84,6 +84,20 @@ public class TestSuiteDao extends DAOImpl<TestSuiteRecord, io.github.ericdriggs.
     }
 
     /**
+     * Fetch records that have <code>name BETWEEN lowerInclusive AND upperInclusive</code>
+     */
+    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestSuite> fetchRangeOfName(String lowerInclusive, String upperInclusive) {
+        return fetchRange(TestSuite.TEST_SUITE.NAME, lowerInclusive, upperInclusive);
+    }
+
+    /**
+     * Fetch records that have <code>name IN (values)</code>
+     */
+    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestSuite> fetchByName(String... values) {
+        return fetch(TestSuite.TEST_SUITE.NAME, values);
+    }
+
+    /**
      * Fetch records that have <code>tests BETWEEN lowerInclusive AND upperInclusive</code>
      */
     public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestSuite> fetchRangeOfTests(Integer lowerInclusive, Integer upperInclusive) {

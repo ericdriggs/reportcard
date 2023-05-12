@@ -1,5 +1,6 @@
 package io.github.ericdriggs.reportcard.cache;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -19,8 +20,9 @@ public class EmptyUtil {
             return true;
         } else if (obj instanceof String) {
             String str = (String) obj;
-            return StringUtils.isEmpty(str.trim());
+            return str.trim().isEmpty();
         } else if (obj instanceof Collection<?>) {
+            //noinspection rawtypes
             return CollectionUtils.isEmpty((Collection) obj);
         } else if (obj instanceof Map) {
             return ((Map<?, ?>) obj).isEmpty();
