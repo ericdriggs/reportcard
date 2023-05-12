@@ -17,7 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.math.BigInteger;
+
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.ConcurrentSkipListSet;
@@ -75,11 +75,35 @@ public class ReportCardService {
     }
 
     public Set<Org> getOrgs() {
-        Set<Org> orgs = new TreeSet<>(Comparators.ORG_CASE_INSENSITIVE_ORDER);
+        Set<Org> orgs = new ConcurrentSkipListSet<>(Comparators.ORG_CASE_INSENSITIVE_ORDER);
         orgs.addAll(dsl.select().from(ORG)
                 .fetch()
                 .into(Org.class));
         return orgs;
+    }
+
+    public Map<Org, Set<Repo>> getOrgsRepos() {
+
+        Map<Org, Set<Repo>> orgRepoMap = new ConcurrentSkipListMap<>(Comparators.ORG_CASE_INSENSITIVE_ORDER);
+        Result<Record> recordResult = dsl.select()
+                .from(ORG)
+                .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID))
+                .fetch();
+
+        for (Record record : recordResult) {
+            Org org = record.into(Org.class);
+            Repo repo = record.into(Repo.class);
+
+            if (!orgRepoMap.containsKey(org)) {
+                synchronized (org.getOrgName() + ":" + repo.getRepoName()) {
+                    if (!orgRepoMap.containsKey(org)) {
+                        orgRepoMap.put(org, new ConcurrentSkipListSet<>(Comparators.REPO_CASE_INSENSITIVE_ORDER));
+                    }
+                }
+            }
+            orgRepoMap.get(org).add(repo);
+        }
+        return orgRepoMap;
     }
 
     public Org getOrg(String orgName) {
@@ -93,46 +117,34 @@ public class ReportCardService {
         return record.into(Org.class);
     }
 
-    public Set<Repo> getRepos(String orgName) {
-        Set<Repo> repos = new TreeSet<>(Comparators.REPO_CASE_INSENSITIVE_ORDER);
-        repos.addAll(dsl.
-                select(REPO.fields())
-                .from(ORG)
-                .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
-                        .and(ORG.ORG_NAME.eq(orgName)))
-                .fetch()
-                .into(Repo.class));
-        return repos;
-    }
+    public Map<Org,Map<Repo, Set<Branch>>> getOrgReposBranches(String orgName) {
 
-    public Map<Org, Set<Repo>> getOrgsRepos() {
-
-        Map<Org, Set<Repo>> orgRepoMap = new ConcurrentSkipListMap<>(Comparators.ORG_CASE_INSENSITIVE_ORDER);
+        Map<Repo, Set<Branch>> repoBranchMap = new ConcurrentSkipListMap<>(Comparators.REPO_CASE_INSENSITIVE_ORDER);
         Result<Record> recordResult = dsl.select()
                 .from(ORG)
-                .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID))
+                .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID))
+                .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID))
+                .where(ORG.ORG_NAME.eq(orgName))
                 .fetch();
 
+        Org org = null;
         for (Record record : recordResult) {
-            Org org = record.into(Org.class);
+            if (org == null) {
+                org = record.into(Org.class);
+            }
             Repo repo = record.into(Repo.class);
+            Branch branch = record.into(Branch.class);
 
-            if (!orgRepoMap.containsKey(org)) {
-                synchronized (org.getOrgName() + ":" + repo.getRepoName()) {
-                    if (!orgRepoMap.containsKey(org)) {
-                        orgRepoMap.put(org, new TreeSet<>(Comparators.REPO_CASE_INSENSITIVE_ORDER));
+            if (!repoBranchMap.containsKey(repo)) {
+                synchronized (repo.getRepoName() + ":" + branch.getBranchName()) {
+                    if (!repoBranchMap.containsKey(repo)) {
+                        repoBranchMap.put(repo, new ConcurrentSkipListSet<>(Comparators.BRANCH_CASE_INSENSITIVE_ORDER));
                     }
                 }
             }
-            orgRepoMap.get(org).add(repo);
+            repoBranchMap.get(repo).add(branch);
         }
-        return orgRepoMap;
-    }
-
-    public Map<Org, Set<Repo>> getOrgRepos(String orgName) {
-        Org org = getOrg(orgName);
-        Set<Repo> repos = getRepos(orgName);
-        return Collections.singletonMap(org, repos);
+        return Collections.singletonMap(org,repoBranchMap);
     }
 
     public Repo getRepo(String orgName, String repoName) {
@@ -140,8 +152,9 @@ public class ReportCardService {
                 select(REPO.fields())
                 .from(ORG)
                 .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
-                        .and(ORG.ORG_NAME.eq(orgName))
-                        .and(REPO.REPO_NAME.eq(repoName)))
+                        .and(REPO.REPO_NAME.eq(repoName))
+                )
+                .where(ORG.ORG_NAME.eq(orgName))
                 .fetchOne()
                 .into(Repo.class);
         if (ret == null) {
@@ -150,37 +163,46 @@ public class ReportCardService {
         return ret;
     }
 
-    //TODO: refactor to use single select
-    public Map<Repo, Set<Branch>> getReposBranches(String orgName) {
-        Set<Repo> repos = getRepos(orgName);
-        Map<Repo, Set<Branch>> repoBranchMap = new ConcurrentSkipListMap<>(Comparators.REPO_CASE_INSENSITIVE_ORDER);
-        repos.parallelStream().forEach(repo -> {
-            repoBranchMap.put(repo, getBranches(orgName, repo.getRepoName()));
-        });
-        return repoBranchMap;
-    }
+    public Map<Repo,Map<Branch, Set<Job>>> getRepoBranchesJobs(String orgName, String repoName) {
 
-    public Map<Repo, Set<Branch>> getRepoBranches(String orgName, String repoName) {
-        Repo repo = getRepo(orgName, repoName);
-        return Collections.singletonMap(repo, getBranches(orgName, repoName));
-    }
-
-    public Set<Branch> getBranches(String orgName, String repoName) {
-        Set<Branch> branches = new TreeSet<>(Comparators.BRANCH_CASE_INSENSITIVE_ORDER);
-        branches.addAll(dsl.
-                select(BRANCH.fields())
+        Map<Branch, Set<Job>> branchesJobsMap = new ConcurrentSkipListMap<>(Comparators.BRANCH_CASE_INSENSITIVE_ORDER);
+        Result<Record> recordResult = dsl.select()
                 .from(ORG)
-                .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
-                        .and(ORG.ORG_NAME.eq(orgName))
+                .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
                         .and(REPO.REPO_NAME.eq(repoName)))
-                .join(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID))
-                .fetch()
-                .into(Branch.class));
-        return branches;
+                .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID))
+                .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
+                .where(ORG.ORG_NAME.eq(orgName))
+                .fetch();
+
+        Repo repo = null;
+        for (Record record : recordResult) {
+            if (repo == null) {
+                repo = record.into(Repo.class);
+            }
+            Branch branch = record.into(Branch.class);
+            Job job = record.into(Job.class);
+
+            if (!branchesJobsMap.containsKey(branch)) {
+                synchronized (branch.getBranchName() + ":" + job.getJobId()) {
+                    if (!branchesJobsMap.containsKey(branch)) {
+                        branchesJobsMap.put(branch, new ConcurrentSkipListSet<>(Comparators.JOB_CASE_INSENSITIVE_ORDER));
+                    }
+                }
+            }
+            branchesJobsMap.get(branch).add(job);
+        }
+        return Collections.singletonMap(repo, branchesJobsMap);
     }
 
     public Branch getBranch(String orgName, String repoName, String branchName) {
-        Branch ret = getBranchSelect(orgName, repoName, branchName, BRANCH.fields())
+        Branch ret = dsl.select(BRANCH.fields())
+                .from(ORG)
+                .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
+                        .and(REPO.REPO_NAME.eq(repoName)))
+                .join(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
+                        .and(BRANCH.BRANCH_NAME.eq(branchName)))
+                .where(ORG.ORG_NAME.eq(orgName))
                 .fetchOne()
                 .into(Branch.class);
         if (ret == null) {
@@ -189,39 +211,46 @@ public class ReportCardService {
         return ret;
     }
 
-    protected SelectOnConditionStep<Record> getBranchSelect(String orgName, String repoName, String branchName, SelectFieldOrAsterisk... fields) {
-        return  dsl.select(fields)
-                .from(BRANCH)
-                .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
-                        .and(ORG.ORG_NAME.eq(orgName))
-                        .and(REPO.REPO_NAME.eq(repoName)))
-                .join(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
-                        .and(BRANCH.BRANCH_NAME.eq(branchName)));
-    }
+    public Map<Branch,Map<Job, Set<Execution>>> getBranchJobsExecutions(String orgName, String repoName, String branchName,  Map<String,String> jobInfoFilters) {
 
-    protected SelectOnConditionStep<Record> getJobsSelect(String orgName, String repoName, String branchName, SelectFieldOrAsterisk... fields) {
-        return dsl.select(fields)
+        Map<Job, Set<Execution>> jobExecuctionMap = new ConcurrentSkipListMap<>(Comparators.JOB_CASE_INSENSITIVE_ORDER);
+        Result<Record> recordResult = dsl.select()
                 .from(ORG)
-                .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
-                        .and(ORG.ORG_NAME.eq(orgName))
+                .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
                         .and(REPO.REPO_NAME.eq(repoName)))
-                .join(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
+                .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
                         .and(BRANCH.BRANCH_NAME.eq(branchName)))
-                .join(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID));
+                .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
+                .leftJoin(EXECUTION).on(EXECUTION.JOB_FK.eq(JOB.JOB_ID))
+                .where(ORG.ORG_NAME.eq(orgName))
+                .fetch();
+
+        //TODO: filter jobs
+
+        Branch branch = null;
+        for (Record record : recordResult) {
+            if (branch == null) {
+                branch = record.into(Branch.class);
+            }
+            Job job = record.into(Job.class);
+            Execution execution = record.into(Execution.class);
+
+            if (!jobExecuctionMap.containsKey(job)) {
+                synchronized (job.getJobInfoStr() + ":" + execution.getExecutionId()) {
+                    if (!jobExecuctionMap.containsKey(job)) {
+                        jobExecuctionMap.put(job, new ConcurrentSkipListSet<>(Comparators.EXECUTION_CASE_INSENSITIVE_ORDER));
+                    }
+                }
+            }
+            jobExecuctionMap.get(job).add(execution);
+        }
+        return Collections.singletonMap(branch, jobExecuctionMap);
     }
 
-    public Set<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job> getJobs(String orgName, String repoName, String branchName, Map<String,String> jobInfoFilters) {
-        Set<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job> jobs = new TreeSet<>(Comparators.JOB_CASE_INSENSITIVE_ORDER);
-        jobs.addAll(
-                getJobsSelect(orgName, repoName, branchName, JOB.fields()).fetch()
-                        .into(io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job.class));
 
-        //TODO: filter json based on metadata
-        return jobs;
-    }
 
-    public io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job getJob(String orgName, String repoName, String branchName, Long jobId) {
-        Set<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job> jobs = new TreeSet<>(Comparators.JOB_CASE_INSENSITIVE_ORDER);
+    public Job getJob(String orgName, String repoName, String branchName, Long jobId) {
+        Set<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job> jobs = new ConcurrentSkipListSet<>(Comparators.JOB_CASE_INSENSITIVE_ORDER);
 
         io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job ret = dsl.select(JOB.fields())
                 .from(ORG)
@@ -241,28 +270,91 @@ public class ReportCardService {
         return ret;
     }
 
-    public Set<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Execution> getExecutions(String orgName, String repoName, String branchName, Long jobId, Map<String,String> jobInfoFilters) {
-        Set<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Execution> executions = new TreeSet<>(Comparators.EXECUTION_CASE_INSENSITIVE_ORDER);
-        //TODO: use filters
-        executions.addAll(
-                dsl.select(JOB.fields())
-                        .from(ORG)
-                        .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
-                                .and(ORG.ORG_NAME.eq(orgName))
-                                .and(REPO.REPO_NAME.eq(repoName)))
-                        .join(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
-                                .and(BRANCH.BRANCH_NAME.eq(branchName)))
-                        .join(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID)
-                                .and(JOB.JOB_ID.eq(jobId)))
-                        .join(EXECUTION).on(EXECUTION.JOB_FK.eq(JOB.JOB_ID))
-                        .fetch()
-                        .into(io.github.ericdriggs.reportcard.gen.db.tables.pojos.Execution.class)
-        );
-        return executions;
+    public Map<Job,Map<Execution, Set<Stage>>> getJobExecutionsStages(String orgName, String repoName, String branchName, Long jobId, Map<String,String> jobInfoFilters) {
+
+
+        Map<Execution, Set<Stage>> executionStageMap = new ConcurrentSkipListMap<>(Comparators.EXECUTION_CASE_INSENSITIVE_ORDER);
+        Result<Record> recordResult = dsl.select()
+                .from(ORG)
+                .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
+                        .and(REPO.REPO_NAME.eq(repoName)))
+                .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
+                        .and(BRANCH.BRANCH_NAME.eq(branchName)))
+                .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID)
+                        .and(JOB.JOB_ID.eq(jobId)))
+                .leftJoin(EXECUTION).on(EXECUTION.JOB_FK.eq(JOB.JOB_ID))
+                .leftJoin(STAGE).on(STAGE.EXECUTION_FK.eq(EXECUTION.EXECUTION_ID))
+                .where(ORG.ORG_NAME.eq(orgName))
+                .fetch();
+
+        //TODO: filter jobs
+
+        Job job = null;
+        for (Record record : recordResult) {
+            if (job == null) {
+                job = record.into(Job.class);
+            }
+            Execution execution = record.into(Execution.class);
+            Stage stage = record.into(Stage.class);
+
+
+            if (!executionStageMap.containsKey(execution)) {
+                synchronized (job.getJobInfoStr() + ":" + execution.getExecutionId()) {
+                    if (!executionStageMap.containsKey(job)) {
+                        executionStageMap.put(execution, new ConcurrentSkipListSet<>(Comparators.STAGE_CASE_INSENSITIVE_ORDER));
+                    }
+                }
+            }
+            executionStageMap.get(job).add(stage);
+        }
+        return Collections.singletonMap(job, executionStageMap);
     }
 
-    public Set<Execution> getExecutionsForSha(String orgName, String repoName, String branchName, String sha, Map<String,String> jobInfoFilters) {
-        Set<Execution> executions = new TreeSet<>(Comparators.EXECUTION_CASE_INSENSITIVE_ORDER);
+    public Execution getExecution(String orgName, String repoName, String branchName, Long jobId, Long executionId) {
+
+        Execution ret = dsl.select(JOB.fields())
+                .from(ORG)
+                .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
+                        .and(ORG.ORG_NAME.eq(orgName))
+                        .and(REPO.REPO_NAME.eq(repoName)))
+                .join(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
+                        .and(BRANCH.BRANCH_NAME.eq(branchName)))
+                .join(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID)
+                        .and(JOB.JOB_ID.eq(jobId)))
+                .join(EXECUTION).on(EXECUTION.JOB_FK.eq(JOB.JOB_ID)
+                        .and(EXECUTION.EXECUTION_ID.eq(executionId)))
+                .fetchOne()
+                .into(io.github.ericdriggs.reportcard.gen.db.tables.pojos.Execution.class);
+
+        if (ret == null) {
+            throwNotFound(orgName, repoName, branchName, Long.toString(jobId), Long.toString(executionId));
+        }
+        return ret;
+    }
+
+
+//    public Set<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Execution> getExecutions(String orgName, String repoName, String branchName, Long jobId, Map<String, String> jobInfoFilters) {
+//        Set<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Execution> executions = new ConcurrentSkipListSet<>(Comparators.EXECUTION_CASE_INSENSITIVE_ORDER);
+//        //TODO: use filters
+//        executions.addAll(
+//                dsl.select(JOB.fields())
+//                        .from(ORG)
+//                        .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
+//                                .and(ORG.ORG_NAME.eq(orgName))
+//                                .and(REPO.REPO_NAME.eq(repoName)))
+//                        .join(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
+//                                .and(BRANCH.BRANCH_NAME.eq(branchName)))
+//                        .join(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID)
+//                                .and(JOB.JOB_ID.eq(jobId)))
+//                        .join(EXECUTION).on(EXECUTION.JOB_FK.eq(JOB.JOB_ID))
+//                        .fetch()
+//                        .into(io.github.ericdriggs.reportcard.gen.db.tables.pojos.Execution.class)
+//        );
+//        return executions;
+//    }
+
+    public Set<Execution> getExecutionsForSha(String orgName, String repoName, String branchName, String sha, Map<String, String> jobInfoFilters) {
+        Set<Execution> executions = new ConcurrentSkipListSet<>(Comparators.EXECUTION_CASE_INSENSITIVE_ORDER);
         //TODO: use filters
         executions.addAll(
                 dsl.select(JOB.fields())
@@ -303,27 +395,7 @@ public class ReportCardService {
         return ret;
     }
 
-    public Execution getExecution(String orgName, String repoName, String branchName, Long jobId, Long executionId) {
 
-        Execution ret = dsl.select(JOB.fields())
-                .from(ORG)
-                .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
-                        .and(ORG.ORG_NAME.eq(orgName))
-                        .and(REPO.REPO_NAME.eq(repoName)))
-                .join(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
-                        .and(BRANCH.BRANCH_NAME.eq(branchName)))
-                .join(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID)
-                        .and (JOB.JOB_ID.eq(jobId)))
-                .join(EXECUTION).on(EXECUTION.JOB_FK.eq(JOB.JOB_ID)
-                        .and(EXECUTION.EXECUTION_ID.eq(executionId)))
-                .fetchOne()
-                .into(io.github.ericdriggs.reportcard.gen.db.tables.pojos.Execution.class);
-
-        if (ret == null) {
-            throwNotFound(orgName, repoName, branchName, Long.toString(jobId), Long.toString(executionId));
-        }
-        return ret;
-    }
 
 //    public Map<Execution, Set<Stage>> getExecutionsStages(String orgName, String repoName, String branchName, String shaString, Map<String, String> metadataFilters) {
 //        Set<Execution> contexts = getExecutions(orgName, repoName, branchName, shaString);
@@ -341,7 +413,7 @@ public class ReportCardService {
 
     public Set<Stage> getStages(String orgName, String repoName, String branchName, String sha, String executionReference) {
 
-        Set<Stage> stages = new TreeSet<>(Comparators.STAGE_CASE_INSENSITIVE_ORDER);
+        Set<Stage> stages = new ConcurrentSkipListSet<>(Comparators.STAGE_CASE_INSENSITIVE_ORDER);
         stages.addAll(
                 dsl.select(STAGE.fields())
                         .from(ORG)
@@ -364,7 +436,7 @@ public class ReportCardService {
 
     public Set<Stage> getStagesFromIds(String orgName, String repoName, String branchName, Long jobId, Long executionId) {
 
-        Set<Stage> stages = new TreeSet<>(Comparators.STAGE_CASE_INSENSITIVE_ORDER);
+        Set<Stage> stages = new ConcurrentSkipListSet<>(Comparators.STAGE_CASE_INSENSITIVE_ORDER);
         stages.addAll(
                 dsl.select(STAGE.fields())
                         .from(ORG)
@@ -410,7 +482,7 @@ public class ReportCardService {
     }
 
     public Stage getStage(String orgName, String repoName, String branchName, String sha, String executionReference, String stageName) {
-        Stage ret =  dsl.select(STAGE.fields())
+        Stage ret = dsl.select(STAGE.fields())
                 .from(ORG)
                 .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
                         .and(ORG.ORG_NAME.eq(orgName))
@@ -574,7 +646,6 @@ public class ReportCardService {
             executionStagePath.setBranch(branch);
         }
 
-
         if (executionStagePath.getJob() == null) {
             io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job job = new io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job()
                     .setJobInfo(request.getJobInfoJson())
@@ -640,7 +711,7 @@ public class ReportCardService {
 
     public Set<TestResult> getTestResults(Long stageId) {
 
-        Set<TestResult> testResults = new TreeSet<>(Comparators.TEST_RESULT_CASE_INSENSITIVE_ORDER);
+        Set<TestResult> testResults = new ConcurrentSkipListSet<>(Comparators.TEST_RESULT_CASE_INSENSITIVE_ORDER);
         testResults.addAll(
                 dsl.
                         select(TEST_RESULT.fields())

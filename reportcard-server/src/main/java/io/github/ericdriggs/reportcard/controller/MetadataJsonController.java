@@ -1,10 +1,14 @@
 package io.github.ericdriggs.reportcard.controller;
 
-import java.math.BigInteger;
 import java.util.Map;
 import java.util.Set;
 
 import io.github.ericdriggs.reportcard.ReportCardService;
+import io.github.ericdriggs.reportcard.cache.dto.OrgName;
+import io.github.ericdriggs.reportcard.cache.dto.OrgRepo;
+import io.github.ericdriggs.reportcard.cache.dto.OrgRepoBranch;
+import io.github.ericdriggs.reportcard.cache.dto.OrgRepoBranchJob;
+import io.github.ericdriggs.reportcard.cache.model.*;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.*;
 import io.github.ericdriggs.reportcard.model.TestResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,75 +31,41 @@ public class MetadataJsonController {
     }
 
     @GetMapping(path = "", produces = "application/json")
-    public ResponseEntity<Map<Org, Set<Repo>>> getOrgs() {
-        return new ResponseEntity<>(reportCardService.getOrgsRepos(), HttpStatus.OK);
+    public ResponseEntity<Map<Org, Set<Repo>>> getOrgsRepos() {
+        return new ResponseEntity<>(OrgsReposCache.INSTANCE.getCache(), HttpStatus.OK);
     }
 
-    @GetMapping(path = "org/{org}", produces = "application/json")
-    public ResponseEntity<Map<Org,Set<Repo>>> getOrg(@PathVariable String org) {
-        return new ResponseEntity<>(reportCardService.getOrgRepos(org), HttpStatus.OK);
+    @GetMapping(path = {"org/{org}", "org/{org}/repo"}, produces = "application/json")
+    public ResponseEntity<Map<Org,Map<Repo,Set<Branch>>>> getOrgReposBranches(@PathVariable String org) {
+        return new ResponseEntity<>(OrgReposBranchesCacheMap.INSTANCE.getValue(new OrgName(org)), HttpStatus.OK);
     }
 
-    @GetMapping(path = "org/{org}/repo", produces = "application/json")
-    public ResponseEntity<Map<Repo,Set<Branch>>> getRepos(@PathVariable String org) {
-        return new ResponseEntity<>(reportCardService.getReposBranches(org), HttpStatus.OK);
+    @GetMapping(path = {"org/{org}/repo/{repo}", "org/{org}/repo/{repo}/branch"}, produces = "application/json")
+    public ResponseEntity<Map<Repo,Map<Branch,Set<Job>>>> getRepoBranchesJobs(@PathVariable String org, @PathVariable String repo) {
+        return new ResponseEntity<>(RepoBranchesJobsCacheMap.INSTANCE.getValue(new OrgRepo(org, repo)), HttpStatus.OK);
     }
 
-    @GetMapping(path = "org/{org}/repo/{repo}", produces = "application/json")
-    public ResponseEntity<Map<Repo,Set<Branch>>> getRepo(@PathVariable String org, @PathVariable String repo) {
-        return new ResponseEntity<>(reportCardService.getRepoBranches(org, repo), HttpStatus.OK);
-    }
-
-    @GetMapping(path = "org/{org}/repo/{repo}/branch", produces = "application/json")
-    public ResponseEntity<Set<Branch>> getBranches(@PathVariable String org, @PathVariable String repo) {
-        return new ResponseEntity<>(reportCardService.getBranches(org, repo), HttpStatus.OK);
-    }
-
-    @GetMapping(path = "org/{org}/repo/{repo}/branch/{branch}", produces = "application/json")
-    public ResponseEntity<Branch> getBranch(
-            @PathVariable String org, @PathVariable String repo, @PathVariable String branch) {
-        return new ResponseEntity<>(reportCardService.getBranch(org, repo, branch), HttpStatus.OK);
-    }
-
-    @GetMapping(path = "org/{org}/repo/{repo}/branch/{branch}/job", produces = "application/json")
-    public ResponseEntity<Set<Job>> getJobs(
+    @GetMapping(path = {"org/{org}/repo/{repo}/branch/{branch}", "org/{org}/repo/{repo}/branch/{branch}/job"}, produces = "application/json")
+    public ResponseEntity<Map<Branch,Map<Job,Set<Execution>>>> getBranchJobsExecutions(
             @PathVariable String org,
             @PathVariable String repo,
             @PathVariable String branch,
             @RequestParam(required = false) Map<String,String> jobInfoFilters) {
-        return new ResponseEntity<>(reportCardService.getJobs(org, repo, branch, jobInfoFilters), HttpStatus.OK);
+        return new ResponseEntity<>(BranchJobsExecutionsCacheMap.INSTANCE.getValue(new OrgRepoBranch(org, repo, branch)), HttpStatus.OK);
+        //TODO: use jobInfoFilters), HttpStatus.OK);
     }
 
-    @GetMapping(path = "org/{org}/repo/{repo}/branch/{branch}/job/{jobId}", produces = "application/json")
-    public ResponseEntity<Job> getJob(
+    @GetMapping(path = {"org/{org}/repo/{repo}/branch/{branch}/job/{jobId}", "org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/execution"}, produces = "application/json")
+    public ResponseEntity<Map<Job,Map<Execution,Set<Stage>>>> getJobExecutionsStages(
             @PathVariable String org,
             @PathVariable String repo,
             @PathVariable String branch,
             @PathVariable Long jobId) {
-        return new ResponseEntity<>(reportCardService.getJob(org, repo, branch, jobId), HttpStatus.OK);
+        return new ResponseEntity<>(JobExecutionsStagesCacheMap.INSTANCE.getValue(new OrgRepoBranchJob(org, repo, branch, jobId)), HttpStatus.OK);
     }
 
-    @GetMapping(path = "org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/execution", produces = "application/json")
-    public ResponseEntity<Set<Execution>> getExecutions(
-            @PathVariable String org,
-            @PathVariable String repo,
-            @PathVariable String branch,
-            @PathVariable Long jobId,
-            @RequestParam(required = false) Map<String,String> jobInfoFilters) {
-        return new ResponseEntity<>(reportCardService.getExecutions(org, repo, branch, jobId,  jobInfoFilters), HttpStatus.OK);
-    }
 
-    @GetMapping(path = "org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/execution/{exectionId}", produces = "application/json")
-    public ResponseEntity<Execution> getExecution(
-            @PathVariable String org,
-            @PathVariable String repo,
-            @PathVariable String branch,
-            @PathVariable Long jobId,
-            @PathVariable Long executionId) {
-        return new ResponseEntity<>(reportCardService.getExecution(org, repo, branch, jobId, executionId), HttpStatus.OK);
-    }
-
-    @GetMapping(path = "org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/execution/{exectionId}/stage", produces = "application/json")
+    @GetMapping(path = "org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/execution/{executionId}/stage", produces = "application/json")
     public ResponseEntity<Set<Stage>> getStagesByIds(
             @PathVariable String org,
             @PathVariable String repo,
