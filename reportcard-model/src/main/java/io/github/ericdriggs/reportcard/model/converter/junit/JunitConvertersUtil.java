@@ -76,6 +76,7 @@ public class JunitConvertersUtil {
     public static TestSuite doFromJunitToModelTestSuite(Testsuite source) {
         TestSuite modelTestSuite = new TestSuite();
         modelTestSuite.setError(source.getErrors());
+        modelTestSuite.setName(source.getName());
         if (modelTestSuite.getError() == null) {
             modelTestSuite.setError(0);
         }

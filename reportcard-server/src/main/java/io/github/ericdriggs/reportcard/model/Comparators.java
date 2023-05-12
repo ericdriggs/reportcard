@@ -26,8 +26,17 @@ public class Comparators {
     public static final Comparator<Stage> STAGE_CASE_INSENSITIVE_ORDER
             = new Comparators.StageCaseInsensitiveComparator();
 
-    public static final Comparator<TestResult> TEST_RESULT_CASE_INSENSITIVE_ORDER
+    public static final Comparator<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestResult> TEST_RESULT_CASE_INSENSITIVE_ORDER
             = new Comparators.TestResultCaseInsensitiveComparator();
+
+    public static final Comparator<TestResult> TEST_RESULT_MODEL_CASE_INSENSITIVE_ORDER
+            = new Comparators.TestResultModelCaseInsensitiveComparator();
+
+    public static final Comparator<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestSuite> TEST_SUITE_CASE_INSENSITIVE_ORDER
+            = new Comparators.TestSuiteCaseInsensitiveComparator();
+
+    public static final Comparator<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCase> TEST_CASE_CASE_INSENSITIVE_ORDER
+            = new Comparators.TestCaseCaseInsensitiveComparator();
 
     private static class OrgCaseInsensitiveComparator
             implements Comparator<Org>, java.io.Serializable {
@@ -133,7 +142,28 @@ public class Comparators {
         );
     }
 
-    public static int compareTestResult(TestResult val1, TestResult val2) {
+    public static int compareTestResult(io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestResult val1, io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestResult val2) {
+        return chainCompare(
+                Long.compare(val1.getStageFk(), val2.getStageFk()),
+                ObjectUtils.compare(val1.getTestResultId(), val2.getTestResultId())
+        );
+    }
+
+    public static int compareTestSuite(io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestSuite val1, io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestSuite val2) {
+        return chainCompare(
+                Long.compare(val1.getTestSuiteId(), val2.getTestSuiteId()),
+                ObjectUtils.compare(val1.getName(), val2.getName())
+        );
+    }
+
+    public static int compareTestCase(io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCase val1, io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCase val2) {
+        return chainCompare(
+                Long.compare(val1.getTestCaseId(), val2.getTestCaseId()),
+                ObjectUtils.compare(val1.getName(), val2.getName())
+        );
+    }
+
+    public static int compareTestResultModel(TestResult val1, TestResult val2) {
         return chainCompare(
                 Long.compare(val1.getStageFk(), val2.getStageFk()),
                 ObjectUtils.compare(val1.getTestResultId(), val2.getTestResultId())
@@ -166,11 +196,38 @@ public class Comparators {
     }
 
     private static class TestResultCaseInsensitiveComparator
-            implements Comparator<TestResult>, java.io.Serializable {
+            implements Comparator<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestResult>, java.io.Serializable {
         private static final long serialVersionUID = -859866670502292563L;
 
-        public int compare(TestResult val1, TestResult val2) {
+        public int compare(io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestResult val1, io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestResult val2) {
             return compareTestResult(val1, val2);
+        }
+    }
+
+    private static class TestResultModelCaseInsensitiveComparator
+            implements Comparator<TestResult>, java.io.Serializable {
+        private static final long serialVersionUID = 8426777269373042386L;
+
+        public int compare(TestResult val1, TestResult val2) {
+            return compareTestResultModel(val1, val2);
+        }
+    }
+
+    private static class TestSuiteCaseInsensitiveComparator
+            implements Comparator<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestSuite>, java.io.Serializable {
+        private static final long serialVersionUID = -5672061856924641442L;
+
+        public int compare(io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestSuite val1, io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestSuite val2) {
+            return compareTestSuite(val1, val2);
+        }
+    }
+
+    private static class TestCaseCaseInsensitiveComparator
+            implements Comparator<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCase>, java.io.Serializable {
+        private static final long serialVersionUID = 5737556829091435969L;
+
+        public int compare(io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCase val1, io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCase val2) {
+            return compareTestCase(val1, val2);
         }
     }
 }

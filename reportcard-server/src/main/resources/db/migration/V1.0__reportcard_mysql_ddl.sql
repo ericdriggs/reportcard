@@ -219,6 +219,7 @@ DROP TABLE IF EXISTS `reportcard`.`test_suite` ;
 CREATE TABLE IF NOT EXISTS `reportcard`.`test_suite` (
   `test_suite_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `test_result_fk` BIGINT UNSIGNED NOT NULL,
+  `name` varchar(1024) NOT NULL,
   `tests` INT NOT NULL,
   `skipped` INT NOT NULL,
   `error` INT NOT NULL,

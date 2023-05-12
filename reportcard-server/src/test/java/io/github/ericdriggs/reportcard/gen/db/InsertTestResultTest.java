@@ -46,6 +46,7 @@ public class InsertTestResultTest extends AbstractDbTest {
     final static BigDecimal testSuiteTime = new BigDecimal("1.690");
     final static String testSuitePackage = "com.foo.bar";
 
+    final static String testSuiteName = "testSuiteName10";
     final static String testCaseClassName = "testCaseClassName10";
     final static String testCaseName = "testCaseName10";
     final static TestStatus testCaseStatus = TestStatus.FAILURE;
@@ -104,6 +105,7 @@ public class InsertTestResultTest extends AbstractDbTest {
         Assertions.assertEquals(testSuiteErrorCount, testSuite.getError());
         Assertions.assertEquals(testSuiteFailureCount, testSuite.getFailure());
         Assertions.assertEquals(testSuiteSkippedCount, testSuite.getSkipped());
+        Assertions.assertEquals(testSuiteName, testSuite.getName());
         Assertions.assertEquals(testSuiteTestCount, testSuite.getTests());
         Assertions.assertEquals(testSuiteTime, testSuite.getTime());
         Assertions.assertEquals(testSuitePackage, testSuite.getPackage());
@@ -179,6 +181,7 @@ public class InsertTestResultTest extends AbstractDbTest {
         {//TestSuite
 
             TestSuite testSuite = new TestSuite();
+            testSuite.setName(testSuiteName);
             testSuite.setError(testSuiteErrorCount);
             testSuite.setFailure(testSuiteFailureCount);
             testSuite.setPackage(testSuitePackage);

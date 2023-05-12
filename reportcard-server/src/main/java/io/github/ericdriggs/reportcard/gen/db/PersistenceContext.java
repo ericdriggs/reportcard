@@ -35,6 +35,7 @@ public class PersistenceContext {
         dataSource.setUser(environment.getRequiredProperty("db.username"));
         dataSource.setPassword(environment.getRequiredProperty("db.password"));
 
+        //TODO: use test flag to route on test/prod config or find more elegant way to set
         String jdbcUrl = "jdbc:mysql://localhost:{port}/reportcard?serverTimezone=UTC".replace("{port}", environment.getRequiredProperty("db.port"));
         dataSource.setUrl(jdbcUrl);
         dataSource.setPort(Integer.parseInt(environment.getRequiredProperty("db.port")));

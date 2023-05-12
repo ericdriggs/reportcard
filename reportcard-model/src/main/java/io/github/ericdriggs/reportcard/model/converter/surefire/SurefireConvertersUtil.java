@@ -78,6 +78,7 @@ public class SurefireConvertersUtil {
 
     public static TestSuite doFromSurefireToModelTestSuite(Testsuite source) {
         TestSuite modelTestSuite = new TestSuite();
+        modelTestSuite.setName(source.getName());
         modelTestSuite.setError(source.getErrors());
         if (modelTestSuite.getError() == null) {
             modelTestSuite.setError(0);
