@@ -105,6 +105,7 @@ public class InsertTestResultTest extends AbstractDbTest {
         Assertions.assertEquals(testSuiteErrorCount, testSuite.getError());
         Assertions.assertEquals(testSuiteFailureCount, testSuite.getFailure());
         Assertions.assertEquals(testSuiteSkippedCount, testSuite.getSkipped());
+        Assertions.assertEquals(testSuiteName, testSuite.getName());
         Assertions.assertEquals(testSuiteTestCount, testSuite.getTests());
         Assertions.assertEquals(testSuiteTime, testSuite.getTime());
         Assertions.assertEquals(testSuitePackage, testSuite.getPackage());
@@ -180,6 +181,7 @@ public class InsertTestResultTest extends AbstractDbTest {
         {//TestSuite
 
             TestSuite testSuite = new TestSuite();
+            testSuite.setName(testSuiteName);
             testSuite.setError(testSuiteErrorCount);
             testSuite.setFailure(testSuiteFailureCount);
             testSuite.setPackage(testSuitePackage);

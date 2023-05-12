@@ -60,9 +60,30 @@ VALUES (1, --       <{test_result_id: }>
         20, --       <{failure: }>,
         3.300); --   <{time: }>,
 
-INSERT `reportcard`.`test_suite`
-(`test_result_fk`, `name`, `package`, `tests`, `skipped`, `error`, `failure`, `time`)
-values (1, `testSuiteName1`, 'com.foo.baz', 8, 7, 5, 6, 1.010);
+INSERT INTO `reportcard`.`test_suite`
+(`test_suite_id`,
+ `test_result_fk`,
+ `name`,
+ `tests`,
+ `skipped`,
+ `error`,
+ `failure`,
+ `time`,
+ `package`,
+ `group`,
+ `properties`)
+VALUES (1, --                  <{test_suite_id: }>,
+        1, --                  <{test_result_fk: }>,
+        'testSuiteName1', --   <{name: }>,
+        8, --                  <{tests: }>,
+        7, --                  <{skipped: }>,
+        6, --                  <{error: }>,
+        0, --                  <{failure: }>,
+        1.010, --              <{time: }>,
+        'com.foo.baz', --      <{package: }>,
+        null, --               <{group: }>,
+        null --                <{properties: }>,
+       );
 
 INSERT `reportcard`.`test_case`
     (`test_suite_fk`, `name`, `class_name`, `time`, `test_status_fk`)
