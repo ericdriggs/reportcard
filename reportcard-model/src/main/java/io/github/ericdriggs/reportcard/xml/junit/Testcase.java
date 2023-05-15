@@ -13,8 +13,9 @@ import java.math.BigDecimal;
         "skipped",
         "error",
         "failure",
-        "system_out",
-        "system_err"
+        "systemOut",
+        "systemErr",
+        "assertions"
 })
 @NoArgsConstructor
 @AllArgsConstructor
@@ -27,15 +28,17 @@ public class Testcase {
     protected Failure failure;
 
     @XmlElement(name = "system-out")
-    protected SystemOut system_out;
+    protected String systemOut;
+
     @XmlElement(name = "system-err")
-    protected SystemErr system_err;
+    protected String systemErr;
+
+    @XmlElement(name = "assertions")
+    protected String assertions;
 
     @XmlAttribute(name = "name", required = true)
     protected String name;
 
-    @XmlAttribute(name = "assertions")
-    protected String assertions;
 
     @XmlAttribute(name = "time")
     protected BigDecimal time;

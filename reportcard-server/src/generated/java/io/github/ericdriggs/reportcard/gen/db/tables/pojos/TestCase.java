@@ -23,40 +23,52 @@ import javax.annotation.processing.Generated;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestCase implements Serializable {
 
-    private static final long serialVersionUID = -1951821267;
+    private static final long serialVersionUID = -1245159568;
 
     private Long       testCaseId;
     private Long       testSuiteFk;
+    private Byte       testStatusFk;
     private String     name;
     private String     className;
     private BigDecimal time;
-    private Byte       testStatusFk;
+    private String     systemOut;
+    private String     systemErr;
+    private String     assertions;
 
     public TestCase() {}
 
     public TestCase(TestCase value) {
         this.testCaseId = value.testCaseId;
         this.testSuiteFk = value.testSuiteFk;
+        this.testStatusFk = value.testStatusFk;
         this.name = value.name;
         this.className = value.className;
         this.time = value.time;
-        this.testStatusFk = value.testStatusFk;
+        this.systemOut = value.systemOut;
+        this.systemErr = value.systemErr;
+        this.assertions = value.assertions;
     }
 
     public TestCase(
         Long       testCaseId,
         Long       testSuiteFk,
+        Byte       testStatusFk,
         String     name,
         String     className,
         BigDecimal time,
-        Byte       testStatusFk
+        String     systemOut,
+        String     systemErr,
+        String     assertions
     ) {
         this.testCaseId = testCaseId;
         this.testSuiteFk = testSuiteFk;
+        this.testStatusFk = testStatusFk;
         this.name = name;
         this.className = className;
         this.time = time;
-        this.testStatusFk = testStatusFk;
+        this.systemOut = systemOut;
+        this.systemErr = systemErr;
+        this.assertions = assertions;
     }
 
     /**
@@ -86,6 +98,21 @@ public class TestCase implements Serializable {
      */
     public TestCase setTestSuiteFk(Long testSuiteFk) {
         this.testSuiteFk = testSuiteFk;
+        return this;
+    }
+
+    /**
+     * Getter for <code>reportcard.test_case.test_status_fk</code>.
+     */
+    public Byte getTestStatusFk() {
+        return this.testStatusFk;
+    }
+
+    /**
+     * Setter for <code>reportcard.test_case.test_status_fk</code>.
+     */
+    public TestCase setTestStatusFk(Byte testStatusFk) {
+        this.testStatusFk = testStatusFk;
         return this;
     }
 
@@ -135,17 +162,47 @@ public class TestCase implements Serializable {
     }
 
     /**
-     * Getter for <code>reportcard.test_case.test_status_fk</code>.
+     * Getter for <code>reportcard.test_case.system_out</code>.
      */
-    public Byte getTestStatusFk() {
-        return this.testStatusFk;
+    public String getSystemOut() {
+        return this.systemOut;
     }
 
     /**
-     * Setter for <code>reportcard.test_case.test_status_fk</code>.
+     * Setter for <code>reportcard.test_case.system_out</code>.
      */
-    public TestCase setTestStatusFk(Byte testStatusFk) {
-        this.testStatusFk = testStatusFk;
+    public TestCase setSystemOut(String systemOut) {
+        this.systemOut = systemOut;
+        return this;
+    }
+
+    /**
+     * Getter for <code>reportcard.test_case.system_err</code>.
+     */
+    public String getSystemErr() {
+        return this.systemErr;
+    }
+
+    /**
+     * Setter for <code>reportcard.test_case.system_err</code>.
+     */
+    public TestCase setSystemErr(String systemErr) {
+        this.systemErr = systemErr;
+        return this;
+    }
+
+    /**
+     * Getter for <code>reportcard.test_case.assertions</code>.
+     */
+    public String getAssertions() {
+        return this.assertions;
+    }
+
+    /**
+     * Setter for <code>reportcard.test_case.assertions</code>.
+     */
+    public TestCase setAssertions(String assertions) {
+        this.assertions = assertions;
         return this;
     }
 
@@ -155,10 +212,13 @@ public class TestCase implements Serializable {
 
         sb.append(testCaseId);
         sb.append(", ").append(testSuiteFk);
+        sb.append(", ").append(testStatusFk);
         sb.append(", ").append(name);
         sb.append(", ").append(className);
         sb.append(", ").append(time);
-        sb.append(", ").append(testStatusFk);
+        sb.append(", ").append(systemOut);
+        sb.append(", ").append(systemErr);
+        sb.append(", ").append(assertions);
 
         sb.append(")");
         return sb.toString();

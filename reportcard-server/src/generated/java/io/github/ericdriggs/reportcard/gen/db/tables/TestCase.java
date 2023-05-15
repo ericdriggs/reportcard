@@ -21,7 +21,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row6;
+import org.jooq.Row9;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -45,7 +45,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestCase extends TableImpl<TestCaseRecord> {
 
-    private static final long serialVersionUID = 75952881;
+    private static final long serialVersionUID = -1682264906;
 
     /**
      * The reference instance of <code>reportcard.test_case</code>
@@ -71,6 +71,11 @@ public class TestCase extends TableImpl<TestCaseRecord> {
     public final TableField<TestCaseRecord, Long> TEST_SUITE_FK = createField(DSL.name("test_suite_fk"), SQLDataType.BIGINT.nullable(false), this, "");
 
     /**
+     * The column <code>reportcard.test_case.test_status_fk</code>.
+     */
+    public final TableField<TestCaseRecord, Byte> TEST_STATUS_FK = createField(DSL.name("test_status_fk"), SQLDataType.TINYINT.nullable(false), this, "");
+
+    /**
      * The column <code>reportcard.test_case.name</code>.
      */
     public final TableField<TestCaseRecord, String> NAME = createField(DSL.name("name"), SQLDataType.VARCHAR(1024).nullable(false), this, "");
@@ -78,17 +83,27 @@ public class TestCase extends TableImpl<TestCaseRecord> {
     /**
      * The column <code>reportcard.test_case.class_name</code>.
      */
-    public final TableField<TestCaseRecord, String> CLASS_NAME = createField(DSL.name("class_name"), SQLDataType.VARCHAR(4096).nullable(false), this, "");
+    public final TableField<TestCaseRecord, String> CLASS_NAME = createField(DSL.name("class_name"), SQLDataType.VARCHAR(1024), this, "");
 
     /**
      * The column <code>reportcard.test_case.time</code>.
      */
-    public final TableField<TestCaseRecord, BigDecimal> TIME = createField(DSL.name("time"), SQLDataType.DECIMAL(9, 3).nullable(false), this, "");
+    public final TableField<TestCaseRecord, BigDecimal> TIME = createField(DSL.name("time"), SQLDataType.DECIMAL(9, 3), this, "");
 
     /**
-     * The column <code>reportcard.test_case.test_status_fk</code>.
+     * The column <code>reportcard.test_case.system_out</code>.
      */
-    public final TableField<TestCaseRecord, Byte> TEST_STATUS_FK = createField(DSL.name("test_status_fk"), SQLDataType.TINYINT.nullable(false), this, "");
+    public final TableField<TestCaseRecord, String> SYSTEM_OUT = createField(DSL.name("system_out"), SQLDataType.CLOB, this, "");
+
+    /**
+     * The column <code>reportcard.test_case.system_err</code>.
+     */
+    public final TableField<TestCaseRecord, String> SYSTEM_ERR = createField(DSL.name("system_err"), SQLDataType.CLOB, this, "");
+
+    /**
+     * The column <code>reportcard.test_case.assertions</code>.
+     */
+    public final TableField<TestCaseRecord, String> ASSERTIONS = createField(DSL.name("assertions"), SQLDataType.CLOB, this, "");
 
     private TestCase(Name alias, Table<TestCaseRecord> aliased) {
         this(alias, aliased, null);
@@ -197,11 +212,11 @@ public class TestCase extends TableImpl<TestCaseRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row6 type methods
+    // Row9 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row6<Long, Long, String, String, BigDecimal, Byte> fieldsRow() {
-        return (Row6) super.fieldsRow();
+    public Row9<Long, Long, Byte, String, String, BigDecimal, String, String, String> fieldsRow() {
+        return (Row9) super.fieldsRow();
     }
 }

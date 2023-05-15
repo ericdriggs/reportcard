@@ -3,6 +3,8 @@ package io.github.ericdriggs.reportcard.model.converter.junit;
 
 import io.github.ericdriggs.reportcard.model.TestCase;
 import io.github.ericdriggs.reportcard.model.TestStatus;
+import io.github.ericdriggs.reportcard.xml.ResourceReader;
+import io.github.ericdriggs.reportcard.xml.junit.JunitParserUtil;
 import io.github.ericdriggs.reportcard.xml.junit.Testsuite;
 import io.github.ericdriggs.reportcard.xml.junit.Testsuites;
 import io.github.ericdriggs.reportcard.model.TestResult;
@@ -101,6 +103,40 @@ public class JunitMapperTests {
         assertEquals(2, modelTestResult.getError());
         assertEquals(2, modelTestResult.getFailure());
         assertEquals(2, modelTestResult.getSkipped());
+    }
+
+    @Test
+    void systemOut_systemErr_Assertions_Test() {
+        String xmlString = ResourceReader.resourceAsString("format-samples/junit/TEST-io.github.ericdriggs.file.FileUtilsTest.xml");
+        Testsuites suites = JunitParserUtil.parseTestSuites(xmlString);
+
+
+        TestResult modelTestResult = modelMapper.map(suites, TestResult.class);
+
+        assertEquals(1, modelTestResult.getTestSuites().size());
+        assertEquals(2, modelTestResult.getTests());
+
+        TestSuite testSuite = modelTestResult.getTestSuites().get(0);
+
+        assertNotNull(testSuite.getName());
+        assertFalse(testSuite.getName().trim().isEmpty());
+        assertTrue(testSuite.getSystemOut().contains(testSuite.getName()));
+        assertTrue(testSuite.getSystemOut().contains("system-out"));
+        assertTrue(testSuite.getSystemErr().contains(testSuite.getName()));
+        assertTrue(testSuite.getSystemErr().contains("system-err"));
+
+        for (TestCase testcase : testSuite.getTestCases()) {
+            assertNotNull(testcase.getName());
+            assertFalse(testcase.getName().trim().isEmpty());
+            assertTrue(testcase.getSystemOut().contains(testcase.getName()));
+            assertTrue(testcase.getSystemOut().contains("system-out"));
+            assertTrue(testcase.getSystemErr().contains(testcase.getName()));
+            assertTrue(testcase.getSystemErr().contains("system-err"));
+            assertTrue(testcase.getAssertions().contains(testcase.getName()));
+            assertTrue(testcase.getAssertions().contains("assertions"));
+        }
+
+
     }
 
 

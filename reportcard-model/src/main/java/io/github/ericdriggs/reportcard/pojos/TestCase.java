@@ -20,4 +20,7 @@ public class TestCase implements Serializable {
     protected String className;
     protected BigDecimal time;
     protected Byte testStatusFk;
+    protected String assertions;
+    protected String systemOut;
+    protected String systemErr;
 }

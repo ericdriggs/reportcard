@@ -5,7 +5,7 @@ import io.github.ericdriggs.reportcard.ReportCardService;
 import io.github.ericdriggs.reportcard.ReportcardApplication;
 import io.github.ericdriggs.reportcard.gen.db.TestData;
 import io.github.ericdriggs.reportcard.model.*;
-import io.github.ericdriggs.reportcard.xml.ResourceReader;
+import io.github.ericdriggs.reportcard.xml.ResourceReaderComponent;
 import net.javacrumbs.jsonunit.JsonAssert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -30,16 +30,16 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ReportControllerTest {
 
     @Autowired
-    public ReportControllerTest(ReportControllerUtil reportControllerUtil, ResourceReader resourceReader, ReportCardService reportCardService) {
+    public ReportControllerTest(ReportControllerUtil reportControllerUtil, ResourceReaderComponent resourceReader, ReportCardService reportCardService) {
         this.reportControllerUtil = reportControllerUtil;
-        this.resourceReader = resourceReader;
+        //this.resourceReader = resourceReader;
         this.reportCardService = reportCardService;
         this.xmlJunit = resourceReader.resourceAsString("classpath:format-samples/sample-junit.xml");
         this.xmlSurefire = resourceReader.resourceAsString("classpath:format-samples/sample-surefire.xml");
     }
 
     private final ReportControllerUtil reportControllerUtil;
-    private final ResourceReader resourceReader;
+    //private final ResourceReaderComponent resourceReader;
     private final ReportCardService reportCardService;
 
     private final String xmlJunit;

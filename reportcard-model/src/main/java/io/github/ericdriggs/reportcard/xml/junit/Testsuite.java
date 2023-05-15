@@ -25,8 +25,8 @@ import java.util.List;
 @XmlType(name = "testsuite", propOrder = {
         "properties",
         "testcase",
-        "system_out",
-        "system_err"
+        "systemOut",
+        "systemErr"
 })
 @XmlRootElement(name = "testsuite")
 @NoArgsConstructor
@@ -40,10 +40,10 @@ public class Testsuite {
     protected List<Testcase> testcase;
 
     @XmlElement(name = "system-out")
-    protected String system_out;
+    protected String systemOut;
 
-    @XmlAttribute(name = "system-err")
-    protected String system_err;
+    @XmlElement(name = "system-err")
+    protected String systemErr;
 
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlAttribute(name = "name", required = true)

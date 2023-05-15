@@ -99,19 +99,17 @@ public class JunitFactoryUtil {
         if (testStatus.equals(TestStatus.SUCCESS)) {
             //NOOP
         } else if (testStatus.equals(TestStatus.SKIPPED)) {
-            Object junitSkipped = new Object();
+            Skipped junitSkipped = new Skipped("because");
             junitTestCase.setSkipped(junitSkipped);
         } else if (testStatus.equals(TestStatus.FAILURE)) {
             Failure elem = new Failure();
             elem.setMessage(junitFailureMessage);
             elem.setType(junitFailureType);
-            elem.setValue(junitFailureValue);
             junitTestCase.setFailure(elem);
         } else if (testStatus.equals(TestStatus.ERROR)) {
             Error elem = new Error();
             elem.setMessage(junitErrorMessage);
             elem.setType(junitErrorType);
-            elem.setValue(junitErrorValue);
             junitTestCase.setError(elem);
         } else {
             throw new IllegalArgumentException("unrecognized: TestStatus." + testStatus.name());

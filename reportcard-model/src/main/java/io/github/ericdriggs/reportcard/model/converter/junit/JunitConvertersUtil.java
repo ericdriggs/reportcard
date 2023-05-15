@@ -40,6 +40,10 @@ public class JunitConvertersUtil {
         modelTestCase.setName(source.getName());
         modelTestCase.setClassName(source.getClassname());
         modelTestCase.setTime(source.getTime());
+        modelTestCase.setAssertions(source.getAssertions());
+        modelTestCase.setSystemOut(source.getSystemOut());
+        modelTestCase.setSystemErr(source.getSystemErr());
+
 
         if (source.getSkipped() != null) {
             modelTestCase.setTestStatus(TestStatus.SKIPPED);
@@ -75,6 +79,8 @@ public class JunitConvertersUtil {
 
     public static TestSuite doFromJunitToModelTestSuite(Testsuite source) {
         TestSuite modelTestSuite = new TestSuite();
+        modelTestSuite.setSystemErr(source.getSystemErr());
+        modelTestSuite.setSystemOut(source.getSystemOut());
         modelTestSuite.setError(source.getErrors());
         modelTestSuite.setName(source.getName());
         if (modelTestSuite.getError() == null) {

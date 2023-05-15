@@ -28,6 +28,8 @@ public class TestSuite implements Serializable {
     private String properties;
     private Boolean isSuccess;
     private Boolean hasSkip;
+    private String systemOut;
+    private String systemErr;
 
     public String getPackage() {
         return package_;

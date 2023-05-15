@@ -4,6 +4,6 @@ java -jar trang.jar  -I dtd -O xsd testng-1.0.dtd  testng-1.0.xsd
 #extract sql from xsd
 java -jar xsd2pgschema.jar --xsd surefire-test-report-3.0.xsd --ddl surefire.sql  --no-doc-key --case-insensitive --pg-map-big-integer
 
-java -jar xsd2pgschema.jar --xsd JUnit.xsd --ddl junit.sql  --no-doc-key --case-insensitive --pg-map-big-integer
+java -jar xsd2pgschema.jar --xsd jenkins-junit.xsd --ddl junit.sql  --no-doc-key --case-insensitive --pg-map-big-integer
 
 java -jar xsd2pgschema.jar --xsd testng-1.0.xsd --ddl testng.sql  --no-doc-key --case-insensitive --pg-map-big-integer

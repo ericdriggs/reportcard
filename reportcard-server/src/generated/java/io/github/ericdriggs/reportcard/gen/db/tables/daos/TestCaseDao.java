@@ -84,6 +84,20 @@ public class TestCaseDao extends DAOImpl<TestCaseRecord, io.github.ericdriggs.re
     }
 
     /**
+     * Fetch records that have <code>test_status_fk BETWEEN lowerInclusive AND upperInclusive</code>
+     */
+    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCase> fetchRangeOfTestStatusFk(Byte lowerInclusive, Byte upperInclusive) {
+        return fetchRange(TestCase.TEST_CASE.TEST_STATUS_FK, lowerInclusive, upperInclusive);
+    }
+
+    /**
+     * Fetch records that have <code>test_status_fk IN (values)</code>
+     */
+    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCase> fetchByTestStatusFk(Byte... values) {
+        return fetch(TestCase.TEST_CASE.TEST_STATUS_FK, values);
+    }
+
+    /**
      * Fetch records that have <code>name BETWEEN lowerInclusive AND upperInclusive</code>
      */
     public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCase> fetchRangeOfName(String lowerInclusive, String upperInclusive) {
@@ -126,16 +140,44 @@ public class TestCaseDao extends DAOImpl<TestCaseRecord, io.github.ericdriggs.re
     }
 
     /**
-     * Fetch records that have <code>test_status_fk BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>system_out BETWEEN lowerInclusive AND upperInclusive</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCase> fetchRangeOfTestStatusFk(Byte lowerInclusive, Byte upperInclusive) {
-        return fetchRange(TestCase.TEST_CASE.TEST_STATUS_FK, lowerInclusive, upperInclusive);
+    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCase> fetchRangeOfSystemOut(String lowerInclusive, String upperInclusive) {
+        return fetchRange(TestCase.TEST_CASE.SYSTEM_OUT, lowerInclusive, upperInclusive);
     }
 
     /**
-     * Fetch records that have <code>test_status_fk IN (values)</code>
+     * Fetch records that have <code>system_out IN (values)</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCase> fetchByTestStatusFk(Byte... values) {
-        return fetch(TestCase.TEST_CASE.TEST_STATUS_FK, values);
+    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCase> fetchBySystemOut(String... values) {
+        return fetch(TestCase.TEST_CASE.SYSTEM_OUT, values);
+    }
+
+    /**
+     * Fetch records that have <code>system_err BETWEEN lowerInclusive AND upperInclusive</code>
+     */
+    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCase> fetchRangeOfSystemErr(String lowerInclusive, String upperInclusive) {
+        return fetchRange(TestCase.TEST_CASE.SYSTEM_ERR, lowerInclusive, upperInclusive);
+    }
+
+    /**
+     * Fetch records that have <code>system_err IN (values)</code>
+     */
+    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCase> fetchBySystemErr(String... values) {
+        return fetch(TestCase.TEST_CASE.SYSTEM_ERR, values);
+    }
+
+    /**
+     * Fetch records that have <code>assertions BETWEEN lowerInclusive AND upperInclusive</code>
+     */
+    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCase> fetchRangeOfAssertions(String lowerInclusive, String upperInclusive) {
+        return fetchRange(TestCase.TEST_CASE.ASSERTIONS, lowerInclusive, upperInclusive);
+    }
+
+    /**
+     * Fetch records that have <code>assertions IN (values)</code>
+     */
+    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCase> fetchByAssertions(String... values) {
+        return fetch(TestCase.TEST_CASE.ASSERTIONS, values);
     }
 }

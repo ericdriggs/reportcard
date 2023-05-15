@@ -14,7 +14,7 @@ import java.io.UncheckedIOException;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 @Component
-public class ResourceReader {
+public class ResourceReaderComponent {
 
     @Autowired
     ResourceLoader resourceLoader;
