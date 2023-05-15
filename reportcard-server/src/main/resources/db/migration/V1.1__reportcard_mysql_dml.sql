@@ -19,18 +19,18 @@ INSERT INTO `reportcard`.`job`
 VALUES (1, 1, '{ "application":"fooapp", "host": "foocorp.jenkins.com", "pipeline": "foopipeline" }');
 
 
-INSERT INTO `reportcard`.`execution`
-(`execution_id`,
- `execution_reference`,
+INSERT INTO `reportcard`.`run`
+(`run_id`,
+ `run_reference`,
  `job_fk`,
  `sha`,
- `job_execution_count`)
-VALUES (1, "executionReference1", 1, 'bdd15b6fae26738ca58f0b300fc43f5872b429bf', 1 );
+ `job_run_count`)
+VALUES (1, "runReference1", 1, 'bdd15b6fae26738ca58f0b300fc43f5872b429bf', 1 );
 
 INSERT INTO `reportcard`.`stage`
 (`stage_id`,
  `stage_name`,
- `execution_fk`)
+ `run_fk`)
 VALUES (1, 'api', 1);
 
 INSERT `reportcard`.`test_status`

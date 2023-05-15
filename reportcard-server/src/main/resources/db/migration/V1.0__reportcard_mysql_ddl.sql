@@ -100,23 +100,23 @@ COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
--- Table `reportcard`.`execution`
+-- Table `reportcard`.`run`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `reportcard`.`execution` ;
+DROP TABLE IF EXISTS `reportcard`.`run` ;
 
-CREATE TABLE IF NOT EXISTS `reportcard`.`execution` (
-  `execution_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `execution_reference` VARCHAR(255) NOT NULL,
+CREATE TABLE IF NOT EXISTS `reportcard`.`run` (
+  `run_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `run_reference` VARCHAR(255) NOT NULL,
   `job_fk` BIGINT UNSIGNED NOT NULL,
-  `job_execution_count` MEDIUMINT NULL DEFAULT NULL,
+  `job_run_count` MEDIUMINT NULL DEFAULT NULL,
   `sha` VARCHAR(128) NULL DEFAULT NULL,
   `created` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`execution_id`),
-  UNIQUE INDEX `execution_id_unique` (`execution_id` ASC) VISIBLE,
-  UNIQUE INDEX `uq_execution_job_reference` (`job_fk` ASC, `execution_reference` ASC) VISIBLE,
-  INDEX `execution_job_fk_idx` (`job_fk` ASC) VISIBLE,
-  INDEX `execution_job_sha` (`job_fk` ASC, `sha` ASC) VISIBLE,
-  CONSTRAINT `execution_context_fk`
+  PRIMARY KEY (`run_id`),
+  UNIQUE INDEX `run_id_unique` (`run_id` ASC) VISIBLE,
+  UNIQUE INDEX `uq_run_job_reference` (`job_fk` ASC, `run_reference` ASC) VISIBLE,
+  INDEX `run_job_fk_idx` (`job_fk` ASC) VISIBLE,
+  INDEX `run_job_sha` (`job_fk` ASC, `sha` ASC) VISIBLE,
+  CONSTRAINT `run_job_fk`
     FOREIGN KEY (`job_fk`)
     REFERENCES `reportcard`.`job` (`job_id`)
     ON DELETE CASCADE
@@ -134,14 +134,14 @@ DROP TABLE IF EXISTS `reportcard`.`stage` ;
 CREATE TABLE IF NOT EXISTS `reportcard`.`stage` (
   `stage_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `stage_name` VARCHAR(255) NOT NULL,
-  `execution_fk` BIGINT UNSIGNED NOT NULL,
+  `run_fk` BIGINT UNSIGNED NOT NULL,
   PRIMARY KEY (`stage_id`),
   UNIQUE INDEX `stage_id_unique` (`stage_id` ASC) VISIBLE,
-  UNIQUE INDEX `uq_execution_stage_name` (`stage_name` ASC, `execution_fk` ASC) VISIBLE,
-  INDEX `stage_execution_fk_idx` (`execution_fk` ASC) VISIBLE,
-  CONSTRAINT `stage_execution_fk`
-    FOREIGN KEY (`execution_fk`)
-    REFERENCES `reportcard`.`execution` (`execution_id`)
+  UNIQUE INDEX `uq_run_stage_name` (`stage_name` ASC, `run_fk` ASC) VISIBLE,
+  INDEX `stage_run_fk_idx` (`run_fk` ASC) VISIBLE,
+  CONSTRAINT `stage_run_fk`
+    FOREIGN KEY (`run_fk`)
+    REFERENCES `reportcard`.`run` (`run_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB

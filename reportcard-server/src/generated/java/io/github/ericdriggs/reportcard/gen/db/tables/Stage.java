@@ -44,7 +44,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Stage extends TableImpl<StageRecord> {
 
-    private static final long serialVersionUID = -1792824402;
+    private static final long serialVersionUID = 487154695;
 
     /**
      * The reference instance of <code>reportcard.stage</code>
@@ -70,9 +70,9 @@ public class Stage extends TableImpl<StageRecord> {
     public final TableField<StageRecord, String> STAGE_NAME = createField(DSL.name("stage_name"), SQLDataType.VARCHAR(255).nullable(false), this, "");
 
     /**
-     * The column <code>reportcard.stage.execution_fk</code>.
+     * The column <code>reportcard.stage.run_fk</code>.
      */
-    public final TableField<StageRecord, Long> EXECUTION_FK = createField(DSL.name("execution_fk"), SQLDataType.BIGINT.nullable(false), this, "");
+    public final TableField<StageRecord, Long> RUN_FK = createField(DSL.name("run_fk"), SQLDataType.BIGINT.nullable(false), this, "");
 
     private Stage(Name alias, Table<StageRecord> aliased) {
         this(alias, aliased, null);
@@ -114,7 +114,7 @@ public class Stage extends TableImpl<StageRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.STAGE_STAGE_EXECUTION_FK_IDX);
+        return Arrays.<Index>asList(Indexes.STAGE_STAGE_RUN_FK_IDX);
     }
 
     @Override
@@ -129,21 +129,21 @@ public class Stage extends TableImpl<StageRecord> {
 
     @Override
     public List<UniqueKey<StageRecord>> getKeys() {
-        return Arrays.<UniqueKey<StageRecord>>asList(Keys.KEY_STAGE_PRIMARY, Keys.KEY_STAGE_STAGE_ID_UNIQUE, Keys.KEY_STAGE_UQ_EXECUTION_STAGE_NAME);
+        return Arrays.<UniqueKey<StageRecord>>asList(Keys.KEY_STAGE_PRIMARY, Keys.KEY_STAGE_STAGE_ID_UNIQUE, Keys.KEY_STAGE_UQ_RUN_STAGE_NAME);
     }
 
     @Override
     public List<ForeignKey<StageRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<StageRecord, ?>>asList(Keys.STAGE_EXECUTION_FK);
+        return Arrays.<ForeignKey<StageRecord, ?>>asList(Keys.STAGE_RUN_FK);
     }
 
-    private transient Execution _execution;
+    private transient Run _run;
 
-    public Execution execution() {
-        if (_execution == null)
-            _execution = new Execution(this, Keys.STAGE_EXECUTION_FK);
+    public Run run() {
+        if (_run == null)
+            _run = new Run(this, Keys.STAGE_RUN_FK);
 
-        return _execution;
+        return _run;
     }
 
     @Override

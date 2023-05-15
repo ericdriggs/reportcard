@@ -65,19 +65,18 @@ public enum ClientArg {
     SCM_SHA(true),
 
     /**
-     * Single layer map of metadata about execution, e.g. host, application, pipeline, committer
+     * Single layer map of metadata about run, e.g. host, application, pipeline, committer
      * (Optional)
      */
     METADATA(false),
 
-    //TODO: rename to EXECUTION_REFERENCE here and all other places
-    //
+
     /**
-     * A string identifier for an execution (build) in a given context.  E.g. run number, generated uuid
-     * Executions belong to a context. Executions have stages.
+     * A string identifier for a run/execution/build in a given context.  E.g. run number, generated uuid
+     * Runs belong to a context. runs have stages.
      * (Optional). Will default to generated UUID if not provided.
      */
-    EXECUTION_REFERENCE(false),
+    RUN_REFERENCE(false),
     /**
      * The stage, e.g. unit, integration, api.
      * Stages belong to an execution. A stage has a test result.

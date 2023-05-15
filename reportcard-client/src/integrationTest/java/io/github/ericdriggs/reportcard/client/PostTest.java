@@ -44,7 +44,7 @@ public class PostTest {
 
     private static PostRequest getTestPostRequest() {
         long randomLong = random.nextLong();
-        final String executionReference = Long.toString(randomLong);
+        final String runReference = Long.toString(randomLong);
 
         final Map<String, String> externalLinks = new HashMap<>();
         externalLinks.put("build", "www.foo.com/build/" + randomLong);
@@ -58,7 +58,7 @@ public class PostTest {
                         .setBranch(branch)
                         .setSha(sha)
                         .setJobInfo(metadata)
-                        .setExecutionReference(executionReference)
+                        .setRunReference(runReference)
                         .setExternalLinks(externalLinks)
                         .setStage(stage);
 

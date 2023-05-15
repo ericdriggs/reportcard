@@ -28,7 +28,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class StageRecord extends UpdatableRecordImpl<StageRecord> implements Record3<Long, String, Long> {
 
-    private static final long serialVersionUID = -1144718022;
+    private static final long serialVersionUID = -362926469;
 
     /**
      * Setter for <code>reportcard.stage.stage_id</code>.
@@ -61,17 +61,17 @@ public class StageRecord extends UpdatableRecordImpl<StageRecord> implements Rec
     }
 
     /**
-     * Setter for <code>reportcard.stage.execution_fk</code>.
+     * Setter for <code>reportcard.stage.run_fk</code>.
      */
-    public StageRecord setExecutionFk(Long value) {
+    public StageRecord setRunFk(Long value) {
         set(2, value);
         return this;
     }
 
     /**
-     * Getter for <code>reportcard.stage.execution_fk</code>.
+     * Getter for <code>reportcard.stage.run_fk</code>.
      */
-    public Long getExecutionFk() {
+    public Long getRunFk() {
         return (Long) get(2);
     }
 
@@ -110,7 +110,7 @@ public class StageRecord extends UpdatableRecordImpl<StageRecord> implements Rec
 
     @Override
     public Field<Long> field3() {
-        return Stage.STAGE.EXECUTION_FK;
+        return Stage.STAGE.RUN_FK;
     }
 
     @Override
@@ -125,7 +125,7 @@ public class StageRecord extends UpdatableRecordImpl<StageRecord> implements Rec
 
     @Override
     public Long component3() {
-        return getExecutionFk();
+        return getRunFk();
     }
 
     @Override
@@ -140,7 +140,7 @@ public class StageRecord extends UpdatableRecordImpl<StageRecord> implements Rec
 
     @Override
     public Long value3() {
-        return getExecutionFk();
+        return getRunFk();
     }
 
     @Override
@@ -157,7 +157,7 @@ public class StageRecord extends UpdatableRecordImpl<StageRecord> implements Rec
 
     @Override
     public StageRecord value3(Long value) {
-        setExecutionFk(value);
+        setRunFk(value);
         return this;
     }
 
@@ -183,11 +183,11 @@ public class StageRecord extends UpdatableRecordImpl<StageRecord> implements Rec
     /**
      * Create a detached, initialised StageRecord
      */
-    public StageRecord(Long stageId, String stageName, Long executionFk) {
+    public StageRecord(Long stageId, String stageName, Long runFk) {
         super(Stage.STAGE);
 
         setStageId(stageId);
         setStageName(stageName);
-        setExecutionFk(executionFk);
+        setRunFk(runFk);
     }
 }

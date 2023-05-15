@@ -30,7 +30,7 @@ public class InsertTestResultTest extends AbstractDbTest {
     final static String pipeline = "pipe1";
 
     final static Map<String, String> metadata = TestData.metadata;
-    final static String executionReference = "run23";
+    final static String runReference = "run23";
     final static String stage = "stage10";
 
     final static int testResultErrorCount = 10;
@@ -154,17 +154,17 @@ public class InsertTestResultTest extends AbstractDbTest {
                         .setBranch(branch)
                         .setSha(sha)
                         .setJobInfo(metadata)
-                        .setExecutionReference(executionReference)
+                        .setRunReference(runReference)
                         .setStage(stage);
         return reportMetatData;
     }
 
     private TestResult getInsertableTestResult() {
 
-        ExecutionStagePath bsp;
+        RunStagePath bsp;
         {
             ReportMetaData reportMetatData = getReportMetaData();
-            bsp = reportCardService.getOrInsertExecutionStagePath(reportMetatData);
+            bsp = reportCardService.getOrInsertRunStagePath(reportMetatData);
             assertTrue(bsp.isComplete());
         }
 

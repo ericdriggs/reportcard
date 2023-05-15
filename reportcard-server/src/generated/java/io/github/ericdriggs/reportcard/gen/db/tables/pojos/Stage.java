@@ -22,28 +22,28 @@ import javax.annotation.processing.Generated;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Stage implements Serializable {
 
-    private static final long serialVersionUID = -1826829734;
+    private static final long serialVersionUID = 938175161;
 
     private Long   stageId;
     private String stageName;
-    private Long   executionFk;
+    private Long   runFk;
 
     public Stage() {}
 
     public Stage(Stage value) {
         this.stageId = value.stageId;
         this.stageName = value.stageName;
-        this.executionFk = value.executionFk;
+        this.runFk = value.runFk;
     }
 
     public Stage(
         Long   stageId,
         String stageName,
-        Long   executionFk
+        Long   runFk
     ) {
         this.stageId = stageId;
         this.stageName = stageName;
-        this.executionFk = executionFk;
+        this.runFk = runFk;
     }
 
     /**
@@ -77,17 +77,17 @@ public class Stage implements Serializable {
     }
 
     /**
-     * Getter for <code>reportcard.stage.execution_fk</code>.
+     * Getter for <code>reportcard.stage.run_fk</code>.
      */
-    public Long getExecutionFk() {
-        return this.executionFk;
+    public Long getRunFk() {
+        return this.runFk;
     }
 
     /**
-     * Setter for <code>reportcard.stage.execution_fk</code>.
+     * Setter for <code>reportcard.stage.run_fk</code>.
      */
-    public Stage setExecutionFk(Long executionFk) {
-        this.executionFk = executionFk;
+    public Stage setRunFk(Long runFk) {
+        this.runFk = runFk;
         return this;
     }
 
@@ -97,7 +97,7 @@ public class Stage implements Serializable {
 
         sb.append(stageId);
         sb.append(", ").append(stageName);
-        sb.append(", ").append(executionFk);
+        sb.append(", ").append(runFk);
 
         sb.append(")");
         return sb.toString();

@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
 
-//TODO: rename to ExecutionDetails
+//TODO: rename to TestPublishRequest
 @Data
 public class ReportMetaData {
 
@@ -25,7 +25,7 @@ public class ReportMetaData {
     private String branch;
     private String sha;
     private Map<String,String> jobInfo = new HashMap<>();
-    private String executionReference;
+    private String runReference;
     private String stage;
     private Map<String, String> externalLinks = new HashMap<>();
     private String testReportPath;
@@ -46,7 +46,7 @@ public class ReportMetaData {
         final String stage = argMap.get(ClientArg.STAGE);
         final String testReportPath = argMap.get(ClientArg.TEST_REPORT_PATH);
         final String testReportRegex = argMap.get(ClientArg.TEST_REPORT_REGEX);
-        final String executionReference = argMap.get(ClientArg.EXECUTION_REFERENCE);
+        final String runReference = argMap.get(ClientArg.RUN_REFERENCE);
         final String externalLinks = argMap.get(ClientArg.EXTERNAL_LINKS);
 
         this.org = org;
@@ -65,7 +65,7 @@ public class ReportMetaData {
         this.stage = stage;
         this.testReportPath = testReportPath;
         this.testReportRegex = testReportRegex;
-        this.executionReference = executionReference;
+        this.runReference = runReference;
     }
 
     public Map<String,String> validate() {

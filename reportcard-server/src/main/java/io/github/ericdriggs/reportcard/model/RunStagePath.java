@@ -8,12 +8,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
 
 @Data
-public class ExecutionStagePath {
+public class RunStagePath {
     private Org org;
     private Repo repo;
     private Branch branch;
     private Job job;
-    private Execution execution;
+    private Run run;
     private Stage stage;
 
     public boolean isEmpty() {
@@ -44,8 +44,8 @@ public class ExecutionStagePath {
             validationErrors.put("job", "missing required field");
         }
 
-        if (ObjectUtils.isEmpty(execution)) {
-            validationErrors.put("execution", "missing required field");
+        if (ObjectUtils.isEmpty(run)) {
+            validationErrors.put("run", "missing required field");
         }
 
         if (ObjectUtils.isEmpty(stage)) {

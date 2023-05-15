@@ -5,10 +5,10 @@ package io.github.ericdriggs.reportcard.gen.db;
 
 
 import io.github.ericdriggs.reportcard.gen.db.tables.Branch;
-import io.github.ericdriggs.reportcard.gen.db.tables.Execution;
 import io.github.ericdriggs.reportcard.gen.db.tables.Job;
 import io.github.ericdriggs.reportcard.gen.db.tables.Org;
 import io.github.ericdriggs.reportcard.gen.db.tables.Repo;
+import io.github.ericdriggs.reportcard.gen.db.tables.Run;
 import io.github.ericdriggs.reportcard.gen.db.tables.Stage;
 import io.github.ericdriggs.reportcard.gen.db.tables.Storage;
 import io.github.ericdriggs.reportcard.gen.db.tables.TestCase;
@@ -39,7 +39,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Reportcard extends SchemaImpl {
 
-    private static final long serialVersionUID = -31741152;
+    private static final long serialVersionUID = -2133427810;
 
     /**
      * The reference instance of <code>reportcard</code>
@@ -50,11 +50,6 @@ public class Reportcard extends SchemaImpl {
      * The table <code>reportcard.branch</code>.
      */
     public final Branch BRANCH = Branch.BRANCH;
-
-    /**
-     * The table <code>reportcard.execution</code>.
-     */
-    public final Execution EXECUTION = Execution.EXECUTION;
 
     /**
      * The table <code>reportcard.job</code>.
@@ -70,6 +65,11 @@ public class Reportcard extends SchemaImpl {
      * The table <code>reportcard.repo</code>.
      */
     public final Repo REPO = Repo.REPO;
+
+    /**
+     * The table <code>reportcard.run</code>.
+     */
+    public final Run RUN = Run.RUN;
 
     /**
      * The table <code>reportcard.stage</code>.
@@ -118,10 +118,10 @@ public class Reportcard extends SchemaImpl {
     public final List<Table<?>> getTables() {
         return Arrays.<Table<?>>asList(
             Branch.BRANCH,
-            Execution.EXECUTION,
             Job.JOB,
             Org.ORG,
             Repo.REPO,
+            Run.RUN,
             Stage.STAGE,
             Storage.STORAGE,
             TestCase.TEST_CASE,

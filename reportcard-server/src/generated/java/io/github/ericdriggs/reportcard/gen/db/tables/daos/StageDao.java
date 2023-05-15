@@ -83,16 +83,16 @@ public class StageDao extends DAOImpl<StageRecord, io.github.ericdriggs.reportca
     }
 
     /**
-     * Fetch records that have <code>execution_fk BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>run_fk BETWEEN lowerInclusive AND upperInclusive</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Stage> fetchRangeOfExecutionFk(Long lowerInclusive, Long upperInclusive) {
-        return fetchRange(Stage.STAGE.EXECUTION_FK, lowerInclusive, upperInclusive);
+    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Stage> fetchRangeOfRunFk(Long lowerInclusive, Long upperInclusive) {
+        return fetchRange(Stage.STAGE.RUN_FK, lowerInclusive, upperInclusive);
     }
 
     /**
-     * Fetch records that have <code>execution_fk IN (values)</code>
+     * Fetch records that have <code>run_fk IN (values)</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Stage> fetchByExecutionFk(Long... values) {
-        return fetch(Stage.STAGE.EXECUTION_FK, values);
+    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Stage> fetchByRunFk(Long... values) {
+        return fetch(Stage.STAGE.RUN_FK, values);
     }
 }

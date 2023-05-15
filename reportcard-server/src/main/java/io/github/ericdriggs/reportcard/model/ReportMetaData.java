@@ -22,7 +22,7 @@ public class ReportMetaData {
     private String branch;
     private String sha;
     private Map<String,String> jobInfo;
-    private String executionReference;
+    private String runReference;
     private String stage;
     private Map<String,String> externalLinks;
 
@@ -32,7 +32,7 @@ public class ReportMetaData {
         addErrorIfMissing(errors, repo, "repo");
         addErrorIfMissing(errors, branch, "branch");
         addErrorIfMissing(errors, sha, "sha");
-        addErrorIfMissing(errors, executionReference, "executionReference");
+        addErrorIfMissing(errors, runReference, "runReference");
         addErrorIfMissing(errors, stage, "stage");
         if (!errors.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,

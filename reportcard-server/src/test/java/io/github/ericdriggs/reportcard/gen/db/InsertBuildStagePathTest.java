@@ -1,7 +1,7 @@
 package io.github.ericdriggs.reportcard.gen.db;
 
 import io.github.ericdriggs.reportcard.ReportCardService;
-import io.github.ericdriggs.reportcard.model.ExecutionStagePath;
+import io.github.ericdriggs.reportcard.model.RunStagePath;
 import io.github.ericdriggs.reportcard.model.ReportMetaData;
 import net.javacrumbs.jsonunit.JsonAssert;
 import org.junit.jupiter.api.Assertions;
@@ -31,25 +31,25 @@ public class InsertBuildStagePathTest extends AbstractDbTest {
                         .setBranch("newBranch")
                         .setSha("newSha")
                         .setJobInfo(TestData.metadata)
-                        .setExecutionReference("64bb0231-9a2e-4492-bbd1-e0aeba24c982")
+                        .setRunReference("64bb0231-9a2e-4492-bbd1-e0aeba24c982")
                         .setStage("newStage");
 
-        ExecutionStagePath bsp = reportCardService.getOrInsertExecutionStagePath(request);
+        RunStagePath bsp = reportCardService.getOrInsertRunStagePath(request);
 
         assertNotNull(bsp);
         assertNotNull(bsp.getOrg());
         assertNotNull(bsp.getRepo());
         assertNotNull(bsp.getBranch());
         assertNotNull(bsp.getJob());
-        assertNotNull(bsp.getExecution());
+        assertNotNull(bsp.getRun());
         assertNotNull(bsp.getStage());
 
         Assertions.assertEquals(request.getOrg(), bsp.getOrg().getOrgName());
         Assertions.assertEquals(request.getRepo(), bsp.getRepo().getRepoName());
         Assertions.assertEquals(request.getBranch(), bsp.getBranch().getBranchName());
-        Assertions.assertEquals(request.getSha(), bsp.getExecution().getSha());
+        Assertions.assertEquals(request.getSha(), bsp.getRun().getSha());
         JsonAssert.assertJsonEquals(request.getJobInfo(), bsp.getJob().getJobInfo());
-        Assertions.assertEquals(request.getExecutionReference(), bsp.getExecution().getExecutionReference());
+        Assertions.assertEquals(request.getRunReference(), bsp.getRun().getRunReference());
         Assertions.assertEquals(request.getStage(), bsp.getStage().getStageName());
         assertNotNull(bsp.getStage().getStageId());
     }

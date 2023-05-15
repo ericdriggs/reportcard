@@ -5,10 +5,10 @@ package io.github.ericdriggs.reportcard.gen.db;
 
 
 import io.github.ericdriggs.reportcard.gen.db.tables.Branch;
-import io.github.ericdriggs.reportcard.gen.db.tables.Execution;
 import io.github.ericdriggs.reportcard.gen.db.tables.Job;
 import io.github.ericdriggs.reportcard.gen.db.tables.Org;
 import io.github.ericdriggs.reportcard.gen.db.tables.Repo;
+import io.github.ericdriggs.reportcard.gen.db.tables.Run;
 import io.github.ericdriggs.reportcard.gen.db.tables.Stage;
 import io.github.ericdriggs.reportcard.gen.db.tables.Storage;
 import io.github.ericdriggs.reportcard.gen.db.tables.TestCase;
@@ -38,11 +38,6 @@ public class Tables {
     public static final Branch BRANCH = Branch.BRANCH;
 
     /**
-     * The table <code>reportcard.execution</code>.
-     */
-    public static final Execution EXECUTION = Execution.EXECUTION;
-
-    /**
      * The table <code>reportcard.job</code>.
      */
     public static final Job JOB = Job.JOB;
@@ -56,6 +51,11 @@ public class Tables {
      * The table <code>reportcard.repo</code>.
      */
     public static final Repo REPO = Repo.REPO;
+
+    /**
+     * The table <code>reportcard.run</code>.
+     */
+    public static final Run RUN = Run.RUN;
 
     /**
      * The table <code>reportcard.stage</code>.

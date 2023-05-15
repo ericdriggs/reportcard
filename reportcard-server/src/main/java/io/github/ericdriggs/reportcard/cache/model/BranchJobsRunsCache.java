@@ -5,15 +5,15 @@ import io.github.ericdriggs.reportcard.cache.CacheDuration;
 import io.github.ericdriggs.reportcard.cache.SyncAsyncDuration;
 import io.github.ericdriggs.reportcard.cache.dto.OrgRepoBranch;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.Branch;
-import io.github.ericdriggs.reportcard.gen.db.tables.pojos.Execution;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.Run;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job;
 
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
-public class BranchJobsExecutionsCache extends AbstractAsyncCache<OrgRepoBranch, Map<Branch,Map<Job, Set<Execution>>>> {
-    public BranchJobsExecutionsCache(OrgRepoBranch key) {
+public class BranchJobsRunsCache extends AbstractAsyncCache<OrgRepoBranch, Map<Branch,Map<Job, Set<Run>>>> {
+    public BranchJobsRunsCache(OrgRepoBranch key) {
         super(key);
     }
 
@@ -23,7 +23,7 @@ public class BranchJobsExecutionsCache extends AbstractAsyncCache<OrgRepoBranch,
     }
 
     @Override
-    protected Map<Branch,Map<Job, Set<Execution>>> getUpdatedCacheValue() {
-        return StaticReportCardService.INSTANCE.getBranchJobsExecutions(key.getOrg(), key.getRepo(), key.getBranch(), Collections.EMPTY_MAP);
+    protected Map<Branch,Map<Job, Set<Run>>> getUpdatedCacheValue() {
+        return StaticReportCardService.INSTANCE.getBranchJobsRuns(key.getOrg(), key.getRepo(), key.getBranch(), Collections.EMPTY_MAP);
     }
 }

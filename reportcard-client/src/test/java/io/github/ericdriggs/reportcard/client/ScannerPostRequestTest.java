@@ -84,7 +84,7 @@ public class ScannerPostRequestTest {
         assertEquals(ClientArg.SCM_BRANCH.name(), reportMetaData.getBranch());
         assertEquals(ClientArg.SCM_SHA.name(), reportMetaData.getSha());
 
-        assertEquals(36, reportMetaData.getExecutionReference().length());
+        assertEquals(36, reportMetaData.getRunReference().length());
         assertEquals(ClientArg.STAGE.name(), reportMetaData.getStage());
 
         assertEquals(ClientArg.REPORTCARD_HOST.name(), scannerPostRequest.getReportCardServerData().getReportCardHost());
@@ -132,7 +132,7 @@ public class ScannerPostRequestTest {
 
         assertEquals("{ \"host\": \"http://www.foojenkins.com\" }", hostMetadata);
 
-        assertEquals(ClientArg.EXECUTION_REFERENCE.name(), reportMetaData.getExecutionReference());
+        assertEquals(ClientArg.RUN_REFERENCE.name(), reportMetaData.getRunReference());
         assertEquals(ClientArg.STAGE.name(), reportMetaData.getStage());
 
         assertEquals(ClientArg.TEST_REPORT_PATH.name(), scannerPostRequest.getReportMetaData().getTestReportPath());

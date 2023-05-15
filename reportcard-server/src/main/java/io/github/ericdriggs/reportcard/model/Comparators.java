@@ -20,8 +20,8 @@ public class Comparators {
     public static final Comparator<Job> JOB_CASE_INSENSITIVE_ORDER
             = new Comparators.ContextCaseInsensitiveComparator();
 
-    public static final Comparator<Execution> EXECUTION_CASE_INSENSITIVE_ORDER
-            = new Comparators.ExecutionCaseInsensitiveComparator();
+    public static final Comparator<Run> RUN_CASE_INSENSITIVE_ORDER
+            = new Comparators.RunCaseInsensitiveComparator();
 
     public static final Comparator<Stage> STAGE_CASE_INSENSITIVE_ORDER
             = new Comparators.StageCaseInsensitiveComparator();
@@ -75,12 +75,12 @@ public class Comparators {
         }
     }
 
-    private static class ExecutionCaseInsensitiveComparator
-            implements Comparator<Execution>, java.io.Serializable {
+    private static class RunCaseInsensitiveComparator
+            implements Comparator<Run>, java.io.Serializable {
         private static final long serialVersionUID = 414949285086649733L;
 
-        public int compare(Execution val1, Execution val2) {
-            return compareExecution(val1, val2);
+        public int compare(Run val1, Run val2) {
+            return compareRun(val1, val2);
         }
     }
 
@@ -124,19 +124,19 @@ public class Comparators {
         );
     }
 
-    public static int compareExecution(Execution val1, Execution val2) {
+    public static int compareRun(Run val1, Run val2) {
         return chainCompare(
                 Long.compare(val1.getJobFk(), val2.getJobFk()),
-                ObjectUtils.compare(val1.getExecutionReference(), val2.getExecutionReference()),
-                ObjectUtils.compare(val1.getExecutionId(), val2.getExecutionId()),
+                ObjectUtils.compare(val1.getRunReference(), val2.getRunReference()),
+                ObjectUtils.compare(val1.getRunId(), val2.getRunId()),
                 ObjectUtils.compare(val1.getSha(), val2.getSha()),
-                Long.compare(val1.getExecutionId(), val2.getExecutionId())
+                Long.compare(val1.getRunId(), val2.getRunId())
         );
     }
 
     public static int compareStage(Stage val1, Stage val2) {
         return chainCompare(
-                Long.compare(val1.getExecutionFk(), val2.getExecutionFk()),
+                Long.compare(val1.getRunFk(), val2.getRunFk()),
                 ObjectUtils.compare(val1.getStageName(), val2.getStageName()),
                 ObjectUtils.compare(val1.getStageId(), val2.getStageId())
         );

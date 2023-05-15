@@ -37,8 +37,8 @@ public class PostRequest {
             reportMetaData.setTestReportRegex(".*[.]xml");
         }
 
-        if (ObjectUtils.isEmpty(this.reportMetaData.getExecutionReference())) {
-            reportMetaData.setExecutionReference(UUID.randomUUID().toString());
+        if (ObjectUtils.isEmpty(this.reportMetaData.getRunReference())) {
+            reportMetaData.setRunReference(UUID.randomUUID().toString());
         }
 
         //Prepare errors

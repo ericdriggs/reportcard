@@ -18,6 +18,6 @@ public enum TestData {
         metadata.put("pipeline", "foopipeline");
     }
 
-    public final static String executionReference = "executionReference1";
+    public final static String runReference = "runReference1";
     public final static String stage = "api";
 }

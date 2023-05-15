@@ -114,24 +114,24 @@ public class ReportControllerTest {
                         .setBranch("branch" + randLong)
                         .setSha("sha" + randLong)
                         .setJobInfo(TestData.metadata)
-                        .setExecutionReference("executionReference" + randLong)
+                        .setRunReference("executionReference" + randLong)
                         .setStage("stage" + randLong);
         return request;
 
     }
 
     private void validateMetadata(ReportMetaData reportMetaData) throws JsonProcessingException {
-        ExecutionStagePath executionStagePath =  reportCardService.getExecutionStagePath(reportMetaData);
-        Assertions.assertEquals(reportMetaData.getOrg(), executionStagePath.getOrg().getOrgName() );
-        Assertions.assertEquals(reportMetaData.getRepo(), executionStagePath.getRepo().getRepoName() );
-        Assertions.assertEquals(reportMetaData.getBranch(), executionStagePath.getBranch().getBranchName() );
-        Assertions.assertEquals(reportMetaData.getSha(), executionStagePath.getExecution().getSha() );
+        RunStagePath runStagePath =  reportCardService.getRunStagePath(reportMetaData);
+        Assertions.assertEquals(reportMetaData.getOrg(), runStagePath.getOrg().getOrgName() );
+        Assertions.assertEquals(reportMetaData.getRepo(), runStagePath.getRepo().getRepoName() );
+        Assertions.assertEquals(reportMetaData.getBranch(), runStagePath.getBranch().getBranchName() );
+        Assertions.assertEquals(reportMetaData.getSha(), runStagePath.getRun().getSha() );
 
-        JsonAssert.assertJsonEquals(reportMetaData.getJobInfo(), executionStagePath.getJob().getJobInfo());
+        JsonAssert.assertJsonEquals(reportMetaData.getJobInfo(), runStagePath.getJob().getJobInfo());
 
 
-        Assertions.assertEquals(reportMetaData.getExecutionReference(), executionStagePath.getExecution().getExecutionReference() );
-        Assertions.assertEquals(reportMetaData.getStage(), executionStagePath.getStage().getStageName() );
+        Assertions.assertEquals(reportMetaData.getRunReference(), runStagePath.getRun().getRunReference() );
+        Assertions.assertEquals(reportMetaData.getStage(), runStagePath.getStage().getStageName() );
     }
 
 }
