@@ -5,19 +5,20 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "error", propOrder = {"type", "message"})
+@XmlType(name = "system-out", propOrder = {"type"})
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder(builderMethodName = "builderForError")
+@Builder(builderMethodName = "builderForSystemOut")
 @Data
-public class Error {
+public class SystemOut {
 
     @XmlAttribute(name = "type", required = true)
     protected String type;
-    @XmlAttribute(name = "message")
-    protected String message;
 
 }

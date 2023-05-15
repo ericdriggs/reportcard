@@ -16,7 +16,6 @@ public class JunitParserUtil {
     @SneakyThrows(JAXBException.class)
     public static Testsuites parseTestSuites(String xmlString) {
 
-
         if (xmlString.contains("<testsuites")) {
             JAXBContext jaxbContext = JAXBContext.newInstance(Testsuites.class);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();

@@ -11,9 +11,7 @@ import javax.xml.bind.annotation.XmlType;
 import java.util.List;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-        "property"
-})
+@XmlType(name = "properties", propOrder = {"property"})
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(builderMethodName = "builderForProperties")

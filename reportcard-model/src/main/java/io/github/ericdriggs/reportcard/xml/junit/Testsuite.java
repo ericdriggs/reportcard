@@ -25,8 +25,8 @@ import java.util.List;
 @XmlType(name = "testsuite", propOrder = {
         "properties",
         "testcase",
-        "systemOut",
-        "systemErr"
+        "system_out",
+        "system_err"
 })
 @XmlRootElement(name = "testsuite")
 @NoArgsConstructor
@@ -35,38 +35,51 @@ import java.util.List;
 @Data
 public class Testsuite {
 
-    @XmlAttribute(name = "package", required = true)
-    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-    @XmlSchemaType(name = "token")
-    protected String _package;
-    @XmlAttribute(name = "id", required = true)
-    protected int id;
-
     @XmlElement(required = true)
     protected Properties properties;
     protected List<Testcase> testcase;
-    @XmlElement(name = "system-out", required = true)
-    protected String systemOut;
-    @XmlElement(name = "system-err", required = true)
-    protected String systemErr;
+
+    @XmlElement(name = "system-out")
+    protected String system_out;
+
+    @XmlAttribute(name = "system-err")
+    protected String system_err;
+
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlAttribute(name = "name", required = true)
-    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     protected String name;
-    @XmlAttribute(name = "timestamp", required = true)
-    protected XMLGregorianCalendar timestamp;
-    @XmlAttribute(name = "hostname", required = true)
-    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-    protected String hostname;
+
     @XmlAttribute(name = "tests", required = true)
     protected int tests;
-    @XmlAttribute(name = "failures", required = true)
+
+    @XmlAttribute(name = "failures")
     protected int failures;
-    @XmlAttribute(name = "errors", required = true)
+
+    @XmlAttribute(name = "errors")
     protected int errors;
-    @XmlAttribute(name = "skipped")
-    protected Integer skipped;
-    @XmlAttribute(name = "time", required = true)
+
+    @XmlAttribute(name = "time")
     protected BigDecimal time;
 
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    @XmlAttribute(name = "disabled")
+    protected String disabled;
+
+    @XmlAttribute(name = "skipped")
+    protected Integer skipped;
+
+
+    @XmlAttribute(name = "timestamp")
+    protected XMLGregorianCalendar timestamp;
+
+    @XmlAttribute(name = "hostname")
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    protected String hostname;
+
+    @XmlAttribute(name = "id")
+    protected int id;
+
+    @XmlAttribute(name = "package")
+    protected String _package;
 
 }
