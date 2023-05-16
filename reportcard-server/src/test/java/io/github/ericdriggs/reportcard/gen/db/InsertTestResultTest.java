@@ -3,7 +3,7 @@ package io.github.ericdriggs.reportcard.gen.db;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.ericdriggs.reportcard.UploadService;
+import io.github.ericdriggs.reportcard.TestResultUploadService;
 import io.github.ericdriggs.reportcard.model.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -59,7 +59,7 @@ public class InsertTestResultTest extends AbstractUploadDbTest {
     }
 
     @Autowired
-    public InsertTestResultTest(UploadService uploadService) {
+    public InsertTestResultTest(TestResultUploadService uploadService) {
         super(uploadService);
     }
 

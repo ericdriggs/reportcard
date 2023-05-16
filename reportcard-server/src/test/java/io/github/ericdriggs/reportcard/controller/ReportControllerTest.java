@@ -2,7 +2,7 @@ package io.github.ericdriggs.reportcard.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.github.ericdriggs.reportcard.ReportcardApplication;
-import io.github.ericdriggs.reportcard.UploadService;
+import io.github.ericdriggs.reportcard.TestResultUploadService;
 import io.github.ericdriggs.reportcard.gen.db.TestData;
 import io.github.ericdriggs.reportcard.model.*;
 import io.github.ericdriggs.reportcard.xml.ResourceReaderComponent;
@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ReportControllerTest {
 
     @Autowired
-    public ReportControllerTest(ReportControllerUtil reportControllerUtil, ResourceReaderComponent resourceReader, UploadService uploadService) {
+    public ReportControllerTest(ReportControllerUtil reportControllerUtil, ResourceReaderComponent resourceReader, TestResultUploadService uploadService) {
         this.reportControllerUtil = reportControllerUtil;
         //this.resourceReader = resourceReader;
         this.uploadService = uploadService;
@@ -40,7 +40,7 @@ public class ReportControllerTest {
 
     private final ReportControllerUtil reportControllerUtil;
     //private final ResourceReaderComponent resourceReader;
-    private final UploadService uploadService;
+    private final TestResultUploadService uploadService;
 
     private final String xmlJunit;
     private final String xmlSurefire;
@@ -58,7 +58,18 @@ public class ReportControllerTest {
     public void insertJunitTest() throws JsonProcessingException {
 
         final ReportMetaData reportMetatData = generateRandomReportMetaData();
-        TestResult inserted = reportControllerUtil.doPostXmlJunit(reportMetatData, xmlJunit);
+        Map<StagePath, TestResult> stagePathTestResultMap = reportControllerUtil.doPostXmlSingle(reportMetatData, xmlJunit);
+
+        assertEquals(1, stagePathTestResultMap.size());
+
+        TestResult inserted = null;
+        StagePath stagePath = null;
+
+        for (Map.Entry<StagePath, TestResult> entry : stagePathTestResultMap.entrySet()) {
+            stagePath = entry.getKey();
+            inserted = entry.getValue();
+        }
+
         assertNotNull(inserted);
         assertNotNull(inserted.getTestResultId());
 
@@ -73,17 +84,25 @@ public class ReportControllerTest {
         assertTrue(LocalDateTime.now().isAfter(inserted.getTestResultCreated()));
         Assertions.assertEquals(new BigDecimal("50.500"), inserted.getTime());
 
-        validateMetadata(reportMetatData);
+        validateStagePath(reportMetatData, stagePath);
     }
 
-
-
     @Test
-    public void insertSurefireTest() throws JsonProcessingException {
-
+    public void insertMultipleTest() throws JsonProcessingException {
 
         final ReportMetaData reportMetatData = generateRandomReportMetaData();
-        TestResult inserted = reportControllerUtil.doPostXmlSurefire(reportMetatData, Collections.singletonList(xmlSurefire));
+        Map<StagePath, TestResult> stagePathTestResultMap = reportControllerUtil.doPostXmlMultiple(reportMetatData, Collections.singletonList(xmlSurefire));
+
+        assertEquals(1, stagePathTestResultMap.size());
+
+        TestResult inserted = null;
+        StagePath stagePath = null;
+
+        for (Map.Entry<StagePath, TestResult> entry : stagePathTestResultMap.entrySet()) {
+            stagePath = entry.getKey();
+            inserted = entry.getValue();
+        }
+
         assertNotNull(inserted);
         assertNotNull(inserted.getTestResultId());
 
@@ -98,11 +117,10 @@ public class ReportControllerTest {
         assertTrue(LocalDateTime.now().isAfter(inserted.getTestResultCreated()));
         Assertions.assertEquals(new BigDecimal("0.014"), inserted.getTime());
 
-        validateMetadata(reportMetatData);
+        validateStagePath(reportMetatData, stagePath);
     }
 
     private final static Random random = new Random();
-
 
     static ReportMetaData generateRandomReportMetaData() {
 
@@ -120,18 +138,16 @@ public class ReportControllerTest {
 
     }
 
-    private void validateMetadata(ReportMetaData reportMetaData) throws JsonProcessingException {
-        StagePath stagePath =  uploadService.getStagePath(reportMetaData);
-        Assertions.assertEquals(reportMetaData.getOrg(), stagePath.getOrg().getOrgName() );
-        Assertions.assertEquals(reportMetaData.getRepo(), stagePath.getRepo().getRepoName() );
-        Assertions.assertEquals(reportMetaData.getBranch(), stagePath.getBranch().getBranchName() );
-        Assertions.assertEquals(reportMetaData.getSha(), stagePath.getRun().getSha() );
+    private void validateStagePath(ReportMetaData reportMetaData, StagePath stagePath) {
+        Assertions.assertEquals(reportMetaData.getOrg(), stagePath.getOrg().getOrgName());
+        Assertions.assertEquals(reportMetaData.getRepo(), stagePath.getRepo().getRepoName());
+        Assertions.assertEquals(reportMetaData.getBranch(), stagePath.getBranch().getBranchName());
+        Assertions.assertEquals(reportMetaData.getSha(), stagePath.getRun().getSha());
 
         JsonAssert.assertJsonEquals(reportMetaData.getJobInfo(), stagePath.getJob().getJobInfo());
 
-
-        Assertions.assertEquals(reportMetaData.getRunReference(), stagePath.getRun().getRunReference() );
-        Assertions.assertEquals(reportMetaData.getStage(), stagePath.getStage().getStageName() );
+        Assertions.assertEquals(reportMetaData.getRunReference(), stagePath.getRun().getRunReference());
+        Assertions.assertEquals(reportMetaData.getStage(), stagePath.getStage().getStageName());
     }
 
 }

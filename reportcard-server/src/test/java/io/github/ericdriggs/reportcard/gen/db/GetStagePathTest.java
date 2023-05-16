@@ -1,7 +1,7 @@
 package io.github.ericdriggs.reportcard.gen.db;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import io.github.ericdriggs.reportcard.UploadService;
+import io.github.ericdriggs.reportcard.TestResultUploadService;
 import io.github.ericdriggs.reportcard.model.StagePath;
 import io.github.ericdriggs.reportcard.model.ReportMetaData;
 import net.javacrumbs.jsonunit.JsonAssert;
@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class GetStagePathTest extends AbstractUploadDbTest {
 
     @Autowired
-    public GetStagePathTest(UploadService uploadService) {
+    public GetStagePathTest(TestResultUploadService uploadService) {
         super(uploadService);
     }
 

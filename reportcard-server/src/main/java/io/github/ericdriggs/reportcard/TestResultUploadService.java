@@ -29,7 +29,7 @@ import static io.github.ericdriggs.reportcard.gen.db.Tables.*;
 
 @Service
 @SuppressWarnings({"unused", "ConstantConditions"})
-public class UploadService extends AbstractReportCardService {
+public class TestResultUploadService extends AbstractReportCardService {
 
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -44,7 +44,7 @@ public class UploadService extends AbstractReportCardService {
     final TestCaseDao testCaseDao;
 
     @Autowired
-    public UploadService(DSLContext dsl) {
+    public TestResultUploadService(DSLContext dsl) {
         super(dsl);
 
         orgDao = new OrgDao(dsl.configuration());

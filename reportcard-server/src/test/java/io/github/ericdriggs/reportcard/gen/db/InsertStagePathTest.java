@@ -1,6 +1,6 @@
 package io.github.ericdriggs.reportcard.gen.db;
 
-import io.github.ericdriggs.reportcard.UploadService;
+import io.github.ericdriggs.reportcard.TestResultUploadService;
 import io.github.ericdriggs.reportcard.model.StagePath;
 import io.github.ericdriggs.reportcard.model.ReportMetaData;
 import net.javacrumbs.jsonunit.JsonAssert;
@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class InsertStagePathTest extends AbstractUploadDbTest {
 
     @Autowired
-    public InsertStagePathTest(UploadService uploadService) {
+    public InsertStagePathTest(TestResultUploadService uploadService) {
         super(uploadService);
     }
 
