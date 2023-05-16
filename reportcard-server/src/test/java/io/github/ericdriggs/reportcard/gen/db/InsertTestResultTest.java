@@ -159,15 +159,15 @@ public class InsertTestResultTest extends AbstractUploadDbTest {
 
     private TestResult getInsertableTestResult() {
 
-        RunStagePath bsp;
+        StagePath stagePath;
         {
             ReportMetaData reportMetatData = getReportMetaData();
-            bsp = uploadService.getOrInsertRunStagePath(reportMetatData);
-            assertTrue(bsp.isComplete());
+            stagePath = uploadService.getOrInsertStagePath(reportMetatData);
+            assertTrue(stagePath.isComplete());
         }
 
         TestResult testResult = new TestResult();
-        testResult.setStageFk(bsp.getStage().getStageId());
+        testResult.setStageFk(stagePath.getStage().getStageId());
         testResult.setError(testResultErrorCount);
         testResult.setFailure(testResultFailureCount);
         testResult.setSkipped(testResultSkippedCount);

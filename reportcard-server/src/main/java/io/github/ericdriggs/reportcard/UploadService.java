@@ -59,7 +59,7 @@ public class UploadService extends AbstractReportCardService {
         testCaseDao = new TestCaseDao(dsl.configuration());
     }
 
-    public RunStagePath getRunStagePath(ReportMetaData request) {
+    public StagePath getStagePath(ReportMetaData request) {
 
         Map<String, String> metadataFilters = request.getJobInfo();
         SelectConditionStep<Record> selectConditionStep = dsl.
@@ -82,9 +82,9 @@ public class UploadService extends AbstractReportCardService {
         Record record = selectConditionStep
                 .fetchOne();
 
-        RunStagePath runStagePath = new RunStagePath();
+        StagePath stagePath = new StagePath();
         if (record == null) {
-            return runStagePath;
+            return stagePath;
         }
 
         {
@@ -115,23 +115,23 @@ public class UploadService extends AbstractReportCardService {
                 _stage = record.into(StageRecord.class).into(Stage.class);
             }
 
-            runStagePath.setOrg(_org);
-            runStagePath.setRepo(_repo);
-            runStagePath.setBranch(_branch);
-            runStagePath.setJob(_context);
-            runStagePath.setRun(_run);
-            runStagePath.setStage(_stage);
+            stagePath.setOrg(_org);
+            stagePath.setRepo(_repo);
+            stagePath.setBranch(_branch);
+            stagePath.setJob(_context);
+            stagePath.setRun(_run);
+            stagePath.setStage(_stage);
 
         }
-        return runStagePath;
+        return stagePath;
     }
 
     /**
      * @param request a BuildStagePathRequest with the fields to match on
      * @return the RunStagePath for the provided report metadata.
      */
-    public RunStagePath getOrInsertRunStagePath(ReportMetaData request) {
-        return getOrInsertRunStagePath(request, null);
+    public StagePath getOrInsertStagePath(ReportMetaData request) {
+        return getOrInsertStagePath(request, null);
     }
 
     /*
@@ -141,74 +141,74 @@ public class UploadService extends AbstractReportCardService {
      */
 
     /**
-     * prefer public method. The ability to inject an runStagePath is for testing purposes.
+     * prefer public method. The ability to inject an stagePath is for testing purposes.
      *
      * @param request      a ReportMetaData
-     * @param runStagePath normally null, only values passed for testing
+     * @param stagePath normally null, only values passed for testing
      * @return the RunStagePath for the provided report metadata.
      */
-    public RunStagePath getOrInsertRunStagePath(ReportMetaData request, RunStagePath runStagePath) {
+    public StagePath getOrInsertStagePath(ReportMetaData request, StagePath stagePath) {
 
         request.validateAndSetDefaults();
 
-        if (runStagePath == null) {
-            runStagePath = getRunStagePath(request);
+        if (stagePath == null) {
+            stagePath = getStagePath(request);
         }
 
-        if (runStagePath.getOrg() == null) {
+        if (stagePath.getOrg() == null) {
             Org org = new Org()
                     .setOrgName(request.getOrg());
             orgDao.insert(org);
-            runStagePath.setOrg(org);
+            stagePath.setOrg(org);
         }
 
-        if (runStagePath.getRepo() == null) {
+        if (stagePath.getRepo() == null) {
             Repo repo = new Repo()
                     .setRepoName(request.getRepo())
-                    .setOrgFk(runStagePath.getOrg().getOrgId());
+                    .setOrgFk(stagePath.getOrg().getOrgId());
             repoDao.insert(repo);
-            runStagePath.setRepo(repo);
+            stagePath.setRepo(repo);
         }
 
-        if (runStagePath.getBranch() == null) {
+        if (stagePath.getBranch() == null) {
             Branch branch = new Branch()
                     .setBranchName(request.getBranch())
-                    .setRepoFk(runStagePath.getRepo().getRepoId());
+                    .setRepoFk(stagePath.getRepo().getRepoId());
             branchDao.insert(branch);
-            runStagePath.setBranch(branch);
+            stagePath.setBranch(branch);
         }
 
-        if (runStagePath.getJob() == null) {
+        if (stagePath.getJob() == null) {
             Job job = new Job()
                     .setJobInfo(request.getJobInfoJson())
-                    .setBranchFk(runStagePath.getBranch().getBranchId());
+                    .setBranchFk(stagePath.getBranch().getBranchId());
             //jobDao.insert(job);
             //user insert since DAO/POJO would incorrectly attempt to insert generated column job_info_str
             Job insertedJob = dsl.insertInto(JOB, JOB.BRANCH_FK, JOB.JOB_INFO)
-                    .values(runStagePath.getBranch().getBranchId(), request.getJobInfoJson())
+                    .values(stagePath.getBranch().getBranchId(), request.getJobInfoJson())
                     .returningResult(JOB.JOB_ID, JOB.JOB_INFO, JOB.BRANCH_FK, JOB.JOB_INFO_STR)
                     .fetchOne().into(Job.class);
 
-            runStagePath.setJob(insertedJob);
+            stagePath.setJob(insertedJob);
         }
 
-        if (runStagePath.getRun() == null) {
+        if (stagePath.getRun() == null) {
             Run run = new Run()
                     .setRunReference(request.getRunReference())
                     .setSha(request.getSha())
-                    .setJobFk(runStagePath.getJob().getJobId());
+                    .setJobFk(stagePath.getJob().getJobId());
             runDao.insert(run);
-            runStagePath.setRun(run);
+            stagePath.setRun(run);
         }
 
-        if (runStagePath.getStage() == null) {
+        if (stagePath.getStage() == null) {
             Stage stage = new Stage()
                     .setStageName(request.getStage())
-                    .setRunFk(runStagePath.getRun().getRunId());
+                    .setRunFk(stagePath.getRun().getRunId());
             stageDao.insert(stage);
-            runStagePath.setStage(stage);
+            stagePath.setStage(stage);
         }
-        return runStagePath;
+        return stagePath;
     }
 
     public TestResult getTestResult(Long testResultId) {

@@ -1,0 +1,54 @@
+package io.github.ericdriggs.reportcard.gen.db;
+
+import io.github.ericdriggs.reportcard.UploadService;
+import io.github.ericdriggs.reportcard.model.StagePath;
+import io.github.ericdriggs.reportcard.model.ReportMetaData;
+import net.javacrumbs.jsonunit.JsonAssert;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+@Profile("test")
+public class InsertStagePathTest extends AbstractUploadDbTest {
+
+    @Autowired
+    public InsertStagePathTest(UploadService uploadService) {
+        super(uploadService);
+    }
+
+    @Test
+    public void insertStagePathAllInserted() {
+        ReportMetaData request =
+                new ReportMetaData()
+                        .setOrg("newOrg")
+                        .setRepo("newRepo")
+                        .setBranch("newBranch")
+                        .setSha("newSha")
+                        .setJobInfo(TestData.metadata)
+                        .setRunReference("64bb0231-9a2e-4492-bbd1-e0aeba24c982")
+                        .setStage("newStage");
+
+        StagePath stagePath = uploadService.getOrInsertStagePath(request);
+
+        assertNotNull(stagePath);
+        assertNotNull(stagePath.getOrg());
+        assertNotNull(stagePath.getRepo());
+        assertNotNull(stagePath.getBranch());
+        assertNotNull(stagePath.getJob());
+        assertNotNull(stagePath.getRun());
+        assertNotNull(stagePath.getStage());
+
+        Assertions.assertEquals(request.getOrg(), stagePath.getOrg().getOrgName());
+        Assertions.assertEquals(request.getRepo(), stagePath.getRepo().getRepoName());
+        Assertions.assertEquals(request.getBranch(), stagePath.getBranch().getBranchName());
+        Assertions.assertEquals(request.getSha(), stagePath.getRun().getSha());
+        JsonAssert.assertJsonEquals(request.getJobInfo(), stagePath.getJob().getJobInfo());
+        Assertions.assertEquals(request.getRunReference(), stagePath.getRun().getRunReference());
+        Assertions.assertEquals(request.getStage(), stagePath.getStage().getStageName());
+        assertNotNull(stagePath.getStage().getStageId());
+    }
+
+}

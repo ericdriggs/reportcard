@@ -1,8 +1,7 @@
 package io.github.ericdriggs.reportcard.controller;
 
-import io.github.ericdriggs.reportcard.AbstractReportCardService;
 import io.github.ericdriggs.reportcard.UploadService;
-import io.github.ericdriggs.reportcard.model.RunStagePath;
+import io.github.ericdriggs.reportcard.model.StagePath;
 import io.github.ericdriggs.reportcard.model.ReportMetaData;
 import io.github.ericdriggs.reportcard.model.TestResult;
 import io.github.ericdriggs.reportcard.model.converter.junit.JunitConvertersUtil;
@@ -76,7 +75,7 @@ public class ReportControllerUtil {
         reportMetatData.validateAndSetDefaults();
         Testsuites testsuites = JunitParserUtil.parseTestSuites(xmlString);
         TestResult testResult = JunitConvertersUtil.modelMapper.map(testsuites, TestResult.class);
-        RunStagePath buildStagePath = uploadService.getOrInsertRunStagePath(reportMetatData);
+        StagePath buildStagePath = uploadService.getOrInsertStagePath(reportMetatData);
         testResult.setStageFk(buildStagePath.getStage().getStageId());
         testResult.setExternalLinks(reportMetatData.getExternalLinksJson());
         return uploadService.insertTestResult(testResult);
@@ -95,7 +94,7 @@ public class ReportControllerUtil {
         reportMetatData.validateAndSetDefaults();
         List<Testsuite> testsuites = SurefireParserUtil.parseTestSuites(xmlStrings);
         TestResult testResult = SurefireConvertersUtil.doFromSurefireToModelTestResult(testsuites);
-        RunStagePath buildStagePath = uploadService.getOrInsertRunStagePath(reportMetatData);
+        StagePath buildStagePath = uploadService.getOrInsertStagePath(reportMetatData);
         testResult.setStageFk(buildStagePath.getStage().getStageId());
         return uploadService.insertTestResult(testResult);
     }

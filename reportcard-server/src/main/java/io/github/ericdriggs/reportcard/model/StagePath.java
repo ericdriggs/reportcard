@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
 
 @Data
-public class RunStagePath {
+public class StagePath {
     private Org org;
     private Repo repo;
     private Branch branch;

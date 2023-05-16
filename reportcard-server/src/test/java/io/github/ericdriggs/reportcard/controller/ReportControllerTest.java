@@ -1,7 +1,6 @@
 package io.github.ericdriggs.reportcard.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import io.github.ericdriggs.reportcard.AbstractReportCardService;
 import io.github.ericdriggs.reportcard.ReportcardApplication;
 import io.github.ericdriggs.reportcard.UploadService;
 import io.github.ericdriggs.reportcard.gen.db.TestData;
@@ -122,17 +121,17 @@ public class ReportControllerTest {
     }
 
     private void validateMetadata(ReportMetaData reportMetaData) throws JsonProcessingException {
-        RunStagePath runStagePath =  uploadService.getRunStagePath(reportMetaData);
-        Assertions.assertEquals(reportMetaData.getOrg(), runStagePath.getOrg().getOrgName() );
-        Assertions.assertEquals(reportMetaData.getRepo(), runStagePath.getRepo().getRepoName() );
-        Assertions.assertEquals(reportMetaData.getBranch(), runStagePath.getBranch().getBranchName() );
-        Assertions.assertEquals(reportMetaData.getSha(), runStagePath.getRun().getSha() );
+        StagePath stagePath =  uploadService.getStagePath(reportMetaData);
+        Assertions.assertEquals(reportMetaData.getOrg(), stagePath.getOrg().getOrgName() );
+        Assertions.assertEquals(reportMetaData.getRepo(), stagePath.getRepo().getRepoName() );
+        Assertions.assertEquals(reportMetaData.getBranch(), stagePath.getBranch().getBranchName() );
+        Assertions.assertEquals(reportMetaData.getSha(), stagePath.getRun().getSha() );
 
-        JsonAssert.assertJsonEquals(reportMetaData.getJobInfo(), runStagePath.getJob().getJobInfo());
+        JsonAssert.assertJsonEquals(reportMetaData.getJobInfo(), stagePath.getJob().getJobInfo());
 
 
-        Assertions.assertEquals(reportMetaData.getRunReference(), runStagePath.getRun().getRunReference() );
-        Assertions.assertEquals(reportMetaData.getStage(), runStagePath.getStage().getStageName() );
+        Assertions.assertEquals(reportMetaData.getRunReference(), stagePath.getRun().getRunReference() );
+        Assertions.assertEquals(reportMetaData.getStage(), stagePath.getStage().getStageName() );
     }
 
 }
