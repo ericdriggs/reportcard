@@ -19,7 +19,6 @@ public class ResourceReaderComponent {
     @Autowired
     ResourceLoader resourceLoader;
 
-
     public String resourceAsString(String classpath) {
 
         Resource resource = resourceLoader.getResource( classpath);

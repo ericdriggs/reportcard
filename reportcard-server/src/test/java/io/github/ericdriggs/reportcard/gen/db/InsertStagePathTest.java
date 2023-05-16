@@ -2,7 +2,7 @@ package io.github.ericdriggs.reportcard.gen.db;
 
 import io.github.ericdriggs.reportcard.TestResultUploadService;
 import io.github.ericdriggs.reportcard.model.StagePath;
-import io.github.ericdriggs.reportcard.model.ReportMetaData;
+import io.github.ericdriggs.reportcard.model.StageDetails;
 import net.javacrumbs.jsonunit.JsonAssert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -21,8 +21,8 @@ public class InsertStagePathTest extends AbstractUploadDbTest {
 
     @Test
     public void insertStagePathAllInserted() {
-        ReportMetaData request =
-                new ReportMetaData()
+        StageDetails request =
+                new StageDetails()
                         .setOrg("newOrg")
                         .setRepo("newRepo")
                         .setBranch("newBranch")

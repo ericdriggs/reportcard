@@ -143,10 +143,10 @@ public class InsertTestResultTest extends AbstractUploadDbTest {
 
     }
 
-    private ReportMetaData getReportMetaData() {
+    private StageDetails getReportMetaData() {
 
-        ReportMetaData reportMetatData =
-                new ReportMetaData()
+        StageDetails reportMetatData =
+                new StageDetails()
                         .setOrg(org)
                         .setRepo(repo)
                         .setBranch(branch)
@@ -161,7 +161,7 @@ public class InsertTestResultTest extends AbstractUploadDbTest {
 
         StagePath stagePath;
         {
-            ReportMetaData reportMetatData = getReportMetaData();
+            StageDetails reportMetatData = getReportMetaData();
             stagePath = uploadService.getOrInsertStagePath(reportMetatData);
             assertTrue(stagePath.isComplete());
         }

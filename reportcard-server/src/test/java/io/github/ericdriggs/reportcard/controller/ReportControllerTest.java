@@ -54,8 +54,8 @@ public class ReportControllerTest {
     @Test
     public void insertJunitTest() throws JsonProcessingException {
 
-        final ReportMetaData reportMetatData = generateRandomReportMetaData();
-        Map<StagePath, TestResult> stagePathTestResultMap = uploadService.doPostXmlSingle(reportMetatData, xmlJunit);
+        final StageDetails reportMetatData = generateRandomReportMetaData();
+        Map<StagePath, TestResult> stagePathTestResultMap = uploadService.doPostXmlStrings(reportMetatData, Collections.singletonList(xmlJunit));
 
         assertEquals(1, stagePathTestResultMap.size());
 
@@ -87,8 +87,8 @@ public class ReportControllerTest {
     @Test
     public void insertMultipleTest() throws JsonProcessingException {
 
-        final ReportMetaData reportMetatData = generateRandomReportMetaData();
-        Map<StagePath, TestResult> stagePathTestResultMap = uploadService.doPostXmlMultiple(reportMetatData, Collections.singletonList(xmlSurefire));
+        final StageDetails reportMetatData = generateRandomReportMetaData();
+        Map<StagePath, TestResult> stagePathTestResultMap = uploadService.doPostXmlStrings(reportMetatData, Collections.singletonList(xmlSurefire));
 
         assertEquals(1, stagePathTestResultMap.size());
 
@@ -119,11 +119,11 @@ public class ReportControllerTest {
 
     private final static Random random = new Random();
 
-    static ReportMetaData generateRandomReportMetaData() {
+    static StageDetails generateRandomReportMetaData() {
 
         long randLong = random.nextLong();
-        ReportMetaData request =
-                new ReportMetaData()
+        StageDetails request =
+                new StageDetails()
                         .setOrg("org" + randLong)
                         .setRepo("repo" + randLong)
                         .setBranch("branch" + randLong)
@@ -135,7 +135,7 @@ public class ReportControllerTest {
 
     }
 
-    private void validateStagePath(ReportMetaData reportMetaData, StagePath stagePath) {
+    private void validateStagePath(StageDetails reportMetaData, StagePath stagePath) {
         Assertions.assertEquals(reportMetaData.getOrg(), stagePath.getOrg().getOrgName());
         Assertions.assertEquals(reportMetaData.getRepo(), stagePath.getRepo().getRepoName());
         Assertions.assertEquals(reportMetaData.getBranch(), stagePath.getBranch().getBranchName());

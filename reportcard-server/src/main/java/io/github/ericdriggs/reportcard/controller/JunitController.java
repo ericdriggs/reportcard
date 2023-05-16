@@ -1,7 +1,7 @@
 package io.github.ericdriggs.reportcard.controller;
 
 import io.github.ericdriggs.reportcard.TestResultUploadService;
-import io.github.ericdriggs.reportcard.model.ReportMetaData;
+import io.github.ericdriggs.reportcard.model.StageDetails;
 import io.github.ericdriggs.reportcard.model.StagePath;
 import io.github.ericdriggs.reportcard.model.TestResult;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -28,9 +28,20 @@ public class JunitController {
     private final TestResultUploadService uploadService;
 
     @PostMapping("")
-    public ResponseEntity<Map<StagePath,TestResult>> postJunitXml(@JsonProperty @RequestPart("reportMetaData") ReportMetaData reportMetaData, @RequestParam("files") MultipartFile[] files) {
-        Map<StagePath,TestResult> stagePathTestResultMap = uploadService.doPostXml(reportMetaData, files);
-        log.info("post success for reportMetaData: " + reportMetaData);
+    public ResponseEntity<Map<StagePath,TestResult>> postJunitXml(@JsonProperty @RequestPart("stageDetails") StageDetails stageDetails, @RequestParam("files") MultipartFile[] files) {
+        Map<StagePath,TestResult> stagePathTestResultMap = uploadService.doPostXml(stageDetails, files);
+        log.info("post success for postJunitXml -- stageDetails: {}", stageDetails);
+        return new ResponseEntity<>(stagePathTestResultMap, HttpStatus.OK);
+    }
+
+    @PostMapping("run/{runId}/stage/{stage}")
+    public ResponseEntity<Map<StagePath,TestResult>> postJunitXmlNewStageForRun(
+            @RequestParam("files") MultipartFile[] files,
+            @PathVariable("runId") Long runId,
+            @PathVariable("stage") String stage
+    ) {
+        Map<StagePath,TestResult> stagePathTestResultMap = uploadService.doPostXml(runId, stage, files);
+        log.info("post success for postJunitXmlAddStage -- runId: {}. stage: {}: ", runId, stage);
         return new ResponseEntity<>(stagePathTestResultMap, HttpStatus.OK);
     }
 

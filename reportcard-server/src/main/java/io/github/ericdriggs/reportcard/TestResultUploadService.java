@@ -67,7 +67,7 @@ public class TestResultUploadService extends AbstractReportCardService {
         testCaseDao = new TestCaseDao(dsl.configuration());
     }
 
-    public Map<StagePath, TestResult> doPostXml(ReportMetaData reportMetatData, MultipartFile[] files) {
+    public Map<StagePath, TestResult> doPostXml(StageDetails reportMetatData, MultipartFile[] files) {
         List<String> xmlStrings = new ArrayList<>();
         Arrays.stream(files)
                 .forEach(file -> xmlStrings.add(fileToString(file)));
@@ -75,45 +75,67 @@ public class TestResultUploadService extends AbstractReportCardService {
         return doPostXmlStrings(reportMetatData, xmlStrings);
     }
 
-    public Map<StagePath, TestResult> doPostXmlStrings(ReportMetaData reportMetatData, List<String> xmlStrings) {
+    public Map<StagePath, TestResult> doPostXml(Long runId, String stageName, MultipartFile[] files) {
+
+        List<String> xmlStrings = new ArrayList<>();
+        Arrays.stream(files)
+                .forEach(file -> xmlStrings.add(fileToString(file)));
+
+        return doPostXmlStrings(runId, stageName, xmlStrings);
+    }
+
+    public Map<StagePath, TestResult> doPostXmlStrings(StageDetails stageDetails, List<String> xmlStrings) {
+        stageDetails.validateAndSetDefaults();
+
         Map<StagePath, TestResult> stagePathTestResultMap = null;
+        TestResult testResult = fromXmlStrings(xmlStrings);
+        testResult.setExternalLinks(stageDetails.getExternalLinksJson());
+        return insertTestResult(stageDetails, testResult);
+    }
+
+    public Map<StagePath, TestResult> doPostXmlStrings(Long runId, String stageName, List<String> xmlStrings) {
+        StagePath stagePath = getOrInsertStage(runId, stageName);
+
+        Map<StagePath, TestResult> stagePathTestResultMap = null;
+        TestResult testResult = fromXmlStrings(xmlStrings);
+        return insertTestResult(stagePath, testResult);
+    }
+
+    public TestResult fromXmlStrings(List<String> xmlStrings) {
+
         if (xmlStrings == null || xmlStrings.size() == 0) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing files");
         } else if (xmlStrings.size() > 1) {
-            for (String xmlString : xmlStrings) {
-                if (!"testsuite".equals(XmlUtil.getXmlRootElementName(xmlString))) {
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Multiple files only supported with surefire format");
-                }
-            }
-            stagePathTestResultMap = doPostXmlMultiple(reportMetatData, xmlStrings);
+            fromTestSuiteList(xmlStrings);
         } else { //xmlString.size == 1
+            //TODO: check all strings -- handle mixed case of testsuite and testsuites
             String xmlString = xmlStrings.get(0);
             String rootElementName = XmlUtil.getXmlRootElementName(xmlString);
             if ("testsuite".equals(rootElementName)) {
-                stagePathTestResultMap = doPostXmlMultiple(reportMetatData, xmlStrings);
+                return fromTestSuiteList(xmlStrings);
             } else if ("testsuites".equals(rootElementName)) {
-                stagePathTestResultMap = doPostXmlSingle(reportMetatData, xmlString);
+                return fromTestSuites(xmlString);
             }
         }
-        return stagePathTestResultMap;
+        throw new IllegalArgumentException("not list of junit xml");
     }
 
-    public Map<StagePath, TestResult> doPostXmlSingle(ReportMetaData reportMetatData, String xmlString) {
-        reportMetatData.validateAndSetDefaults();
+    public TestResult fromTestSuites(String xmlString) {
         Testsuites testsuites = JunitParserUtil.parseTestSuites(xmlString);
-        TestResult testResult = JunitConvertersUtil.modelMapper.map(testsuites, TestResult.class);
-        StagePath stagePath = getOrInsertStagePath(reportMetatData);
-        testResult.setStageFk(stagePath.getStage().getStageId());
-        testResult.setExternalLinks(reportMetatData.getExternalLinksJson());
-        TestResult inserted = insertTestResult(testResult);
-        return Collections.singletonMap(stagePath, inserted);
+        return JunitConvertersUtil.modelMapper.map(testsuites, TestResult.class);
     }
 
-    public Map<StagePath, TestResult> doPostXmlMultiple(ReportMetaData reportMetatData, List<String> xmlStrings) {
-        reportMetatData.validateAndSetDefaults();
+    public TestResult fromTestSuiteList(List<String> xmlStrings) {
         Testsuites testsuites = JunitParserUtil.parseTestSuiteList(xmlStrings);
-        TestResult testResult = JunitConvertersUtil.doFromJunitToModelTestResult(testsuites);
+        return JunitConvertersUtil.doFromJunitToModelTestResult(testsuites);
+    }
+
+    public Map<StagePath, TestResult> insertTestResult(StageDetails reportMetatData, TestResult testResult) {
         StagePath stagePath = getOrInsertStagePath(reportMetatData);
+        return insertTestResult(stagePath, testResult);
+    }
+
+    public Map<StagePath, TestResult> insertTestResult(StagePath stagePath, TestResult testResult) {
         testResult.setStageFk(stagePath.getStage().getStageId());
         TestResult inserted = insertTestResult(testResult);
         return Collections.singletonMap(stagePath, inserted);
@@ -127,7 +149,22 @@ public class TestResultUploadService extends AbstractReportCardService {
         }
     }
 
-    public StagePath getStagePath(ReportMetaData request) {
+    public StagePath getStagePath(Long runId, String stageName) {
+
+        SelectConditionStep<Record> selectConditionStep = dsl.
+                select()
+                .from(ORG)
+                .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID))
+                .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID))
+                .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
+                .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID))
+                .leftJoin(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID)
+                        .and(STAGE.STAGE_NAME.eq(stageName)))
+                .where(RUN.RUN_ID.eq(runId));
+        return doGetStagePath(selectConditionStep);
+    }
+
+    public StagePath getStagePath(StageDetails request) {
 
         Map<String, String> metadataFilters = request.getJobInfo();
         SelectConditionStep<Record> selectConditionStep = dsl.
@@ -146,6 +183,10 @@ public class TestResultUploadService extends AbstractReportCardService {
                 .leftJoin(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID)
                         .and(STAGE.STAGE_NAME.eq(request.getStage())))
                 .where(ORG.ORG_NAME.eq(request.getOrg()));
+        return doGetStagePath(selectConditionStep);
+    }
+
+    protected StagePath doGetStagePath(SelectConditionStep<Record> selectConditionStep) {
 
         Record record = selectConditionStep
                 .fetchOne();
@@ -198,7 +239,7 @@ public class TestResultUploadService extends AbstractReportCardService {
      * @param request a BuildStagePathRequest with the fields to match on
      * @return the RunStagePath for the provided report metadata.
      */
-    public StagePath getOrInsertStagePath(ReportMetaData request) {
+    public StagePath getOrInsertStagePath(StageDetails request) {
         return getOrInsertStagePath(request, null);
     }
 
@@ -208,6 +249,20 @@ public class TestResultUploadService extends AbstractReportCardService {
      *     2) the existing data is returned
      */
 
+    public StagePath getOrInsertStage(Long runId, String stageName) {
+        StagePath stagePath = getStagePath(runId, stageName);
+        if (stagePath.getStage() == null) {
+            if (stagePath.getStage() == null) {
+                Stage stage = new Stage()
+                        .setStageName(stageName)
+                        .setRunFk(stagePath.getRun().getRunId());
+                stageDao.insert(stage);
+                stagePath.setStage(stage);
+            }
+        }
+        return stagePath;
+    }
+
     /**
      * prefer public method. The ability to inject an stagePath is for testing purposes.
      *
@@ -215,7 +270,7 @@ public class TestResultUploadService extends AbstractReportCardService {
      * @param stagePath normally null, only values passed for testing
      * @return the RunStagePath for the provided report metadata.
      */
-    public StagePath getOrInsertStagePath(ReportMetaData request, StagePath stagePath) {
+    public StagePath getOrInsertStagePath(StageDetails request, StagePath stagePath) {
 
         request.validateAndSetDefaults();
 

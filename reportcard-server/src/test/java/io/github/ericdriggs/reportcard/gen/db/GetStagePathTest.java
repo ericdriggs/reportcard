@@ -3,7 +3,7 @@ package io.github.ericdriggs.reportcard.gen.db;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.github.ericdriggs.reportcard.TestResultUploadService;
 import io.github.ericdriggs.reportcard.model.StagePath;
-import io.github.ericdriggs.reportcard.model.ReportMetaData;
+import io.github.ericdriggs.reportcard.model.StageDetails;
 import net.javacrumbs.jsonunit.JsonAssert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -22,8 +22,8 @@ public class GetStagePathTest extends AbstractUploadDbTest {
 
     @Test
     public void getStagePathAllFound() throws JsonProcessingException {
-        ReportMetaData request =
-                new ReportMetaData()
+        StageDetails request =
+                new StageDetails()
                         .setOrg(TestData.org)
                         .setRepo(TestData.repo)
                         .setBranch(TestData.branch)
@@ -49,8 +49,8 @@ public class GetStagePathTest extends AbstractUploadDbTest {
 
     @Test
     public void getStagePath_Missing_build() {
-        ReportMetaData request =
-                new ReportMetaData()
+        StageDetails request =
+                new StageDetails()
                         .setOrg(TestData.org)
                         .setRepo(TestData.repo)
                         .setBranch(TestData.branch)

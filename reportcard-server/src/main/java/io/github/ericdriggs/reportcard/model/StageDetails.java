@@ -14,7 +14,7 @@ import java.util.*;
 
 //TODO: rename to StageDetails
 @Data
-public class ReportMetaData {
+public class StageDetails {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private String org;
