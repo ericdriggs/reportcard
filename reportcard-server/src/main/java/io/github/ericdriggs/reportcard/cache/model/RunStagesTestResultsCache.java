@@ -24,6 +24,6 @@ public class RunStagesTestResultsCache extends AbstractAsyncCache<OrgRepoBranchJ
 
     @Override
     protected Map<Run,Map<Stage, Set<TestResult>>> getUpdatedCacheValue() {
-        return StaticReportCardService.INSTANCE.getRunStagesTestResults(key.getOrg(), key.getRepo(), key.getBranch(), key.getJobId(), key.getRunId());
+        return StaticBrowseService.getInstance().getRunStagesTestResults(key.getOrg(), key.getRepo(), key.getBranch(), key.getJobId(), key.getRunId());
     }
 }

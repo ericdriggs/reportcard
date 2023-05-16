@@ -1,8 +1,8 @@
 package io.github.ericdriggs.reportcard.gen.db;
 
 
-import io.github.ericdriggs.reportcard.ReportCardService;
 import io.github.ericdriggs.reportcard.ReportcardApplication;
+import io.github.ericdriggs.reportcard.UploadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -14,12 +14,12 @@ import org.springframework.test.context.TestPropertySource;
 @ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:application-test.properties")
 @SuppressWarnings("PMD")
-public abstract class AbstractDbTest {
+public abstract class AbstractUploadDbTest {
 
-    protected final ReportCardService reportCardService;
+    protected final UploadService uploadService;
 
     @Autowired
-    public AbstractDbTest(ReportCardService reportCardService ) {
-        this.reportCardService = reportCardService;
+    public AbstractUploadDbTest(UploadService uploadService ) {
+        this.uploadService = uploadService;
     }
 }

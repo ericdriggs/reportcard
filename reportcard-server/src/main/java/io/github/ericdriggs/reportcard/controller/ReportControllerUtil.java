@@ -1,6 +1,7 @@
 package io.github.ericdriggs.reportcard.controller;
 
-import io.github.ericdriggs.reportcard.ReportCardService;
+import io.github.ericdriggs.reportcard.AbstractReportCardService;
+import io.github.ericdriggs.reportcard.UploadService;
 import io.github.ericdriggs.reportcard.model.RunStagePath;
 import io.github.ericdriggs.reportcard.model.ReportMetaData;
 import io.github.ericdriggs.reportcard.model.TestResult;
@@ -26,14 +27,14 @@ import java.util.List;
 public class ReportControllerUtil {
 
     @Autowired
-    public ReportControllerUtil(ReportCardService reportCardService) {
-        this.reportCardService = reportCardService;
+    public ReportControllerUtil(UploadService uploadService) {
+        this.uploadService = uploadService;
     }
 
-    private final ReportCardService reportCardService;
+    private final UploadService uploadService;
 
     public TestResult getTestResult(Long testResultId) {
-        return reportCardService.getTestResult(testResultId);
+        return uploadService.getTestResult(testResultId);
     }
 
     public TestResult doPostXml(ReportMetaData reportMetatData, MultipartFile[] files) {
@@ -75,10 +76,10 @@ public class ReportControllerUtil {
         reportMetatData.validateAndSetDefaults();
         Testsuites testsuites = JunitParserUtil.parseTestSuites(xmlString);
         TestResult testResult = JunitConvertersUtil.modelMapper.map(testsuites, TestResult.class);
-        RunStagePath buildStagePath = reportCardService.getOrInsertRunStagePath(reportMetatData);
+        RunStagePath buildStagePath = uploadService.getOrInsertRunStagePath(reportMetatData);
         testResult.setStageFk(buildStagePath.getStage().getStageId());
         testResult.setExternalLinks(reportMetatData.getExternalLinksJson());
-        return reportCardService.insertTestResult(testResult);
+        return uploadService.insertTestResult(testResult);
     }
 
     public TestResult doPostXmlSurefire(ReportMetaData reportMetatData, MultipartFile[] files) {
@@ -94,9 +95,9 @@ public class ReportControllerUtil {
         reportMetatData.validateAndSetDefaults();
         List<Testsuite> testsuites = SurefireParserUtil.parseTestSuites(xmlStrings);
         TestResult testResult = SurefireConvertersUtil.doFromSurefireToModelTestResult(testsuites);
-        RunStagePath buildStagePath = reportCardService.getOrInsertRunStagePath(reportMetatData);
+        RunStagePath buildStagePath = uploadService.getOrInsertRunStagePath(reportMetatData);
         testResult.setStageFk(buildStagePath.getStage().getStageId());
-        return reportCardService.insertTestResult(testResult);
+        return uploadService.insertTestResult(testResult);
     }
 
     public static String fileToString(MultipartFile file) {

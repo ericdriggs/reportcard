@@ -1,6 +1,6 @@
 package io.github.ericdriggs.reportcard.gen.db;
 
-import io.github.ericdriggs.reportcard.ReportCardService;
+import io.github.ericdriggs.reportcard.UploadService;
 import io.github.ericdriggs.reportcard.model.RunStagePath;
 import io.github.ericdriggs.reportcard.model.ReportMetaData;
 import net.javacrumbs.jsonunit.JsonAssert;
@@ -12,15 +12,12 @@ import org.springframework.context.annotation.Profile;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Profile("test")
-//@EnableConfigurationProperties
-public class InsertBuildStagePathTest extends AbstractDbTest {
+public class InsertBuildStagePathTest extends AbstractUploadDbTest {
 
     @Autowired
-    public InsertBuildStagePathTest(ReportCardService reportCardService) {
-        super(reportCardService);
+    public InsertBuildStagePathTest(UploadService uploadService) {
+        super(uploadService);
     }
-
-
 
     @Test
     public void insertBuildStagePathAllInserted() {
@@ -34,7 +31,7 @@ public class InsertBuildStagePathTest extends AbstractDbTest {
                         .setRunReference("64bb0231-9a2e-4492-bbd1-e0aeba24c982")
                         .setStage("newStage");
 
-        RunStagePath bsp = reportCardService.getOrInsertRunStagePath(request);
+        RunStagePath bsp = uploadService.getOrInsertRunStagePath(request);
 
         assertNotNull(bsp);
         assertNotNull(bsp.getOrg());

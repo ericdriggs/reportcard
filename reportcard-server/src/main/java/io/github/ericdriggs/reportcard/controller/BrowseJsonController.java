@@ -3,7 +3,7 @@ package io.github.ericdriggs.reportcard.controller;
 import java.util.Map;
 import java.util.Set;
 
-import io.github.ericdriggs.reportcard.ReportCardService;
+import io.github.ericdriggs.reportcard.BrowseService;
 import io.github.ericdriggs.reportcard.cache.dto.*;
 import io.github.ericdriggs.reportcard.cache.model.*;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.*;
@@ -16,13 +16,13 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/orgs")
 @SuppressWarnings("unused")
-public class MetadataJsonController {
+public class BrowseJsonController {
 
-    private final ReportCardService reportCardService;
+    private final BrowseService browseService;
 
     @Autowired
-    public MetadataJsonController(ReportCardService reportCardService) {
-        this.reportCardService = reportCardService;
+    public BrowseJsonController(BrowseService browseService) {
+        this.browseService = browseService;
     }
 
     @GetMapping(path = "", produces = "application/json")
@@ -80,7 +80,7 @@ public class MetadataJsonController {
             @PathVariable Long jobId,
             @PathVariable Long runId,
             @PathVariable String stage) {
-        return new ResponseEntity<>(reportCardService.getStageTestResultsTestSuites(org, repo, branch, jobId, runId, stage), HttpStatus.OK);
+        return new ResponseEntity<>(browseService.getStageTestResultsTestSuites(org, repo, branch, jobId, runId, stage), HttpStatus.OK);
     }
 
     @GetMapping(path = "{org}/repo/{repo}/branch/{branch}/sha/{sha}/executions", produces = "application/json")
@@ -91,7 +91,7 @@ public class MetadataJsonController {
             @PathVariable String sha,
             @RequestParam(required = false) Map<String, String> jobInfoFilters) {
         //TODO: filters
-        return new ResponseEntity<>(reportCardService.getBranchJobsRunsForSha(org, repo, branch, sha), HttpStatus.OK);
+        return new ResponseEntity<>(browseService.getBranchJobsRunsForSha(org, repo, branch, sha), HttpStatus.OK);
     }
 
     @GetMapping(path = "{org}/repo/{repo}/branch/{branch}/sha/{sha}/contexts/executions/{runReference}", produces = "application/json")
@@ -102,7 +102,7 @@ public class MetadataJsonController {
             @PathVariable String sha,
             @PathVariable String runReference,
             @RequestParam(required = false) Map<String, String> metadataFilters) {
-        return new ResponseEntity<>(reportCardService.getRunFromReference(org, repo, branch, sha, runReference), HttpStatus.OK);
+        return new ResponseEntity<>(browseService.getRunFromReference(org, repo, branch, sha, runReference), HttpStatus.OK);
     }
 
     @GetMapping(path = "{org}/repo/{repo}/branch/{branch}/job/{jobId}/execution/{runId}/stages/{stage}", produces = "application/json")
@@ -114,7 +114,7 @@ public class MetadataJsonController {
             @PathVariable Long runId,
             @PathVariable String stage,
             @RequestParam(required = false) Map<String, String> metadataFilters) {
-        return new ResponseEntity<>(reportCardService.getStageTestResultsTestSuites(org, repo, branch, jobId, runId, stage), HttpStatus.OK);
+        return new ResponseEntity<>(browseService.getStageTestResultsTestSuites(org, repo, branch, jobId, runId, stage), HttpStatus.OK);
     }
 
 //    @GetMapping(path = "{org}/repo/{repo}/branch/{branch}/sha/{sha}/contexts/executions/{runReference}/stages", produces = "application/json")

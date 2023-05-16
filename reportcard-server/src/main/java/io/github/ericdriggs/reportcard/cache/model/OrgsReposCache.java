@@ -9,7 +9,6 @@ import io.github.ericdriggs.reportcard.gen.db.tables.pojos.Repo;
 import java.util.Map;
 import java.util.Set;
 
-//@Component
 public class OrgsReposCache extends AbstractAsyncCache<String, Map<Org,Set<Repo>>> {
 
     public static OrgsReposCache INSTANCE = new OrgsReposCache("org");
@@ -25,6 +24,6 @@ public class OrgsReposCache extends AbstractAsyncCache<String, Map<Org,Set<Repo>
 
     @Override
     protected Map<Org,Set<Repo>> getUpdatedCacheValue() {
-        return StaticReportCardService.INSTANCE.getOrgsRepos();
+        return StaticBrowseService.getInstance().getOrgsRepos();
     }
 }

@@ -24,6 +24,6 @@ public class BranchJobsRunsCache extends AbstractAsyncCache<OrgRepoBranch, Map<B
 
     @Override
     protected Map<Branch,Map<Job, Set<Run>>> getUpdatedCacheValue() {
-        return StaticReportCardService.INSTANCE.getBranchJobsRuns(key.getOrg(), key.getRepo(), key.getBranch(), Collections.EMPTY_MAP);
+        return StaticBrowseService.getInstance().getBranchJobsRuns(key.getOrg(), key.getRepo(), key.getBranch(), Collections.EMPTY_MAP);
     }
 }
