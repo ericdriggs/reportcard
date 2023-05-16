@@ -3,7 +3,7 @@ package io.github.ericdriggs.reportcard.gen.db;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.ericdriggs.reportcard.ReportCardService;
+import io.github.ericdriggs.reportcard.UploadService;
 import io.github.ericdriggs.reportcard.model.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -16,10 +16,8 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-//import static org.junit.jupiter.api.Assertions.*;
-
 @Profile("test")
-public class InsertTestResultTest extends AbstractDbTest {
+public class InsertTestResultTest extends AbstractUploadDbTest {
 
     final static String org = "org10";
     final static String repo = "repo10";
@@ -61,8 +59,8 @@ public class InsertTestResultTest extends AbstractDbTest {
     }
 
     @Autowired
-    public InsertTestResultTest(ReportCardService reportCardService) {
-        super(reportCardService);
+    public InsertTestResultTest(UploadService uploadService) {
+        super(uploadService);
     }
 
     @Test
@@ -71,12 +69,12 @@ public class InsertTestResultTest extends AbstractDbTest {
         final TestResult testResultBefore = getInsertableTestResult();
         assertValues(testResultBefore);
 
-        final TestResult testResultInsert = reportCardService.insertTestResult(testResultBefore);
+        final TestResult testResultInsert = uploadService.insertTestResult(testResultBefore);
         assertValues(testResultInsert);
         assertIdsandFks(testResultInsert);
         assertExternalLinks(testResultInsert);
 
-        final Set<TestResult> testResultsGet = reportCardService.getTestResults(testResultBefore.getStageFk());
+        final Set<TestResult> testResultsGet = uploadService.getTestResults(testResultBefore.getStageFk());
         assertEquals(1, testResultsGet.size());
         final TestResult testResultGet = testResultsGet.iterator().next();
         assertValues(testResultGet);
@@ -164,7 +162,7 @@ public class InsertTestResultTest extends AbstractDbTest {
         RunStagePath bsp;
         {
             ReportMetaData reportMetatData = getReportMetaData();
-            bsp = reportCardService.getOrInsertRunStagePath(reportMetatData);
+            bsp = uploadService.getOrInsertRunStagePath(reportMetatData);
             assertTrue(bsp.isComplete());
         }
 

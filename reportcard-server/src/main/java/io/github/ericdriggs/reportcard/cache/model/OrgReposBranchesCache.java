@@ -23,7 +23,7 @@ public class OrgReposBranchesCache extends AbstractAsyncCache<OrgName, Map<Org,M
 
     @Override
     protected Map<Org,Map<Repo, Set<Branch>>> getUpdatedCacheValue() {
-        return StaticReportCardService.INSTANCE.getOrgReposBranches(key.getOrg());
+        return StaticBrowseService.getInstance().getOrgReposBranches(key.getOrg());
     }
 
 }

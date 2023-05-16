@@ -1,7 +1,7 @@
 package io.github.ericdriggs.reportcard.gen.db;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import io.github.ericdriggs.reportcard.ReportCardService;
+import io.github.ericdriggs.reportcard.UploadService;
 import io.github.ericdriggs.reportcard.model.RunStagePath;
 import io.github.ericdriggs.reportcard.model.ReportMetaData;
 import net.javacrumbs.jsonunit.JsonAssert;
@@ -13,12 +13,11 @@ import org.springframework.context.annotation.Profile;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Profile("test")
-//@EnableConfigurationProperties
-public class GetBuildStagePathTest extends AbstractDbTest {
+public class GetBuildStagePathTest extends AbstractUploadDbTest {
 
     @Autowired
-    public GetBuildStagePathTest(ReportCardService reportCardService) {
-        super(reportCardService);
+    public GetBuildStagePathTest(UploadService uploadService) {
+        super(uploadService);
     }
 
     @Test
@@ -33,7 +32,7 @@ public class GetBuildStagePathTest extends AbstractDbTest {
                         .setRunReference(TestData.runReference)
                         .setStage(TestData.stage);
 
-        RunStagePath bsp = reportCardService.getRunStagePath(request);
+        RunStagePath bsp = uploadService.getRunStagePath(request);
         assertTrue(bsp.isComplete(), bsp.validate().toString());
 
         Assertions.assertEquals(bsp.getOrg().getOrgName(), request.getOrg());
@@ -60,7 +59,7 @@ public class GetBuildStagePathTest extends AbstractDbTest {
                         .setRunReference("not_found")
                         .setStage(TestData.stage);
 
-        RunStagePath bsp = reportCardService.getRunStagePath(request);
+        RunStagePath bsp = uploadService.getRunStagePath(request);
         assertNotNull(bsp);
         assertNotNull(bsp.getOrg());
         assertNotNull(bsp.getRepo());

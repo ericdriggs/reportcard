@@ -1,8 +1,9 @@
 package io.github.ericdriggs.reportcard.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import io.github.ericdriggs.reportcard.ReportCardService;
+import io.github.ericdriggs.reportcard.AbstractReportCardService;
 import io.github.ericdriggs.reportcard.ReportcardApplication;
+import io.github.ericdriggs.reportcard.UploadService;
 import io.github.ericdriggs.reportcard.gen.db.TestData;
 import io.github.ericdriggs.reportcard.model.*;
 import io.github.ericdriggs.reportcard.xml.ResourceReaderComponent;
@@ -30,24 +31,24 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ReportControllerTest {
 
     @Autowired
-    public ReportControllerTest(ReportControllerUtil reportControllerUtil, ResourceReaderComponent resourceReader, ReportCardService reportCardService) {
+    public ReportControllerTest(ReportControllerUtil reportControllerUtil, ResourceReaderComponent resourceReader, UploadService uploadService) {
         this.reportControllerUtil = reportControllerUtil;
         //this.resourceReader = resourceReader;
-        this.reportCardService = reportCardService;
+        this.uploadService = uploadService;
         this.xmlJunit = resourceReader.resourceAsString("classpath:format-samples/sample-junit.xml");
         this.xmlSurefire = resourceReader.resourceAsString("classpath:format-samples/sample-surefire.xml");
     }
 
     private final ReportControllerUtil reportControllerUtil;
     //private final ResourceReaderComponent resourceReader;
-    private final ReportCardService reportCardService;
+    private final UploadService uploadService;
 
     private final String xmlJunit;
     private final String xmlSurefire;
 
     @Test
     public void testStatusTest() {
-        Map<Byte, String> statuses = reportCardService.getTestStatusMap();
+        Map<Byte, String> statuses = uploadService.getTestStatusMap();
         assertEquals(8, statuses.size());
         for (TestStatus testStatus : TestStatus.values()) {
             assertEquals(testStatus.name(), statuses.get(testStatus.getStatusId()));
@@ -121,7 +122,7 @@ public class ReportControllerTest {
     }
 
     private void validateMetadata(ReportMetaData reportMetaData) throws JsonProcessingException {
-        RunStagePath runStagePath =  reportCardService.getRunStagePath(reportMetaData);
+        RunStagePath runStagePath =  uploadService.getRunStagePath(reportMetaData);
         Assertions.assertEquals(reportMetaData.getOrg(), runStagePath.getOrg().getOrgName() );
         Assertions.assertEquals(reportMetaData.getRepo(), runStagePath.getRepo().getRepoName() );
         Assertions.assertEquals(reportMetaData.getBranch(), runStagePath.getBranch().getBranchName() );

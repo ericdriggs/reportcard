@@ -23,6 +23,7 @@ public class ReportController {
 
     private final ReportControllerUtil reportControllerUtil;
 
+    //FIXME: singleton Map<Stage,TestResult>
     @PostMapping("")
     public ResponseEntity<TestResult> postXml(@JsonProperty @RequestPart("reportMetaData") ReportMetaData reportMetaData, @RequestParam("files") MultipartFile[] files) {
         TestResult inserted = reportControllerUtil.doPostXml(reportMetaData, files);
@@ -30,21 +31,24 @@ public class ReportController {
         return new ResponseEntity<>(inserted, HttpStatus.OK);
     }
 
+    //FIXME: singleton Map<Stage,TestResult>
+    //TODO: accept array of files for junit
     @PostMapping("junit")
     public ResponseEntity<TestResult> postXmlJunit(@RequestPart("reportMetaData") ReportMetaData reportMetaData, @RequestParam("file") MultipartFile file) {
         TestResult inserted = reportControllerUtil.doPostXmlJunit(reportMetaData, file);
         return new ResponseEntity<>(inserted, HttpStatus.OK);
     }
 
+    //FIXME: singleton Map<Stage,TestResult>
     @PostMapping("surefire")
     public ResponseEntity<TestResult> postXmlSurefire(@RequestPart("reportMetaData") ReportMetaData reportMetaData, @RequestParam("files") MultipartFile[] files) {
         TestResult inserted = reportControllerUtil.doPostXmlSurefire(reportMetaData, files);
         return new ResponseEntity<>(inserted, HttpStatus.OK);
     }
 
-    @GetMapping(path = "{testResultId}", produces = "application/json")
-    public ResponseEntity<TestResult> getTestResult(@PathVariable String testResultId) {
-        return new ResponseEntity<>(reportControllerUtil.getTestResult(Long.valueOf(testResultId)), HttpStatus.OK);
-    }
+//    @GetMapping(path = "{testResultId}", produces = "application/json")
+//    public ResponseEntity<TestResult> getTestResult(@PathVariable String testResultId) {
+//        return new ResponseEntity<>(reportControllerUtil.getTestResult(Long.valueOf(testResultId)), HttpStatus.OK);
+//    }
 
 }
