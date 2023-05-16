@@ -30,17 +30,14 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ReportControllerTest {
 
     @Autowired
-    public ReportControllerTest(ReportControllerUtil reportControllerUtil, ResourceReaderComponent resourceReader, TestResultUploadService uploadService) {
-        this.reportControllerUtil = reportControllerUtil;
-        //this.resourceReader = resourceReader;
+    public ReportControllerTest(ResourceReaderComponent resourceReader, TestResultUploadService uploadService) {
         this.uploadService = uploadService;
         this.xmlJunit = resourceReader.resourceAsString("classpath:format-samples/sample-junit.xml");
         this.xmlSurefire = resourceReader.resourceAsString("classpath:format-samples/sample-surefire.xml");
     }
 
-    private final ReportControllerUtil reportControllerUtil;
     //private final ResourceReaderComponent resourceReader;
-    private final TestResultUploadService uploadService;
+    private final io.github.ericdriggs.reportcard.TestResultUploadService uploadService;
 
     private final String xmlJunit;
     private final String xmlSurefire;
@@ -58,7 +55,7 @@ public class ReportControllerTest {
     public void insertJunitTest() throws JsonProcessingException {
 
         final ReportMetaData reportMetatData = generateRandomReportMetaData();
-        Map<StagePath, TestResult> stagePathTestResultMap = reportControllerUtil.doPostXmlSingle(reportMetatData, xmlJunit);
+        Map<StagePath, TestResult> stagePathTestResultMap = uploadService.doPostXmlSingle(reportMetatData, xmlJunit);
 
         assertEquals(1, stagePathTestResultMap.size());
 
@@ -91,7 +88,7 @@ public class ReportControllerTest {
     public void insertMultipleTest() throws JsonProcessingException {
 
         final ReportMetaData reportMetatData = generateRandomReportMetaData();
-        Map<StagePath, TestResult> stagePathTestResultMap = reportControllerUtil.doPostXmlMultiple(reportMetatData, Collections.singletonList(xmlSurefire));
+        Map<StagePath, TestResult> stagePathTestResultMap = uploadService.doPostXmlMultiple(reportMetatData, Collections.singletonList(xmlSurefire));
 
         assertEquals(1, stagePathTestResultMap.size());
 

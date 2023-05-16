@@ -8,6 +8,10 @@ import io.github.ericdriggs.reportcard.model.TestCase;
 import io.github.ericdriggs.reportcard.model.TestResult;
 import io.github.ericdriggs.reportcard.model.TestSuite;
 import io.github.ericdriggs.reportcard.model.*;
+import io.github.ericdriggs.reportcard.model.converter.junit.JunitConvertersUtil;
+import io.github.ericdriggs.reportcard.xml.XmlUtil;
+import io.github.ericdriggs.reportcard.xml.junit.JunitParserUtil;
+import io.github.ericdriggs.reportcard.xml.junit.Testsuites;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 
@@ -15,8 +19,12 @@ import org.jooq.SelectConditionStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.util.*;
 
 import static io.github.ericdriggs.reportcard.gen.db.Tables.*;
@@ -57,6 +65,66 @@ public class TestResultUploadService extends AbstractReportCardService {
         testResultDao = new TestResultDao(dsl.configuration());
         testSuiteDao = new TestSuiteDao(dsl.configuration());
         testCaseDao = new TestCaseDao(dsl.configuration());
+    }
+
+    public Map<StagePath, TestResult> doPostXml(ReportMetaData reportMetatData, MultipartFile[] files) {
+        List<String> xmlStrings = new ArrayList<>();
+        Arrays.stream(files)
+                .forEach(file -> xmlStrings.add(fileToString(file)));
+
+        return doPostXmlStrings(reportMetatData, xmlStrings);
+    }
+
+    public Map<StagePath, TestResult> doPostXmlStrings(ReportMetaData reportMetatData, List<String> xmlStrings) {
+        Map<StagePath, TestResult> stagePathTestResultMap = null;
+        if (xmlStrings == null || xmlStrings.size() == 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing files");
+        } else if (xmlStrings.size() > 1) {
+            for (String xmlString : xmlStrings) {
+                if (!"testsuite".equals(XmlUtil.getXmlRootElementName(xmlString))) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Multiple files only supported with surefire format");
+                }
+            }
+            stagePathTestResultMap = doPostXmlMultiple(reportMetatData, xmlStrings);
+        } else { //xmlString.size == 1
+            String xmlString = xmlStrings.get(0);
+            String rootElementName = XmlUtil.getXmlRootElementName(xmlString);
+            if ("testsuite".equals(rootElementName)) {
+                stagePathTestResultMap = doPostXmlMultiple(reportMetatData, xmlStrings);
+            } else if ("testsuites".equals(rootElementName)) {
+                stagePathTestResultMap = doPostXmlSingle(reportMetatData, xmlString);
+            }
+        }
+        return stagePathTestResultMap;
+    }
+
+    public Map<StagePath, TestResult> doPostXmlSingle(ReportMetaData reportMetatData, String xmlString) {
+        reportMetatData.validateAndSetDefaults();
+        Testsuites testsuites = JunitParserUtil.parseTestSuites(xmlString);
+        TestResult testResult = JunitConvertersUtil.modelMapper.map(testsuites, TestResult.class);
+        StagePath stagePath = getOrInsertStagePath(reportMetatData);
+        testResult.setStageFk(stagePath.getStage().getStageId());
+        testResult.setExternalLinks(reportMetatData.getExternalLinksJson());
+        TestResult inserted = insertTestResult(testResult);
+        return Collections.singletonMap(stagePath, inserted);
+    }
+
+    public Map<StagePath, TestResult> doPostXmlMultiple(ReportMetaData reportMetatData, List<String> xmlStrings) {
+        reportMetatData.validateAndSetDefaults();
+        Testsuites testsuites = JunitParserUtil.parseTestSuiteList(xmlStrings);
+        TestResult testResult = JunitConvertersUtil.doFromJunitToModelTestResult(testsuites);
+        StagePath stagePath = getOrInsertStagePath(reportMetatData);
+        testResult.setStageFk(stagePath.getStage().getStageId());
+        TestResult inserted = insertTestResult(testResult);
+        return Collections.singletonMap(stagePath, inserted);
+    }
+
+    public static String fileToString(MultipartFile file) {
+        try {
+            return new String(file.getBytes());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public StagePath getStagePath(ReportMetaData request) {
@@ -143,7 +211,7 @@ public class TestResultUploadService extends AbstractReportCardService {
     /**
      * prefer public method. The ability to inject an stagePath is for testing purposes.
      *
-     * @param request      a ReportMetaData
+     * @param request   a ReportMetaData
      * @param stagePath normally null, only values passed for testing
      * @return the RunStagePath for the provided report metadata.
      */
