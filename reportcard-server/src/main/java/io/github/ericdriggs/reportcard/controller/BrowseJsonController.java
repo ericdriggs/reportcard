@@ -3,7 +3,7 @@ package io.github.ericdriggs.reportcard.controller;
 import java.util.Map;
 import java.util.Set;
 
-import io.github.ericdriggs.reportcard.BrowseService;
+import io.github.ericdriggs.reportcard.persist.BrowseService;
 import io.github.ericdriggs.reportcard.cache.dto.*;
 import io.github.ericdriggs.reportcard.cache.model.*;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.*;

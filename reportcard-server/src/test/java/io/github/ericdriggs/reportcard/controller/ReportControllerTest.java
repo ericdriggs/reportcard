@@ -2,9 +2,9 @@ package io.github.ericdriggs.reportcard.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.github.ericdriggs.reportcard.ReportcardApplication;
-import io.github.ericdriggs.reportcard.TestResultUploadService;
 import io.github.ericdriggs.reportcard.gen.db.TestData;
 import io.github.ericdriggs.reportcard.model.*;
+import io.github.ericdriggs.reportcard.persist.TestResultPersistService;
 import io.github.ericdriggs.reportcard.xml.ResourceReaderComponent;
 import net.javacrumbs.jsonunit.JsonAssert;
 import org.junit.jupiter.api.Assertions;
@@ -30,21 +30,21 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ReportControllerTest {
 
     @Autowired
-    public ReportControllerTest(ResourceReaderComponent resourceReader, TestResultUploadService uploadService) {
-        this.uploadService = uploadService;
+    public ReportControllerTest(ResourceReaderComponent resourceReader, TestResultPersistService testResultPersistService) {
+        this.testResultPersistService = testResultPersistService;
         this.xmlJunit = resourceReader.resourceAsString("classpath:format-samples/sample-junit.xml");
         this.xmlSurefire = resourceReader.resourceAsString("classpath:format-samples/sample-surefire.xml");
     }
 
     //private final ResourceReaderComponent resourceReader;
-    private final io.github.ericdriggs.reportcard.TestResultUploadService uploadService;
+    private final TestResultPersistService testResultPersistService;
 
     private final String xmlJunit;
     private final String xmlSurefire;
 
     @Test
     public void testStatusTest() {
-        Map<Byte, String> statuses = uploadService.getTestStatusMap();
+        Map<Byte, String> statuses = testResultPersistService.getTestStatusMap();
         assertEquals(8, statuses.size());
         for (TestStatus testStatus : TestStatus.values()) {
             assertEquals(testStatus.name(), statuses.get(testStatus.getStatusId()));
@@ -55,7 +55,7 @@ public class ReportControllerTest {
     public void insertJunitTest() throws JsonProcessingException {
 
         final StageDetails reportMetatData = generateRandomReportMetaData();
-        Map<StagePath, TestResult> stagePathTestResultMap = uploadService.doPostXmlStrings(reportMetatData, Collections.singletonList(xmlJunit));
+        Map<StagePath, TestResult> stagePathTestResultMap = testResultPersistService.doPostXmlStrings(reportMetatData, Collections.singletonList(xmlJunit));
 
         assertEquals(1, stagePathTestResultMap.size());
 
@@ -88,7 +88,7 @@ public class ReportControllerTest {
     public void insertMultipleTest() throws JsonProcessingException {
 
         final StageDetails reportMetatData = generateRandomReportMetaData();
-        Map<StagePath, TestResult> stagePathTestResultMap = uploadService.doPostXmlStrings(reportMetatData, Collections.singletonList(xmlSurefire));
+        Map<StagePath, TestResult> stagePathTestResultMap = testResultPersistService.doPostXmlStrings(reportMetatData, Collections.singletonList(xmlSurefire));
 
         assertEquals(1, stagePathTestResultMap.size());
 

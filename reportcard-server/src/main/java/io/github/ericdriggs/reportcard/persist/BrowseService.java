@@ -1,4 +1,4 @@
-package io.github.ericdriggs.reportcard;
+package io.github.ericdriggs.reportcard.persist;
 
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.*;
 
@@ -26,7 +26,7 @@ import static io.github.ericdriggs.reportcard.gen.db.Tables.*;
 
 @Service
 @SuppressWarnings({"unused", "ConstantConditions"})
-public class BrowseService extends AbstractReportCardService {
+public class BrowseService extends AbstractPersistService {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -38,18 +38,13 @@ public class BrowseService extends AbstractReportCardService {
 
     public Set<Org> getOrgs() {
         Set<Org> orgs = new TreeSet<>(PojoComparators.ORG_CASE_INSENSITIVE_ORDER);
-        orgs.addAll(dsl.select().from(ORG)
-                .fetch()
-                .into(Org.class));
+        orgs.addAll(dsl.select().from(ORG).fetch().into(Org.class));
         return orgs;
     }
 
     public Map<Org, Set<Repo>> getOrgsRepos() {
 
-        Result<Record> recordResult = dsl.select()
-                .from(ORG)
-                .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID))
-                .fetch();
+        Result<Record> recordResult = dsl.select().from(ORG).leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)).fetch();
 
         Map<Org, Set<Repo>> orgRepoMap = new TreeMap<>(PojoComparators.ORG_CASE_INSENSITIVE_ORDER);
         for (Record record : recordResult) {
@@ -65,24 +60,16 @@ public class BrowseService extends AbstractReportCardService {
     }
 
     public Org getOrg(String orgName) {
-        Record record =
-                dsl.select(ORG.fields()).from(ORG)
-                        .where(ORG.ORG_NAME.eq(orgName))
-                        .fetchOne();
+        Record record = dsl.select(ORG.fields()).from(ORG).where(ORG.ORG_NAME.eq(orgName)).fetchOne();
         if (record == null) {
-            throwNotFound(orgName);
+            throwNotFound("org:" + orgName);
         }
         return record.into(Org.class);
     }
 
     public Map<Org, Map<Repo, Set<Branch>>> getOrgReposBranches(String orgName) {
 
-        Result<Record> recordResult = dsl.select()
-                .from(ORG)
-                .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID))
-                .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID))
-                .where(ORG.ORG_NAME.eq(orgName))
-                .fetch();
+        Result<Record> recordResult = dsl.select().from(ORG).leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)).leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)).where(ORG.ORG_NAME.eq(orgName)).fetch();
 
         Map<Repo, Set<Branch>> repoBranchMap = new TreeMap<>(PojoComparators.REPO_CASE_INSENSITIVE_ORDER);
         Org org = null;
@@ -102,31 +89,16 @@ public class BrowseService extends AbstractReportCardService {
     }
 
     public Repo getRepo(String orgName, String repoName) {
-        Repo ret = dsl.
-                select(REPO.fields())
-                .from(ORG)
-                .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
-                        .and(REPO.REPO_NAME.eq(repoName))
-                )
-                .where(ORG.ORG_NAME.eq(orgName))
-                .fetchOne()
-                .into(Repo.class);
+        Repo ret = dsl.select(REPO.fields()).from(ORG).join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID).and(REPO.REPO_NAME.eq(repoName))).where(ORG.ORG_NAME.eq(orgName)).fetchOne().into(Repo.class);
         if (ret == null) {
-            throwNotFound(orgName, repoName);
+            throwNotFound("org: " + orgName, "repo: " + repoName);
         }
         return ret;
     }
 
     public Map<Repo, Map<Branch, Set<Job>>> getRepoBranchesJobs(String orgName, String repoName) {
 
-        Result<Record> recordResult = dsl.select()
-                .from(ORG)
-                .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
-                        .and(REPO.REPO_NAME.eq(repoName)))
-                .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID))
-                .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
-                .where(ORG.ORG_NAME.eq(orgName))
-                .fetch();
+        Result<Record> recordResult = dsl.select().from(ORG).leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID).and(REPO.REPO_NAME.eq(repoName))).leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)).leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID)).where(ORG.ORG_NAME.eq(orgName)).fetch();
 
         Map<Branch, Set<Job>> branchesJobsMap = new TreeMap<>(PojoComparators.BRANCH_CASE_INSENSITIVE_ORDER);
         Repo repo = null;
@@ -146,33 +118,16 @@ public class BrowseService extends AbstractReportCardService {
     }
 
     public Branch getBranch(String orgName, String repoName, String branchName) {
-        Branch ret = dsl.select(BRANCH.fields())
-                .from(ORG)
-                .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
-                        .and(REPO.REPO_NAME.eq(repoName)))
-                .join(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
-                        .and(BRANCH.BRANCH_NAME.eq(branchName)))
-                .where(ORG.ORG_NAME.eq(orgName))
-                .fetchOne()
-                .into(Branch.class);
+        Branch ret = dsl.select(BRANCH.fields()).from(ORG).join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID).and(REPO.REPO_NAME.eq(repoName))).join(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID).and(BRANCH.BRANCH_NAME.eq(branchName))).where(ORG.ORG_NAME.eq(orgName)).fetchOne().into(Branch.class);
         if (ret == null) {
-            throwNotFound(orgName, repoName, branchName);
+            throwNotFound("org: " + orgName, "repo: " + repoName, "branch: " + branchName);
         }
         return ret;
     }
 
     public Map<Branch, Map<Job, Set<Run>>> getBranchJobsRuns(String orgName, String repoName, String branchName, Map<String, String> jobInfoFilters) {
 
-        Result<Record> recordResult = dsl.select()
-                .from(ORG)
-                .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
-                        .and(REPO.REPO_NAME.eq(repoName)))
-                .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
-                        .and(BRANCH.BRANCH_NAME.eq(branchName)))
-                .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
-                .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID))
-                .where(ORG.ORG_NAME.eq(orgName))
-                .fetch();
+        Result<Record> recordResult = dsl.select().from(ORG).leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID).and(REPO.REPO_NAME.eq(repoName))).leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID).and(BRANCH.BRANCH_NAME.eq(branchName))).leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID)).leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID)).where(ORG.ORG_NAME.eq(orgName)).fetch();
 
         //TODO: filter jobs
         Map<Job, Set<Run>> jobRunMap = new TreeMap<>(PojoComparators.JOB_CASE_INSENSITIVE_ORDER);
@@ -195,38 +150,17 @@ public class BrowseService extends AbstractReportCardService {
     public Job getJob(String orgName, String repoName, String branchName, Long jobId) {
         Set<Job> jobs = new TreeSet<>(PojoComparators.JOB_CASE_INSENSITIVE_ORDER);
 
-        Job ret = dsl.select(JOB.fields())
-                .from(ORG)
-                .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
-                        .and(ORG.ORG_NAME.eq(orgName))
-                        .and(REPO.REPO_NAME.eq(repoName)))
-                .join(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
-                        .and(BRANCH.BRANCH_NAME.eq(branchName)))
-                .join(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID)
-                        .and(JOB.JOB_ID.eq(jobId)))
-                .fetchOne()
-                .into(Job.class);
+        Job ret = dsl.select(JOB.fields()).from(ORG).join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID).and(ORG.ORG_NAME.eq(orgName)).and(REPO.REPO_NAME.eq(repoName))).join(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID).and(BRANCH.BRANCH_NAME.eq(branchName))).join(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID).and(JOB.JOB_ID.eq(jobId))).fetchOne().into(Job.class);
 
         if (ret == null) {
-            throwNotFound(orgName, repoName, branchName, Long.toString(jobId));
+            throwNotFound("org: " + orgName, "repo: " + repoName, "branch: " + branchName, "jobId: " + Long.toString(jobId));
         }
         return ret;
     }
 
     public Map<Job, Map<Run, Set<Stage>>> getJobRunsStages(String orgName, String repoName, String branchName, Long jobId) {
 
-        Result<Record> recordResult = dsl.select()
-                .from(ORG)
-                .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
-                        .and(REPO.REPO_NAME.eq(repoName)))
-                .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
-                        .and(BRANCH.BRANCH_NAME.eq(branchName)))
-                .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID)
-                        .and(JOB.JOB_ID.eq(jobId)))
-                .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID))
-                .leftJoin(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID))
-                .where(ORG.ORG_NAME.eq(orgName))
-                .fetch();
+        Result<Record> recordResult = dsl.select().from(ORG).leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID).and(REPO.REPO_NAME.eq(repoName))).leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID).and(BRANCH.BRANCH_NAME.eq(branchName))).leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID).and(JOB.JOB_ID.eq(jobId))).leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID)).leftJoin(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID)).where(ORG.ORG_NAME.eq(orgName)).fetch();
 
         Map<Run, Set<Stage>> runStageMap = new ConcurrentSkipListMap<>(PojoComparators.RUN_CASE_INSENSITIVE_ORDER);
         Job job = null;
@@ -251,20 +185,7 @@ public class BrowseService extends AbstractReportCardService {
 
     public Map<Run, Map<Stage, Set<TestResult>>> getRunStagesTestResults(String orgName, String repoName, String branchName, Long jobId, Long runId) {
 
-        Result<Record> recordResult = dsl.select()
-                .from(ORG)
-                .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
-                        .and(REPO.REPO_NAME.eq(repoName)))
-                .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
-                        .and(BRANCH.BRANCH_NAME.eq(branchName)))
-                .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID)
-                        .and(JOB.JOB_ID.eq(jobId)))
-                .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID)
-                        .and(RUN.RUN_ID.eq(runId)))
-                .leftJoin(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID))
-                .leftJoin(TEST_RESULT).on(TEST_RESULT.STAGE_FK.eq(TEST_RESULT.TEST_RESULT_ID))
-                .where(ORG.ORG_NAME.eq(orgName))
-                .fetch();
+        Result<Record> recordResult = dsl.select().from(ORG).leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID).and(REPO.REPO_NAME.eq(repoName))).leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID).and(BRANCH.BRANCH_NAME.eq(branchName))).leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID).and(JOB.JOB_ID.eq(jobId))).leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID).and(RUN.RUN_ID.eq(runId))).leftJoin(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID)).leftJoin(TEST_RESULT).on(TEST_RESULT.STAGE_FK.eq(TEST_RESULT.TEST_RESULT_ID)).where(ORG.ORG_NAME.eq(orgName)).fetch();
 
         Map<Stage, Set<TestResult>> stageTestResultMap = new TreeMap<>(PojoComparators.STAGE_CASE_INSENSITIVE_ORDER);
         Run run = null;
@@ -285,39 +206,17 @@ public class BrowseService extends AbstractReportCardService {
 
     public Run getRun(String orgName, String repoName, String branchName, Long jobId, Long runId) {
 
-        Run ret = dsl.select(JOB.fields())
-                .from(ORG)
-                .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
-                        .and(ORG.ORG_NAME.eq(orgName))
-                        .and(REPO.REPO_NAME.eq(repoName)))
-                .join(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
-                        .and(BRANCH.BRANCH_NAME.eq(branchName)))
-                .join(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID)
-                        .and(JOB.JOB_ID.eq(jobId)))
-                .join(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID)
-                        .and(RUN.RUN_ID.eq(runId)))
-                .fetchOne()
-                .into(Run.class);
+        Run ret = dsl.select(JOB.fields()).from(ORG).join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID).and(ORG.ORG_NAME.eq(orgName)).and(REPO.REPO_NAME.eq(repoName))).join(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID).and(BRANCH.BRANCH_NAME.eq(branchName))).join(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID).and(JOB.JOB_ID.eq(jobId))).join(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID).and(RUN.RUN_ID.eq(runId))).fetchOne().into(Run.class);
 
         if (ret == null) {
-            throwNotFound(orgName, repoName, branchName, Long.toString(jobId), Long.toString(runId));
+            throwNotFound("org: " + orgName, "repo: " + repoName, "branch: " + branchName, "jobId: " + Long.toString(jobId), "runId: " + Long.toString(runId));
         }
         return ret;
     }
 
     public Map<Branch, Map<Job, Set<Run>>> getBranchJobsRunsForSha(String orgName, String repoName, String branchName, String sha) {
 
-        Result<Record> recordResult = dsl.select()
-                .from(ORG)
-                .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
-                        .and(ORG.ORG_NAME.eq(orgName))
-                        .and(REPO.REPO_NAME.eq(repoName)))
-                .join(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
-                        .and(BRANCH.BRANCH_NAME.eq(branchName)))
-                .join(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
-                .join(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID)
-                        .and(RUN.SHA.eq(sha)))
-                .fetch();
+        Result<Record> recordResult = dsl.select().from(ORG).join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID).and(ORG.ORG_NAME.eq(orgName)).and(REPO.REPO_NAME.eq(repoName))).join(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID).and(BRANCH.BRANCH_NAME.eq(branchName))).join(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID)).join(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID).and(RUN.SHA.eq(sha))).fetch();
 
         Map<Job, Set<Run>> jobRunMap = new TreeMap<>(PojoComparators.JOB_CASE_INSENSITIVE_ORDER);
 
@@ -343,47 +242,19 @@ public class BrowseService extends AbstractReportCardService {
 
     public Run getRunFromReference(String orgName, String repoName, String branchName, String sha, String runReference) {
 
-        Run ret = dsl.select(RUN.fields())
-                .from(ORG)
-                .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
-                        .and(ORG.ORG_NAME.eq(orgName))
-                        .and(REPO.REPO_NAME.eq(repoName)))
-                .join(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
-                        .and(BRANCH.BRANCH_NAME.eq(branchName)))
-                .join(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
-                .join(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID)
-                        .and(RUN.SHA.eq(sha))
-                        .and(RUN.RUN_REFERENCE.eq(runReference)))
-                .fetchOne()
-                .into(Run.class);
+        Run ret = dsl.select(RUN.fields()).from(ORG).join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID).and(ORG.ORG_NAME.eq(orgName)).and(REPO.REPO_NAME.eq(repoName))).join(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID).and(BRANCH.BRANCH_NAME.eq(branchName))).join(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID)).join(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID).and(RUN.SHA.eq(sha)).and(RUN.RUN_REFERENCE.eq(runReference))).fetchOne().into(Run.class);
 
         if (ret == null) {
-            throwNotFound(orgName, repoName, branchName, sha, runReference);
+            throwNotFound("org: " + orgName, "repo: " + repoName, "branch: " + branchName, "sha:" + sha, "runReference: " + runReference);
         }
         return ret;
     }
 
-    public Map<Stage, Map<TestResult, Set<TestSuite>>>
-    getStageTestResultsTestSuites(String orgName, String repoName, String branchName, Long jobId, Long runId, String stageName) {
+    public Map<Stage, Map<TestResult, Set<TestSuite>>> getStageTestResultsTestSuites(String orgName, String repoName, String branchName, Long jobId, Long runId, String stageName) {
 
-        Result<Record> recordResult =
-                dsl.select()
-                        .from(ORG)
-                        .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
-                                .and(ORG.ORG_NAME.eq(orgName))
-                                .and(REPO.REPO_NAME.eq(repoName)))
-                        .join(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
-                                .and(BRANCH.BRANCH_NAME.eq(branchName)))
-                        .join(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID)
-                                .and(JOB.JOB_ID.eq(jobId)))
-                        .join(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID)
-                                .and(RUN.RUN_ID.eq(runId)))
-                        .join(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID)
-                                .and(STAGE.STAGE_NAME.eq(stageName)))
-                        .fetch();
+        Result<Record> recordResult = dsl.select().from(ORG).join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID).and(ORG.ORG_NAME.eq(orgName)).and(REPO.REPO_NAME.eq(repoName))).join(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID).and(BRANCH.BRANCH_NAME.eq(branchName))).join(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID).and(JOB.JOB_ID.eq(jobId))).join(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID).and(RUN.RUN_ID.eq(runId))).join(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID).and(STAGE.STAGE_NAME.eq(stageName))).fetch();
 
-        Map<TestResult, Set<TestSuite>> testResultSuiteMap =
-                new TreeMap<>(PojoComparators.TEST_RESULT_CASE_INSENSITIVE_ORDER);
+        Map<TestResult, Set<TestSuite>> testResultSuiteMap = new TreeMap<>(PojoComparators.TEST_RESULT_CASE_INSENSITIVE_ORDER);
 
         Stage stage = null;
         for (Record record : recordResult) {
@@ -405,30 +276,15 @@ public class BrowseService extends AbstractReportCardService {
     }
 
     public Stage getStage(String orgName, String repoName, String branchName, String sha, String runReference, String stageName) {
-        Stage ret = dsl.select(STAGE.fields())
-                .from(ORG)
-                .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
-                        .and(ORG.ORG_NAME.eq(orgName))
-                        .and(REPO.REPO_NAME.eq(repoName)))
-                .join(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
-                        .and(BRANCH.BRANCH_NAME.eq(branchName)))
-                .join(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
-                .join(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID)
-                        .and(RUN.SHA.eq(sha))
-                        .and(RUN.RUN_REFERENCE.eq(runReference)))
-                .join(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID)
-                        .and(STAGE.STAGE_NAME.eq(stageName)))
-                .fetchOne()
-                .into(Stage.class);
+        Stage ret = dsl.select(STAGE.fields()).from(ORG).join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID).and(ORG.ORG_NAME.eq(orgName)).and(REPO.REPO_NAME.eq(repoName))).join(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID).and(BRANCH.BRANCH_NAME.eq(branchName))).join(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID)).join(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID).and(RUN.SHA.eq(sha)).and(RUN.RUN_REFERENCE.eq(runReference))).join(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID).and(STAGE.STAGE_NAME.eq(stageName))).fetchOne().into(Stage.class);
         if (ret == null) {
-            throwNotFound(orgName, repoName, branchName, sha, runReference, stageName);
+            throwNotFound("org: " + orgName, "repo: " + repoName, "branch: " + branchName, "sha: " + sha, "runReference: " + runReference, "stage: " + stageName);
         }
         return ret;
     }
 
     protected void throwNotFound(String... args) {
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                getNotFoundMessage(args));
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, getNotFoundMessage(args));
     }
 
     //TODO: refactor to take tuple of variable name and value

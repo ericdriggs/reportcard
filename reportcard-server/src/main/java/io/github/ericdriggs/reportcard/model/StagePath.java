@@ -2,7 +2,9 @@ package io.github.ericdriggs.reportcard.model;
 
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.*;
 import lombok.Data;
+import org.springframework.http.HttpStatus;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
@@ -54,4 +56,12 @@ public class StagePath {
 
         return validationErrors;
     }
+
+    public void throwIfIncomplete() {
+        Map<String, String> errors = validate();
+        if (!errors.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errors.toString());
+        }
+    }
+
 }

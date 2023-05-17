@@ -1,8 +1,9 @@
 package io.github.ericdriggs.reportcard.gen.db;
 
-import io.github.ericdriggs.reportcard.TestResultUploadService;
+import io.github.ericdriggs.reportcard.persist.StagePathPersistService;
 import io.github.ericdriggs.reportcard.model.StagePath;
 import io.github.ericdriggs.reportcard.model.StageDetails;
+import io.github.ericdriggs.reportcard.persist.TestResultPersistService;
 import net.javacrumbs.jsonunit.JsonAssert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -12,11 +13,11 @@ import org.springframework.context.annotation.Profile;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Profile("test")
-public class InsertStagePathTest extends AbstractUploadDbTest {
+public class InsertStagePathTest extends AbstractTestResultPersistTest {
 
     @Autowired
-    public InsertStagePathTest(TestResultUploadService uploadService) {
-        super(uploadService);
+    public InsertStagePathTest(TestResultPersistService testResultPersistService) {
+        super(testResultPersistService);
     }
 
     @Test
@@ -31,7 +32,7 @@ public class InsertStagePathTest extends AbstractUploadDbTest {
                         .setRunReference("64bb0231-9a2e-4492-bbd1-e0aeba24c982")
                         .setStage("newStage");
 
-        StagePath stagePath = uploadService.getOrInsertStagePath(request);
+        StagePath stagePath = testResultPersistService.getOrInsertStagePath(request);
 
         assertNotNull(stagePath);
         assertNotNull(stagePath.getOrg());

@@ -1,4 +1,4 @@
-package io.github.ericdriggs.reportcard;
+package io.github.ericdriggs.reportcard.persist;
 
 import io.github.ericdriggs.reportcard.model.TestCase;
 import io.github.ericdriggs.reportcard.model.TestResult;
@@ -26,7 +26,7 @@ import static io.github.ericdriggs.reportcard.gen.db.Tables.*;
 
 @Service
 @SuppressWarnings({"unused", "ConstantConditions"})
-public class ModelService extends AbstractReportCardService {
+public class ModelService extends AbstractPersistService {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 

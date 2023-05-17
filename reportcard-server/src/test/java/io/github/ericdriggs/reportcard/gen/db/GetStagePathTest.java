@@ -1,9 +1,9 @@
 package io.github.ericdriggs.reportcard.gen.db;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import io.github.ericdriggs.reportcard.TestResultUploadService;
 import io.github.ericdriggs.reportcard.model.StagePath;
 import io.github.ericdriggs.reportcard.model.StageDetails;
+import io.github.ericdriggs.reportcard.persist.TestResultPersistService;
 import net.javacrumbs.jsonunit.JsonAssert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -13,11 +13,11 @@ import org.springframework.context.annotation.Profile;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Profile("test")
-public class GetStagePathTest extends AbstractUploadDbTest {
+public class GetStagePathTest extends AbstractTestResultPersistTest {
 
     @Autowired
-    public GetStagePathTest(TestResultUploadService uploadService) {
-        super(uploadService);
+    public GetStagePathTest(TestResultPersistService testResultPersistService) {
+        super(testResultPersistService);
     }
 
     @Test
@@ -32,7 +32,7 @@ public class GetStagePathTest extends AbstractUploadDbTest {
                         .setRunReference(TestData.runReference)
                         .setStage(TestData.stage);
 
-        StagePath stagePath = uploadService.getStagePath(request);
+        StagePath stagePath = testResultPersistService.getStagePath(request);
         assertTrue(stagePath.isComplete(), stagePath.validate().toString());
 
         Assertions.assertEquals(stagePath.getOrg().getOrgName(), request.getOrg());
@@ -59,7 +59,7 @@ public class GetStagePathTest extends AbstractUploadDbTest {
                         .setRunReference("not_found")
                         .setStage(TestData.stage);
 
-        StagePath stagePath = uploadService.getStagePath(request);
+        StagePath stagePath = testResultPersistService.getStagePath(request);
         assertNotNull(stagePath);
         assertNotNull(stagePath.getOrg());
         assertNotNull(stagePath.getRepo());

@@ -1,4 +1,4 @@
-package io.github.ericdriggs.reportcard;
+package io.github.ericdriggs.reportcard.persist;
 
 import org.jooq.*;
 import org.slf4j.Logger;
@@ -12,19 +12,19 @@ import org.springframework.stereotype.Service;
 
 @Service
 @SuppressWarnings({"unused", "ConstantConditions"})
-public abstract class AbstractReportCardService {
+public abstract class AbstractPersistService {
 
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     protected DSLContext dsl;
 
-    private AbstractReportCardService() {
+    private AbstractPersistService() {
         throw new RuntimeException("needs dsl in constructor");
     }
 
     @Autowired
-    public AbstractReportCardService(DSLContext dsl) {
+    public AbstractPersistService(DSLContext dsl) {
         this.dsl = dsl;
     }
 
