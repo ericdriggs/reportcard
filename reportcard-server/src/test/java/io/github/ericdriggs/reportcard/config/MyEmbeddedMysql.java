@@ -47,8 +47,10 @@ public class MyEmbeddedMysql {
                 .withDatabaseName(schema)
                 .withUsername(username)
                 .withPassword(password)
-                .withCopyFileToContainer(MountableFile.forClasspathResource(ddlsql), "/docker-entrypoint-initdb.d/schema.sql")
-                .withCopyFileToContainer(MountableFile.forClasspathResource(dmlsql), "/docker-entrypoint-initdb.d/z_data.sql")
+                .withCopyFileToContainer(MountableFile.forClasspathResource(ddlsql), "/docker-entrypoint-initdb.d/0_schema.sql")
+                .withCopyFileToContainer(MountableFile.forClasspathResource(dmlsql), "/docker-entrypoint-initdb.d/1_config.sql")
+                .withCopyFileToContainer(MountableFile.forClasspathResource("db/test/test-data.dml.sql"), "/docker-entrypoint-initdb.d/2_data.sql")
+
         ;
         mySQLContainer.start();
         this.driverClassName = driverClassName;
