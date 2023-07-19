@@ -1,5 +1,6 @@
-package io.github.ericdriggs.reportcard.gen.db;
+package io.github.ericdriggs.reportcard.persist.test_result;
 
+import io.github.ericdriggs.reportcard.gen.db.TestData;
 import io.github.ericdriggs.reportcard.model.StagePath;
 import io.github.ericdriggs.reportcard.model.StageDetails;
 import io.github.ericdriggs.reportcard.persist.TestResultPersistService;

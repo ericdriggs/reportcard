@@ -1,4 +1,4 @@
-package io.github.ericdriggs.reportcard.controller;
+package io.github.ericdriggs.reportcard.persist.test_result;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.github.ericdriggs.reportcard.ReportcardApplication;
@@ -30,10 +30,10 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:application-test.properties")
 
-public class ReportControllerTest {
+public class TestResultPersistServiceTest {
 
     @Autowired
-    public ReportControllerTest(ResourceReaderComponent resourceReader, TestResultPersistService testResultPersistService) {
+    public TestResultPersistServiceTest(ResourceReaderComponent resourceReader, TestResultPersistService testResultPersistService) {
         this.testResultPersistService = testResultPersistService;
         this.xmlJunit = resourceReader.resourceAsString("classpath:format-samples/sample-junit.xml");
         //this.xmlSurefire = resourceReader.resourceAsString("classpath:format-samples/sample-surefire.xml");

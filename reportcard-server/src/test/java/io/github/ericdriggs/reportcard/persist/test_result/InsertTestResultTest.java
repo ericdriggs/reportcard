@@ -1,8 +1,9 @@
-package io.github.ericdriggs.reportcard.gen.db;
+package io.github.ericdriggs.reportcard.persist.test_result;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.ericdriggs.reportcard.gen.db.TestData;
 import io.github.ericdriggs.reportcard.model.*;
 import io.github.ericdriggs.reportcard.persist.TestResultPersistService;
 import org.junit.jupiter.api.Assertions;

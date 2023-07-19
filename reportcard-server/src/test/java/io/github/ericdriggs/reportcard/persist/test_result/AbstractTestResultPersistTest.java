@@ -1,4 +1,4 @@
-package io.github.ericdriggs.reportcard.gen.db;
+package io.github.ericdriggs.reportcard.persist.test_result;
 
 import io.github.ericdriggs.reportcard.ReportcardApplication;
 import io.github.ericdriggs.reportcard.persist.TestResultPersistService;
