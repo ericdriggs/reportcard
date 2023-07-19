@@ -90,6 +90,7 @@ CREATE TABLE IF NOT EXISTS `reportcard`.`job` (
   `branch_fk` INT UNSIGNED NOT NULL,
   `job_info_str` VARCHAR(512) GENERATED ALWAYS AS (job_info) VIRTUAL,
   PRIMARY KEY (`job_id`),
+  UNIQUE KEY `UQ_BRANCH_FK_JOB_INFO_STR` (`job_info_str`,`branch_fk`),
   INDEX `FK_JOB_BRANCH` (`branch_fk` ASC) VISIBLE,
   CONSTRAINT `FK_JOB_BRANCH`
     FOREIGN KEY (`branch_fk`)

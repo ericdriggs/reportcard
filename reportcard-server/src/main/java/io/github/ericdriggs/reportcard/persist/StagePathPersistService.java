@@ -1,30 +1,25 @@
 package io.github.ericdriggs.reportcard.persist;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.ericdriggs.reportcard.gen.db.tables.daos.*;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.*;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.*;
 
-import io.github.ericdriggs.reportcard.model.TestCase;
-import io.github.ericdriggs.reportcard.model.TestResult;
-import io.github.ericdriggs.reportcard.model.TestSuite;
 import io.github.ericdriggs.reportcard.model.*;
-import io.github.ericdriggs.reportcard.model.converter.junit.JunitConvertersUtil;
-import io.github.ericdriggs.reportcard.xml.XmlUtil;
-import io.github.ericdriggs.reportcard.xml.junit.JunitParserUtil;
-import io.github.ericdriggs.reportcard.xml.junit.Testsuites;
+import lombok.SneakyThrows;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 
+import org.jooq.Result;
 import org.jooq.SelectConditionStep;
+import org.jooq.tools.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.util.ObjectUtils;
 
-import java.io.IOException;
 import java.util.*;
 
 import static io.github.ericdriggs.reportcard.gen.db.Tables.*;
@@ -38,6 +33,8 @@ import static io.github.ericdriggs.reportcard.gen.db.Tables.*;
 @Service
 @SuppressWarnings({"unused", "ConstantConditions"})
 public class StagePathPersistService extends AbstractPersistService {
+
+    protected final static ObjectMapper mapper = new ObjectMapper();
 
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -80,7 +77,7 @@ public class StagePathPersistService extends AbstractPersistService {
                 .leftJoin(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID)
                         .and(STAGE.STAGE_NAME.eq(stageName)))
                 .where(RUN.RUN_ID.eq(runId));
-        return doGetStagePath(selectConditionStep);
+        return doGetStagePath(selectConditionStep, null);
     }
 
     public StagePath getStagePath(Long stageId) {
@@ -94,7 +91,7 @@ public class StagePathPersistService extends AbstractPersistService {
                 .join(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID))
                 .join(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID))
                 .where(STAGE.STAGE_ID.eq(stageId));
-        return doGetStagePath(selectConditionStep);
+        return doGetStagePath(selectConditionStep, null);
     }
 
     public StagePath getStagePath(StageDetails request) {
@@ -109,6 +106,7 @@ public class StagePathPersistService extends AbstractPersistService {
                 )
                 .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
                         .and(BRANCH.BRANCH_NAME.eq(request.getBranch())))
+                //.leftJoin(JOB).on(JOB.JOB_INFO_STR.eq(request.getJobInfoJson()))
                 .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
                 .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID)
                         .and(RUN.SHA.eq(request.getSha()))
@@ -116,24 +114,35 @@ public class StagePathPersistService extends AbstractPersistService {
                 .leftJoin(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID)
                         .and(STAGE.STAGE_NAME.eq(request.getStage())))
                 .where(ORG.ORG_NAME.eq(request.getOrg()));
-        return doGetStagePath(selectConditionStep);
+        return doGetStagePath(selectConditionStep, request);
     }
 
-    protected StagePath doGetStagePath(SelectConditionStep<Record> selectConditionStep) {
+    /**
+     * Gets stage path using provided left join query and optional stageDetails
+     * @param selectConditionStep the query
+     * @param stageDetails optional stage details (used to match job info map)
+     * @return matching stage path where some of the elements may be null
+     */
+    @SneakyThrows(JsonProcessingException.class)
+    protected StagePath doGetStagePath(SelectConditionStep<Record> selectConditionStep, StageDetails stageDetails)  {
 
-        Record record = selectConditionStep
-                .fetchOne();
+        Result<Record> records = selectConditionStep
+                .fetch();
 
-        StagePath stagePath = new StagePath();
-        if (record == null) {
-            return stagePath;
-        }
+        /*
+        * stagePath may only be partially populated
+         */
+        StagePath returnStagePath = new StagePath();
+        for (Record record : records) {
+            StagePath stagePath = new StagePath();
+            if (record == null) {
+                return stagePath;
+            }
 
-        {
             Org _org = null;
             Repo _repo = null;
             Branch _branch = null;
-            Job _context = null;
+            Job _job = null;
             Run _run = null;
             Stage _stage = null;
 
@@ -147,8 +156,23 @@ public class StagePathPersistService extends AbstractPersistService {
                 _branch = record.into(BranchRecord.class).into(Branch.class);
             }
 
+            /*
+             * It's difficult to compare json strings directly so use TreeMap<String,String> for comparisons
+             */
             if (record.get(JOB.JOB_ID.getName()) != null) {
-                _context = record.into(JobRecord.class).into(Job.class);
+                _job = record.into(JobRecord.class).into(Job.class);
+                if (!ObjectUtils.isEmpty(stageDetails.getJobInfo()) && !StringUtils.isEmpty(_job.getJobInfo())) {
+                    @SuppressWarnings("unchecked")
+                    TreeMap<String, String> jobInfo = mapper.readValue(_job.getJobInfo(), TreeMap.class);
+
+                    if (!jobInfo.equals(stageDetails.getJobInfo())) {
+                        log.debug("jobInfo: {}  != request.getJobInfo: {}", jobInfo, stageDetails.getJobInfo());
+                        //retain stagePath as return candidate in case no other record matches on jobInfo
+                        returnStagePath = stagePath;
+                        continue;
+                    }
+                }
+                stageDetails.getJobInfo();
             }
             if (record.get(RUN.RUN_ID.getName()) != null) {
                 _run = record.into(RunRecord.class).into(Run.class);
@@ -160,12 +184,13 @@ public class StagePathPersistService extends AbstractPersistService {
             stagePath.setOrg(_org);
             stagePath.setRepo(_repo);
             stagePath.setBranch(_branch);
-            stagePath.setJob(_context);
+            stagePath.setJob(_job);
             stagePath.setRun(_run);
             stagePath.setStage(_stage);
-
+            returnStagePath = stagePath;
         }
-        return stagePath;
+        return returnStagePath;
+
     }
 
     /**
@@ -238,8 +263,7 @@ public class StagePathPersistService extends AbstractPersistService {
             Job job = new Job()
                     .setJobInfo(request.getJobInfoJson())
                     .setBranchFk(stagePath.getBranch().getBranchId());
-            //jobDao.insert(job);
-            //user insert since DAO/POJO would incorrectly attempt to insert generated column job_info_str
+            // insert since DAO/POJO would incorrectly attempt to insert generated column job_info_str
             Job insertedJob = dsl.insertInto(JOB, JOB.BRANCH_FK, JOB.JOB_INFO)
                     .values(stagePath.getBranch().getBranchId(), request.getJobInfoJson())
                     .returningResult(JOB.JOB_ID, JOB.JOB_INFO, JOB.BRANCH_FK, JOB.JOB_INFO_STR)

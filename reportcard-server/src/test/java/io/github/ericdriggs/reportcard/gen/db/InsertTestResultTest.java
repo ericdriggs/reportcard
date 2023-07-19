@@ -27,7 +27,7 @@ public class InsertTestResultTest extends AbstractTestResultPersistTest {
     final static String application = "app1";
     final static String pipeline = "pipe1";
 
-    final static Map<String, String> metadata = TestData.metadata;
+    final static TreeMap<String, String> metadata = TestData.metadata;
     final static String runReference = "run23";
     final static String stage = "stage10";
 

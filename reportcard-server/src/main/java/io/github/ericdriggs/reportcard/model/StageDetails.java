@@ -12,7 +12,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 
-//TODO: rename to StageDetails
 @Data
 public class StageDetails {
 
@@ -21,7 +20,7 @@ public class StageDetails {
     private String repo;
     private String branch;
     private String sha;
-    private Map<String,String> jobInfo;
+    private TreeMap<String,String> jobInfo;
     private String runReference;
     private String stage;
     private Map<String,String> externalLinks;

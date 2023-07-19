@@ -1,7 +1,6 @@
 package io.github.ericdriggs.reportcard.gen.db;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.TreeMap;
 
 public enum TestData {
     ;
@@ -10,7 +9,7 @@ public enum TestData {
     public final static String branch = "master";
     public final static String sha = "bdd15b6fae26738ca58f0b300fc43f5872b429bf";
 
-    public final static Map<String, String> metadata = new HashMap<>();
+    public final static TreeMap<String, String> metadata = new TreeMap<>();
 
     static {
         metadata.put("host", "foocorp.jenkins.com");
