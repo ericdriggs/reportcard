@@ -129,7 +129,7 @@ public class ReportControllerTest {
                         .setBranch("branch" + randLong)
                         .setSha("sha" + randLong)
                         .setJobInfo(TestData.metadata)
-                        .setRunReference("executionReference" + randLong)
+                        .setRunReference("runReference" + randLong)
                         .setStage("stage" + randLong);
         return request;
 

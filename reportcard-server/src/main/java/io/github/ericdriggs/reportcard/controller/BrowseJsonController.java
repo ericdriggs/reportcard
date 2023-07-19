@@ -52,7 +52,7 @@ public class BrowseJsonController {
     }
 
     @GetMapping(path = {"org/{org}/repo/{repo}/branch/{branch}/job/{jobId}",
-            "org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/execution"}, produces = "application/json")
+            "org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run"}, produces = "application/json")
     public ResponseEntity<Map<Job, Map<Run, Set<Stage>>>> getJobRunsStages(
             @PathVariable String org,
             @PathVariable String repo,
@@ -61,8 +61,8 @@ public class BrowseJsonController {
         return new ResponseEntity<>(JobRunsStagesCacheMap.INSTANCE.getValue(new OrgRepoBranchJob(org, repo, branch, jobId)), HttpStatus.OK);
     }
 
-    @GetMapping(path = {"org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/execution/{runId}",
-            "org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/execution/{runId}/stage"}, produces = "application/json")
+    @GetMapping(path = {"org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/{runId}",
+            "org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/{runId}/stage"}, produces = "application/json")
     public ResponseEntity<Map<Run, Map<Stage, Set<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestResult>>>> getStagesByIds(
             @PathVariable String org,
             @PathVariable String repo,
@@ -72,7 +72,7 @@ public class BrowseJsonController {
         return new ResponseEntity<>(RunStagesTestResultsCacheMap.INSTANCE.getValue(new OrgRepoBranchJobRun(org, repo, branch, jobId, runId)), HttpStatus.OK);
     }
 
-    @GetMapping(path = "org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/execution/{runId}/stage/{stage}", produces = "application/json")
+    @GetMapping(path = "org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/{runId}/stage/{stage}", produces = "application/json")
     public ResponseEntity<Map<Stage, Map<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestResult, Set<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestSuite>>>> getStageTestResultsTestSuites(
             @PathVariable String org,
             @PathVariable String repo,
@@ -83,7 +83,7 @@ public class BrowseJsonController {
         return new ResponseEntity<>(browseService.getStageTestResultsTestSuites(org, repo, branch, jobId, runId, stage), HttpStatus.OK);
     }
 
-    @GetMapping(path = "{org}/repo/{repo}/branch/{branch}/sha/{sha}/executions", produces = "application/json")
+    @GetMapping(path = "{org}/repo/{repo}/branch/{branch}/sha/{sha}/run", produces = "application/json")
     public ResponseEntity<Map<Branch, Map<Job, Set<Run>>>> getRuns(
             @PathVariable String org,
             @PathVariable String repo,
@@ -94,7 +94,7 @@ public class BrowseJsonController {
         return new ResponseEntity<>(browseService.getBranchJobsRunsForSha(org, repo, branch, sha), HttpStatus.OK);
     }
 
-    @GetMapping(path = "{org}/repo/{repo}/branch/{branch}/sha/{sha}/contexts/executions/{runReference}", produces = "application/json")
+    @GetMapping(path = "{org}/repo/{repo}/branch/{branch}/sha/{sha}/run/{runReference}", produces = "application/json")
     public ResponseEntity<Run> getRunForReference(
             @PathVariable String org,
             @PathVariable String repo,
@@ -105,7 +105,7 @@ public class BrowseJsonController {
         return new ResponseEntity<>(browseService.getRunFromReference(org, repo, branch, sha, runReference), HttpStatus.OK);
     }
 
-    @GetMapping(path = "{org}/repo/{repo}/branch/{branch}/job/{jobId}/execution/{runId}/stages/{stage}", produces = "application/json")
+    @GetMapping(path = "{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/{runId}/stages/{stage}", produces = "application/json")
     public ResponseEntity<Map<Stage, Map<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestResult, Set<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestSuite>>>> getStage(
             @PathVariable String org,
             @PathVariable String repo,
@@ -117,7 +117,7 @@ public class BrowseJsonController {
         return new ResponseEntity<>(browseService.getStageTestResultsTestSuites(org, repo, branch, jobId, runId, stage), HttpStatus.OK);
     }
 
-//    @GetMapping(path = "{org}/repo/{repo}/branch/{branch}/sha/{sha}/contexts/executions/{runReference}/stages", produces = "application/json")
+//    @GetMapping(path = "{org}/repo/{repo}/branch/{branch}/sha/{sha}/run/{runReference}/stages", produces = "application/json")
 //    public ResponseEntity<Map<Stage,Set<TestResult>>> getStages (
 //            @PathVariable String org,
 //            @PathVariable String repo,

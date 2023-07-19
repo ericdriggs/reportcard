@@ -79,7 +79,7 @@ public enum ClientArg {
     RUN_REFERENCE(false),
     /**
      * The stage, e.g. unit, integration, api.
-     * Stages belong to an execution. A stage has a test result.
+     * Stages belong to a run. A stage has a test result.
      * (Required)
      */
     STAGE(true),

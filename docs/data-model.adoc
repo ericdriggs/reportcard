@@ -18,7 +18,7 @@ Jenkins and Kubernetes/Spinnaker have very different data models
 |*Build System* |*Entity relationships*
 
 |*Jenkins* |Org ← Repo ← Branch ← Build ← Test Report
-|*Spinnaker* |Org ← Repo ← Application ← Pipeline ← Execution ← Stages ← Test Report +
+|*Spinnaker* |Org ← Repo ← Application ← Pipeline ← Run ← Stages ← Test Report +
 +++ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp&nbsp;&nbsp;&nbsp; +++ ↖ Branch †↙
 |===
 
@@ -37,13 +37,13 @@ Typical Spinnaker Test Data Lifecycle
 
 . Git: commit (with sha) →
 . Jenins: build → unit test → publish docker image →
-. Spinnaker/Kubernetes: pipeline execution trigger → integration test → deploy → api test
+. Spinnaker/Kubernetes: pipeline run trigger → integration test → deploy → api test
 
 == Proposed Data Model
 
 === Proposed Entity Cardinality
 |===
-|Org ← Repo ← Branch ← Job ← Execution ← Stage ← Test Suites +
+|Org ← Repo ← Branch ← Job ← Run ← Stage ← Test Suites +
 +++ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp&nbsp;&nbsp;&nbsp; +++ ↖ Sha ↙
 |===
 
@@ -57,7 +57,7 @@ Typical Spinnaker Test Data Lifecycle
 |Branch |Branch |Branch*
 |Sha |$GIT_COMMIT  | Sha*
 |Job |jobInfo: { "host" : …} |jobInfo : { "host" : …, "application": …., "pipeline": ….}
-|Execution |Build |Execution
+|Run |Build |Run
 |Stage |parameter
 |String (e.g. unit) |parameter
 |String (e.g. api)
@@ -70,7 +70,7 @@ _* Not native to Kubernetes model. Environment variable would need to be set as 
 A job entity solves several problems
 
 . Supporting multiple instances of Jenkins and/or Kubernetes
-. differentiating multiple executions for the same sha from different Jenkins or Kubernetes instances
+. differentiating multiple runs for the same sha from different Jenkins or Kubernetes instances
 . Supporting application and pipeline as optional parameters to support indexable querying without needing any join tables
 
 === Entity Fields
@@ -114,16 +114,16 @@ repo_fk and branch_name
 | job_id +
 branch_fk, sha_fk, and job_info_str
 
-| Execution (Build) | *execution_id* : auto_number
-*execution_external_id* : string
-*context_fk* : number | execution_id,
-context_fk and execution_number
+| Run (Build) | *run_id* : auto_number
+*run_external_id* : string
+*context_fk* : number | run_id,
+context_fk and run_number
 
 | Stage | *stage_id* : auto_number +
   *stage_name* : string +
-  *execution_fk* : number +
+  *run_fk* : number +
 | stage_id +
-  execution_fk and stage_name
+  run_fk and stage_name
 
 | Test Result *‡* (Test Suites)
 | *test_result_id* : auto_number +

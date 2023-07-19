@@ -29,9 +29,9 @@ Author: Eric Driggs
 ** monitors and alerts
 
 * html reports can be stored in s3
-** correlated to text executions in database
+** correlated to text runs in database
 
-* can produce dashboards for org and/or repo showing if latest executions have failures based on
+* can produce dashboards for org and/or repo showing if latest runs have failures based on
 ** specified branches
 ** custom metadata
 ** correlate results by SHA for multiple build systems
@@ -41,14 +41,14 @@ Author: Eric Driggs
 
 *Org*
 
-* Dashboard to with latest execution status for master/develop branches for each repo
+* Dashboard to with latest run status for master/develop branches for each repo
 * see all repos with recent failures in single page
 
 *Repo*
 
 * tests with highest failure %
 * longest running tests with durations
-* % of executions with any test failures
+* % of runs with any test failures
 * % of tests which pass
 
 *Branch*
@@ -128,7 +128,7 @@ While the plugin provides good return on minimal time investment, it does have s
 * HTML is easier for tester usability
 * JSON has advantages for dashboards and metrics
 * Support option to filter out tests which have not seen failure
-* Show overall test metrics for requested # of builds/executions
+* Show overall test metrics for requested # of builds/runs
 * % of tests passed
 * % of builds where all tests passed
 
@@ -149,7 +149,7 @@ Test trend analysis would be meaningful across builds for a particular context/s
 |Branch |develop 
 |Sha |* 
 |Job | { "host": "https://www.foo.com" }
-|Execution |* 
+|Run |* 
 |stage |api-test 
 |===
 

@@ -9,11 +9,11 @@
 
 ==== HTML
 
-* link also stored in database, correlated to test execution
+* link also stored in database, correlated to test run
 
 ==== Logs/text
 
-* link also stored in database, correlated to test execution
+* link also stored in database, correlated to test run
 
 ---
 === Database Import

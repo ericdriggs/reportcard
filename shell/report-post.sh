@@ -12,11 +12,11 @@ set -x #todo: remove to hide password
 : "${SCM_BRANCH:?SCM_BRANCH not set or empty}"
 : "${SCM_SHA:?SCM_SHA not set or empty}"
 
-: "${EXECUTION_STAGE:?EXECUTION_STAGE not set or empty}"
+: "${STAGE:?STAGE not set or empty}"
 
 #optional with defaults
 CONTEXT_METADATA="${CONTEXT_METADATA:-{}"
-EXECUTION_REFERENCE="${EXECUTION_REFERENCE:-$(uuidgen)}"
+RUN_REFERENCE="${RUN_REFERENCE:-$(uuidgen)}"
 TEST_REPORT_REGEX="${TEST_REPORT_REGEX:-*.xml}"
 EXTERNAL_LINKS_JSON="${EXTERNAL_LINKS_JSON:-{}"
 
@@ -45,8 +45,8 @@ STAGE_DETAILS=$(cat <<EOT
   \"branch\": \"$SCM_BRANCH\",
   \"sha\": \"$SCM_SHA\",
   \"metadata\": \"$METADATA\",
-  \"executionReference\": \"executionReference\",
-  \"stage\": \"$EXECUTION_STAGE\",
+  \"runReference\": \"RUN_REFERENCE\",
+  \"stage\": \"$STAGE\",
   \"externalLinks\": $EXTERNAL_LINKS_JSON
 }
 EOT
