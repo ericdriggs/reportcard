@@ -54,12 +54,19 @@ allprojects {
     }
 
 
-
     tasks {
         withType<Test> {
             useJUnitPlatform()
             systemProperties(System.getProperties().toMap() as Map<String, Object>)
             systemProperties["user.dir"] = workingDir
+            configure<JacocoTaskExtension> {
+                isEnabled = true
+                //exclusions doesn't work -- using custom generator. TODO: fix exclusions for jacoco coverage
+                excludes = listOf(
+                    "io/github/ericdriggs/reportcard/gen/**",
+                    "io.github.ericdriggs.reportcard.gen.**"
+                    )
+            }
         }
 
         withType<JacocoReport> {
@@ -68,16 +75,6 @@ allprojects {
                 html.required.set(true)
                 csv.required.set(false)
             }
-            classDirectories.setFrom(
-                    files(classDirectories.files.map {
-                        fileTree(it) {
-                            exclude("io/github/ericdriggs/reportcard/gen/**",
-                                    "io/github/ericdriggs/reportcard/gen/db/**",
-                                    "io/github/ericdriggs/reportcard/gen/db/tables/**",
-                                    "io/github/ericdriggs/reportcard/gen/db/tables/records/**")
-                        }
-                    })
-            )
         }
     }
 

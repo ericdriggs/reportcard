@@ -127,9 +127,9 @@ task generateJooqSchemaSource {
                                                 new ForcedType().withName('varchar')
                                                         .withIncludeExpression('.*').withIncludeTypes('INET'),
                                                 new ForcedType()
-                                                        .withName('BOOLEAN').withIncludeTypes('tinyint.*'),
+                                                        .withName('BOOLEAN').withIncludeExpression("is_.*").withIncludeTypes('tinyint.*'),
                                                 new ForcedType()
-                                                        .withName('Boolean').withIncludeTypes('tinyint.*')
+                                                        .withName('Boolean').withIncludeExpression("has_.*").withIncludeTypes('tinyint.*')
                                         )
                                 )
                         )
@@ -143,6 +143,7 @@ task generateJooqSchemaSource {
                                 .withImmutablePojos(false)
                                 .withFluentSetters(true)
                                 .withJavaTimeTypes(true)
+                                .withGeneratedSerialVersionUID(GeneratedSerialVersionUID.HASH)
                         )
                         .withTarget(new Target()
                                 .withPackageName('io.github.ericdriggs.reportcard.gen.db')

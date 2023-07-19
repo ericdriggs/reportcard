@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
  */
 public class JavaLombokGeneratorTest {
     @Test
-    public void construtorTest() {
+    public void constructorTest() {
         new JavaLombokGenerator();
     }
 }
