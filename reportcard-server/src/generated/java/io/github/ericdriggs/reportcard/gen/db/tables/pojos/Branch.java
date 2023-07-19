@@ -5,6 +5,7 @@ package io.github.ericdriggs.reportcard.gen.db.tables.pojos;
 
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 import javax.annotation.processing.Generated;
 
@@ -22,11 +23,12 @@ import javax.annotation.processing.Generated;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Branch implements Serializable {
 
-    private static final long serialVersionUID = 25225740;
+    private static final long serialVersionUID = 1293953435;
 
-    private Integer branchId;
-    private String  branchName;
-    private Integer repoFk;
+    private Integer       branchId;
+    private String        branchName;
+    private Integer       repoFk;
+    private LocalDateTime lastRun;
 
     public Branch() {}
 
@@ -34,16 +36,19 @@ public class Branch implements Serializable {
         this.branchId = value.branchId;
         this.branchName = value.branchName;
         this.repoFk = value.repoFk;
+        this.lastRun = value.lastRun;
     }
 
     public Branch(
-        Integer branchId,
-        String  branchName,
-        Integer repoFk
+        Integer       branchId,
+        String        branchName,
+        Integer       repoFk,
+        LocalDateTime lastRun
     ) {
         this.branchId = branchId;
         this.branchName = branchName;
         this.repoFk = repoFk;
+        this.lastRun = lastRun;
     }
 
     /**
@@ -91,6 +96,21 @@ public class Branch implements Serializable {
         return this;
     }
 
+    /**
+     * Getter for <code>reportcard.branch.last_run</code>.
+     */
+    public LocalDateTime getLastRun() {
+        return this.lastRun;
+    }
+
+    /**
+     * Setter for <code>reportcard.branch.last_run</code>.
+     */
+    public Branch setLastRun(LocalDateTime lastRun) {
+        this.lastRun = lastRun;
+        return this;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("Branch (");
@@ -98,6 +118,7 @@ public class Branch implements Serializable {
         sb.append(branchId);
         sb.append(", ").append(branchName);
         sb.append(", ").append(repoFk);
+        sb.append(", ").append(lastRun);
 
         sb.append(")");
         return sb.toString();

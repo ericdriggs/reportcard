@@ -7,6 +7,7 @@ package io.github.ericdriggs.reportcard.gen.db.tables.daos;
 import io.github.ericdriggs.reportcard.gen.db.tables.Branch;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.BranchRecord;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.annotation.processing.Generated;
@@ -94,5 +95,19 @@ public class BranchDao extends DAOImpl<BranchRecord, io.github.ericdriggs.report
      */
     public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Branch> fetchByRepoFk(Integer... values) {
         return fetch(Branch.BRANCH.REPO_FK, values);
+    }
+
+    /**
+     * Fetch records that have <code>last_run BETWEEN lowerInclusive AND upperInclusive</code>
+     */
+    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Branch> fetchRangeOfLastRun(LocalDateTime lowerInclusive, LocalDateTime upperInclusive) {
+        return fetchRange(Branch.BRANCH.LAST_RUN, lowerInclusive, upperInclusive);
+    }
+
+    /**
+     * Fetch records that have <code>last_run IN (values)</code>
+     */
+    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Branch> fetchByLastRun(LocalDateTime... values) {
+        return fetch(Branch.BRANCH.LAST_RUN, values);
     }
 }

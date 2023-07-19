@@ -67,6 +67,7 @@ CREATE TABLE IF NOT EXISTS `reportcard`.`branch` (
   `branch_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `branch_name` VARCHAR(255) NOT NULL,
   `repo_fk` INT UNSIGNED NOT NULL,
+  `last_run` datetime DEFAULT (utc_timestamp()),
   PRIMARY KEY (`branch_id`),
   INDEX `branch_repo_idx` (`repo_fk` ASC) VISIBLE,
   CONSTRAINT `branch_repo_fk`
@@ -88,6 +89,7 @@ CREATE TABLE IF NOT EXISTS `reportcard`.`job` (
   `job_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `job_info` JSON NULL DEFAULT NULL,
   `branch_fk` INT UNSIGNED NOT NULL,
+  `last_run` datetime DEFAULT (utc_timestamp()),
   `job_info_str` VARCHAR(512) GENERATED ALWAYS AS (job_info) VIRTUAL,
   PRIMARY KEY (`job_id`),
   UNIQUE KEY `UQ_BRANCH_FK_JOB_INFO_STR` (`job_info_str`,`branch_fk`),

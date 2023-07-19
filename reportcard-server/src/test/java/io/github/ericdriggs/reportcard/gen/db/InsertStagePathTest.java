@@ -1,6 +1,5 @@
 package io.github.ericdriggs.reportcard.gen.db;
 
-import io.github.ericdriggs.reportcard.persist.StagePathPersistService;
 import io.github.ericdriggs.reportcard.model.StagePath;
 import io.github.ericdriggs.reportcard.model.StageDetails;
 import io.github.ericdriggs.reportcard.persist.TestResultPersistService;
@@ -32,7 +31,7 @@ public class InsertStagePathTest extends AbstractTestResultPersistTest {
                         .setRunReference("64bb0231-9a2e-4492-bbd1-e0aeba24c982")
                         .setStage("newStage");
 
-        StagePath stagePath = testResultPersistService.getOrInsertStagePath(request);
+        StagePath stagePath = testResultPersistService.getUpsertedStagePath(request);
 
         assertNotNull(stagePath);
         assertNotNull(stagePath.getOrg());
@@ -50,6 +49,9 @@ public class InsertStagePathTest extends AbstractTestResultPersistTest {
         Assertions.assertEquals(request.getRunReference(), stagePath.getRun().getRunReference());
         Assertions.assertEquals(request.getStage(), stagePath.getStage().getStageName());
         assertNotNull(stagePath.getStage().getStageId());
+
+        Assertions.assertEquals(stagePath.getRun().getCreated(), stagePath.getBranch().getLastRun());
+        Assertions.assertEquals(stagePath.getRun().getCreated(), stagePath.getJob().getLastRun());
     }
 
 }

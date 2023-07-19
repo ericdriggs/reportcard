@@ -9,6 +9,7 @@ import io.github.ericdriggs.reportcard.gen.db.Keys;
 import io.github.ericdriggs.reportcard.gen.db.Reportcard;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.BranchRecord;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -20,7 +21,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row3;
+import org.jooq.Row4;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -44,7 +45,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Branch extends TableImpl<BranchRecord> {
 
-    private static final long serialVersionUID = -1662122028;
+    private static final long serialVersionUID = 1737046642;
 
     /**
      * The reference instance of <code>reportcard.branch</code>
@@ -73,6 +74,11 @@ public class Branch extends TableImpl<BranchRecord> {
      * The column <code>reportcard.branch.repo_fk</code>.
      */
     public final TableField<BranchRecord, Integer> REPO_FK = createField(DSL.name("repo_fk"), SQLDataType.INTEGER.nullable(false), this, "");
+
+    /**
+     * The column <code>reportcard.branch.last_run</code>.
+     */
+    public final TableField<BranchRecord, LocalDateTime> LAST_RUN = createField(DSL.name("last_run"), SQLDataType.LOCALDATETIME(0).defaultValue(DSL.inline("utc_timestamp()", SQLDataType.LOCALDATETIME)), this, "");
 
     private Branch(Name alias, Table<BranchRecord> aliased) {
         this(alias, aliased, null);
@@ -173,11 +179,11 @@ public class Branch extends TableImpl<BranchRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row3 type methods
+    // Row4 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row3<Integer, String, Integer> fieldsRow() {
-        return (Row3) super.fieldsRow();
+    public Row4<Integer, String, Integer, LocalDateTime> fieldsRow() {
+        return (Row4) super.fieldsRow();
     }
 }

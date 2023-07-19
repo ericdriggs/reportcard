@@ -5,6 +5,7 @@ package io.github.ericdriggs.reportcard.gen.db.tables.pojos;
 
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 import javax.annotation.processing.Generated;
 
@@ -22,12 +23,13 @@ import javax.annotation.processing.Generated;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Job implements Serializable {
 
-    private static final long serialVersionUID = 1948625296;
+    private static final long serialVersionUID = 99725378;
 
-    private Long    jobId;
-    private String  jobInfo;
-    private Integer branchFk;
-    private String  jobInfoStr;
+    private Long          jobId;
+    private String        jobInfo;
+    private Integer       branchFk;
+    private String        jobInfoStr;
+    private LocalDateTime lastRun;
 
     public Job() {}
 
@@ -36,18 +38,21 @@ public class Job implements Serializable {
         this.jobInfo = value.jobInfo;
         this.branchFk = value.branchFk;
         this.jobInfoStr = value.jobInfoStr;
+        this.lastRun = value.lastRun;
     }
 
     public Job(
-        Long    jobId,
-        String  jobInfo,
-        Integer branchFk,
-        String  jobInfoStr
+        Long          jobId,
+        String        jobInfo,
+        Integer       branchFk,
+        String        jobInfoStr,
+        LocalDateTime lastRun
     ) {
         this.jobId = jobId;
         this.jobInfo = jobInfo;
         this.branchFk = branchFk;
         this.jobInfoStr = jobInfoStr;
+        this.lastRun = lastRun;
     }
 
     /**
@@ -110,6 +115,21 @@ public class Job implements Serializable {
         return this;
     }
 
+    /**
+     * Getter for <code>reportcard.job.last_run</code>.
+     */
+    public LocalDateTime getLastRun() {
+        return this.lastRun;
+    }
+
+    /**
+     * Setter for <code>reportcard.job.last_run</code>.
+     */
+    public Job setLastRun(LocalDateTime lastRun) {
+        this.lastRun = lastRun;
+        return this;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("Job (");
@@ -118,6 +138,7 @@ public class Job implements Serializable {
         sb.append(", ").append(jobInfo);
         sb.append(", ").append(branchFk);
         sb.append(", ").append(jobInfoStr);
+        sb.append(", ").append(lastRun);
 
         sb.append(")");
         return sb.toString();

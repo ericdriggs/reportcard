@@ -162,7 +162,7 @@ public class InsertTestResultTest extends AbstractTestResultPersistTest {
         StagePath stagePath;
         {
             StageDetails reportMetatData = getReportMetaData();
-            stagePath = testResultPersistService.getOrInsertStagePath(reportMetatData);
+            stagePath = testResultPersistService.getUpsertedStagePath(reportMetatData);
             assertTrue(stagePath.isComplete());
         }
 

@@ -46,7 +46,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestResult extends TableImpl<TestResultRecord> {
 
-    private static final long serialVersionUID = 1141422700;
+    private static final long serialVersionUID = -347238399;
 
     /**
      * The reference instance of <code>reportcard.test_result</code>
@@ -99,7 +99,7 @@ public class TestResult extends TableImpl<TestResultRecord> {
     /**
      * The column <code>reportcard.test_result.test_result_created</code>.
      */
-    public final TableField<TestResultRecord, LocalDateTime> TEST_RESULT_CREATED = createField(DSL.name("test_result_created"), SQLDataType.LOCALDATETIME(0).nullable(false).defaultValue(DSL.field("CURRENT_TIMESTAMP", SQLDataType.LOCALDATETIME)), this, "");
+    public final TableField<TestResultRecord, LocalDateTime> TEST_RESULT_CREATED = createField(DSL.name("test_result_created"), SQLDataType.LOCALDATETIME(0).nullable(false).defaultValue(DSL.inline("utc_timestamp()", SQLDataType.LOCALDATETIME)), this, "");
 
     /**
      * The column <code>reportcard.test_result.external_links</code>.

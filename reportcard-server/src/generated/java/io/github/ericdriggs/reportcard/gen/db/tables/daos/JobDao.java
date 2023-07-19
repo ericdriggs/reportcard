@@ -7,6 +7,7 @@ package io.github.ericdriggs.reportcard.gen.db.tables.daos;
 import io.github.ericdriggs.reportcard.gen.db.tables.Job;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.JobRecord;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.annotation.processing.Generated;
@@ -108,5 +109,19 @@ public class JobDao extends DAOImpl<JobRecord, io.github.ericdriggs.reportcard.g
      */
     public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job> fetchByJobInfoStr(String... values) {
         return fetch(Job.JOB.JOB_INFO_STR, values);
+    }
+
+    /**
+     * Fetch records that have <code>last_run BETWEEN lowerInclusive AND upperInclusive</code>
+     */
+    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job> fetchRangeOfLastRun(LocalDateTime lowerInclusive, LocalDateTime upperInclusive) {
+        return fetchRange(Job.JOB.LAST_RUN, lowerInclusive, upperInclusive);
+    }
+
+    /**
+     * Fetch records that have <code>last_run IN (values)</code>
+     */
+    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job> fetchByLastRun(LocalDateTime... values) {
+        return fetch(Job.JOB.LAST_RUN, values);
     }
 }

@@ -20,6 +20,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import static io.github.ericdriggs.reportcard.gen.db.Tables.*;
@@ -197,8 +200,8 @@ public class StagePathPersistService extends AbstractPersistService {
      * @param request a BuildStagePathRequest with the fields to match on
      * @return the RunStagePath for the provided report metadata.
      */
-    public StagePath getOrInsertStagePath(StageDetails request) {
-        return getOrInsertStagePath(request, null);
+    public StagePath getUpsertedStagePath(StageDetails request) {
+        return getUpsertedStagePath(request, null);
     }
 
     /*
@@ -228,8 +231,9 @@ public class StagePathPersistService extends AbstractPersistService {
      * @param stagePath normally null, only values passed for testing
      * @return the RunStagePath for the provided report metadata.
      */
-    public StagePath getOrInsertStagePath(StageDetails request, StagePath stagePath) {
+    public StagePath getUpsertedStagePath(StageDetails request, StagePath stagePath) {
 
+        LocalDateTime nowUTC = LocalDateTime.now(ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS);
         request.validateAndSetDefaults();
 
         if (stagePath == null) {
@@ -254,19 +258,25 @@ public class StagePathPersistService extends AbstractPersistService {
         if (stagePath.getBranch() == null) {
             Branch branch = new Branch()
                     .setBranchName(request.getBranch())
-                    .setRepoFk(stagePath.getRepo().getRepoId());
+                    .setRepoFk(stagePath.getRepo().getRepoId())
+                    .setLastRun(nowUTC);
             branchDao.insert(branch);
             stagePath.setBranch(branch);
+        } else {
+            Branch branch = stagePath.getBranch();
+            branch.setLastRun(nowUTC);
+            branchDao.update(branch);
         }
 
         if (stagePath.getJob() == null) {
             Job job = new Job()
                     .setJobInfo(request.getJobInfoJson())
-                    .setBranchFk(stagePath.getBranch().getBranchId());
+                    .setBranchFk(stagePath.getBranch().getBranchId())
+                    .setLastRun(nowUTC);
             // insert since DAO/POJO would incorrectly attempt to insert generated column job_info_str
-            Job insertedJob = dsl.insertInto(JOB, JOB.BRANCH_FK, JOB.JOB_INFO)
-                    .values(stagePath.getBranch().getBranchId(), request.getJobInfoJson())
-                    .returningResult(JOB.JOB_ID, JOB.JOB_INFO, JOB.BRANCH_FK, JOB.JOB_INFO_STR)
+            Job insertedJob = dsl.insertInto(JOB, JOB.BRANCH_FK, JOB.JOB_INFO, JOB.LAST_RUN)
+                    .values(stagePath.getBranch().getBranchId(), request.getJobInfoJson(), nowUTC)
+                    .returningResult(JOB.JOB_ID, JOB.JOB_INFO, JOB.BRANCH_FK, JOB.JOB_INFO_STR, JOB.LAST_RUN)
                     .fetchOne().into(Job.class);
 
             stagePath.setJob(insertedJob);
@@ -276,7 +286,8 @@ public class StagePathPersistService extends AbstractPersistService {
             Run run = new Run()
                     .setRunReference(request.getRunReference())
                     .setSha(request.getSha())
-                    .setJobFk(stagePath.getJob().getJobId());
+                    .setJobFk(stagePath.getJob().getJobId())
+                    .setCreated(nowUTC);
             runDao.insert(run);
             stagePath.setRun(run);
         }

@@ -8,6 +8,7 @@ import io.github.ericdriggs.reportcard.gen.db.Keys;
 import io.github.ericdriggs.reportcard.gen.db.Reportcard;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.JobRecord;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -18,7 +19,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row4;
+import org.jooq.Row5;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -42,7 +43,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Job extends TableImpl<JobRecord> {
 
-    private static final long serialVersionUID = 1879259265;
+    private static final long serialVersionUID = -1311454713;
 
     /**
      * The reference instance of <code>reportcard.job</code>
@@ -76,6 +77,11 @@ public class Job extends TableImpl<JobRecord> {
      * The column <code>reportcard.job.job_info_str</code>.
      */
     public final TableField<JobRecord, String> JOB_INFO_STR = createField(DSL.name("job_info_str"), SQLDataType.VARCHAR(512), this, "");
+
+    /**
+     * The column <code>reportcard.job.last_run</code>.
+     */
+    public final TableField<JobRecord, LocalDateTime> LAST_RUN = createField(DSL.name("last_run"), SQLDataType.LOCALDATETIME(0).defaultValue(DSL.inline("utc_timestamp()", SQLDataType.LOCALDATETIME)), this, "");
 
     private Job(Name alias, Table<JobRecord> aliased) {
         this(alias, aliased, null);
@@ -127,7 +133,7 @@ public class Job extends TableImpl<JobRecord> {
 
     @Override
     public List<UniqueKey<JobRecord>> getKeys() {
-        return Arrays.<UniqueKey<JobRecord>>asList(Keys.KEY_JOB_PRIMARY);
+        return Arrays.<UniqueKey<JobRecord>>asList(Keys.KEY_JOB_PRIMARY, Keys.KEY_JOB_UQ_BRANCH_FK_JOB_INFO_STR);
     }
 
     @Override
@@ -171,11 +177,11 @@ public class Job extends TableImpl<JobRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row4 type methods
+    // Row5 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row4<Long, String, Integer, String> fieldsRow() {
-        return (Row4) super.fieldsRow();
+    public Row5<Long, String, Integer, String, LocalDateTime> fieldsRow() {
+        return (Row5) super.fieldsRow();
     }
 }

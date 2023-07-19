@@ -56,6 +56,7 @@ public class Keys {
 
     public static final UniqueKey<BranchRecord> KEY_BRANCH_PRIMARY = Internal.createUniqueKey(Branch.BRANCH, DSL.name("KEY_branch_PRIMARY"), new TableField[] { Branch.BRANCH.BRANCH_ID }, true);
     public static final UniqueKey<JobRecord> KEY_JOB_PRIMARY = Internal.createUniqueKey(Job.JOB, DSL.name("KEY_job_PRIMARY"), new TableField[] { Job.JOB.JOB_ID }, true);
+    public static final UniqueKey<JobRecord> KEY_JOB_UQ_BRANCH_FK_JOB_INFO_STR = Internal.createUniqueKey(Job.JOB, DSL.name("KEY_job_UQ_BRANCH_FK_JOB_INFO_STR"), new TableField[] { Job.JOB.JOB_INFO_STR, Job.JOB.BRANCH_FK }, true);
     public static final UniqueKey<OrgRecord> KEY_ORG_ORG_NAME_IDX = Internal.createUniqueKey(Org.ORG, DSL.name("KEY_org_org_name_idx"), new TableField[] { Org.ORG.ORG_NAME }, true);
     public static final UniqueKey<OrgRecord> KEY_ORG_PRIMARY = Internal.createUniqueKey(Org.ORG, DSL.name("KEY_org_PRIMARY"), new TableField[] { Org.ORG.ORG_ID }, true);
     public static final UniqueKey<RepoRecord> KEY_REPO_PRIMARY = Internal.createUniqueKey(Repo.REPO, DSL.name("KEY_repo_PRIMARY"), new TableField[] { Repo.REPO.REPO_ID }, true);

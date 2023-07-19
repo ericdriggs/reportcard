@@ -45,7 +45,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Run extends TableImpl<RunRecord> {
 
-    private static final long serialVersionUID = 704496551;
+    private static final long serialVersionUID = -1027001036;
 
     /**
      * The reference instance of <code>reportcard.run</code>
@@ -88,7 +88,7 @@ public class Run extends TableImpl<RunRecord> {
     /**
      * The column <code>reportcard.run.created</code>.
      */
-    public final TableField<RunRecord, LocalDateTime> CREATED = createField(DSL.name("created"), SQLDataType.LOCALDATETIME(0).nullable(false).defaultValue(DSL.field("CURRENT_TIMESTAMP", SQLDataType.LOCALDATETIME)), this, "");
+    public final TableField<RunRecord, LocalDateTime> CREATED = createField(DSL.name("created"), SQLDataType.LOCALDATETIME(0).nullable(false).defaultValue(DSL.inline("utc_timestamp()", SQLDataType.LOCALDATETIME)), this, "");
 
     private Run(Name alias, Table<RunRecord> aliased) {
         this(alias, aliased, null);
