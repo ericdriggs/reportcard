@@ -4,7 +4,7 @@ plugins {
     id("io.github.gradle-nexus.publish-plugin").version("1.1.0")
 }
 
-val javaVersion = JavaVersion.VERSION_11
+val javaVersion = JavaVersion.VERSION_17
 
 java {
     sourceCompatibility = javaVersion
