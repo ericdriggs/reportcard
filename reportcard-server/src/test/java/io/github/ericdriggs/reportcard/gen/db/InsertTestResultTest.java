@@ -23,11 +23,7 @@ public class InsertTestResultTest extends AbstractTestResultPersistTest {
     final static String repo = "repo10";
     final static String branch = "branch10";
     final static String sha = "a5493474-274c-44bd-93a1-82e9df1c15d4";
-    final static String host = "www.foo.com";
-    final static String application = "app1";
-    final static String pipeline = "pipe1";
-
-    final static TreeMap<String, String> metadata = TestData.metadata;
+    final static TreeMap<String, String> metadata = TestData.jobInfo;
     final static String runReference = "run23";
     final static String stage = "stage10";
 
@@ -74,13 +70,23 @@ public class InsertTestResultTest extends AbstractTestResultPersistTest {
         assertIdsandFks(testResultInsert);
         assertExternalLinks(testResultInsert);
 
-        final Set<TestResult> testResultsGet = testResultPersistService.getTestResults(testResultBefore.getStageFk());
-        assertEquals(1, testResultsGet.size());
-        final TestResult testResultGet = testResultsGet.iterator().next();
-        assertValues(testResultGet);
-        assertIdsandFks(testResultGet);
-        assertExternalLinks(testResultGet);
+        {
+            final Set<TestResult> testResultsGet = testResultPersistService.getTestResults(testResultBefore.getStageFk());
+            assertEquals(1, testResultsGet.size());
+            final TestResult testResultGet = testResultsGet.iterator().next();
+            assertValues(testResultGet);
+            assertIdsandFks(testResultGet);
+            assertExternalLinks(testResultGet);
+        }
+
+        {
+            TestResult testResultGet = testResultPersistService.getTestResult(testResultInsert.getTestResultId());
+            assertValues(testResultGet);
+            assertIdsandFks(testResultGet);
+            assertExternalLinks(testResultGet);
+        }
     }
+
 
     private void assertValues(TestResult testResult) {
 
@@ -143,26 +149,25 @@ public class InsertTestResultTest extends AbstractTestResultPersistTest {
 
     }
 
-    private StageDetails getReportMetaData() {
+    private StageDetails getStageDetails() {
 
-        StageDetails reportMetatData =
-                new StageDetails()
-                        .setOrg(org)
-                        .setRepo(repo)
-                        .setBranch(branch)
-                        .setSha(sha)
-                        .setJobInfo(metadata)
-                        .setRunReference(runReference)
-                        .setStage(stage);
-        return reportMetatData;
+        return new StageDetails()
+                .setOrg(org)
+                .setRepo(repo)
+                .setBranch(branch)
+                .setSha(sha)
+                .setJobInfo(metadata)
+                .setRunReference(runReference)
+                .setStage(stage);
+
     }
 
     private TestResult getInsertableTestResult() {
 
         StagePath stagePath;
         {
-            StageDetails reportMetatData = getReportMetaData();
-            stagePath = testResultPersistService.getUpsertedStagePath(reportMetatData);
+            StageDetails stageDetails = getStageDetails();
+            stagePath = testResultPersistService.getUpsertedStagePath(stageDetails);
             assertTrue(stagePath.isComplete());
         }
 

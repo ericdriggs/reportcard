@@ -28,7 +28,7 @@ public class GetStagePathTest extends AbstractTestResultPersistTest {
                         .setRepo(TestData.repo)
                         .setBranch(TestData.branch)
                         .setSha(TestData.sha)
-                        .setJobInfo(TestData.metadata)
+                        .setJobInfo(TestData.jobInfo)
                         .setRunReference(TestData.runReference)
                         .setStage(TestData.stage);
 
@@ -55,7 +55,7 @@ public class GetStagePathTest extends AbstractTestResultPersistTest {
                         .setRepo(TestData.repo)
                         .setBranch(TestData.branch)
                         .setSha(TestData.sha)
-                        .setJobInfo(TestData.metadata)
+                        .setJobInfo(TestData.jobInfo)
                         .setRunReference("not_found")
                         .setStage(TestData.stage);
 

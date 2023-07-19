@@ -1,5 +1,7 @@
 package io.github.ericdriggs.reportcard.gen.db;
 
+import io.github.ericdriggs.reportcard.model.StageDetails;
+
 import java.util.TreeMap;
 
 public enum TestData {
@@ -9,14 +11,23 @@ public enum TestData {
     public final static String branch = "master";
     public final static String sha = "bdd15b6fae26738ca58f0b300fc43f5872b429bf";
 
-    public final static TreeMap<String, String> metadata = new TreeMap<>();
+    public final static TreeMap<String, String> jobInfo = new TreeMap<>();
 
     static {
-        metadata.put("host", "foocorp.jenkins.com");
-        metadata.put("application", "fooapp");
-        metadata.put("pipeline", "foopipeline");
+        jobInfo.put("host", "foocorp.jenkins.com");
+        jobInfo.put("application", "fooapp");
+        jobInfo.put("pipeline", "foopipeline");
     }
 
     public final static String runReference = "runReference1";
     public final static String stage = "api";
+
+    public final static StageDetails stageDetails = new StageDetails()
+            .setOrg(org)
+            .setRepo(repo)
+            .setBranch(branch)
+            .setSha(sha)
+            .setJobInfo(jobInfo)
+            .setRunReference(runReference)
+            .setStage(stage);
 }

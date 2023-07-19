@@ -105,11 +105,9 @@ public class StagePathPersistService extends AbstractPersistService {
                 .from(ORG)
                 .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
                         .and(ORG.ORG_NAME.eq(request.getOrg()))
-                        .and(REPO.REPO_NAME.eq(request.getRepo()))
-                )
+                        .and(REPO.REPO_NAME.eq(request.getRepo())))
                 .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
                         .and(BRANCH.BRANCH_NAME.eq(request.getBranch())))
-                //.leftJoin(JOB).on(JOB.JOB_INFO_STR.eq(request.getJobInfoJson()))
                 .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
                 .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID)
                         .and(RUN.SHA.eq(request.getSha()))
@@ -164,7 +162,7 @@ public class StagePathPersistService extends AbstractPersistService {
              */
             if (record.get(JOB.JOB_ID.getName()) != null) {
                 _job = record.into(JobRecord.class).into(Job.class);
-                if (!ObjectUtils.isEmpty(stageDetails.getJobInfo()) && !StringUtils.isEmpty(_job.getJobInfo())) {
+                if (stageDetails != null && !ObjectUtils.isEmpty(stageDetails.getJobInfo()) && !StringUtils.isEmpty(_job.getJobInfo())) {
                     @SuppressWarnings("unchecked")
                     TreeMap<String, String> jobInfo = mapper.readValue(_job.getJobInfo(), TreeMap.class);
 
@@ -175,7 +173,6 @@ public class StagePathPersistService extends AbstractPersistService {
                         continue;
                     }
                 }
-                stageDetails.getJobInfo();
             }
             if (record.get(RUN.RUN_ID.getName()) != null) {
                 _run = record.into(RunRecord.class).into(Run.class);
@@ -225,12 +222,13 @@ public class StagePathPersistService extends AbstractPersistService {
     }
 
     /**
-     * prefer public method. The ability to inject an stagePath is for testing purposes.
+     * prefer version which only accepts request. The ability to inject a stagePath is for testing purposes.
      *
      * @param request   a ReportMetaData
      * @param stagePath normally null, only values passed for testing
      * @return the RunStagePath for the provided report metadata.
      */
+    @SuppressWarnings("resource")
     public StagePath getUpsertedStagePath(StageDetails request, StagePath stagePath) {
 
         LocalDateTime nowUTC = LocalDateTime.now(ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS);

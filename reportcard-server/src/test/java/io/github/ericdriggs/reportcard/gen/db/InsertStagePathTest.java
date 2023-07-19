@@ -27,7 +27,7 @@ public class InsertStagePathTest extends AbstractTestResultPersistTest {
                         .setRepo("newRepo")
                         .setBranch("newBranch")
                         .setSha("newSha")
-                        .setJobInfo(TestData.metadata)
+                        .setJobInfo(TestData.jobInfo)
                         .setRunReference("64bb0231-9a2e-4492-bbd1-e0aeba24c982")
                         .setStage("newStage");
 
