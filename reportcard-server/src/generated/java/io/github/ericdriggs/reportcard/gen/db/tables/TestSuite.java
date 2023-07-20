@@ -39,7 +39,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestSuite extends TableImpl<TestSuiteRecord> {
 
-    private static final long serialVersionUID = 804983414;
+    private static final long serialVersionUID = -814060157;
 
     /**
      * The reference instance of <code>reportcard.test_suite</code>
@@ -154,12 +154,12 @@ public class TestSuite extends TableImpl<TestSuiteRecord> {
 
     @Override
     public Schema getSchema() {
-        return Reportcard.REPORTCARD;
+        return aliased() ? null : Reportcard.REPORTCARD;
     }
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.TEST_SUITE_TEST_RESULT_FK_IDX);
+        return Arrays.asList(Indexes.TEST_SUITE_TEST_RESULT_FK_IDX);
     }
 
     @Override
@@ -173,17 +173,16 @@ public class TestSuite extends TableImpl<TestSuiteRecord> {
     }
 
     @Override
-    public List<UniqueKey<TestSuiteRecord>> getKeys() {
-        return Arrays.<UniqueKey<TestSuiteRecord>>asList(Keys.KEY_TEST_SUITE_PRIMARY);
-    }
-
-    @Override
     public List<ForeignKey<TestSuiteRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<TestSuiteRecord, ?>>asList(Keys.TEST_RESULT_FK);
+        return Arrays.asList(Keys.TEST_RESULT_FK);
     }
 
     private transient TestResult _testResult;
 
+    /**
+     * Get the implicit join path to the <code>reportcard.test_result</code>
+     * table.
+     */
     public TestResult testResult() {
         if (_testResult == null)
             _testResult = new TestResult(this, Keys.TEST_RESULT_FK);

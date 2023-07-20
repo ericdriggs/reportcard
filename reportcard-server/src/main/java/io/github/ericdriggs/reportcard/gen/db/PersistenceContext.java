@@ -58,10 +58,10 @@ public class PersistenceContext {
         return new DataSourceConnectionProvider(transactionAwareDataSource());
     }
 
-    @Bean
-    public ExceptionTranslator exceptionTransformer() {
-        return new ExceptionTranslator();
-    }
+//    @Bean
+//    public ExceptionTranslator exceptionTransformer() {
+//        return new ExceptionTranslator();
+//    }
 
     @Bean
     public DefaultDSLContext dsl() {
@@ -72,7 +72,7 @@ public class PersistenceContext {
     public DefaultConfiguration configuration() {
         DefaultConfiguration jooqConfiguration = new DefaultConfiguration();
         jooqConfiguration.set(connectionProvider());
-        jooqConfiguration.set(new DefaultExecuteListenerProvider(exceptionTransformer()));
+//        jooqConfiguration.set(new DefaultExecuteListenerProvider(exceptionTransformer()));
 
         String sqlDialectName = environment.getRequiredProperty("jooq.sql.dialect");
         SQLDialect dialect = SQLDialect.valueOf(sqlDialectName);

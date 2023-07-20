@@ -24,7 +24,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record6<Long, String, Long, Integer, String, LocalDateTime> {
 
-    private static final long serialVersionUID = -1377041876;
+    private static final long serialVersionUID = -607497149;
 
     /**
      * Setter for <code>reportcard.run.run_id</code>.
@@ -299,5 +299,21 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record6
         setJobRunCount(jobRunCount);
         setSha(sha);
         setCreated(created);
+    }
+
+    /**
+     * Create a detached, initialised RunRecord
+     */
+    public RunRecord(io.github.ericdriggs.reportcard.gen.db.tables.pojos.Run value) {
+        super(Run.RUN);
+
+        if (value != null) {
+            setRunId(value.getRunId());
+            setRunReference(value.getRunReference());
+            setJobFk(value.getJobFk());
+            setJobRunCount(value.getJobRunCount());
+            setSha(value.getSha());
+            setCreated(value.getCreated());
+        }
     }
 }

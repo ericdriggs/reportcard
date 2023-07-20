@@ -38,7 +38,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Repo extends TableImpl<RepoRecord> {
 
-    private static final long serialVersionUID = -111373688;
+    private static final long serialVersionUID = 512946524;
 
     /**
      * The reference instance of <code>reportcard.repo</code>
@@ -103,12 +103,12 @@ public class Repo extends TableImpl<RepoRecord> {
 
     @Override
     public Schema getSchema() {
-        return Reportcard.REPORTCARD;
+        return aliased() ? null : Reportcard.REPORTCARD;
     }
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.REPO_ORG_IDX);
+        return Arrays.asList(Indexes.REPO_ORG_IDX);
     }
 
     @Override
@@ -122,17 +122,20 @@ public class Repo extends TableImpl<RepoRecord> {
     }
 
     @Override
-    public List<UniqueKey<RepoRecord>> getKeys() {
-        return Arrays.<UniqueKey<RepoRecord>>asList(Keys.KEY_REPO_PRIMARY, Keys.KEY_REPO_REPO_NAME_IDX);
+    public List<UniqueKey<RepoRecord>> getUniqueKeys() {
+        return Arrays.asList(Keys.KEY_REPO_REPO_NAME_IDX);
     }
 
     @Override
     public List<ForeignKey<RepoRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<RepoRecord, ?>>asList(Keys.REPO_ORG_FK);
+        return Arrays.asList(Keys.REPO_ORG_FK);
     }
 
     private transient Org _org;
 
+    /**
+     * Get the implicit join path to the <code>reportcard.org</code> table.
+     */
     public Org org() {
         if (_org == null)
             _org = new Org(this, Keys.REPO_ORG_FK);

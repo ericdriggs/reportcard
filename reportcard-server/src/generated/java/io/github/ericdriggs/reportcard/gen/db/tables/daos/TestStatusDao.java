@@ -8,6 +8,7 @@ import io.github.ericdriggs.reportcard.gen.db.tables.TestStatus;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.TestStatusRecord;
 
 import java.util.List;
+import java.util.Optional;
 
 import lombok.Generated;
 
@@ -42,7 +43,8 @@ public class TestStatusDao extends DAOImpl<TestStatusRecord, io.github.ericdrigg
     }
 
     /**
-     * Fetch records that have <code>test_status_id BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>test_status_id BETWEEN lowerInclusive AND
+     * upperInclusive</code>
      */
     public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestStatus> fetchRangeOfTestStatusId(Byte lowerInclusive, Byte upperInclusive) {
         return fetchRange(TestStatus.TEST_STATUS.TEST_STATUS_ID, lowerInclusive, upperInclusive);
@@ -63,7 +65,15 @@ public class TestStatusDao extends DAOImpl<TestStatusRecord, io.github.ericdrigg
     }
 
     /**
-     * Fetch records that have <code>test_status_name BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch a unique record that has <code>test_status_id = value</code>
+     */
+    public Optional<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestStatus> fetchOptionalByTestStatusId(Byte value) {
+        return fetchOptional(TestStatus.TEST_STATUS.TEST_STATUS_ID, value);
+    }
+
+    /**
+     * Fetch records that have <code>test_status_name BETWEEN lowerInclusive AND
+     * upperInclusive</code>
      */
     public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestStatus> fetchRangeOfTestStatusName(String lowerInclusive, String upperInclusive) {
         return fetchRange(TestStatus.TEST_STATUS.TEST_STATUS_NAME, lowerInclusive, upperInclusive);

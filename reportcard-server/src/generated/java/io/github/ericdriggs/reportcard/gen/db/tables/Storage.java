@@ -37,7 +37,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Storage extends TableImpl<StorageRecord> {
 
-    private static final long serialVersionUID = 2134587137;
+    private static final long serialVersionUID = -670429693;
 
     /**
      * The reference instance of <code>reportcard.storage</code>
@@ -112,12 +112,12 @@ public class Storage extends TableImpl<StorageRecord> {
 
     @Override
     public Schema getSchema() {
-        return Reportcard.REPORTCARD;
+        return aliased() ? null : Reportcard.REPORTCARD;
     }
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.STORAGE_STAGE_FK_IDX);
+        return Arrays.asList(Indexes.STORAGE_STAGE_FK_IDX);
     }
 
     @Override
@@ -126,17 +126,15 @@ public class Storage extends TableImpl<StorageRecord> {
     }
 
     @Override
-    public List<UniqueKey<StorageRecord>> getKeys() {
-        return Arrays.<UniqueKey<StorageRecord>>asList(Keys.KEY_STORAGE_PRIMARY);
-    }
-
-    @Override
     public List<ForeignKey<StorageRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<StorageRecord, ?>>asList(Keys.STAGE_FK);
+        return Arrays.asList(Keys.STAGE_FK);
     }
 
     private transient Stage _stage;
 
+    /**
+     * Get the implicit join path to the <code>reportcard.stage</code> table.
+     */
     public Stage stage() {
         if (_stage == null)
             _stage = new Stage(this, Keys.STAGE_FK);

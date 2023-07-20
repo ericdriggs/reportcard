@@ -24,7 +24,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class JobRecord extends UpdatableRecordImpl<JobRecord> implements Record5<Long, String, Integer, String, LocalDateTime> {
 
-    private static final long serialVersionUID = -69333883;
+    private static final long serialVersionUID = 1387697110;
 
     /**
      * Setter for <code>reportcard.job.job_id</code>.
@@ -261,5 +261,20 @@ public class JobRecord extends UpdatableRecordImpl<JobRecord> implements Record5
         setBranchFk(branchFk);
         setJobInfoStr(jobInfoStr);
         setLastRun(lastRun);
+    }
+
+    /**
+     * Create a detached, initialised JobRecord
+     */
+    public JobRecord(io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job value) {
+        super(Job.JOB);
+
+        if (value != null) {
+            setJobId(value.getJobId());
+            setJobInfo(value.getJobInfo());
+            setBranchFk(value.getBranchFk());
+            setJobInfoStr(value.getJobInfoStr());
+            setLastRun(value.getLastRun());
+        }
     }
 }

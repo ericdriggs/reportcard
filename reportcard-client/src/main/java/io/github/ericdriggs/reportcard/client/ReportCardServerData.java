@@ -28,7 +28,6 @@ public class ReportCardServerData {
         throwIfInvalid();
     }
 
-    @SneakyThrows(JsonProcessingException.class)
     public ReportCardServerData(Map<ClientArg, String> argMap) {
         this(argMap.get(ClientArg.REPORTCARD_HOST),
                 argMap.get(ClientArg.REPORTCARD_USER),

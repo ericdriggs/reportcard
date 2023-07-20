@@ -8,6 +8,7 @@ import io.github.ericdriggs.reportcard.gen.db.tables.Repo;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.RepoRecord;
 
 import java.util.List;
+import java.util.Optional;
 
 import lombok.Generated;
 
@@ -42,7 +43,8 @@ public class RepoDao extends DAOImpl<RepoRecord, io.github.ericdriggs.reportcard
     }
 
     /**
-     * Fetch records that have <code>repo_id BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>repo_id BETWEEN lowerInclusive AND
+     * upperInclusive</code>
      */
     public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Repo> fetchRangeOfRepoId(Integer lowerInclusive, Integer upperInclusive) {
         return fetchRange(Repo.REPO.REPO_ID, lowerInclusive, upperInclusive);
@@ -63,7 +65,15 @@ public class RepoDao extends DAOImpl<RepoRecord, io.github.ericdriggs.reportcard
     }
 
     /**
-     * Fetch records that have <code>repo_name BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch a unique record that has <code>repo_id = value</code>
+     */
+    public Optional<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Repo> fetchOptionalByRepoId(Integer value) {
+        return fetchOptional(Repo.REPO.REPO_ID, value);
+    }
+
+    /**
+     * Fetch records that have <code>repo_name BETWEEN lowerInclusive AND
+     * upperInclusive</code>
      */
     public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Repo> fetchRangeOfRepoName(String lowerInclusive, String upperInclusive) {
         return fetchRange(Repo.REPO.REPO_NAME, lowerInclusive, upperInclusive);
@@ -77,7 +87,8 @@ public class RepoDao extends DAOImpl<RepoRecord, io.github.ericdriggs.reportcard
     }
 
     /**
-     * Fetch records that have <code>org_fk BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>org_fk BETWEEN lowerInclusive AND
+     * upperInclusive</code>
      */
     public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Repo> fetchRangeOfOrgFk(Integer lowerInclusive, Integer upperInclusive) {
         return fetchRange(Repo.REPO.ORG_FK, lowerInclusive, upperInclusive);

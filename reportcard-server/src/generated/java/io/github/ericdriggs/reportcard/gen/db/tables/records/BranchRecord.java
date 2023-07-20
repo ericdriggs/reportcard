@@ -24,7 +24,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BranchRecord extends UpdatableRecordImpl<BranchRecord> implements Record4<Integer, String, Integer, LocalDateTime> {
 
-    private static final long serialVersionUID = -1701939455;
+    private static final long serialVersionUID = -619020559;
 
     /**
      * Setter for <code>reportcard.branch.branch_id</code>.
@@ -223,5 +223,19 @@ public class BranchRecord extends UpdatableRecordImpl<BranchRecord> implements R
         setBranchName(branchName);
         setRepoFk(repoFk);
         setLastRun(lastRun);
+    }
+
+    /**
+     * Create a detached, initialised BranchRecord
+     */
+    public BranchRecord(io.github.ericdriggs.reportcard.gen.db.tables.pojos.Branch value) {
+        super(Branch.BRANCH);
+
+        if (value != null) {
+            setBranchId(value.getBranchId());
+            setBranchName(value.getBranchName());
+            setRepoFk(value.getRepoFk());
+            setLastRun(value.getLastRun());
+        }
     }
 }

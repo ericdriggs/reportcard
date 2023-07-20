@@ -38,7 +38,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Stage extends TableImpl<StageRecord> {
 
-    private static final long serialVersionUID = -1119225721;
+    private static final long serialVersionUID = -1238497036;
 
     /**
      * The reference instance of <code>reportcard.stage</code>
@@ -103,12 +103,12 @@ public class Stage extends TableImpl<StageRecord> {
 
     @Override
     public Schema getSchema() {
-        return Reportcard.REPORTCARD;
+        return aliased() ? null : Reportcard.REPORTCARD;
     }
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.STAGE_STAGE_RUN_FK_IDX);
+        return Arrays.asList(Indexes.STAGE_STAGE_RUN_FK_IDX);
     }
 
     @Override
@@ -122,17 +122,20 @@ public class Stage extends TableImpl<StageRecord> {
     }
 
     @Override
-    public List<UniqueKey<StageRecord>> getKeys() {
-        return Arrays.<UniqueKey<StageRecord>>asList(Keys.KEY_STAGE_PRIMARY, Keys.KEY_STAGE_STAGE_ID_UNIQUE, Keys.KEY_STAGE_UQ_RUN_STAGE_NAME);
+    public List<UniqueKey<StageRecord>> getUniqueKeys() {
+        return Arrays.asList(Keys.KEY_STAGE_STAGE_ID_UNIQUE, Keys.KEY_STAGE_UQ_RUN_STAGE_NAME);
     }
 
     @Override
     public List<ForeignKey<StageRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<StageRecord, ?>>asList(Keys.STAGE_RUN_FK);
+        return Arrays.asList(Keys.STAGE_RUN_FK);
     }
 
     private transient Run _run;
 
+    /**
+     * Get the implicit join path to the <code>reportcard.run</code> table.
+     */
     public Run run() {
         if (_run == null)
             _run = new Run(this, Keys.STAGE_RUN_FK);

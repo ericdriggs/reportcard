@@ -36,7 +36,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Org extends TableImpl<OrgRecord> {
 
-    private static final long serialVersionUID = -888202624;
+    private static final long serialVersionUID = 114013791;
 
     /**
      * The reference instance of <code>reportcard.org</code>
@@ -96,7 +96,7 @@ public class Org extends TableImpl<OrgRecord> {
 
     @Override
     public Schema getSchema() {
-        return Reportcard.REPORTCARD;
+        return aliased() ? null : Reportcard.REPORTCARD;
     }
 
     @Override
@@ -110,8 +110,8 @@ public class Org extends TableImpl<OrgRecord> {
     }
 
     @Override
-    public List<UniqueKey<OrgRecord>> getKeys() {
-        return Arrays.<UniqueKey<OrgRecord>>asList(Keys.KEY_ORG_PRIMARY, Keys.KEY_ORG_ORG_NAME_IDX);
+    public List<UniqueKey<OrgRecord>> getUniqueKeys() {
+        return Arrays.asList(Keys.KEY_ORG_ORG_NAME_IDX);
     }
 
     @Override

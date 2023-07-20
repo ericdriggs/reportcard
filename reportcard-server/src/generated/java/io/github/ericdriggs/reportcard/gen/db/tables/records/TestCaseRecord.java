@@ -24,7 +24,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestCaseRecord extends UpdatableRecordImpl<TestCaseRecord> implements Record9<Long, Long, Byte, String, String, BigDecimal, String, String, String> {
 
-    private static final long serialVersionUID = 867002976;
+    private static final long serialVersionUID = -877470477;
 
     /**
      * Setter for <code>reportcard.test_case.test_case_id</code>.
@@ -413,5 +413,24 @@ public class TestCaseRecord extends UpdatableRecordImpl<TestCaseRecord> implemen
         setSystemOut(systemOut);
         setSystemErr(systemErr);
         setAssertions(assertions);
+    }
+
+    /**
+     * Create a detached, initialised TestCaseRecord
+     */
+    public TestCaseRecord(io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCase value) {
+        super(TestCase.TEST_CASE);
+
+        if (value != null) {
+            setTestCaseId(value.getTestCaseId());
+            setTestSuiteFk(value.getTestSuiteFk());
+            setTestStatusFk(value.getTestStatusFk());
+            setName(value.getName());
+            setClassName(value.getClassName());
+            setTime(value.getTime());
+            setSystemOut(value.getSystemOut());
+            setSystemErr(value.getSystemErr());
+            setAssertions(value.getAssertions());
+        }
     }
 }

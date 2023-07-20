@@ -22,7 +22,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestStatusRecord extends UpdatableRecordImpl<TestStatusRecord> implements Record2<Byte, String> {
 
-    private static final long serialVersionUID = 95765483;
+    private static final long serialVersionUID = -208075324;
 
     /**
      * Setter for <code>reportcard.test_status.test_status_id</code>.
@@ -145,5 +145,17 @@ public class TestStatusRecord extends UpdatableRecordImpl<TestStatusRecord> impl
 
         setTestStatusId(testStatusId);
         setTestStatusName(testStatusName);
+    }
+
+    /**
+     * Create a detached, initialised TestStatusRecord
+     */
+    public TestStatusRecord(io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestStatus value) {
+        super(TestStatus.TEST_STATUS);
+
+        if (value != null) {
+            setTestStatusId(value.getTestStatusId());
+            setTestStatusName(value.getTestStatusName());
+        }
     }
 }

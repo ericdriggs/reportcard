@@ -25,7 +25,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> implements Record11<Long, Long, Integer, Integer, Integer, Integer, BigDecimal, LocalDateTime, String, Boolean, Boolean> {
 
-    private static final long serialVersionUID = 283868921;
+    private static final long serialVersionUID = -1855125137;
 
     /**
      * Setter for <code>reportcard.test_result.test_result_id</code>.
@@ -490,5 +490,26 @@ public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> impl
         setExternalLinks(externalLinks);
         setIsSuccess(isSuccess);
         setHasSkip(hasSkip);
+    }
+
+    /**
+     * Create a detached, initialised TestResultRecord
+     */
+    public TestResultRecord(io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestResult value) {
+        super(TestResult.TEST_RESULT);
+
+        if (value != null) {
+            setTestResultId(value.getTestResultId());
+            setStageFk(value.getStageFk());
+            setTests(value.getTests());
+            setSkipped(value.getSkipped());
+            setError(value.getError());
+            setFailure(value.getFailure());
+            setTime(value.getTime());
+            setTestResultCreated(value.getTestResultCreated());
+            setExternalLinks(value.getExternalLinks());
+            setIsSuccess(value.getIsSuccess());
+            setHasSkip(value.getHasSkip());
+        }
     }
 }

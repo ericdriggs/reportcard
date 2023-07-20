@@ -9,6 +9,7 @@ import io.github.ericdriggs.reportcard.gen.db.tables.records.TestSuiteRecord;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 import lombok.Generated;
 
@@ -43,7 +44,8 @@ public class TestSuiteDao extends DAOImpl<TestSuiteRecord, io.github.ericdriggs.
     }
 
     /**
-     * Fetch records that have <code>test_suite_id BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>test_suite_id BETWEEN lowerInclusive AND
+     * upperInclusive</code>
      */
     public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestSuite> fetchRangeOfTestSuiteId(Long lowerInclusive, Long upperInclusive) {
         return fetchRange(TestSuite.TEST_SUITE.TEST_SUITE_ID, lowerInclusive, upperInclusive);
@@ -64,7 +66,15 @@ public class TestSuiteDao extends DAOImpl<TestSuiteRecord, io.github.ericdriggs.
     }
 
     /**
-     * Fetch records that have <code>test_result_fk BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch a unique record that has <code>test_suite_id = value</code>
+     */
+    public Optional<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestSuite> fetchOptionalByTestSuiteId(Long value) {
+        return fetchOptional(TestSuite.TEST_SUITE.TEST_SUITE_ID, value);
+    }
+
+    /**
+     * Fetch records that have <code>test_result_fk BETWEEN lowerInclusive AND
+     * upperInclusive</code>
      */
     public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestSuite> fetchRangeOfTestResultFk(Long lowerInclusive, Long upperInclusive) {
         return fetchRange(TestSuite.TEST_SUITE.TEST_RESULT_FK, lowerInclusive, upperInclusive);
@@ -78,7 +88,8 @@ public class TestSuiteDao extends DAOImpl<TestSuiteRecord, io.github.ericdriggs.
     }
 
     /**
-     * Fetch records that have <code>name BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>name BETWEEN lowerInclusive AND
+     * upperInclusive</code>
      */
     public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestSuite> fetchRangeOfName(String lowerInclusive, String upperInclusive) {
         return fetchRange(TestSuite.TEST_SUITE.NAME, lowerInclusive, upperInclusive);
@@ -92,7 +103,8 @@ public class TestSuiteDao extends DAOImpl<TestSuiteRecord, io.github.ericdriggs.
     }
 
     /**
-     * Fetch records that have <code>tests BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>tests BETWEEN lowerInclusive AND
+     * upperInclusive</code>
      */
     public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestSuite> fetchRangeOfTests(Integer lowerInclusive, Integer upperInclusive) {
         return fetchRange(TestSuite.TEST_SUITE.TESTS, lowerInclusive, upperInclusive);
@@ -106,7 +118,8 @@ public class TestSuiteDao extends DAOImpl<TestSuiteRecord, io.github.ericdriggs.
     }
 
     /**
-     * Fetch records that have <code>skipped BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>skipped BETWEEN lowerInclusive AND
+     * upperInclusive</code>
      */
     public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestSuite> fetchRangeOfSkipped(Integer lowerInclusive, Integer upperInclusive) {
         return fetchRange(TestSuite.TEST_SUITE.SKIPPED, lowerInclusive, upperInclusive);
@@ -120,7 +133,8 @@ public class TestSuiteDao extends DAOImpl<TestSuiteRecord, io.github.ericdriggs.
     }
 
     /**
-     * Fetch records that have <code>error BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>error BETWEEN lowerInclusive AND
+     * upperInclusive</code>
      */
     public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestSuite> fetchRangeOfError(Integer lowerInclusive, Integer upperInclusive) {
         return fetchRange(TestSuite.TEST_SUITE.ERROR, lowerInclusive, upperInclusive);
@@ -134,7 +148,8 @@ public class TestSuiteDao extends DAOImpl<TestSuiteRecord, io.github.ericdriggs.
     }
 
     /**
-     * Fetch records that have <code>failure BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>failure BETWEEN lowerInclusive AND
+     * upperInclusive</code>
      */
     public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestSuite> fetchRangeOfFailure(Integer lowerInclusive, Integer upperInclusive) {
         return fetchRange(TestSuite.TEST_SUITE.FAILURE, lowerInclusive, upperInclusive);
@@ -148,7 +163,8 @@ public class TestSuiteDao extends DAOImpl<TestSuiteRecord, io.github.ericdriggs.
     }
 
     /**
-     * Fetch records that have <code>time BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>time BETWEEN lowerInclusive AND
+     * upperInclusive</code>
      */
     public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestSuite> fetchRangeOfTime(BigDecimal lowerInclusive, BigDecimal upperInclusive) {
         return fetchRange(TestSuite.TEST_SUITE.TIME, lowerInclusive, upperInclusive);
@@ -162,7 +178,8 @@ public class TestSuiteDao extends DAOImpl<TestSuiteRecord, io.github.ericdriggs.
     }
 
     /**
-     * Fetch records that have <code>package BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>package BETWEEN lowerInclusive AND
+     * upperInclusive</code>
      */
     public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestSuite> fetchRangeOfPackage(String lowerInclusive, String upperInclusive) {
         return fetchRange(TestSuite.TEST_SUITE.PACKAGE, lowerInclusive, upperInclusive);
@@ -176,7 +193,8 @@ public class TestSuiteDao extends DAOImpl<TestSuiteRecord, io.github.ericdriggs.
     }
 
     /**
-     * Fetch records that have <code>group BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>group BETWEEN lowerInclusive AND
+     * upperInclusive</code>
      */
     public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestSuite> fetchRangeOfGroup(String lowerInclusive, String upperInclusive) {
         return fetchRange(TestSuite.TEST_SUITE.GROUP, lowerInclusive, upperInclusive);
@@ -190,7 +208,8 @@ public class TestSuiteDao extends DAOImpl<TestSuiteRecord, io.github.ericdriggs.
     }
 
     /**
-     * Fetch records that have <code>properties BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>properties BETWEEN lowerInclusive AND
+     * upperInclusive</code>
      */
     public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestSuite> fetchRangeOfProperties(String lowerInclusive, String upperInclusive) {
         return fetchRange(TestSuite.TEST_SUITE.PROPERTIES, lowerInclusive, upperInclusive);
@@ -204,7 +223,8 @@ public class TestSuiteDao extends DAOImpl<TestSuiteRecord, io.github.ericdriggs.
     }
 
     /**
-     * Fetch records that have <code>is_success BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>is_success BETWEEN lowerInclusive AND
+     * upperInclusive</code>
      */
     public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestSuite> fetchRangeOfIsSuccess(Boolean lowerInclusive, Boolean upperInclusive) {
         return fetchRange(TestSuite.TEST_SUITE.IS_SUCCESS, lowerInclusive, upperInclusive);
@@ -218,7 +238,8 @@ public class TestSuiteDao extends DAOImpl<TestSuiteRecord, io.github.ericdriggs.
     }
 
     /**
-     * Fetch records that have <code>has_skip BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>has_skip BETWEEN lowerInclusive AND
+     * upperInclusive</code>
      */
     public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestSuite> fetchRangeOfHasSkip(Boolean lowerInclusive, Boolean upperInclusive) {
         return fetchRange(TestSuite.TEST_SUITE.HAS_SKIP, lowerInclusive, upperInclusive);

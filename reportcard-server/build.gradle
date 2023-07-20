@@ -17,7 +17,7 @@ plugins {
     id 'idea'
     id 'org.springframework.boot'
     id 'io.spring.dependency-management'
-    id 'nu.studer.jooq' version '5.2.1'
+    id 'nu.studer.jooq' version '7.2'
 //    id "org.flywaydb.flyway" version "7.8.2"
 }
 
@@ -100,7 +100,7 @@ import org.jooq.meta.jaxb.*
 
 task generateJooqSchemaSource {
     group = "jooq"
-    version = "3.14.9"
+    version = "3.18.4"
     doLast {
         GenerationTool.generate(new Configuration()
                 .withJdbc(new Jdbc()
@@ -155,7 +155,7 @@ task generateJooqSchemaSource {
 }
 
 jooq {
-    version = '3.14.9' //latest 3.16.5
+    version = '3.18.4'
     edition = nu.studer.gradle.jooq.JooqEdition.OSS
     configurations {
         generated {

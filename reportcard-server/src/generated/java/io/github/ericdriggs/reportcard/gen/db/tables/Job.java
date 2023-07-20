@@ -37,7 +37,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Job extends TableImpl<JobRecord> {
 
-    private static final long serialVersionUID = -23631319;
+    private static final long serialVersionUID = 636271840;
 
     /**
      * The reference instance of <code>reportcard.job</code>
@@ -112,7 +112,7 @@ public class Job extends TableImpl<JobRecord> {
 
     @Override
     public Schema getSchema() {
-        return Reportcard.REPORTCARD;
+        return aliased() ? null : Reportcard.REPORTCARD;
     }
 
     @Override
@@ -126,17 +126,20 @@ public class Job extends TableImpl<JobRecord> {
     }
 
     @Override
-    public List<UniqueKey<JobRecord>> getKeys() {
-        return Arrays.<UniqueKey<JobRecord>>asList(Keys.KEY_JOB_PRIMARY, Keys.KEY_JOB_UQ_BRANCH_FK_JOB_INFO_STR);
+    public List<UniqueKey<JobRecord>> getUniqueKeys() {
+        return Arrays.asList(Keys.KEY_JOB_UQ_BRANCH_FK_JOB_INFO_STR);
     }
 
     @Override
     public List<ForeignKey<JobRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<JobRecord, ?>>asList(Keys.FK_JOB_BRANCH);
+        return Arrays.asList(Keys.FK_JOB_BRANCH);
     }
 
     private transient Branch _branch;
 
+    /**
+     * Get the implicit join path to the <code>reportcard.branch</code> table.
+     */
     public Branch branch() {
         if (_branch == null)
             _branch = new Branch(this, Keys.FK_JOB_BRANCH);

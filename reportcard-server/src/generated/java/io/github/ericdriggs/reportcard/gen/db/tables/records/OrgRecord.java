@@ -22,7 +22,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class OrgRecord extends UpdatableRecordImpl<OrgRecord> implements Record2<Integer, String> {
 
-    private static final long serialVersionUID = 1886313619;
+    private static final long serialVersionUID = 1138560845;
 
     /**
      * Setter for <code>reportcard.org.org_id</code>.
@@ -145,5 +145,17 @@ public class OrgRecord extends UpdatableRecordImpl<OrgRecord> implements Record2
 
         setOrgId(orgId);
         setOrgName(orgName);
+    }
+
+    /**
+     * Create a detached, initialised OrgRecord
+     */
+    public OrgRecord(io.github.ericdriggs.reportcard.gen.db.tables.pojos.Org value) {
+        super(Org.ORG);
+
+        if (value != null) {
+            setOrgId(value.getOrgId());
+            setOrgName(value.getOrgName());
+        }
     }
 }

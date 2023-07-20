@@ -39,7 +39,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Run extends TableImpl<RunRecord> {
 
-    private static final long serialVersionUID = -2011421158;
+    private static final long serialVersionUID = -701107586;
 
     /**
      * The reference instance of <code>reportcard.run</code>
@@ -119,12 +119,12 @@ public class Run extends TableImpl<RunRecord> {
 
     @Override
     public Schema getSchema() {
-        return Reportcard.REPORTCARD;
+        return aliased() ? null : Reportcard.REPORTCARD;
     }
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.RUN_RUN_JOB_FK_IDX, Indexes.RUN_RUN_JOB_SHA);
+        return Arrays.asList(Indexes.RUN_RUN_JOB_FK_IDX, Indexes.RUN_RUN_JOB_SHA);
     }
 
     @Override
@@ -138,17 +138,20 @@ public class Run extends TableImpl<RunRecord> {
     }
 
     @Override
-    public List<UniqueKey<RunRecord>> getKeys() {
-        return Arrays.<UniqueKey<RunRecord>>asList(Keys.KEY_RUN_PRIMARY, Keys.KEY_RUN_RUN_ID_UNIQUE, Keys.KEY_RUN_UQ_RUN_JOB_REFERENCE);
+    public List<UniqueKey<RunRecord>> getUniqueKeys() {
+        return Arrays.asList(Keys.KEY_RUN_RUN_ID_UNIQUE, Keys.KEY_RUN_UQ_RUN_JOB_REFERENCE);
     }
 
     @Override
     public List<ForeignKey<RunRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<RunRecord, ?>>asList(Keys.RUN_JOB_FK);
+        return Arrays.asList(Keys.RUN_JOB_FK);
     }
 
     private transient Job _job;
 
+    /**
+     * Get the implicit join path to the <code>reportcard.job</code> table.
+     */
     public Job job() {
         if (_job == null)
             _job = new Job(this, Keys.RUN_JOB_FK);

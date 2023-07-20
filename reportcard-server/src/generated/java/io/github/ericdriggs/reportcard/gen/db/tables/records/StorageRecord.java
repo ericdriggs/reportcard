@@ -22,7 +22,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements Record5<Long, Long, String, String, String> {
 
-    private static final long serialVersionUID = 1310622963;
+    private static final long serialVersionUID = -1994468250;
 
     /**
      * Setter for <code>reportcard.storage.storage_id</code>.
@@ -259,5 +259,20 @@ public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements
         setPath(path);
         setIndexfile(indexfile);
         setType(type);
+    }
+
+    /**
+     * Create a detached, initialised StorageRecord
+     */
+    public StorageRecord(io.github.ericdriggs.reportcard.gen.db.tables.pojos.Storage value) {
+        super(Storage.STORAGE);
+
+        if (value != null) {
+            setStorageId(value.getStorageId());
+            setStageFk(value.getStageFk());
+            setPath(value.getPath());
+            setIndexfile(value.getIndexfile());
+            setType(value.getType());
+        }
     }
 }

@@ -9,6 +9,7 @@ import io.github.ericdriggs.reportcard.gen.db.tables.records.JobRecord;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import lombok.Generated;
 
@@ -43,7 +44,8 @@ public class JobDao extends DAOImpl<JobRecord, io.github.ericdriggs.reportcard.g
     }
 
     /**
-     * Fetch records that have <code>job_id BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>job_id BETWEEN lowerInclusive AND
+     * upperInclusive</code>
      */
     public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job> fetchRangeOfJobId(Long lowerInclusive, Long upperInclusive) {
         return fetchRange(Job.JOB.JOB_ID, lowerInclusive, upperInclusive);
@@ -64,7 +66,15 @@ public class JobDao extends DAOImpl<JobRecord, io.github.ericdriggs.reportcard.g
     }
 
     /**
-     * Fetch records that have <code>job_info BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch a unique record that has <code>job_id = value</code>
+     */
+    public Optional<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job> fetchOptionalByJobId(Long value) {
+        return fetchOptional(Job.JOB.JOB_ID, value);
+    }
+
+    /**
+     * Fetch records that have <code>job_info BETWEEN lowerInclusive AND
+     * upperInclusive</code>
      */
     public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job> fetchRangeOfJobInfo(String lowerInclusive, String upperInclusive) {
         return fetchRange(Job.JOB.JOB_INFO, lowerInclusive, upperInclusive);
@@ -78,7 +88,8 @@ public class JobDao extends DAOImpl<JobRecord, io.github.ericdriggs.reportcard.g
     }
 
     /**
-     * Fetch records that have <code>branch_fk BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>branch_fk BETWEEN lowerInclusive AND
+     * upperInclusive</code>
      */
     public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job> fetchRangeOfBranchFk(Integer lowerInclusive, Integer upperInclusive) {
         return fetchRange(Job.JOB.BRANCH_FK, lowerInclusive, upperInclusive);
@@ -92,7 +103,8 @@ public class JobDao extends DAOImpl<JobRecord, io.github.ericdriggs.reportcard.g
     }
 
     /**
-     * Fetch records that have <code>job_info_str BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>job_info_str BETWEEN lowerInclusive AND
+     * upperInclusive</code>
      */
     public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job> fetchRangeOfJobInfoStr(String lowerInclusive, String upperInclusive) {
         return fetchRange(Job.JOB.JOB_INFO_STR, lowerInclusive, upperInclusive);
@@ -106,7 +118,8 @@ public class JobDao extends DAOImpl<JobRecord, io.github.ericdriggs.reportcard.g
     }
 
     /**
-     * Fetch records that have <code>last_run BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>last_run BETWEEN lowerInclusive AND
+     * upperInclusive</code>
      */
     public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job> fetchRangeOfLastRun(LocalDateTime lowerInclusive, LocalDateTime upperInclusive) {
         return fetchRange(Job.JOB.LAST_RUN, lowerInclusive, upperInclusive);

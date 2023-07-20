@@ -40,7 +40,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestResult extends TableImpl<TestResultRecord> {
 
-    private static final long serialVersionUID = -1593314013;
+    private static final long serialVersionUID = -388708994;
 
     /**
      * The reference instance of <code>reportcard.test_result</code>
@@ -145,12 +145,12 @@ public class TestResult extends TableImpl<TestResultRecord> {
 
     @Override
     public Schema getSchema() {
-        return Reportcard.REPORTCARD;
+        return aliased() ? null : Reportcard.REPORTCARD;
     }
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.TEST_RESULT_TEST_RESULT_STAGE_FK_IDX);
+        return Arrays.asList(Indexes.TEST_RESULT_TEST_RESULT_STAGE_FK_IDX);
     }
 
     @Override
@@ -164,17 +164,15 @@ public class TestResult extends TableImpl<TestResultRecord> {
     }
 
     @Override
-    public List<UniqueKey<TestResultRecord>> getKeys() {
-        return Arrays.<UniqueKey<TestResultRecord>>asList(Keys.KEY_TEST_RESULT_PRIMARY);
-    }
-
-    @Override
     public List<ForeignKey<TestResultRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<TestResultRecord, ?>>asList(Keys.TEST_RESULT_STAGE_FK);
+        return Arrays.asList(Keys.TEST_RESULT_STAGE_FK);
     }
 
     private transient Stage _stage;
 
+    /**
+     * Get the implicit join path to the <code>reportcard.stage</code> table.
+     */
     public Stage stage() {
         if (_stage == null)
             _stage = new Stage(this, Keys.TEST_RESULT_STAGE_FK);

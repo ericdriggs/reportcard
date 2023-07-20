@@ -39,7 +39,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Branch extends TableImpl<BranchRecord> {
 
-    private static final long serialVersionUID = -1181281008;
+    private static final long serialVersionUID = -732650702;
 
     /**
      * The reference instance of <code>reportcard.branch</code>
@@ -109,12 +109,12 @@ public class Branch extends TableImpl<BranchRecord> {
 
     @Override
     public Schema getSchema() {
-        return Reportcard.REPORTCARD;
+        return aliased() ? null : Reportcard.REPORTCARD;
     }
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.BRANCH_BRANCH_REPO_IDX);
+        return Arrays.asList(Indexes.BRANCH_BRANCH_REPO_IDX);
     }
 
     @Override
@@ -128,17 +128,15 @@ public class Branch extends TableImpl<BranchRecord> {
     }
 
     @Override
-    public List<UniqueKey<BranchRecord>> getKeys() {
-        return Arrays.<UniqueKey<BranchRecord>>asList(Keys.KEY_BRANCH_PRIMARY);
-    }
-
-    @Override
     public List<ForeignKey<BranchRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<BranchRecord, ?>>asList(Keys.BRANCH_REPO_FK);
+        return Arrays.asList(Keys.BRANCH_REPO_FK);
     }
 
     private transient Repo _repo;
 
+    /**
+     * Get the implicit join path to the <code>reportcard.repo</code> table.
+     */
     public Repo repo() {
         if (_repo == null)
             _repo = new Repo(this, Keys.BRANCH_REPO_FK);

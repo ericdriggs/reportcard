@@ -39,7 +39,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestCase extends TableImpl<TestCaseRecord> {
 
-    private static final long serialVersionUID = 1578994306;
+    private static final long serialVersionUID = -1830193229;
 
     /**
      * The reference instance of <code>reportcard.test_case</code>
@@ -134,12 +134,12 @@ public class TestCase extends TableImpl<TestCaseRecord> {
 
     @Override
     public Schema getSchema() {
-        return Reportcard.REPORTCARD;
+        return aliased() ? null : Reportcard.REPORTCARD;
     }
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.TEST_CASE_FK_TEST_CASE_STATUS_IDX, Indexes.TEST_CASE_FK_TEST_CASE_TEST_SUITE_IDX);
+        return Arrays.asList(Indexes.TEST_CASE_FK_TEST_CASE_STATUS_IDX, Indexes.TEST_CASE_FK_TEST_CASE_TEST_SUITE_IDX);
     }
 
     @Override
@@ -153,18 +153,17 @@ public class TestCase extends TableImpl<TestCaseRecord> {
     }
 
     @Override
-    public List<UniqueKey<TestCaseRecord>> getKeys() {
-        return Arrays.<UniqueKey<TestCaseRecord>>asList(Keys.KEY_TEST_CASE_PRIMARY);
-    }
-
-    @Override
     public List<ForeignKey<TestCaseRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<TestCaseRecord, ?>>asList(Keys.FK_TEST_CASE_TEST_SUITE, Keys.FK_TEST_CASE_TEST_STATUS);
+        return Arrays.asList(Keys.FK_TEST_CASE_TEST_SUITE, Keys.FK_TEST_CASE_TEST_STATUS);
     }
 
     private transient TestSuite _testSuite;
     private transient TestStatus _testStatus;
 
+    /**
+     * Get the implicit join path to the <code>reportcard.test_suite</code>
+     * table.
+     */
     public TestSuite testSuite() {
         if (_testSuite == null)
             _testSuite = new TestSuite(this, Keys.FK_TEST_CASE_TEST_SUITE);
@@ -172,6 +171,10 @@ public class TestCase extends TableImpl<TestCaseRecord> {
         return _testSuite;
     }
 
+    /**
+     * Get the implicit join path to the <code>reportcard.test_status</code>
+     * table.
+     */
     public TestStatus testStatus() {
         if (_testStatus == null)
             _testStatus = new TestStatus(this, Keys.FK_TEST_CASE_TEST_STATUS);

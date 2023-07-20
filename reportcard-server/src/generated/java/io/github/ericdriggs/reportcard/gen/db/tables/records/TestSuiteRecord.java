@@ -24,7 +24,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestSuiteRecord extends UpdatableRecordImpl<TestSuiteRecord> implements Record13<Long, Long, String, Integer, Integer, Integer, Integer, BigDecimal, String, String, String, Boolean, Boolean> {
 
-    private static final long serialVersionUID = 1130396313;
+    private static final long serialVersionUID = -1830161886;
 
     /**
      * Setter for <code>reportcard.test_suite.test_suite_id</code>.
@@ -565,5 +565,28 @@ public class TestSuiteRecord extends UpdatableRecordImpl<TestSuiteRecord> implem
         setProperties(properties);
         setIsSuccess(isSuccess);
         setHasSkip(hasSkip);
+    }
+
+    /**
+     * Create a detached, initialised TestSuiteRecord
+     */
+    public TestSuiteRecord(io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestSuite value) {
+        super(TestSuite.TEST_SUITE);
+
+        if (value != null) {
+            setTestSuiteId(value.getTestSuiteId());
+            setTestResultFk(value.getTestResultFk());
+            setName(value.getName());
+            setTests(value.getTests());
+            setSkipped(value.getSkipped());
+            setError(value.getError());
+            setFailure(value.getFailure());
+            setTime(value.getTime());
+            setPackage(value.getPackage());
+            setGroup(value.getGroup());
+            setProperties(value.getProperties());
+            setIsSuccess(value.getIsSuccess());
+            setHasSkip(value.getHasSkip());
+        }
     }
 }

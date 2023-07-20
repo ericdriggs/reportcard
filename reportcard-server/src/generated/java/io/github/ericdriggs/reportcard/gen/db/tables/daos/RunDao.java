@@ -9,6 +9,7 @@ import io.github.ericdriggs.reportcard.gen.db.tables.records.RunRecord;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import lombok.Generated;
 
@@ -43,7 +44,8 @@ public class RunDao extends DAOImpl<RunRecord, io.github.ericdriggs.reportcard.g
     }
 
     /**
-     * Fetch records that have <code>run_id BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>run_id BETWEEN lowerInclusive AND
+     * upperInclusive</code>
      */
     public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Run> fetchRangeOfRunId(Long lowerInclusive, Long upperInclusive) {
         return fetchRange(Run.RUN.RUN_ID, lowerInclusive, upperInclusive);
@@ -64,7 +66,15 @@ public class RunDao extends DAOImpl<RunRecord, io.github.ericdriggs.reportcard.g
     }
 
     /**
-     * Fetch records that have <code>run_reference BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch a unique record that has <code>run_id = value</code>
+     */
+    public Optional<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Run> fetchOptionalByRunId(Long value) {
+        return fetchOptional(Run.RUN.RUN_ID, value);
+    }
+
+    /**
+     * Fetch records that have <code>run_reference BETWEEN lowerInclusive AND
+     * upperInclusive</code>
      */
     public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Run> fetchRangeOfRunReference(String lowerInclusive, String upperInclusive) {
         return fetchRange(Run.RUN.RUN_REFERENCE, lowerInclusive, upperInclusive);
@@ -78,7 +88,8 @@ public class RunDao extends DAOImpl<RunRecord, io.github.ericdriggs.reportcard.g
     }
 
     /**
-     * Fetch records that have <code>job_fk BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>job_fk BETWEEN lowerInclusive AND
+     * upperInclusive</code>
      */
     public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Run> fetchRangeOfJobFk(Long lowerInclusive, Long upperInclusive) {
         return fetchRange(Run.RUN.JOB_FK, lowerInclusive, upperInclusive);
@@ -92,7 +103,8 @@ public class RunDao extends DAOImpl<RunRecord, io.github.ericdriggs.reportcard.g
     }
 
     /**
-     * Fetch records that have <code>job_run_count BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>job_run_count BETWEEN lowerInclusive AND
+     * upperInclusive</code>
      */
     public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Run> fetchRangeOfJobRunCount(Integer lowerInclusive, Integer upperInclusive) {
         return fetchRange(Run.RUN.JOB_RUN_COUNT, lowerInclusive, upperInclusive);
@@ -106,7 +118,8 @@ public class RunDao extends DAOImpl<RunRecord, io.github.ericdriggs.reportcard.g
     }
 
     /**
-     * Fetch records that have <code>sha BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>sha BETWEEN lowerInclusive AND
+     * upperInclusive</code>
      */
     public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Run> fetchRangeOfSha(String lowerInclusive, String upperInclusive) {
         return fetchRange(Run.RUN.SHA, lowerInclusive, upperInclusive);
@@ -120,7 +133,8 @@ public class RunDao extends DAOImpl<RunRecord, io.github.ericdriggs.reportcard.g
     }
 
     /**
-     * Fetch records that have <code>created BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>created BETWEEN lowerInclusive AND
+     * upperInclusive</code>
      */
     public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Run> fetchRangeOfCreated(LocalDateTime lowerInclusive, LocalDateTime upperInclusive) {
         return fetchRange(Run.RUN.CREATED, lowerInclusive, upperInclusive);

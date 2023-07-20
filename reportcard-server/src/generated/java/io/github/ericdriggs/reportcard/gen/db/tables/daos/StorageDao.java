@@ -8,6 +8,7 @@ import io.github.ericdriggs.reportcard.gen.db.tables.Storage;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.StorageRecord;
 
 import java.util.List;
+import java.util.Optional;
 
 import lombok.Generated;
 
@@ -42,7 +43,8 @@ public class StorageDao extends DAOImpl<StorageRecord, io.github.ericdriggs.repo
     }
 
     /**
-     * Fetch records that have <code>storage_id BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>storage_id BETWEEN lowerInclusive AND
+     * upperInclusive</code>
      */
     public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Storage> fetchRangeOfStorageId(Long lowerInclusive, Long upperInclusive) {
         return fetchRange(Storage.STORAGE.STORAGE_ID, lowerInclusive, upperInclusive);
@@ -63,7 +65,15 @@ public class StorageDao extends DAOImpl<StorageRecord, io.github.ericdriggs.repo
     }
 
     /**
-     * Fetch records that have <code>stage_fk BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch a unique record that has <code>storage_id = value</code>
+     */
+    public Optional<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Storage> fetchOptionalByStorageId(Long value) {
+        return fetchOptional(Storage.STORAGE.STORAGE_ID, value);
+    }
+
+    /**
+     * Fetch records that have <code>stage_fk BETWEEN lowerInclusive AND
+     * upperInclusive</code>
      */
     public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Storage> fetchRangeOfStageFk(Long lowerInclusive, Long upperInclusive) {
         return fetchRange(Storage.STORAGE.STAGE_FK, lowerInclusive, upperInclusive);
@@ -77,7 +87,8 @@ public class StorageDao extends DAOImpl<StorageRecord, io.github.ericdriggs.repo
     }
 
     /**
-     * Fetch records that have <code>path BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>path BETWEEN lowerInclusive AND
+     * upperInclusive</code>
      */
     public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Storage> fetchRangeOfPath(String lowerInclusive, String upperInclusive) {
         return fetchRange(Storage.STORAGE.PATH, lowerInclusive, upperInclusive);
@@ -91,7 +102,8 @@ public class StorageDao extends DAOImpl<StorageRecord, io.github.ericdriggs.repo
     }
 
     /**
-     * Fetch records that have <code>indexFile BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>indexFile BETWEEN lowerInclusive AND
+     * upperInclusive</code>
      */
     public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Storage> fetchRangeOfIndexfile(String lowerInclusive, String upperInclusive) {
         return fetchRange(Storage.STORAGE.INDEXFILE, lowerInclusive, upperInclusive);
@@ -105,7 +117,8 @@ public class StorageDao extends DAOImpl<StorageRecord, io.github.ericdriggs.repo
     }
 
     /**
-     * Fetch records that have <code>type BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>type BETWEEN lowerInclusive AND
+     * upperInclusive</code>
      */
     public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Storage> fetchRangeOfType(String lowerInclusive, String upperInclusive) {
         return fetchRange(Storage.STORAGE.TYPE, lowerInclusive, upperInclusive);

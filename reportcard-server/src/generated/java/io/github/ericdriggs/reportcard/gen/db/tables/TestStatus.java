@@ -8,9 +8,6 @@ import io.github.ericdriggs.reportcard.gen.db.Keys;
 import io.github.ericdriggs.reportcard.gen.db.Reportcard;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.TestStatusRecord;
 
-import java.util.Arrays;
-import java.util.List;
-
 import lombok.Generated;
 
 import org.jooq.Field;
@@ -36,7 +33,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestStatus extends TableImpl<TestStatusRecord> {
 
-    private static final long serialVersionUID = -1419581115;
+    private static final long serialVersionUID = 844379551;
 
     /**
      * The reference instance of <code>reportcard.test_status</code>
@@ -96,7 +93,7 @@ public class TestStatus extends TableImpl<TestStatusRecord> {
 
     @Override
     public Schema getSchema() {
-        return Reportcard.REPORTCARD;
+        return aliased() ? null : Reportcard.REPORTCARD;
     }
 
     @Override
@@ -107,11 +104,6 @@ public class TestStatus extends TableImpl<TestStatusRecord> {
     @Override
     public UniqueKey<TestStatusRecord> getPrimaryKey() {
         return Keys.KEY_TEST_STATUS_PRIMARY;
-    }
-
-    @Override
-    public List<UniqueKey<TestStatusRecord>> getKeys() {
-        return Arrays.<UniqueKey<TestStatusRecord>>asList(Keys.KEY_TEST_STATUS_PRIMARY);
     }
 
     @Override

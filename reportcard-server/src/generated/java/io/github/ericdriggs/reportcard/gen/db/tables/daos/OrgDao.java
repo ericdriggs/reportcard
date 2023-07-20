@@ -8,6 +8,7 @@ import io.github.ericdriggs.reportcard.gen.db.tables.Org;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.OrgRecord;
 
 import java.util.List;
+import java.util.Optional;
 
 import lombok.Generated;
 
@@ -42,7 +43,8 @@ public class OrgDao extends DAOImpl<OrgRecord, io.github.ericdriggs.reportcard.g
     }
 
     /**
-     * Fetch records that have <code>org_id BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>org_id BETWEEN lowerInclusive AND
+     * upperInclusive</code>
      */
     public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Org> fetchRangeOfOrgId(Integer lowerInclusive, Integer upperInclusive) {
         return fetchRange(Org.ORG.ORG_ID, lowerInclusive, upperInclusive);
@@ -63,7 +65,15 @@ public class OrgDao extends DAOImpl<OrgRecord, io.github.ericdriggs.reportcard.g
     }
 
     /**
-     * Fetch records that have <code>org_name BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch a unique record that has <code>org_id = value</code>
+     */
+    public Optional<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Org> fetchOptionalByOrgId(Integer value) {
+        return fetchOptional(Org.ORG.ORG_ID, value);
+    }
+
+    /**
+     * Fetch records that have <code>org_name BETWEEN lowerInclusive AND
+     * upperInclusive</code>
      */
     public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Org> fetchRangeOfOrgName(String lowerInclusive, String upperInclusive) {
         return fetchRange(Org.ORG.ORG_NAME, lowerInclusive, upperInclusive);
@@ -81,5 +91,12 @@ public class OrgDao extends DAOImpl<OrgRecord, io.github.ericdriggs.reportcard.g
      */
     public io.github.ericdriggs.reportcard.gen.db.tables.pojos.Org fetchOneByOrgName(String value) {
         return fetchOne(Org.ORG.ORG_NAME, value);
+    }
+
+    /**
+     * Fetch a unique record that has <code>org_name = value</code>
+     */
+    public Optional<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Org> fetchOptionalByOrgName(String value) {
+        return fetchOptional(Org.ORG.ORG_NAME, value);
     }
 }

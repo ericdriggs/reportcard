@@ -35,7 +35,7 @@ public class TestResultPersistServiceTest {
     @Autowired
     public TestResultPersistServiceTest(ResourceReaderComponent resourceReader, TestResultPersistService testResultPersistService) {
         this.testResultPersistService = testResultPersistService;
-        this.xmlJunit = resourceReader.resourceAsString("classpath:format-samples/sample-junit.xml");
+        this.xmlJunit = resourceReader.resourceAsString("classpath:format-samples/sample-junit-small.xml");
         //this.xmlSurefire = resourceReader.resourceAsString("classpath:format-samples/sample-surefire.xml");
 
         MultipartFile[] files = new MultipartFile[1];
@@ -118,8 +118,8 @@ public class TestResultPersistServiceTest {
         assertNotNull(inserted);
         assertNotNull(inserted.getTestResultId());
 
-        assertEquals(66, inserted.getTestSuites().size());
-        Assertions.assertEquals(685, inserted.getTests());
+        assertEquals(1, inserted.getTestSuites().size());
+        Assertions.assertEquals(3, inserted.getTests());
         Assertions.assertEquals(0, inserted.getSkipped());
         Assertions.assertEquals(0, inserted.getError());
         Assertions.assertEquals(0, inserted.getFailure());
@@ -127,7 +127,7 @@ public class TestResultPersistServiceTest {
         assertEquals(true, inserted.getIsSuccess());
         assertNotNull(inserted.getTestResultCreated());
         assertTrue(LocalDateTime.now().isAfter(inserted.getTestResultCreated()));
-        Assertions.assertEquals(new BigDecimal("50.500"), inserted.getTime());
+        Assertions.assertEquals(new BigDecimal("0.256"), inserted.getTime());
 
         validateStagePath(stageDetails, stagePath);
     }

@@ -33,7 +33,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Reportcard extends SchemaImpl {
 
-    private static final long serialVersionUID = -2059245254;
+    private static final long serialVersionUID = -1565591243;
 
     /**
      * The reference instance of <code>reportcard</code>
@@ -110,7 +110,7 @@ public class Reportcard extends SchemaImpl {
 
     @Override
     public final List<Table<?>> getTables() {
-        return Arrays.<Table<?>>asList(
+        return Arrays.asList(
             Branch.BRANCH,
             Job.JOB,
             Org.ORG,
@@ -121,6 +121,7 @@ public class Reportcard extends SchemaImpl {
             TestCase.TEST_CASE,
             TestResult.TEST_RESULT,
             TestStatus.TEST_STATUS,
-            TestSuite.TEST_SUITE);
+            TestSuite.TEST_SUITE
+        );
     }
 }

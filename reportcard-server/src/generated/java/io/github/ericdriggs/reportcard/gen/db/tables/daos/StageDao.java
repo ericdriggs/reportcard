@@ -8,6 +8,7 @@ import io.github.ericdriggs.reportcard.gen.db.tables.Stage;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.StageRecord;
 
 import java.util.List;
+import java.util.Optional;
 
 import lombok.Generated;
 
@@ -42,7 +43,8 @@ public class StageDao extends DAOImpl<StageRecord, io.github.ericdriggs.reportca
     }
 
     /**
-     * Fetch records that have <code>stage_id BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>stage_id BETWEEN lowerInclusive AND
+     * upperInclusive</code>
      */
     public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Stage> fetchRangeOfStageId(Long lowerInclusive, Long upperInclusive) {
         return fetchRange(Stage.STAGE.STAGE_ID, lowerInclusive, upperInclusive);
@@ -63,7 +65,15 @@ public class StageDao extends DAOImpl<StageRecord, io.github.ericdriggs.reportca
     }
 
     /**
-     * Fetch records that have <code>stage_name BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch a unique record that has <code>stage_id = value</code>
+     */
+    public Optional<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Stage> fetchOptionalByStageId(Long value) {
+        return fetchOptional(Stage.STAGE.STAGE_ID, value);
+    }
+
+    /**
+     * Fetch records that have <code>stage_name BETWEEN lowerInclusive AND
+     * upperInclusive</code>
      */
     public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Stage> fetchRangeOfStageName(String lowerInclusive, String upperInclusive) {
         return fetchRange(Stage.STAGE.STAGE_NAME, lowerInclusive, upperInclusive);
@@ -77,7 +87,8 @@ public class StageDao extends DAOImpl<StageRecord, io.github.ericdriggs.reportca
     }
 
     /**
-     * Fetch records that have <code>run_fk BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>run_fk BETWEEN lowerInclusive AND
+     * upperInclusive</code>
      */
     public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Stage> fetchRangeOfRunFk(Long lowerInclusive, Long upperInclusive) {
         return fetchRange(Stage.STAGE.RUN_FK, lowerInclusive, upperInclusive);

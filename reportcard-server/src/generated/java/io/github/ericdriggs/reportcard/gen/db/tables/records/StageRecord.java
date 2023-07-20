@@ -22,7 +22,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class StageRecord extends UpdatableRecordImpl<StageRecord> implements Record3<Long, String, Long> {
 
-    private static final long serialVersionUID = -354702037;
+    private static final long serialVersionUID = 235066401;
 
     /**
      * Setter for <code>reportcard.stage.stage_id</code>.
@@ -183,5 +183,18 @@ public class StageRecord extends UpdatableRecordImpl<StageRecord> implements Rec
         setStageId(stageId);
         setStageName(stageName);
         setRunFk(runFk);
+    }
+
+    /**
+     * Create a detached, initialised StageRecord
+     */
+    public StageRecord(io.github.ericdriggs.reportcard.gen.db.tables.pojos.Stage value) {
+        super(Stage.STAGE);
+
+        if (value != null) {
+            setStageId(value.getStageId());
+            setStageName(value.getStageName());
+            setRunFk(value.getRunFk());
+        }
     }
 }

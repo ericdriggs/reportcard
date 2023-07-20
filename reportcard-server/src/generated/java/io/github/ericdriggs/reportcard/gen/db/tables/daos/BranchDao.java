@@ -9,6 +9,7 @@ import io.github.ericdriggs.reportcard.gen.db.tables.records.BranchRecord;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import lombok.Generated;
 
@@ -43,7 +44,8 @@ public class BranchDao extends DAOImpl<BranchRecord, io.github.ericdriggs.report
     }
 
     /**
-     * Fetch records that have <code>branch_id BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>branch_id BETWEEN lowerInclusive AND
+     * upperInclusive</code>
      */
     public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Branch> fetchRangeOfBranchId(Integer lowerInclusive, Integer upperInclusive) {
         return fetchRange(Branch.BRANCH.BRANCH_ID, lowerInclusive, upperInclusive);
@@ -64,7 +66,15 @@ public class BranchDao extends DAOImpl<BranchRecord, io.github.ericdriggs.report
     }
 
     /**
-     * Fetch records that have <code>branch_name BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch a unique record that has <code>branch_id = value</code>
+     */
+    public Optional<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Branch> fetchOptionalByBranchId(Integer value) {
+        return fetchOptional(Branch.BRANCH.BRANCH_ID, value);
+    }
+
+    /**
+     * Fetch records that have <code>branch_name BETWEEN lowerInclusive AND
+     * upperInclusive</code>
      */
     public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Branch> fetchRangeOfBranchName(String lowerInclusive, String upperInclusive) {
         return fetchRange(Branch.BRANCH.BRANCH_NAME, lowerInclusive, upperInclusive);
@@ -78,7 +88,8 @@ public class BranchDao extends DAOImpl<BranchRecord, io.github.ericdriggs.report
     }
 
     /**
-     * Fetch records that have <code>repo_fk BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>repo_fk BETWEEN lowerInclusive AND
+     * upperInclusive</code>
      */
     public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Branch> fetchRangeOfRepoFk(Integer lowerInclusive, Integer upperInclusive) {
         return fetchRange(Branch.BRANCH.REPO_FK, lowerInclusive, upperInclusive);
@@ -92,7 +103,8 @@ public class BranchDao extends DAOImpl<BranchRecord, io.github.ericdriggs.report
     }
 
     /**
-     * Fetch records that have <code>last_run BETWEEN lowerInclusive AND upperInclusive</code>
+     * Fetch records that have <code>last_run BETWEEN lowerInclusive AND
+     * upperInclusive</code>
      */
     public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Branch> fetchRangeOfLastRun(LocalDateTime lowerInclusive, LocalDateTime upperInclusive) {
         return fetchRange(Branch.BRANCH.LAST_RUN, lowerInclusive, upperInclusive);

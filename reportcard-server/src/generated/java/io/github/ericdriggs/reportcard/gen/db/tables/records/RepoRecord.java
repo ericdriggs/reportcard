@@ -22,7 +22,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RepoRecord extends UpdatableRecordImpl<RepoRecord> implements Record3<Integer, String, Integer> {
 
-    private static final long serialVersionUID = 1948247274;
+    private static final long serialVersionUID = 627868596;
 
     /**
      * Setter for <code>reportcard.repo.repo_id</code>.
@@ -183,5 +183,18 @@ public class RepoRecord extends UpdatableRecordImpl<RepoRecord> implements Recor
         setRepoId(repoId);
         setRepoName(repoName);
         setOrgFk(orgFk);
+    }
+
+    /**
+     * Create a detached, initialised RepoRecord
+     */
+    public RepoRecord(io.github.ericdriggs.reportcard.gen.db.tables.pojos.Repo value) {
+        super(Repo.REPO);
+
+        if (value != null) {
+            setRepoId(value.getRepoId());
+            setRepoName(value.getRepoName());
+            setOrgFk(value.getOrgFk());
+        }
     }
 }
