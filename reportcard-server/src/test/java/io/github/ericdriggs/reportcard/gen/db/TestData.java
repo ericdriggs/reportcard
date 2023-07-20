@@ -22,6 +22,9 @@ public enum TestData {
     public final static String runReference = "runReference1";
     public final static String stage = "api";
 
+    public final static Integer testResultTestCount = 70;
+    public final static Integer testSuiteTestCount = 8;
+
     public final static StageDetails stageDetails = new StageDetails()
             .setOrg(org)
             .setRepo(repo)

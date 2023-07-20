@@ -29,4 +29,11 @@ public enum CompareUtil {
             return string.toLowerCase();
         }
     }
+
+    public static int compareLong(Long val1, Long val2) {
+        if (val1 == null || val2 == null) {
+            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+        }
+        return Long.compare(val1, val2);
+    }
 }

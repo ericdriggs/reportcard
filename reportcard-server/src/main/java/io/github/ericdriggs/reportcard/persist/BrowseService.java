@@ -226,7 +226,8 @@ public class BrowseService extends AbstractPersistService {
                 .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
                         .and(BRANCH.BRANCH_NAME.eq(branchName)))
                 .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID)
-                        .and(JOB.JOB_ID.eq(jobId)))
+                        .and(JOB.JOB_ID.eq(jobId))
+                )
                 .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID))
                 .leftJoin(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID))
                 .where(ORG.ORG_NAME.eq(orgName))
@@ -242,13 +243,9 @@ public class BrowseService extends AbstractPersistService {
             Stage stage = record.into(Stage.class);
 
             if (!runStageMap.containsKey(run)) {
-                synchronized (job.getJobInfoStr() + ":" + run.getRunId()) {
-                    if (!runStageMap.containsKey(job)) {
-                        runStageMap.put(run, new ConcurrentSkipListSet<>(PojoComparators.STAGE_CASE_INSENSITIVE_ORDER));
-                    }
-                }
+                runStageMap.put(run, new TreeSet<>(PojoComparators.STAGE_CASE_INSENSITIVE_ORDER));
             }
-            runStageMap.get(job).add(stage);
+            runStageMap.get(run).add(stage);
         }
         return Collections.singletonMap(job, runStageMap);
     }
@@ -289,7 +286,7 @@ public class BrowseService extends AbstractPersistService {
 
     public Run getRun(String orgName, String repoName, String branchName, Long jobId, Long runId) {
 
-        Run ret = dsl.select(JOB.fields())
+        Run ret = dsl.select(RUN.fields())
                 .from(ORG)
                 .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
                         .and(ORG.ORG_NAME.eq(orgName))
@@ -383,6 +380,9 @@ public class BrowseService extends AbstractPersistService {
                                 .and(RUN.RUN_ID.eq(runId)))
                         .join(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID)
                                 .and(STAGE.STAGE_NAME.eq(stageName)))
+                        //TODO: left join?
+                        .join(TEST_RESULT).on(TEST_RESULT.STAGE_FK.eq(STAGE.STAGE_ID))
+                        .join(TEST_SUITE).on(TEST_SUITE.TEST_RESULT_FK.eq(TEST_RESULT.TEST_RESULT_ID))
                         .fetch();
 
         Map<TestResult, Set<TestSuite>> testResultSuiteMap = new TreeMap<>(PojoComparators.TEST_RESULT_CASE_INSENSITIVE_ORDER);
@@ -392,10 +392,10 @@ public class BrowseService extends AbstractPersistService {
             if (stage == null) {
                 stage = record.into(Stage.class);
             }
-            io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestResult testResult = record.into(io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestResult.class);
-            io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestSuite testSuite = record.into(io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestSuite.class);
+            TestResult testResult = getTestResultFromRecord(record);
+            TestSuite testSuite = getTestSuiteFromRecord(record);
 
-            if (!testResultSuiteMap.containsKey(stage)) {
+            if (!testResultSuiteMap.containsKey(testResult)) {
 
                 testResultSuiteMap.put(testResult, new TreeSet<>(PojoComparators.TEST_SUITE_CASE_INSENSITIVE_ORDER));
 
@@ -404,6 +404,42 @@ public class BrowseService extends AbstractPersistService {
         }
         return Collections.singletonMap(stage, testResultSuiteMap);
 
+    }
+
+    /**
+     * Needed since ambiguous column names can be overwritten by another table if using record into
+     *
+     * @param record a record containing TestResult fields
+     * @return TestResult
+     */
+    protected static TestResult getTestResultFromRecord(Record record) {
+        TestResult testResult = record.into(TestResult.class);
+        testResult.setTests(record.get(TEST_RESULT.TESTS));
+        testResult.setSkipped(record.get(TEST_RESULT.SKIPPED));
+        testResult.setError(record.get(TEST_RESULT.ERROR));
+        testResult.setFailure(record.get(TEST_RESULT.FAILURE));
+        testResult.setTime(record.get(TEST_RESULT.TIME));
+        testResult.setIsSuccess(record.get(TEST_RESULT.IS_SUCCESS));
+        testResult.setIsSuccess(record.get(TEST_RESULT.HAS_SKIP));
+        return testResult;
+    }
+
+    /**
+     * Needed since ambiguous column names can be overwritten by another table if using record into
+     *
+     * @param record a record containing TestResult fields
+     * @return TestResult
+     */
+    protected static TestSuite getTestSuiteFromRecord(Record record) {
+        TestSuite testSuite = record.into(TestSuite.class);
+        testSuite.setTests(record.get(TEST_SUITE.TESTS));
+        testSuite.setSkipped(record.get(TEST_SUITE.SKIPPED));
+        testSuite.setError(record.get(TEST_SUITE.ERROR));
+        testSuite.setFailure(record.get(TEST_SUITE.FAILURE));
+        testSuite.setTime(record.get(TEST_SUITE.TIME));
+        testSuite.setIsSuccess(record.get(TEST_SUITE.IS_SUCCESS));
+        testSuite.setIsSuccess(record.get(TEST_SUITE.HAS_SKIP));
+        return testSuite;
     }
 
     public Stage getStage(String orgName, String repoName, String branchName, String sha, String runReference, String stageName) {

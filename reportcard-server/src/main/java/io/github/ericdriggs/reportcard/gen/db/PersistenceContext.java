@@ -2,6 +2,8 @@ package io.github.ericdriggs.reportcard.gen.db;
 
 import com.mysql.cj.jdbc.MysqlDataSource;
 import org.jooq.SQLDialect;
+import org.jooq.conf.RenderTable;
+import org.jooq.conf.Settings;
 import org.jooq.impl.DataSourceConnectionProvider;
 import org.jooq.impl.DefaultConfiguration;
 import org.jooq.impl.DefaultDSLContext;
@@ -71,6 +73,8 @@ public class PersistenceContext {
     @Bean
     public DefaultConfiguration configuration() {
         DefaultConfiguration jooqConfiguration = new DefaultConfiguration();
+        //
+        jooqConfiguration.set(new Settings().withRenderTable(RenderTable.ALWAYS));
         jooqConfiguration.set(connectionProvider());
 //        jooqConfiguration.set(new DefaultExecuteListenerProvider(exceptionTransformer()));
 

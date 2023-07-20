@@ -5,8 +5,7 @@ import org.apache.commons.lang3.ObjectUtils;
 
 import java.util.Comparator;
 
-import static io.github.ericdriggs.reportcard.util.CompareUtil.chainCompare;
-import static io.github.ericdriggs.reportcard.util.CompareUtil.compareLowerNullSafe;
+import static io.github.ericdriggs.reportcard.util.CompareUtil.*;
 
 public class PojoComparators {
 
@@ -93,6 +92,9 @@ public class PojoComparators {
     }
 
     public static int compareOrg(Org val1, Org val2) {
+        if (val1 == null || val2 == null) {
+            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+        }
         return chainCompare(
                 compareLowerNullSafe(val1.getOrgName(), val2.getOrgName()),
                 Integer.compare(val1.getOrgId(), val2.getOrgId())
@@ -100,6 +102,9 @@ public class PojoComparators {
     }
 
     public static int compareRepo(Repo val1, Repo val2) {
+        if (val1 == null || val2 == null) {
+            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+        }
         return chainCompare(
                 Integer.compare(val1.getOrgFk(), val2.getOrgFk()),
                 compareLowerNullSafe(val1.getRepoName(), val2.getRepoName()),
@@ -108,6 +113,9 @@ public class PojoComparators {
     }
 
     public static int compareBranch(Branch val1, Branch val2) {
+        if (val1 == null || val2 == null) {
+            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+        }
         return chainCompare(
                 Integer.compare(val1.getRepoFk(), val2.getRepoFk()),
                 compareLowerNullSafe(val1.getBranchName(), val2.getBranchName()),
@@ -116,48 +124,66 @@ public class PojoComparators {
     }
 
     public static int compareJob(Job val1, Job val2) {
+        if (val1 == null || val2 == null) {
+            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+        }
         return chainCompare(
                 JsonCompare.compareTo(val1.getJobInfo(), val2.getJobInfo()),
                 compareLowerNullSafe(val1.getJobInfo(), val2.getJobInfo()),
-                Long.compare(val1.getJobId(), val2.getJobId())
+                compareLong(val1.getJobId(), val2.getJobId())
         );
     }
 
     public static int compareRun(Run val1, Run val2) {
+        if (val1 == null || val2 == null) {
+            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+        }
         return chainCompare(
-                Long.compare(val1.getJobFk(), val2.getJobFk()),
+                compareLong(val1.getJobFk(), val2.getJobFk()),
                 ObjectUtils.compare(val1.getRunReference(), val2.getRunReference()),
                 ObjectUtils.compare(val1.getRunId(), val2.getRunId()),
                 ObjectUtils.compare(val1.getSha(), val2.getSha()),
-                Long.compare(val1.getRunId(), val2.getRunId())
+                compareLong(val1.getRunId(), val2.getRunId())
         );
     }
 
     public static int compareStage(Stage val1, Stage val2) {
+        if (val1 == null || val2 == null) {
+            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+        }
         return chainCompare(
-                Long.compare(val1.getRunFk(), val2.getRunFk()),
+                compareLong(val1.getRunFk(), val2.getRunFk()),
                 ObjectUtils.compare(val1.getStageName(), val2.getStageName()),
                 ObjectUtils.compare(val1.getStageId(), val2.getStageId())
         );
     }
 
     public static int compareTestResult(TestResult val1, TestResult val2) {
+        if (val1 == null || val2 == null) {
+            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+        }
         return chainCompare(
-                Long.compare(val1.getStageFk(), val2.getStageFk()),
+                compareLong(val1.getStageFk(), val2.getStageFk()),
                 ObjectUtils.compare(val1.getTestResultId(), val2.getTestResultId())
         );
     }
 
     public static int compareTestSuite(TestSuite val1, TestSuite val2) {
+        if (val1 == null || val2 == null) {
+            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+        }
         return chainCompare(
-                Long.compare(val1.getTestSuiteId(), val2.getTestSuiteId()),
+                compareLong(val1.getTestSuiteId(), val2.getTestSuiteId()),
                 ObjectUtils.compare(val1.getName(), val2.getName())
         );
     }
 
     public static int compareTestCase(TestCase val1, TestCase val2) {
+        if (val1 == null || val2 == null) {
+            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+        }
         return chainCompare(
-                Long.compare(val1.getTestCaseId(), val2.getTestCaseId()),
+                compareLong(val1.getTestCaseId(), val2.getTestCaseId()),
                 ObjectUtils.compare(val1.getName(), val2.getName())
         );
     }
