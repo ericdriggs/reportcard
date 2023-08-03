@@ -1,12 +1,3 @@
-buildscript {
-    ext {
-        jakartaVersion = '2.3.3'
-        lombokVersion = '1.18.20'
-        jacksonVersion = '2.13.2'
-        junitVersion = '5.7.1'
-    }
-}
-
 plugins {
     id 'java'
     id 'groovy'
@@ -22,7 +13,6 @@ configurations {
 repositories {
     mavenLocal()
     mavenCentral()
-    jcenter()
 }
 
 dependencies {
@@ -40,11 +30,11 @@ dependencies {
     implementation "com.sun.xml.bind:jaxb-impl:${jakartaVersion}"
 
     //Mapping
-    implementation 'org.modelmapper:modelmapper:2.3.0'
+    implementation "org.modelmapper:modelmapper:${modelMapperVersion}"
 
     //Test
     testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
-    implementation 'net.javacrumbs.json-unit:json-unit:2.37.0'
+    implementation "net.javacrumbs.json-unit:json-unit:${jsonUnitVersion}"
 
 }

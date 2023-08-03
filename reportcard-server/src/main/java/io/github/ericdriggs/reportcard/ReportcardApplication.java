@@ -11,7 +11,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @EnableTransactionManagement
-@SuppressWarnings("SpellCheckingInspection")
 @SpringBootApplication(scanBasePackages = {"io.github.ericdriggs.reportcard"}, exclude = {R2dbcAutoConfiguration.class})
 @EnableJpaRepositories(basePackages = "io.github.ericdriggs.reportcard")
 public class ReportcardApplication {

@@ -35,15 +35,14 @@ repositories {
 
 dependencies {
     implementation project(':reportcard-model')
-    testImplementation 'net.javacrumbs.json-unit:json-unit:2.37.0'
+    testImplementation "net.javacrumbs.json-unit:json-unit:${jsonUnitVersion}"
     //Lombok
     implementation 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'
 
     //Swagger
-    //TODO: update implementation 'org.springdoc:springdoc-openapi-ui:1.7.0'
-    implementation 'org.springdoc:springdoc-openapi-ui:1.5.8'
+    implementation 'org.springdoc:springdoc-openapi-ui:1.7.0'
 
     //XML
     implementation "javax.xml.bind:jaxb-api:${jaxbVersion}"
@@ -63,11 +62,9 @@ dependencies {
     implementation 'mysql:mysql-connector-java'
     implementation 'org.jooq:jooq'
     implementation 'org.jooq:jooq-codegen'
-    //TODO: update https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-jooq
-    implementation 'org.springframework.boot:spring-boot-starter-jooq:2.3.1.RELEASE'
-    implementation 'mysql:mysql-connector-java:8.0.20'
-    //TOOD: update https://mvnrepository.com/artifact/com.mysql/mysql-connector-j/8.1.0
-    jooqGenerator 'mysql:mysql-connector-java:8.0.20'
+    implementation 'org.springframework.boot:spring-boot-starter-jooq:2.7.14'
+    implementation 'mysql:mysql-connector-java:8.0.28'
+    jooqGenerator 'mysql:mysql-connector-java:8.0.28'
 
     //DB Migration
     //implementation 'org.flywaydb:flyway-core:7.8.2'
