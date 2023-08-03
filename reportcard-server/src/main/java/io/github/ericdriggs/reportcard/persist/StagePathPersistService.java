@@ -67,7 +67,6 @@ public class StagePathPersistService extends AbstractPersistService {
         testCaseDao = new TestCaseDao(dsl.configuration());
     }
 
-
     public StagePath getStagePath(Long runId, String stageName) {
 
         SelectConditionStep<Record> selectConditionStep = dsl.
@@ -120,18 +119,19 @@ public class StagePathPersistService extends AbstractPersistService {
 
     /**
      * Gets stage path using provided left join query and optional stageDetails
+     *
      * @param selectConditionStep the query
-     * @param stageDetails optional stage details (used to match job info map)
+     * @param stageDetails        optional stage details (used to match job info map)
      * @return matching stage path where some of the elements may be null
      */
     @SneakyThrows(JsonProcessingException.class)
-    protected StagePath doGetStagePath(SelectConditionStep<Record> selectConditionStep, StageDetails stageDetails)  {
+    protected StagePath doGetStagePath(SelectConditionStep<Record> selectConditionStep, StageDetails stageDetails) {
 
         Result<Record> records = selectConditionStep
                 .fetch();
 
         /*
-        * stagePath may only be partially populated
+         * stagePath may only be partially populated
          */
         StagePath returnStagePath = new StagePath();
         for (Record record : records) {
@@ -262,7 +262,8 @@ public class StagePathPersistService extends AbstractPersistService {
             stagePath.setBranch(branch);
         } else {
             Branch branch = stagePath.getBranch();
-            branch.setLastRun(nowUTC);
+            //TODO: update lastRun AFTER post data
+            //branch.setLastRun(nowUTC);
             branchDao.update(branch);
         }
 
@@ -300,6 +301,24 @@ public class StagePathPersistService extends AbstractPersistService {
         return stagePath;
     }
 
+    public void updateLastRunToNow(StagePath stagePath) {
+        LocalDateTime nowUTC = LocalDateTime.now(ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS);
+        if (stagePath.getBranch() != null) {
+            Branch branch = stagePath.getBranch();
+            branch.setLastRun(nowUTC);
+            branchDao.update(branch);
+        }
+
+        if (stagePath.getJob() != null) {
+            Job job = stagePath.getJob();
+            job.setLastRun(nowUTC);
+            // insert since DAO/POJO would incorrectly attempt to insert generated column job_info_str
+            dsl.update(JOB)
+                    .set(JOB.LAST_RUN, nowUTC)
+                    .where(JOB.JOB_ID.eq(job.getJobId())).execute();
+        }
+
+    }
 
     public Map<Byte, String> getTestStatusMap() {
         List<TestStatusRecord> testStatusRecords = dsl.

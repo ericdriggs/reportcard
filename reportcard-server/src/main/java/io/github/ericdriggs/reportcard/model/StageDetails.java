@@ -15,7 +15,9 @@ import java.util.*;
 @Data
 public class StageDetails {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    @JsonIgnore
+    final static ObjectMapper mapper = new ObjectMapper();
+
     private String org;
     private String repo;
     private String branch;
@@ -39,13 +41,13 @@ public class StageDetails {
         }
     }
 
+    @JsonIgnore
     protected void addErrorIfMissing(Map<String,String> errors,  String val, String variableName) {
         if (!StringUtils.hasText(val)) {
             errors.put(variableName, "missing required field");
         }
     }
 
-    final static ObjectMapper mapper = new ObjectMapper();
 
     @JsonIgnore
     public String getExternalLinksJson() {
@@ -61,6 +63,7 @@ public class StageDetails {
         }
     }
 
+    @JsonIgnore
     @SneakyThrows(JsonProcessingException.class)
     public String getJobInfoJson() {
         return mapper.writeValueAsString(jobInfo);
