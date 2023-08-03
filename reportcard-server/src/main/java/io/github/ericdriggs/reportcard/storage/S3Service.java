@@ -12,11 +12,11 @@ import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
 import software.amazon.awssdk.services.s3.S3CrtAsyncClientBuilder;
+import software.amazon.awssdk.services.s3.model.ChecksumAlgorithm;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 import software.amazon.awssdk.transfer.s3.S3TransferManager;
-import software.amazon.awssdk.transfer.s3.model.CompletedDirectoryUpload;
-import software.amazon.awssdk.transfer.s3.model.DirectoryUpload;
-import software.amazon.awssdk.transfer.s3.model.FailedFileUpload;
-import software.amazon.awssdk.transfer.s3.model.UploadDirectoryRequest;
+import software.amazon.awssdk.transfer.s3.model.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,10 +31,12 @@ import java.util.TreeSet;
 @Slf4j
 public class S3Service {
 
-    private Region region;
-    private String bucketName;
+    private final static ChecksumAlgorithm CHECKSUM_ALGORITHM = ChecksumAlgorithm.CRC32_C;
 
-    private URI endpointOverride;
+    private final Region region;
+    private final String bucketName;
+
+    private final URI endpointOverride;
 
     public S3Service(@Value("${s3.region}") String region,
                      @Value("${s3.bucket}") String bucketName,
@@ -72,7 +74,7 @@ public class S3Service {
                 final Path filepath = Paths.get(tmpPathString, file.getOriginalFilename());
                 file.transferTo(filepath);
             }
-            return uploadDirectory(tmpPathString, prefix);
+            return uploadDirectory(tmpPathString , prefix);
         } finally {
             FileUtils.deleteDirectory(new File(tmpPathString));
         }
@@ -85,6 +87,11 @@ public class S3Service {
         DirectoryUpload directoryUpload =
                 s3TransferManager.uploadDirectory(UploadDirectoryRequest.builder()
                         .source(Paths.get(sourceDirectory))
+                        .uploadFileRequestTransformer(ufr -> ufr.putObjectRequest(
+                                PutObjectRequest.builder()
+                                        .checksumAlgorithm(CHECKSUM_ALGORITHM)
+                                        .build())
+                        )
                         .bucket(bucketName)
                         .s3Prefix(prefix)
                         .build());
@@ -100,6 +107,30 @@ public class S3Service {
             throw new ResponseStatusException(HttpStatus.CONFLICT, failedUploads.toString());
         }
         return completedDirectoryUpload;
+    }
+
+    public CompletedFileUpload uploadFile(File file, String key) {
+
+        S3TransferManager s3TransferManager = getTransferManager();
+
+        FileUpload fileUpload =
+                s3TransferManager.uploadFile(UploadFileRequest.builder()
+                        .source(file)
+                        .putObjectRequest(
+                                PutObjectRequest.builder()
+                                        .key(key)
+                                        .bucket(bucketName)
+                                        .checksumAlgorithm(CHECKSUM_ALGORITHM)
+                                        .build()
+                        )
+                        .build());
+
+        CompletedFileUpload completedFileUpload = fileUpload.completionFuture().join();
+        PutObjectResponse putObjectResponse = completedFileUpload.response();
+        if (!putObjectResponse.sdkHttpResponse().isSuccessful()) {
+            throw new ResponseStatusException(HttpStatus.valueOf(putObjectResponse.sdkHttpResponse().statusCode()), putObjectResponse.sdkHttpResponse().statusText().orElse("unknown"));
+        }
+        return completedFileUpload;
     }
 
 }
