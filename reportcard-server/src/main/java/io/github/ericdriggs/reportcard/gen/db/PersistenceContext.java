@@ -30,6 +30,24 @@ public class PersistenceContext {
     @Autowired
     private Environment environment;
 
+//    @Value("${db.connection.string}")
+//    private String dbConnectionStringValue;
+//
+//    @Value("${db.port}")
+//    private String dbPortValue;
+//
+//    @Value("${db.host}")
+//    private String dbHostValue;
+//
+//    @Value("${db.name}")
+//    private String dbNameValue;
+//
+//    @Value("${db.username}")
+//    private String dbUserNameValue;
+//
+//    @Value("${db.password}")
+//    private String dbPasswordValue;
+
     @Bean
     public DataSource dataSource() {
         MysqlDataSource dataSource = new MysqlDataSource();
@@ -41,9 +59,35 @@ public class PersistenceContext {
         String jdbcUrl = "jdbc:mysql://localhost:{port}/reportcard?serverTimezone=UTC".replace("{port}", environment.getRequiredProperty("db.port"));
         dataSource.setUrl(jdbcUrl);
         dataSource.setPort(Integer.parseInt(environment.getRequiredProperty("db.port")));
+//        final String dbUserName = getProperty("db.username", dbUserNameValue);
+//        final String dbPassword = getProperty("db.password", dbPasswordValue);
+//        final String dbPort = getProperty("db.port", dbPortValue);
+//        final String jdbcUrl = getJdbcUrl(dbPort);
+//
+//
+//        dataSource.setUser(dbUserName);
+//        dataSource.setPassword(dbPassword);
+//        dataSource.setUrl(jdbcUrl);
+//        dataSource.setPort(Integer.parseInt(dbPort));
 
         return dataSource;
     }
+
+//    private String getJdbcUrl(String dbPort) {
+//
+//        final String dbHost = getProperty("db.host", dbHostValue);
+//        final String dbName = getProperty("db.name", dbNameValue);
+//
+//        return dbConnectionStringValue
+//                .replace("{dbHost}", getProperty("db.host", dbHost))
+//                .replace("{dbPort}", getProperty("db.port", dbPort))
+//                .replace("{dbName}", getProperty("db.name", dbName));
+//    }
+//
+//    //allow overriding using runtime environment for localstack testing
+//    private String getProperty(String propertyName, String defaultValue) {
+//        return environment.getProperty(propertyName) == null? environment.getProperty(propertyName) : defaultValue;
+//    }
 
     @Bean
     public TransactionAwareDataSourceProxy transactionAwareDataSource() {

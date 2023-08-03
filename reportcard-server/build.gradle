@@ -42,6 +42,7 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok'
 
     //Swagger
+    //TODO: update implementation 'org.springdoc:springdoc-openapi-ui:1.7.0'
     implementation 'org.springdoc:springdoc-openapi-ui:1.5.8'
 
     //XML
@@ -62,8 +63,10 @@ dependencies {
     implementation 'mysql:mysql-connector-java'
     implementation 'org.jooq:jooq'
     implementation 'org.jooq:jooq-codegen'
+    //TODO: update https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-jooq
     implementation 'org.springframework.boot:spring-boot-starter-jooq:2.3.1.RELEASE'
     implementation 'mysql:mysql-connector-java:8.0.20'
+    //TOOD: update https://mvnrepository.com/artifact/com.mysql/mysql-connector-j/8.1.0
     jooqGenerator 'mysql:mysql-connector-java:8.0.20'
 
     //DB Migration
@@ -90,9 +93,10 @@ dependencies {
     implementation 'org.modelmapper.extensions:modelmapper-jooq:3.1.1'
 
     //Test
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.1'
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
     jooqGenerator("jakarta.xml.bind:jakarta.xml.bind-api:3.0.1")
+    //jooqGenerator("jakarta.xml.bind:jakarta.xml.bind-api:${jakartaVersion}")
 }
 
 import org.jooq.codegen.GenerationTool
