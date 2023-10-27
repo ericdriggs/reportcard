@@ -1,4 +1,12 @@
 <html>
+<!-- TODO: fix purple link, make visited darker if needed -->
+<!-- TODO: skipped links -->
+<!-- TODO: sort skipped alphabetically -->
+<!-- TODO: skipped tests should match class tests -->
+<!-- TODO: classes table space between lines -->
+<!-- TODO: space above and below classes detail table -->
+<!-- TODO: failed and skipped similar space vertically to overview -->
+<!-- TODO: testcase failure detail should default to just message (summary) and not full contents.-->
 
 <head>
     <script>
@@ -220,9 +228,9 @@
     </style>
 </head>
 <div id="content">
-    <div id="overview" className="section">
-        <h2 className="toggle" dataref="#" onClick="toggleSiblings(this)">Overview</h2>
-        <table className="classes show">
+    <div id="overview" class="section">
+        <h2 class="toggle" dataref="#" onclick="toggleSiblings(this)">Overview</h2>
+        <table class="classes show">
             <thead>
             <tr>
                 <th>Class</th>
@@ -230,43 +238,36 @@
                 <th>Failure</th>
                 <th>skipped</th>
                 <th>Duration</th>
-                <th>Succe
-                    ss rate
-                </th>
+                <th>Success rate</th>
             </tr>
             </thead>
             <tbody>
-            <tr className="skipped">
-                <td><a onClick="showChildrenById('com.foo.qe.metrics.OpenApiCoverageMetricsPublisherTest')"
-                       href="#com.foo.qe.metrics.OpenApiCoverageMetricsPublisherTest">com.foo.qe.metrics.OpenApiCoverageMetricsPublisherTest</a>
-                </td>
+            <tr class="skipped">
+                <td><a onclick="showChildrenById('com.foo.qe.metrics.OpenApiCoverageMetricsPublisherTest')" href="#com.foo.qe.metrics.OpenApiCoverageMetricsPublisherTest">com.foo.qe.metrics.OpenApiCoverageMetricsPublisherTest</a></td>
                 <td>1</td>
                 <td>0</td>
                 <td>1</td>
                 <td>0s</td>
                 <td>-</td>
             </tr>
-            <tr className="skipped">
-                <td><a onClick="showChildrenById('com.foo.qe.metrics.TestMetricsPublisherTest')"
-                       href="#com.foo.qe.metrics.TestMetricsPublisherTest">com.foo.qe.metrics.TestMetricsPublisherTest</a>
-                </td>
+            <tr class="skipped">
+                <td><a onclick="showChildrenById('com.foo.qe.metrics.TestMetricsPublisherTest')" href="#com.foo.qe.metrics.TestMetricsPublisherTest">com.foo.qe.metrics.TestMetricsPublisherTest</a></td>
                 <td>2</td>
                 <td>0</td>
                 <td>1</td>
                 <td>0.162s</td>
                 <td>100%</td>
             </tr>
-            <tr className="passed">
-                <td><a onClick="showChildrenById('com.foo.coverage.PathRegexUtilTest')"
-                       href="#com.foo.coverage.PathRegexUtilTest">com.foo.coverage.PathRegexUtilTest</a></td>
+            <tr class="passed">
+                <td><a onclick="showChildrenById('com.foo.coverage.PathRegexUtilTest')" href="#com.foo.coverage.PathRegexUtilTest">com.foo.coverage.PathRegexUtilTest</a></td>
                 <td>1</td>
                 <td>0</td>
                 <td>0</td>
                 <td>7.4s</td>
                 <td>100%</td>
             </tr>
-            <tr className="failures" name="com.foo.FooTest">
-                <td><a onClick="showChildrenById('com.foo.FooTest')" href="#com.foo.FooTest">com.foo.FooTest</a></td>
+            <tr class="failures" name="com.foo.FooTest">
+                <td><a onclick="showChildrenById('com.foo.FooTest')" href="#com.foo.FooTest">com.foo.FooTest</a></td>
                 <td>1</td>
                 <td>1</td>
                 <td>0</td>
@@ -284,18 +285,17 @@
             </tbody>
         </table>
     </div>
-    <div id="failures" className="failures section">
-        <h2 className="toggle" dataref="#" onClick="toggleSiblings(this)">Failed</h2>
-        <ul className="show">
+    <div id="failures" class="failures section">
+        <h2 class="toggle" dataref="#" onclick="toggleSiblings(this)">Failed</h2>
+        <ul class="show">
             <li>
-                <a onClick="showChildrenById('com.foo.FooTest')" href="#com.foo.FooTest">com.foo.FooTest</a>
+                <a onclick="showChildrenById('com.foo.FooTest')" href="#com.foo.FooTest">FooTest.failTest()</a>
             </li>
         </ul>
     </div>
-
-    <div id="skipped" className="skipped section">
-        <h2 className="toggle" dataref="#" onClick="toggleSiblings(this)">Skipped</h2>
-        <ul className="show">
+    <div id="skipped" class="skipped section">
+        <h2 class="toggle" dataref="#" onclick="toggleSiblings(this)">Skipped</h2>
+        <ul class="show">
             <li>
                 OpenApiCoverageMetricsPublisherTest.publishCoverageMetricsPostTest()
             </li>
@@ -313,11 +313,11 @@
             </li>
         </ul>
     </div>
-    <div id="classes" className="section">
-        <h2 className="toggle" dataref="#" onClick="toggleSiblings(this)">Classes</h2>
-        <div className="show" id="com.foo.qe.metrics.OpenApiCoverageMetricsPublisherTest" className="skipped">
-            <a href="#" className="testclass skipped" onClick="toggleSiblings(this)">com.foo.qe.metrics.OpenApiCoverageMetricsPublisherTest</a>
-            <table className="testcases hide">
+    <div id="classes" class="section">
+        <h2 class="toggle" dataref="#" onclick="toggleSiblings(this)">Classes</h2>
+        <div class="show" id="com.foo.qe.metrics.OpenApiCoverageMetricsPublisherTest" class="skipped">
+            <a href="#" class="testclass skipped" onclick="toggleSiblings(this)">com.foo.qe.metrics.OpenApiCoverageMetricsPublisherTest</a>
+            <table class="testcases hide">
                 <thead>
                 <tr>
                     <th>Test</th>
@@ -325,16 +325,16 @@
                     <th>Result</th>
                 </tr>
                 </thead>
-                <tr className="skipped" className="com.foo.FooTest">
+                <tr class="skipped" class="com.foo.FooTest">
                     <td>publishCoverageMetricsPostTest()</td>
                     <td>0s</td>
                     <td>skipped</td>
                 </tr>
             </table>
         </div>
-        <div className="show" id="com.foo.qe.metrics.TestMetricsPublisherTest" className="passed">
-            <a href="#" className="testclass passed" onClick="toggleSiblings(this)">com.foo.qe.metrics.TestMetricsPublisherTest</a>
-            <table className="testcases hide">
+        <div class="show" id="com.foo.qe.metrics.TestMetricsPublisherTest" class="passed">
+            <a href="#" class="testclass passed" onclick="toggleSiblings(this)">com.foo.qe.metrics.TestMetricsPublisherTest</a>
+            <table class="testcases hide">
                 <thead>
                 <tr>
                     <th>Test</th>
@@ -342,22 +342,21 @@
                     <th>Result</th>
                 </tr>
                 </thead>
-                <tr className="passed" className="com.foo.FooTest">
+                <tr class="passed" class="com.foo.FooTest">
                     <td>getTestResultTest()</td>
                     <td>0s</td>
                     <td>passed</td>
                 </tr>
-                <tr className="skipped" className="com.foo.FooTest">
+                <tr class="skipped" class="com.foo.FooTest">
                     <td>publishTestMetricsTest()</td>
                     <td>0s</td>
                     <td>skipped</td>
                 </tr>
             </table>
         </div>
-        <div className="show" id="com.foo.coverage.PathRegexUtilTest" className="success">
-            <a href="#" className="testclass success"
-               onClick="toggleSiblings(this)">com.foo.coverage.PathRegexUtilTest</a>
-            <table className="testcases hide">
+        <div class="show" id="com.foo.coverage.PathRegexUtilTest" class="success">
+            <a href="#" class="testclass success" onclick="toggleSiblings(this)">com.foo.coverage.PathRegexUtilTest</a>
+            <table class="testcases hide">
                 <thead>
                 <tr>
                     <th>Test</th>
@@ -365,21 +364,21 @@
                     <th>Result</th>
                 </tr>
                 </thead>
-                <tr className="success" className="com.foo.FooTest">
+                <tr class="success" class="com.foo.FooTest">
                     <td>longPathRegexTest</td>
                     <td>0s</td>
                     <td>passed</td>
                 </tr>
-                <tr className="passed" className="com.foo.FooTest">
+                <tr class="passed" class="com.foo.FooTest">
                     <td>shortPathRegexTest</td>
                     <td>0s</td>
                     <td>passed</td>
                 </tr>
             </table>
         </div>
-        <div className="show" id="com.foo.FooTest" className="failures">
-            <a href="#" className="testclass failures" onClick="toggleSiblings(this)">com.foo.FooTest</a>
-            <table className="testcases hide">
+        <div class="show" id="com.foo.FooTest" class="failures">
+            <a href="#" class="testclass failures" onclick="toggleSiblings(this)">com.foo.FooTest</a>
+            <table class="testcases hide">
                 <thead>
                 <tr>
                     <th>Test</th>
@@ -387,28 +386,28 @@
                     <th>Result</th>
                 </tr>
                 </thead>
-                <tr className="failures" className="com.foo.FooTest">
+                <tr class="failures" class="com.foo.FooTest">
                     <td>failTest</td>
                     <td>0.262s</td>
                     <td>failed</td>
                 </tr>
-                <tr className="passed" className="com.foo.FooTest">
+                <tr class="passed" class="com.foo.FooTest">
                     <td>passTest</td>
                     <td>0.262s</td>
                     <td>passed</td>
                 </tr>
-                <tr className="skipped" className="com.foo.FooTest">
+                <tr class="skipped" class="com.foo.FooTest">
                     <td>skipTest</td>
                     <td>0.262s</td>
                     <td>skipped</td>
                 </tr>
             </table>
-            <div className="failures button-wrapper hide">
-                <button className="togglebutton" onClick="toggleSiblings(this)">Failure messages</button>
-                <ul className="hide">
-                    <li className="failures">
-                        <a href="#" onClick="toggleSiblings(this)">com.foo.FooTest</a>
-                        <pre className="failure-message show">org.opentest4j.AssertionFailedError: expected: &lt;a&gt; but was: &lt;b&gt;
+            <div class="failures button-wrapper hide">
+                <button class="togglebutton" onclick="toggleSiblings(this)">Failure messages</button>
+                <ul class="hide">
+                    <li class="failures">
+                        <a href="#" onclick="toggleSiblings(this)">com.foo.FooTest</a>
+                        <pre class="failure-message show">org.opentest4j.AssertionFailedError: expected: &lt;a&gt; but was: &lt;b&gt;
 	at app//org.junit.jupiter.api.AssertionUtils.fail(AssertionUtils.java:55)
 	at app//org.junit.jupiter.api.AssertionUtils.failNotEqual(AssertionUtils.java:62)
 	at app//org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:182)
@@ -419,15 +418,15 @@
                     </li>
                 </ul>
             </div>
-            <div className="stderr button-wrapper hide">
-                <button className="togglebutton" onClick="toggleSiblings(this)">Standard error</button>
-                <pre className="stderr hide">13:50:12.083 [Test worker] INFO  com.foo.FooTest - stderr entry 1
+            <div class="stderr button-wrapper hide">
+                <button class="togglebutton" onclick="toggleSiblings(this)">Standard error</button>
+                <pre class="stderr hide">13:50:12.083 [Test worker] INFO  com.foo.FooTest - stderr entry 1
 13:51:12.083 [Test worker] INFO  com.foo.FooTest - stderr entry 2
 			</pre>
             </div>
-            <div className="stdout button-wrapper hide">
-                <button className="togglebutton" onClick="toggleSiblings(this)">Standard out</button>
-                <pre className="stdout hide">13:50:12.083 [Test worker] INFO  com.foo.FooTest - stdout entry 1
+            <div class="stdout button-wrapper hide">
+                <button class="togglebutton" onclick="toggleSiblings(this)">Standard out</button>
+                <pre class="stdout hide">13:50:12.083 [Test worker] INFO  com.foo.FooTest - stdout entry 1
 			</pre>
             </div>
         </div>
