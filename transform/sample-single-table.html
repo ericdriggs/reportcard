@@ -1,0 +1,303 @@
+<html>
+
+<head>
+</head>
+<script>
+</script>
+<style>
+    body {
+        font-size: 14pt;
+        font-family: sans-serif;
+    }
+
+    table,
+    tr,
+    td {
+        border: 1px solid;
+    }
+
+    .passed,
+    .passed a {
+        color: #282;
+        background-color: #efe;
+    }
+
+    .failed,
+    .failed a {
+        color: #b11;
+        background-color: #fee;
+    }
+
+    .skipped,
+    .skipped a {
+        color: #b84;
+        background-color: #ffe;
+    }
+
+    .output button {
+        background-color: #333;
+    }
+
+    .package .spacer {
+        padding-left: 0px;
+    }
+
+
+    .testclass .spacer {
+        padding-left: 20px;
+    }
+
+    .testmethod .spacer {
+        padding-left: 70px;
+    }
+
+    .testmethod td.toggle{
+        margin-left: 20px;
+    }
+
+
+    .plus::before {
+
+        content: '+';
+        color: white;
+        font-weight: bolder;
+        position: relative;
+        left: 0px;
+        bottom: 1px;
+    }
+
+    .minus::before {
+        content: '- ';
+    }
+
+    pre {
+        background-color: #eee;
+        text-align: left;
+    }
+
+
+    .output button {
+        background-color: #aaa;
+        border-radius: 10px;
+        color: white;
+    }
+
+    .stderr pre {
+        color: #b11;
+    }
+
+
+    .output {
+        margin-left: 30px;
+        border-bottom: 1px solid;
+        padding-top: 5px;
+    }
+
+    td button.toggle {
+        border: none;
+        background-color: #333;
+
+        text-align: center;
+        width: 18px;
+        height: 18px;
+
+        border-radius: 20px;
+        margin: 8px;
+        /*
+        margin: 4px;
+        margin-top:2px;
+        */
+    }
+
+    tr button {
+        text-align: left;
+    }
+
+    td {
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
+
+
+
+
+    .output {
+        background-color: #eee;
+        text-align: left;
+    }
+
+    .name {
+        text-align: left;
+    }
+
+
+</style>
+
+<body>
+<br />
+<div style="display:inline-block">
+    <button class="" onclick="">Packages</button>
+    <button class="" onclick="">Failed</button>
+    <button class="" onclick="">Skipped</button>
+    <button class="" onclick="">Expand All</button>
+</div>
+<br />
+<br />
+<table width=70%>
+    <thead>
+    <tr>
+        <td class="name">Package/Class/Testmethod</td>
+        <td>Tests</td>
+        <td>Passed</td>
+        <td>Failed</td>
+        <td>Skipped</td>
+        <td>Duration</td>
+        <td>Success Rate</td>
+    </tr>
+    <tbody>
+    <tr id="com.foo.qe.metrics" class="package passed">
+        <td class="name"><span class="spacer"></span><button class="toggle plus"></button>com.foo.qe.metrics</td>
+        <td>3</td>
+        <td>1</td>
+        <td>0</td>
+        <td>2</td>
+        <td>8.1s</td>
+        <td>100%</td>
+    </tr>
+    <tr id="com.foo.qe.metrics.OpenApiCoverageMetricsPublisherTest" class="testclass skipped com.foo.qe.metrics">
+        <td class="name"><span class="spacer"></span><button class="toggle plus"></button>OpenApiCoverageMetricsPublisherTest</td>
+        <td>1</td>
+        <td></td>
+        <td></td>
+        <td>1</td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr id="com.foo.qe.metrics.OpenApiCoverageMetricsPublisherTest.publishCoverageMetricsPostTest()" class="testmethod skipped com.foo.qe.metrics com.foo.qe.metrics.OpenApiCoverageMetricsPublisherTest">
+        <td class="name"><span class="spacer"></span>publishCoverageMetricsPostTest()</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>1</td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr id="com.foo.qe.metrics.TestMetricsPublisherTest" class="testclass passed com.foo.qe.metrics">
+        <td class="name"><span class="spacer"></span><button class="toggle plus"></button>TestMetricsPublisherTest</td>
+        <td>2</td>
+        <td>1</td>
+        <td></td>
+        <td>1</td>
+        <td>3.3s</td>
+        <td>100%</td>
+    </tr>
+    <tr id="com.foo.qe.metrics.TestMetricsPublisherTest.getTestResultTest()" class="testmethod passed com.foo.qe.metrics com.foo.qe.metrics.TestMetricsPublisherTest">
+        <td class="name"><span class="spacer"></span>getTestResultTest()</td>
+        <td></td>
+        <td>1</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr id="com.foo.qe.metrics.TestMetricsPublisherTest.publishTestMetricsTest()" class="testmethod skipped com.foo.qe.metrics com.foo.qe.metrics.TestMetricsPublisherTest">
+        <td class="name"><span class="spacer"></span>publishTestMetricsTest()</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>1</td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr id="com.foo" class="package failed">
+        <td class="name"><span class="spacer"></span><button class="toggle plus"></button>com.foo</td>
+        <td>3</td>
+        <td>1</td>
+        <td>1</td>
+        <td>1</td>
+        <td>.8s</td>
+        <td>50%</td>
+    </tr>
+    <tr>
+        <td colspan="7" class="output">
+            <div class="stderr button-wrapper hide">
+                <button class="togglebutton" onclick="toggleSiblings(this)">Standard error</button>
+                <pre class="stderr hide">
+13:50:12.083 [Test worker] INFO  com.foo.FooTest - stderr entry 1
+13:51:12.083 [Test worker] INFO  com.foo.FooTest - stderr entry 2
+                            </pre>
+            </div>
+            <div class="stdout button-wrapper hide">
+                <button class="togglebutton" onclick="toggleSiblings(this)">Standard out</button>
+                <pre class="stdout hide">
+13:50:12.083 [Test worker] INFO  com.foo.FooTest - stdout entry 1
+                            </pre>
+            </div>
+        </td>
+    </tr>
+    <tr id="com.foo.FooTest" class="testclass failed com.foo.FooTest">
+        <td class="name"><span class="spacer"></span><button class="toggle plus"></button>FooTest</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr id="com.foo.qe.metrics.OpenApiCoverageMetricsPublisherTest.publishCoverageMetricsPostTest()" class="testmethod failed com.foo.qe.metrics com.foo.qe.metrics.OpenApiCoverageMetricsPublisherTest">
+        <td class="name"><span class="spacer"></span><button class="toggle plus"></button>failTest()</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr class="failed">
+        <td colspan=7>
+            <div class="failures button-wrapper hide">
+                        <pre class="failed show">
+            org.opentest4j.AssertionFailedError: expected: &lt;a&gt; but was: &lt;b&gt;
+            at app//org.junit.jupiter.api.AssertionUtils.fail(AssertionUtils.java:55)
+            at app//org.junit.jupiter.api.AssertionUtils.failNotEqual(AssertionUtils.java:62)
+            at app//org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:182)
+            at app//org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:177)
+            at app//org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:1141)
+            at app//com.foo.FooTest.failTest(FooTest.java:17)
+                        </pre>
+            </div>
+        </td>
+    </tr>
+    <tr id="com.foo.qe.metrics.OpenApiCoverageMetricsPublisherTest.publishCoverageMetricsPostTest()" class="testmethod passed com.foo.qe.metrics com.foo.qe.metrics.OpenApiCoverageMetricsPublisherTest">
+        <td class="name"><span class="spacer"></span>passTest()</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr id="com.foo.qe.metrics.OpenApiCoverageMetricsPublisherTest.publishCoverageMetricsPostTest()" class="testmethod skipped com.foo.qe.metrics com.foo.qe.metrics.OpenApiCoverageMetricsPublisherTest">
+        <td class="name"><span class="spacer"></span>skipTest()</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr class="total">
+        <td class="name"><span class="spacer"></span>Total</td>
+        <td>6</td>
+        <td>69</td>
+        <td>1</td>
+        <td>3</td>
+        <td>12.2s</td>
+        <td>83%</td>
+    </tr>
+    </tbody>
+</table>
+</div>
+</body>
+
+</html>
