@@ -112,6 +112,7 @@ public class TestResultPersistService extends StagePathPersistService {
     public Map<StagePath, TestResult> insertTestResult(StagePath stagePath, TestResult testResult) {
         testResult.setStageFk(stagePath.getStage().getStageId());
         TestResult inserted = insertTestResult(testResult);
+        updateLastRunToNow(stagePath);
         return Collections.singletonMap(stagePath, inserted);
     }
 

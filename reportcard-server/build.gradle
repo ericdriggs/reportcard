@@ -1,7 +1,7 @@
 buildscript {
     ext {
-        awsSdkVersion = "2.19.1"
-        awsCrtVersion = "0.20.3"
+        awsSdkVersion = "2.23.3"
+        awsCrtVersion = "0.29.7"
         jaxbVersion = '2.3.1'
         mysqlPassword=System.getenv("MYSQL_PASSWORD")
     }
@@ -69,7 +69,7 @@ dependencies {
     //DB Migration
     //implementation 'org.flywaydb:flyway-core:7.8.2'
 
-    //FIle
+    //File
     implementation 'commons-io:commons-io:2.11.0'
 
     //AWS
@@ -78,11 +78,11 @@ dependencies {
     implementation("software.amazon.awssdk.crt:aws-crt:${awsCrtVersion}")
 
     //AWS Test
-    testImplementation("org.testcontainers:localstack:1.18.1")
+    testImplementation('org.testcontainers:localstack:1.19.3')
 
     //DB Test
-    implementation platform('org.testcontainers:testcontainers-bom:1.18.1')
-    testImplementation "org.testcontainers:junit-jupiter"
+    implementation platform('org.testcontainers:testcontainers-bom:1.19.3')
+    testImplementation ("org.testcontainers:junit-jupiter")
     testImplementation('org.testcontainers:mysql')
 
     //Mapping
@@ -231,4 +231,37 @@ jar {
 
 bootJar {
     archiveClassifier = 'application'
+}
+
+//testing
+sourceSets {
+    integrationTest {
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+        compileClasspath += sourceSets.test.output
+        runtimeClasspath += sourceSets.test.output
+    }
+}
+
+configurations {
+    integrationTestAnnotationProcessor.extendsFrom testAnnotationProcessor
+    integrationTestCompile.extendsFrom testCompile
+    integrationTestCompileOnly.extendsFrom testCompileOnly
+    integrationTestImplementation.extendsFrom testImplementation
+    integrationTestRuntime.extendsFrom testRuntime
+    integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
+}
+
+
+task integrationTest(type: Test) {
+    description = 'Runs integration tests.'
+    group = 'verification'
+
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
+    shouldRunAfter test
+
+    options {
+        systemProperties(System.getProperties())
+    }
 }

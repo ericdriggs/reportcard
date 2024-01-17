@@ -10,6 +10,8 @@ public enum TestData {
     public final static String repo = "repo1";
     public final static String branch = "master";
     public final static String sha = "bdd15b6fae26738ca58f0b300fc43f5872b429bf";
+    public static final Long testResultId = 1L;
+    public static final Long testSuiteId = 1L;
 
     public final static TreeMap<String, String> jobInfo = new TreeMap<>();
 

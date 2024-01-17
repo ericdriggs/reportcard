@@ -26,14 +26,4 @@ public class ReportcardApplication {
 				.addValueReader(new RecordValueReader());
 		return mapper;
 	}
-
-//	@Bean
-//	public ExceptionTranslator exceptionTransformer() {
-//		return new ExceptionTranslator();
-//	}
-
-//	@Bean
-//	public DefaultDSLContext dsl() {
-//		return new DefaultDSLContext(configuration());
-//	}
 }

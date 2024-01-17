@@ -5,24 +5,25 @@ import io.github.ericdriggs.reportcard.model.StagePath;
 import io.github.ericdriggs.reportcard.model.StoragePath;
 import io.github.ericdriggs.reportcard.persist.StoragePersistService;
 import io.github.ericdriggs.reportcard.persist.StorageType;
+import io.github.ericdriggs.reportcard.storage.DirectoryUploadResponse;
 import io.github.ericdriggs.reportcard.storage.S3Service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.util.Map;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/storage/html")
+@RequestMapping("/api/v1/storage/")
 @SuppressWarnings("unused")
-public class StorageHtmlController {
+public class StorageController {
 
     @Autowired
-    public StorageHtmlController(StoragePersistService storagePersistService, S3Service s3Service) {
+    public StorageController(StoragePersistService storagePersistService, S3Service s3Service) {
         this.storagePersistService = storagePersistService;
         this.s3Service = s3Service;
     }
@@ -30,8 +31,8 @@ public class StorageHtmlController {
     private final StoragePersistService storagePersistService;
     private final S3Service s3Service;
 
-    @PostMapping("stage/{stageId}")
-    public ResponseEntity<Map<StagePath, Storage>> postHtml(
+    @PostMapping(value = {"stage/html/{stageId}"}, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<Map<StagePath, Storage>> postStageHtml(
             @RequestParam("files") MultipartFile[] files,
             @RequestParam("indexFile") String indexFile,
             @PathVariable("stageId") Long stageId
@@ -43,6 +44,18 @@ public class StorageHtmlController {
         s3Service.uploadDirectory(files, storagePrefix);
         Map<StagePath, Storage> stagePathTestResultMap = storagePersistService.persistStoragePath(stageId, indexFile, storagePrefix, StorageType.HTML);
         return new ResponseEntity<>(stagePathTestResultMap, HttpStatus.OK);
+    }
+
+    //For testing only
+    //TODO: hide when not running locally
+    @PostMapping(value = {"path/{storagePrefix}"},
+            consumes= MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<DirectoryUploadResponse> postStorageOnly(
+            @PathVariable("storagePrefix") String storagePrefix,
+            //@Schema(type = "string", format = "binary")
+            @RequestPart("files") MultipartFile[] files
+    ) {
+        return new ResponseEntity<>(s3Service.uploadDirectory(files, storagePrefix), HttpStatus.OK);
     }
 
 }
