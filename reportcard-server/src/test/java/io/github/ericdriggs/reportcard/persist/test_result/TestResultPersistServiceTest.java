@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -32,24 +33,33 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TestResultPersistServiceTest {
 
+    public static String xmlPath = "classpath:format-samples/sample-junit-small.xml";
+    public static List<String> xmlPaths = Collections.singletonList(xmlPath);
+
     @Autowired
     public TestResultPersistServiceTest(ResourceReaderComponent resourceReader, TestResultPersistService testResultPersistService) {
         this.testResultPersistService = testResultPersistService;
-        this.xmlJunit = resourceReader.resourceAsString("classpath:format-samples/sample-junit-small.xml");
-        //this.xmlSurefire = resourceReader.resourceAsString("classpath:format-samples/sample-surefire.xml");
 
-        MultipartFile[] files = new MultipartFile[1];
-        {
+        this.xmlJunit = resourceReader.resourceAsString(xmlPath);
+        this.mulipartFiles = getMockMultipartFiles(Collections.singletonList(xmlPath), resourceReader);
+    }
+
+    public static MultipartFile[] getMockMultipartFiles(List<String> classPaths, ResourceReaderComponent resourceReader) {
+        MultipartFile[] files = new MultipartFile[classPaths.size()];
+
+        for (int i = 0;i<classPaths.size();i++){
+            String xmlJunit = resourceReader.resourceAsString("classpath:format-samples/sample-junit-small.xml");
             MockMultipartFile mockMultipartFile
                     = new MockMultipartFile(
                     "file",
-                    "junit.xml",
+                    "junit-"+i+".xml",
                     MediaType.APPLICATION_XML_VALUE,
                     xmlJunit.getBytes()
             );
-            files[0] = mockMultipartFile;
+            files[i] = mockMultipartFile;
+            i++;
         }
-        this.mulipartFiles = files;
+        return files;
     }
 
     //private final ResourceReaderComponent resourceReader;

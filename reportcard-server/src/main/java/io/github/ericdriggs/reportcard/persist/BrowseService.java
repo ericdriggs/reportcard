@@ -464,11 +464,19 @@ public class BrowseService extends AbstractPersistService {
         return ret;
     }
 
+    public List<TestStatus> getAllTestStatuses() {
+        List<TestStatus> ret = dsl.select(TEST_STATUS.fields())
+                .from(TEST_STATUS)
+                .fetch()
+                .into(TestStatus.class);
+        return ret;
+    }
+
     protected void throwNotFound(String... args) throws ResponseStatusException {
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, getNotFoundMessage(args));
     }
 
-    //TODO: refactor to take tuple of variable name and value
+    //TODO: refactor to take tuple of variable name and value (or map<String,String>
     protected static String getNotFoundMessage(String... args) {
         return "Unable to find " + String.join(" <- ", args);
     }

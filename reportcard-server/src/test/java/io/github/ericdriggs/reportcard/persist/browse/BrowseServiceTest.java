@@ -14,10 +14,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class BrowseServiceTest extends AbstractBrowseServiceTest {
     @Autowired
@@ -55,21 +52,21 @@ public class BrowseServiceTest extends AbstractBrowseServiceTest {
     @Test
     void getOrgReposSuccessTest() {
         final Map<Org, Set<Repo>> orgRepos = browseService.getOrgsRepos();
-        final Org org = getTestOrg(orgRepos.keySet());
+        final Org org = getTestOrg(orgRepos.keySet(), TestData.org);
         validateTestOrg(org);
-        final Repo repo = getTestRepo(orgRepos.get(org));
+        final Repo repo = getTestRepo(orgRepos.get(org), TestData.repo);
         validateTestRepo(repo);
     }
 
     @Test
     void getOrgReposBranchesTest() {
         Map<Org, Map<Repo, Set<Branch>>> orgReposBranches = browseService.getOrgReposBranches(TestData.org);
-        final Org org = getTestOrg(orgReposBranches.keySet());
+        final Org org = getTestOrg(orgReposBranches.keySet(), TestData.org);
         validateTestOrg(org);
         final Map<Repo, Set<Branch>> repoBranches = orgReposBranches.get(org);
-        final Repo repo = getTestRepo(repoBranches.keySet());
+        final Repo repo = getTestRepo(repoBranches.keySet(), TestData.repo);
         validateTestRepo(repo);
-        final Branch branch = getTestBranch(repoBranches.get(repo));
+        final Branch branch = getTestBranch(repoBranches.get(repo), TestData.branch);
         validateTestBranch(branch);
     }
 
@@ -104,10 +101,10 @@ public class BrowseServiceTest extends AbstractBrowseServiceTest {
     @Test
     void getRepoBranchesJobsTest() {
         Map<Repo, Map<Branch, Set<Job>>> repoBranchesJobs = browseService.getRepoBranchesJobs(TestData.org, TestData.repo);
-        final Repo repo = getTestRepo(repoBranchesJobs.keySet());
+        final Repo repo = getTestRepo(repoBranchesJobs.keySet(), TestData.repo);
         final Map<Branch, Set<Job>> branchJobs = repoBranchesJobs.get(repo);
-        final Branch branch = getTestBranch(branchJobs.keySet());
-        final Job job = getTestJob(nestedSet(branchJobs.values()));
+        final Branch branch = getTestBranch(branchJobs.keySet(), TestData.branch);
+        final Job job = getTestJob(nestedSet(branchJobs.values()), TestData.jobInfo);
         validateTestRepo(repo);
         validateTestBranch(branch);
         validateTestJob(job);
@@ -122,10 +119,10 @@ public class BrowseServiceTest extends AbstractBrowseServiceTest {
     @Test
     void getBranchJobsRunsTest() {
         Map<Branch, Map<Job, Set<Run>>> branchJobRuns = browseService.getBranchJobsRuns(TestData.org, TestData.repo, TestData.branch, null);
-        final Branch branch = getTestBranch(branchJobRuns.keySet());
+        final Branch branch = getTestBranch(branchJobRuns.keySet(), TestData.branch);
         final Map<Job, Set<Run>> jobRuns = branchJobRuns.get(branch);
-        final Job job = getTestJob(jobRuns.keySet());
-        final Run run = getTestRun(nestedSet(jobRuns.values()));
+        final Job job = getTestJob(jobRuns.keySet(), TestData.jobInfo);
+        final Run run = getTestRun(nestedSet(jobRuns.values()), TestData.runReference);
         validateTestBranch(branch);
         validateTestJob(job);
         validateTestRun(run);
@@ -134,10 +131,10 @@ public class BrowseServiceTest extends AbstractBrowseServiceTest {
     @Test
     void getBranchJobsRunsForShaTest() {
         Map<Branch, Map<Job, Set<Run>>> branchJobRuns = browseService.getBranchJobsRunsForSha(TestData.org, TestData.repo, TestData.branch, TestData.sha);
-        final Branch branch = getTestBranch(branchJobRuns.keySet());
+        final Branch branch = getTestBranch(branchJobRuns.keySet(), TestData.branch);
         final Map<Job, Set<Run>> jobRuns = branchJobRuns.get(branch);
-        final Job job = getTestJob(jobRuns.keySet());
-        final Run run = getTestRun(nestedSet(jobRuns.values()));
+        final Job job = getTestJob(jobRuns.keySet(), TestData.jobInfo);
+        final Run run = getTestRun(nestedSet(jobRuns.values()), TestData.runReference);
         validateTestBranch(branch);
         validateTestJob(job);
         validateTestRun(run);
@@ -152,10 +149,10 @@ public class BrowseServiceTest extends AbstractBrowseServiceTest {
     @Test
     void getJobRunsStagesTest() {
         Map<Job, Map<Run, Set<Stage>>> jobRunsStages = browseService.getJobRunsStages(TestData.org, TestData.repo, TestData.branch, 1l);
-        final Job job = getTestJob(jobRunsStages.keySet());
+        final Job job = getTestJob(jobRunsStages.keySet(), TestData.jobInfo);
         final Map<Run, Set<Stage>> runStages = jobRunsStages.get(job);
-        final Run run = getTestRun(runStages.keySet());
-        final Stage stage = getTestStage(nestedSet(runStages.values()));
+        final Run run = getTestRun(runStages.keySet(), TestData.runReference);
+        final Stage stage = getTestStage(nestedSet(runStages.values()), TestData.stage);
         validateTestJob(job);
         validateTestRun(run);
         validateTestStage(stage);
@@ -184,10 +181,10 @@ public class BrowseServiceTest extends AbstractBrowseServiceTest {
     @Test
     void getRunStagesTestResultsTest() {
         Map<Run, Map<Stage, Set<TestResult>>> runStageResults = browseService.getRunStagesTestResults(TestData.org, TestData.repo, TestData.branch, 1l, 1l);
-        final Run run = getTestRun(runStageResults.keySet());
+        final Run run = getTestRun(runStageResults.keySet(), TestData.runReference);
         final Map<Stage, Set<TestResult>> stageTestResults = runStageResults.get(run);
-        final Stage stage = getTestStage(stageTestResults.keySet());
-        final TestResult testResult = getTestResult(nestedSet(stageTestResults.values()));
+        final Stage stage = getTestStage(stageTestResults.keySet(), TestData.stage);
+        final TestResult testResult = getTestResult(nestedSet(stageTestResults.values()), TestData.testResultId);
 
         validateTestRun(run);
         validateTestStage(stage);
@@ -197,20 +194,20 @@ public class BrowseServiceTest extends AbstractBrowseServiceTest {
     @Test
     void getStageTestResultsTestSuitesTest() {
         Map<Stage, Map<TestResult, Set<TestSuite>>> stageResultSuites = browseService.getStageTestResultsTestSuites(TestData.org, TestData.repo, TestData.branch, 1l, 1l, TestData.stage);
-        final Stage stage = getTestStage(stageResultSuites.keySet());
+        final Stage stage = getTestStage(stageResultSuites.keySet(), TestData.stage);
         final Map<TestResult, Set<TestSuite>> resultSuites = stageResultSuites.get(stage);
-        final TestResult testResult = getTestResult(resultSuites.keySet());
-        final TestSuite testSuite = getTestSuite(nestedSet(resultSuites.values()));
+        final TestResult testResult = getTestResult(resultSuites.keySet(), TestData.testResultId);
+        final TestSuite testSuite = getTestSuite(nestedSet(resultSuites.values()), TestData.testSuiteId);
         validateTestStage(stage);
         validateTestResult(testResult);
         validateTestSuite(testSuite);
     }
 
-    private Org getTestOrg(Collection<Org> orgs) {
-        assertEquals(1, orgs.size());
+    static Org getTestOrg(Collection<Org> orgs, final String expectedOrg) {
+
         Org org = null;
         for (Org o : orgs) {
-            if (o.getOrgName().equals(TestData.org)) {
+            if (o.getOrgName().equals(expectedOrg)) {
                 org = o;
                 break;
             }
@@ -219,11 +216,11 @@ public class BrowseServiceTest extends AbstractBrowseServiceTest {
         return org;
     }
 
-    private Repo getTestRepo(Collection<Repo> repos) {
-        assertEquals(1, repos.size());
+    static Repo getTestRepo(Collection<Repo> repos, String expectedRepo) {
+
         Repo repo = null;
         for (Repo r : repos) {
-            if (r.getRepoName().equals(TestData.repo)) {
+            if (r.getRepoName().equals(expectedRepo)) {
                 repo = r;
                 break;
             }
@@ -232,11 +229,10 @@ public class BrowseServiceTest extends AbstractBrowseServiceTest {
         return repo;
     }
 
-    private Branch getTestBranch(Collection<Branch> branches) {
-        assertEquals(1, branches.size());
+    static Branch getTestBranch(Collection<Branch> branches, String expectedBranchName) {
         Branch branch = null;
         for (Branch b : branches) {
-            if (b.getBranchName().equals(TestData.branch)) {
+            if (b.getBranchName().equals(expectedBranchName)) {
                 branch = b;
                 break;
             }
@@ -249,11 +245,11 @@ public class BrowseServiceTest extends AbstractBrowseServiceTest {
         return t.stream().flatMap(Collection::stream).collect(Collectors.toList());
     }
 
-    private Job getTestJob(Collection<Job> jobs) {
-        assertEquals(1, jobs.size());
+    static Job getTestJob(Collection<Job> jobs, final Map<String,String> expectedJobInfo) {
+
         Job job = null;
         for (Job j : jobs) {
-            if (JsonCompare.equalsMap(j.getJobInfo(), TestData.jobInfo)) {
+            if (JsonCompare.equalsMap(j.getJobInfo(), expectedJobInfo)) {
                 job = j;
                 break;
             }
@@ -262,11 +258,11 @@ public class BrowseServiceTest extends AbstractBrowseServiceTest {
         return job;
     }
 
-    private Run getTestRun(Collection<Run> runs) {
-        assertEquals(1, runs.size());
+    static Run getTestRun(Collection<Run> runs, String expectedRunReference) {
+
         Run run = null;
         for (Run r : runs) {
-            if (r.getRunReference().equals(TestData.runReference)) {
+            if (r.getRunReference().equals(expectedRunReference)) {
                 run = r;
                 break;
             }
@@ -275,21 +271,34 @@ public class BrowseServiceTest extends AbstractBrowseServiceTest {
         return run;
     }
 
-    private TestResult getTestResult(Collection<TestResult> testResults) {
-        assertEquals(1, testResults.size());
-        return testResults.stream().findFirst().orElseThrow();
+    static TestResult getTestResult(Collection<TestResult> testResults, Long expectedTestResultId) {
+        TestResult testResult = null;
+        for (TestResult t : testResults) {
+            if (t.getTestResultId().equals(expectedTestResultId)) {
+                testResult = t;
+                break;
+            }
+        }
+        assertNotNull(testResult);
+        return testResult;
     }
 
-    private TestSuite getTestSuite(Collection<TestSuite> testSuites) {
-        assertEquals(1, testSuites.size());
-        return testSuites.stream().findFirst().orElseThrow();
+    static TestSuite getTestSuite(Collection<TestSuite> testSuites, Long expectedTestSuiteId) {
+        TestSuite testSuite = null;
+        for (TestSuite t : testSuites) {
+            if (t.getTestSuiteId().equals(expectedTestSuiteId)) {
+                testSuite = t;
+                break;
+            }
+        }
+        assertNotNull(testSuite);
+        return testSuite;
     }
 
-    private Stage getTestStage(Collection<Stage> stages) {
-        assertEquals(1, stages.size());
+    static Stage getTestStage(Collection<Stage> stages, final String expectedStageName) {
         Stage stage = null;
         for (Stage s : stages) {
-            if (s.getStageName().equals(TestData.stage)) {
+            if (s.getStageName().equals(expectedStageName)) {
                 stage = s;
                 break;
             }
