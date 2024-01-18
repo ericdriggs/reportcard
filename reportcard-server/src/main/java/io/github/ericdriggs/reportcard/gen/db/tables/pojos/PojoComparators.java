@@ -9,6 +9,9 @@ import static io.github.ericdriggs.reportcard.util.CompareUtil.*;
 
 public class PojoComparators {
 
+    public static final Comparator<Company> COMPANY_CASE_INSENSITIVE_ORDER
+            = new PojoComparators.CompanyCaseInsensitiveComparator();
+
     public static final Comparator<Org> ORG_CASE_INSENSITIVE_ORDER
             = new PojoComparators.OrgCaseInsensitiveComparator();
 
@@ -35,6 +38,15 @@ public class PojoComparators {
 
     public static final Comparator<TestCase> TEST_CASE_CASE_INSENSITIVE_ORDER
             = new PojoComparators.TestCaseCaseInsensitiveComparator();
+
+    private static class CompanyCaseInsensitiveComparator
+            implements Comparator<Company>, java.io.Serializable {
+        private static final long serialVersionUID = 1546298733674170266L;
+
+        public int compare(Company val1, Company val2) {
+            return compareCompany(val1, val2);
+        }
+    }
 
     private static class OrgCaseInsensitiveComparator
             implements Comparator<Org>, java.io.Serializable {
@@ -90,6 +102,17 @@ public class PojoComparators {
             return compareStage(val1, val2);
         }
     }
+
+    public static int compareCompany(Company val1, Company val2) {
+        if (val1 == null || val2 == null) {
+            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+        }
+        return chainCompare(
+                compareLowerNullSafe(val1.getCompanyName(), val2.getCompanyName()),
+                Integer.compare(val1.getCompanyId(), val2.getCompanyId())
+        );
+    }
+
 
     public static int compareOrg(Org val1, Org val2) {
         if (val1 == null || val2 == null) {

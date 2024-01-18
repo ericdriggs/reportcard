@@ -61,6 +61,7 @@ public class JunitControllerTest {
         String stageDetailsJson =
                 """
                         {
+                          "company": "company1",
                           "org": "org1",
                           "repo": "repo1",
                           "branch": "branch1",
@@ -80,6 +81,7 @@ public class JunitControllerTest {
         assertEquals(1, result.size());
         for (Map.Entry<StagePath, TestResult> entry : result.entrySet()) {
             final StagePath stagePath = entry.getKey();
+            assertEquals("company1", stagePath.getCompany().getCompanyName());
             assertEquals("org1", stagePath.getOrg().getOrgName());
             assertEquals("repo1", stagePath.getRepo().getRepoName());
             assertEquals("branch1", stagePath.getBranch().getBranchName());

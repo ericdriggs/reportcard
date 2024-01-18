@@ -1,8 +1,12 @@
 USE reportcard;
 
+INSERT `reportcard`.`company`
+(`company_id`, `company_name`)
+VALUES (1, 'company1');
+
 INSERT `reportcard`.`org`
-    (`org_id`, `org_name`)
-VALUES (1, 'org1');
+    (`org_id`, `org_name`, `company_fk`)
+VALUES (1, 'org1', 1);
 
 INSERT `reportcard`.`repo`
     (`repo_id`, `repo_name`, `org_fk`)

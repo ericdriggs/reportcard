@@ -18,6 +18,7 @@ public class StageDetails {
     @JsonIgnore
     final static ObjectMapper mapper = new ObjectMapper();
 
+    private String company;
     private String org;
     private String repo;
     private String branch;
@@ -29,6 +30,7 @@ public class StageDetails {
 
     public void validateAndSetDefaults() {
         Map<String,String> errors = new LinkedHashMap<>();
+        addErrorIfMissing(errors, company, "company");
         addErrorIfMissing(errors, org, "org");
         addErrorIfMissing(errors, repo, "repo");
         addErrorIfMissing(errors, branch, "branch");

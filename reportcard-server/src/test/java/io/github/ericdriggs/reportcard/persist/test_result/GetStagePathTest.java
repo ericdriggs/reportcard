@@ -25,6 +25,7 @@ public class GetStagePathTest extends AbstractTestResultPersistTest {
     public void getStagePathAllFound() throws JsonProcessingException {
         StageDetails request =
                 new StageDetails()
+                        .setCompany(TestData.company)
                         .setOrg(TestData.org)
                         .setRepo(TestData.repo)
                         .setBranch(TestData.branch)
@@ -36,6 +37,7 @@ public class GetStagePathTest extends AbstractTestResultPersistTest {
         StagePath stagePath = testResultPersistService.getStagePath(request);
         assertTrue(stagePath.isComplete(), stagePath.validate().toString());
 
+        Assertions.assertEquals(stagePath.getCompany().getCompanyName(), request.getCompany());
         Assertions.assertEquals(stagePath.getOrg().getOrgName(), request.getOrg());
         Assertions.assertEquals(stagePath.getRepo().getRepoName(), request.getRepo());
         Assertions.assertEquals(stagePath.getBranch().getBranchName(), request.getBranch());
@@ -52,6 +54,7 @@ public class GetStagePathTest extends AbstractTestResultPersistTest {
     public void getStagePath_Missing_build() {
         StageDetails request =
                 new StageDetails()
+                        .setCompany(TestData.company)
                         .setOrg(TestData.org)
                         .setRepo(TestData.repo)
                         .setBranch(TestData.branch)
@@ -62,6 +65,7 @@ public class GetStagePathTest extends AbstractTestResultPersistTest {
 
         StagePath stagePath = testResultPersistService.getStagePath(request);
         assertNotNull(stagePath);
+        assertNotNull(stagePath.getCompany());
         assertNotNull(stagePath.getOrg());
         assertNotNull(stagePath.getRepo());
         assertNotNull(stagePath.getBranch());

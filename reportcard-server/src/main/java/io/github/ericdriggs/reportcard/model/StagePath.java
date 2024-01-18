@@ -16,6 +16,8 @@ import java.util.concurrent.ConcurrentSkipListMap;
 //TOMAYBE: refactor to Value with Builder
 @Data
 public class StagePath implements Comparable<StagePath> {
+
+    Company company;
     Org org;
     Repo repo;
     Branch branch;
