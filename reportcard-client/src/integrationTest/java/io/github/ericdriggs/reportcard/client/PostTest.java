@@ -17,6 +17,8 @@ public class PostTest {
     final static String reportCardHost = "http://localhost:8080";
     final static String reportCardUser = "user";
     final static String reportCardPass = "password";
+
+    final static String company = "company1";
     final static String org = "org1";
     final static String repo = "repo1";
     final static String branch = "branch1";
@@ -53,6 +55,7 @@ public class PostTest {
 
         ReportMetaData reportMetaData =
                 new ReportMetaData()
+                        .setCompany(company)
                         .setOrg(org)
                         .setRepo(repo)
                         .setBranch(branch)

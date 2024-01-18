@@ -11,6 +11,7 @@ import java.util.TreeMap;
  * {@link ClientArg#REPORTCARD_HOST}<br>
  * {@link ClientArg#REPORTCARD_USER}<br>
  * {@link ClientArg#REPORTCARD_PASS}<br>
+ * {@link ClientArg#SCM_COMPANY}<br>
  * {@link ClientArg#SCM_ORG}<br>
  * {@link ClientArg#SCM_REPO}<br>
  * {@link ClientArg#SCM_BRANCH}<br>
@@ -41,6 +42,11 @@ public enum ClientArg {
      * (Required)
      */
     REPORTCARD_PASS(true),
+
+    /**
+     * A source control company. Companies have orgs. (Required)
+     */
+    SCM_COMPANY(true),
 
     /**
      * A source control organization. Organizations have repositories.(Required)

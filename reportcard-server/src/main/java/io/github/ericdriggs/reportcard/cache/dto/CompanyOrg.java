@@ -7,10 +7,7 @@ import lombok.Data;
 @Data
 @Builder
 @AllArgsConstructor
-public class OrgRepoBranchJobRun {
+public class CompanyOrg {
+    private final String company;
     private final String org;
-    private final String repo;
-    private final String branch;
-    private final Long jobId;
-    private final Long runId;
 }

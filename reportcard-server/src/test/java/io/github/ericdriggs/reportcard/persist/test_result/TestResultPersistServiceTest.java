@@ -149,6 +149,7 @@ public class TestResultPersistServiceTest {
         long randLong = random.nextLong();
         StageDetails request =
                 new StageDetails()
+                        .setCompany("company" + randLong)
                         .setOrg("org" + randLong)
                         .setRepo("repo" + randLong)
                         .setBranch("branch" + randLong)
@@ -160,6 +161,7 @@ public class TestResultPersistServiceTest {
     }
 
     private void validateStagePath(StageDetails reportMetaData, StagePath stagePath) {
+        Assertions.assertEquals(reportMetaData.getCompany(), stagePath.getCompany().getCompanyName());
         Assertions.assertEquals(reportMetaData.getOrg(), stagePath.getOrg().getOrgName());
         Assertions.assertEquals(reportMetaData.getRepo(), stagePath.getRepo().getRepoName());
         Assertions.assertEquals(reportMetaData.getBranch(), stagePath.getBranch().getBranchName());

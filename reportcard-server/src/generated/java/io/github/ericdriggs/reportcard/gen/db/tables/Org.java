@@ -4,6 +4,7 @@
 package io.github.ericdriggs.reportcard.gen.db.tables;
 
 
+import io.github.ericdriggs.reportcard.gen.db.Indexes;
 import io.github.ericdriggs.reportcard.gen.db.Keys;
 import io.github.ericdriggs.reportcard.gen.db.Reportcard;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.OrgRecord;
@@ -16,9 +17,10 @@ import lombok.Generated;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Identity;
+import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row2;
+import org.jooq.Row3;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -36,7 +38,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Org extends TableImpl<OrgRecord> {
 
-    private static final long serialVersionUID = 114013791;
+    private static final long serialVersionUID = -1697042096;
 
     /**
      * The reference instance of <code>reportcard.org</code>
@@ -60,6 +62,11 @@ public class Org extends TableImpl<OrgRecord> {
      * The column <code>reportcard.org.org_name</code>.
      */
     public final TableField<OrgRecord, String> ORG_NAME = createField(DSL.name("org_name"), SQLDataType.VARCHAR(255).nullable(false).defaultValue(DSL.inline("'", SQLDataType.VARCHAR)), this, "");
+
+    /**
+     * The column <code>reportcard.org.company_fk</code>.
+     */
+    public final TableField<OrgRecord, Integer> COMPANY_FK = createField(DSL.name("company_fk"), SQLDataType.INTEGER.nullable(false), this, "");
 
     private Org(Name alias, Table<OrgRecord> aliased) {
         this(alias, aliased, null);
@@ -100,6 +107,11 @@ public class Org extends TableImpl<OrgRecord> {
     }
 
     @Override
+    public List<Index> getIndexes() {
+        return Arrays.asList(Indexes.ORG_FK_COMPANY_ORG_IDX);
+    }
+
+    @Override
     public Identity<OrgRecord, Integer> getIdentity() {
         return (Identity<OrgRecord, Integer>) super.getIdentity();
     }
@@ -112,6 +124,23 @@ public class Org extends TableImpl<OrgRecord> {
     @Override
     public List<UniqueKey<OrgRecord>> getUniqueKeys() {
         return Arrays.asList(Keys.KEY_ORG_ORG_NAME_IDX);
+    }
+
+    @Override
+    public List<ForeignKey<OrgRecord, ?>> getReferences() {
+        return Arrays.asList(Keys.FK_COMPANY_ORG);
+    }
+
+    private transient Company _company;
+
+    /**
+     * Get the implicit join path to the <code>reportcard.company</code> table.
+     */
+    public Company company() {
+        if (_company == null)
+            _company = new Company(this, Keys.FK_COMPANY_ORG);
+
+        return _company;
     }
 
     @Override
@@ -141,11 +170,11 @@ public class Org extends TableImpl<OrgRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row2 type methods
+    // Row3 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row2<Integer, String> fieldsRow() {
-        return (Row2) super.fieldsRow();
+    public Row3<Integer, String, Integer> fieldsRow() {
+        return (Row3) super.fieldsRow();
     }
 }

@@ -20,6 +20,7 @@ public class ReportMetaData {
     @JsonIgnore
     private static ObjectMapper objectMapper = new ObjectMapper();
 
+    private String company;
     private String org;
     private String repo;
     private String branch;
@@ -38,6 +39,7 @@ public class ReportMetaData {
 
     @SneakyThrows(JsonProcessingException.class)
     public ReportMetaData(Map<ClientArg, String> argMap) {
+        final String company = argMap.get(ClientArg.SCM_COMPANY);
         final String org = argMap.get(ClientArg.SCM_ORG);
         final String repo = argMap.get(ClientArg.SCM_REPO);
         final String branch = argMap.get(ClientArg.SCM_BRANCH);
@@ -49,6 +51,7 @@ public class ReportMetaData {
         final String runReference = argMap.get(ClientArg.RUN_REFERENCE);
         final String externalLinks = argMap.get(ClientArg.EXTERNAL_LINKS);
 
+        this.company = company;
         this.org = org;
         this.repo = repo;
         this.branch = branch;
@@ -72,6 +75,9 @@ public class ReportMetaData {
 
         //Prepare errors
         Map<String, String> validationErrors = new ConcurrentSkipListMap<>();
+        if (ObjectUtils.isEmpty(company)) {
+            validationErrors.put("company", "missing required field");
+        }
         if (ObjectUtils.isEmpty(org)) {
             validationErrors.put("org", "missing required field");
         }

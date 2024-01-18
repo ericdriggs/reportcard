@@ -23,27 +23,40 @@ public class BrowseServiceTest extends AbstractBrowseServiceTest {
     }
 
     @Test
-    void getOrgsSuccessTest() {
-        Set<Org> orgs = browseService.getOrgs();
-        assertNotNull(orgs);
-        assertTrue(orgs.size() > 0);
-        Set<String> orgNames = orgs.stream().map(Org::getOrgName).collect(Collectors.toSet());
-        assertTrue(orgNames.contains(TestData.org));
+    void getCompanyOrgsSuccessTest() {
+        Map<Company, Set<Org>> companyOrgs = browseService.getCompanyOrgs();
+        assertNotNull(companyOrgs);
+        assertFalse(companyOrgs.isEmpty());
+
+        boolean companyWasFound = false;
+        for (Map.Entry<Company, Set<Org>> entry: companyOrgs.entrySet()){
+            final Company company = entry.getKey();
+            final Set<Org> orgs = entry.getValue();
+            assertNotNull(orgs);
+            assertFalse(orgs.isEmpty());
+            if (company.getCompanyName().equalsIgnoreCase(TestData.company)) {
+                Set<String> orgNames = orgs.stream().map(Org::getOrgName).collect(Collectors.toSet());
+                assertTrue(orgNames.contains(TestData.org));
+                companyWasFound = true;
+            }
+        }
+        assertTrue(companyWasFound);
+
     }
 
     @Test
     void getOrgSuccessTest() {
-        Org org = browseService.getOrg(TestData.org);
+        Org org = browseService.getOrg(TestData.company, TestData.org);
         validateTestOrg(org);
     }
 
     @Test
     void getOrgNotFoundTest() {
         ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> {
-            browseService.getOrg("MISSING_ORG");
+            browseService.getOrg(TestData.company, "MISSING_ORG");
         });
         assertNotNull(ex.getMessage());
-        assertTrue(ex.getMessage().contains("Unable to find org"));
+        assertTrue(ex.getMessage().contains(TestData.company));
         assertTrue(ex.getMessage().contains("MISSING_ORG"));
         assertEquals(404, ex.getStatus().value());
 
@@ -51,7 +64,7 @@ public class BrowseServiceTest extends AbstractBrowseServiceTest {
 
     @Test
     void getOrgReposSuccessTest() {
-        final Map<Org, Set<Repo>> orgRepos = browseService.getOrgsRepos();
+        final Map<Org, Set<Repo>> orgRepos = browseService.getOrgsRepos(TestData.company);
         final Org org = getTestOrg(orgRepos.keySet(), TestData.org);
         validateTestOrg(org);
         final Repo repo = getTestRepo(orgRepos.get(org), TestData.repo);
@@ -60,7 +73,7 @@ public class BrowseServiceTest extends AbstractBrowseServiceTest {
 
     @Test
     void getOrgReposBranchesTest() {
-        Map<Org, Map<Repo, Set<Branch>>> orgReposBranches = browseService.getOrgReposBranches(TestData.org);
+        Map<Org, Map<Repo, Set<Branch>>> orgReposBranches = browseService.getOrgReposBranches(TestData.company, TestData.org);
         final Org org = getTestOrg(orgReposBranches.keySet(), TestData.org);
         validateTestOrg(org);
         final Map<Repo, Set<Branch>> repoBranches = orgReposBranches.get(org);
@@ -72,7 +85,7 @@ public class BrowseServiceTest extends AbstractBrowseServiceTest {
 
     @Test
     void getRepoSuccessTest() {
-        Repo repo = browseService.getRepo(TestData.org, TestData.repo);
+        Repo repo = browseService.getRepo(TestData.company, TestData.org, TestData.repo);
         validateTestRepo(repo);
     }
 
@@ -80,27 +93,29 @@ public class BrowseServiceTest extends AbstractBrowseServiceTest {
     void getRepoNotFoundTest() {
         {
             ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> {
-                browseService.getRepo("MISSING_ORG", "MISSING_REPO");
+                browseService.getRepo(TestData.company, "MISSING_ORG", "MISSING_REPO");
             });
             assertNotNull(ex.getMessage());
-            assertTrue(ex.getMessage().contains("MISSING_ORG"));
-            assertTrue(ex.getMessage().contains("MISSING_REPO"));
-            assertEquals(404, ex.getStatus().value());
+            assertTrue(ex.getMessage().contains(TestData.company), ex.getMessage());
+            assertTrue(ex.getMessage().contains("MISSING_ORG"), ex.getMessage());
+            assertTrue(ex.getMessage().contains("MISSING_REPO"), ex.getMessage());
+            assertEquals(404, ex.getStatus().value(), ex.getMessage());
         }
         {
             ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> {
-                browseService.getRepo(TestData.org, "MISSING_REPO");
+                browseService.getRepo(TestData.company, TestData.org, "MISSING_REPO");
             });
             assertNotNull(ex.getMessage());
-            assertTrue(ex.getMessage().contains(TestData.org));
-            assertTrue(ex.getMessage().contains("MISSING_REPO"));
-            assertEquals(404, ex.getStatus().value());
+            assertTrue(ex.getMessage().contains(TestData.company), ex.getMessage());
+            assertTrue(ex.getMessage().contains(TestData.org), ex.getMessage());
+            assertTrue(ex.getMessage().contains("MISSING_REPO"), ex.getMessage());
+            assertEquals(404, ex.getStatus().value(), ex.getMessage());
         }
     }
 
     @Test
     void getRepoBranchesJobsTest() {
-        Map<Repo, Map<Branch, Set<Job>>> repoBranchesJobs = browseService.getRepoBranchesJobs(TestData.org, TestData.repo);
+        Map<Repo, Map<Branch, Set<Job>>> repoBranchesJobs = browseService.getRepoBranchesJobs(TestData.company, TestData.org, TestData.repo);
         final Repo repo = getTestRepo(repoBranchesJobs.keySet(), TestData.repo);
         final Map<Branch, Set<Job>> branchJobs = repoBranchesJobs.get(repo);
         final Branch branch = getTestBranch(branchJobs.keySet(), TestData.branch);
@@ -112,13 +127,13 @@ public class BrowseServiceTest extends AbstractBrowseServiceTest {
 
     @Test
     void getBranchTest() {
-        Branch branch = browseService.getBranch(TestData.org, TestData.repo, TestData.branch);
+        Branch branch = browseService.getBranch(TestData.company, TestData.org, TestData.repo, TestData.branch);
         validateTestBranch(branch);
     }
 
     @Test
     void getBranchJobsRunsTest() {
-        Map<Branch, Map<Job, Set<Run>>> branchJobRuns = browseService.getBranchJobsRuns(TestData.org, TestData.repo, TestData.branch, null);
+        Map<Branch, Map<Job, Set<Run>>> branchJobRuns = browseService.getBranchJobsRuns(TestData.company, TestData.org, TestData.repo, TestData.branch, null);
         final Branch branch = getTestBranch(branchJobRuns.keySet(), TestData.branch);
         final Map<Job, Set<Run>> jobRuns = branchJobRuns.get(branch);
         final Job job = getTestJob(jobRuns.keySet(), TestData.jobInfo);
@@ -130,7 +145,7 @@ public class BrowseServiceTest extends AbstractBrowseServiceTest {
 
     @Test
     void getBranchJobsRunsForShaTest() {
-        Map<Branch, Map<Job, Set<Run>>> branchJobRuns = browseService.getBranchJobsRunsForSha(TestData.org, TestData.repo, TestData.branch, TestData.sha);
+        Map<Branch, Map<Job, Set<Run>>> branchJobRuns = browseService.getBranchJobsRunsForSha(TestData.company, TestData.org, TestData.repo, TestData.branch, TestData.sha);
         final Branch branch = getTestBranch(branchJobRuns.keySet(), TestData.branch);
         final Map<Job, Set<Run>> jobRuns = branchJobRuns.get(branch);
         final Job job = getTestJob(jobRuns.keySet(), TestData.jobInfo);
@@ -142,13 +157,13 @@ public class BrowseServiceTest extends AbstractBrowseServiceTest {
 
     @Test
     void getJobTest() {
-        Job job = browseService.getJob(TestData.org, TestData.repo, TestData.branch, TestData.jobInfo);
+        Job job = browseService.getJob(TestData.company, TestData.org, TestData.repo, TestData.branch, TestData.jobInfo);
         validateTestJob(job);
     }
 
     @Test
     void getJobRunsStagesTest() {
-        Map<Job, Map<Run, Set<Stage>>> jobRunsStages = browseService.getJobRunsStages(TestData.org, TestData.repo, TestData.branch, 1l);
+        Map<Job, Map<Run, Set<Stage>>> jobRunsStages = browseService.getJobRunsStages(TestData.company, TestData.org, TestData.repo, TestData.branch, 1l);
         final Job job = getTestJob(jobRunsStages.keySet(), TestData.jobInfo);
         final Map<Run, Set<Stage>> runStages = jobRunsStages.get(job);
         final Run run = getTestRun(runStages.keySet(), TestData.runReference);
@@ -160,19 +175,19 @@ public class BrowseServiceTest extends AbstractBrowseServiceTest {
 
     @Test
     void getStageTest() {
-        Stage stage = browseService.getStage(TestData.org, TestData.repo, TestData.branch, TestData.sha, TestData.runReference, TestData.stage);
+        Stage stage = browseService.getStage(TestData.company, TestData.org, TestData.repo, TestData.branch, TestData.sha, TestData.runReference, TestData.stage);
         validateTestStage(stage);
     }
 
     @Test
     void getRunTest() {
-        Run run = browseService.getRun(TestData.org, TestData.repo, TestData.branch, 1l, 1l);
+        Run run = browseService.getRun(TestData.company, TestData.org, TestData.repo, TestData.branch, 1l, 1l);
         validateTestRun(run);
     }
 
     @Test
     void getRunFromReferenceTest() {
-        Run run = browseService.getRunFromReference(TestData.org, TestData.repo, TestData.branch, TestData.sha, TestData.runReference);
+        Run run = browseService.getRunFromReference(TestData.company, TestData.org, TestData.repo, TestData.branch, TestData.sha, TestData.runReference);
         validateTestRun(run);
     }
 
@@ -180,7 +195,7 @@ public class BrowseServiceTest extends AbstractBrowseServiceTest {
 
     @Test
     void getRunStagesTestResultsTest() {
-        Map<Run, Map<Stage, Set<TestResult>>> runStageResults = browseService.getRunStagesTestResults(TestData.org, TestData.repo, TestData.branch, 1l, 1l);
+        Map<Run, Map<Stage, Set<TestResult>>> runStageResults = browseService.getRunStagesTestResults(TestData.company, TestData.org, TestData.repo, TestData.branch, 1l, 1l);
         final Run run = getTestRun(runStageResults.keySet(), TestData.runReference);
         final Map<Stage, Set<TestResult>> stageTestResults = runStageResults.get(run);
         final Stage stage = getTestStage(stageTestResults.keySet(), TestData.stage);
@@ -193,7 +208,7 @@ public class BrowseServiceTest extends AbstractBrowseServiceTest {
 
     @Test
     void getStageTestResultsTestSuitesTest() {
-        Map<Stage, Map<TestResult, Set<TestSuite>>> stageResultSuites = browseService.getStageTestResultsTestSuites(TestData.org, TestData.repo, TestData.branch, 1l, 1l, TestData.stage);
+        Map<Stage, Map<TestResult, Set<TestSuite>>> stageResultSuites = browseService.getStageTestResultsTestSuites(TestData.company, TestData.org, TestData.repo, TestData.branch, 1l, 1l, TestData.stage);
         final Stage stage = getTestStage(stageResultSuites.keySet(), TestData.stage);
         final Map<TestResult, Set<TestSuite>> resultSuites = stageResultSuites.get(stage);
         final TestResult testResult = getTestResult(resultSuites.keySet(), TestData.testResultId);

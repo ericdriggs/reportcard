@@ -10,8 +10,8 @@ import lombok.Generated;
 
 import org.jooq.Field;
 import org.jooq.Record1;
-import org.jooq.Record2;
-import org.jooq.Row2;
+import org.jooq.Record3;
+import org.jooq.Row3;
 import org.jooq.impl.UpdatableRecordImpl;
 
 
@@ -20,9 +20,9 @@ import org.jooq.impl.UpdatableRecordImpl;
  */
 @Generated
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class OrgRecord extends UpdatableRecordImpl<OrgRecord> implements Record2<Integer, String> {
+public class OrgRecord extends UpdatableRecordImpl<OrgRecord> implements Record3<Integer, String, Integer> {
 
-    private static final long serialVersionUID = 1138560845;
+    private static final long serialVersionUID = 1173456497;
 
     /**
      * Setter for <code>reportcard.org.org_id</code>.
@@ -54,6 +54,21 @@ public class OrgRecord extends UpdatableRecordImpl<OrgRecord> implements Record2
         return (String) get(1);
     }
 
+    /**
+     * Setter for <code>reportcard.org.company_fk</code>.
+     */
+    public OrgRecord setCompanyFk(Integer value) {
+        set(2, value);
+        return this;
+    }
+
+    /**
+     * Getter for <code>reportcard.org.company_fk</code>.
+     */
+    public Integer getCompanyFk() {
+        return (Integer) get(2);
+    }
+
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
@@ -64,17 +79,17 @@ public class OrgRecord extends UpdatableRecordImpl<OrgRecord> implements Record2
     }
 
     // -------------------------------------------------------------------------
-    // Record2 type implementation
+    // Record3 type implementation
     // -------------------------------------------------------------------------
 
     @Override
-    public Row2<Integer, String> fieldsRow() {
-        return (Row2) super.fieldsRow();
+    public Row3<Integer, String, Integer> fieldsRow() {
+        return (Row3) super.fieldsRow();
     }
 
     @Override
-    public Row2<Integer, String> valuesRow() {
-        return (Row2) super.valuesRow();
+    public Row3<Integer, String, Integer> valuesRow() {
+        return (Row3) super.valuesRow();
     }
 
     @Override
@@ -88,6 +103,11 @@ public class OrgRecord extends UpdatableRecordImpl<OrgRecord> implements Record2
     }
 
     @Override
+    public Field<Integer> field3() {
+        return Org.ORG.COMPANY_FK;
+    }
+
+    @Override
     public Integer component1() {
         return getOrgId();
     }
@@ -98,6 +118,11 @@ public class OrgRecord extends UpdatableRecordImpl<OrgRecord> implements Record2
     }
 
     @Override
+    public Integer component3() {
+        return getCompanyFk();
+    }
+
+    @Override
     public Integer value1() {
         return getOrgId();
     }
@@ -105,6 +130,11 @@ public class OrgRecord extends UpdatableRecordImpl<OrgRecord> implements Record2
     @Override
     public String value2() {
         return getOrgName();
+    }
+
+    @Override
+    public Integer value3() {
+        return getCompanyFk();
     }
 
     @Override
@@ -120,9 +150,16 @@ public class OrgRecord extends UpdatableRecordImpl<OrgRecord> implements Record2
     }
 
     @Override
-    public OrgRecord values(Integer value1, String value2) {
+    public OrgRecord value3(Integer value) {
+        setCompanyFk(value);
+        return this;
+    }
+
+    @Override
+    public OrgRecord values(Integer value1, String value2, Integer value3) {
         value1(value1);
         value2(value2);
+        value3(value3);
         return this;
     }
 
@@ -140,11 +177,12 @@ public class OrgRecord extends UpdatableRecordImpl<OrgRecord> implements Record2
     /**
      * Create a detached, initialised OrgRecord
      */
-    public OrgRecord(Integer orgId, String orgName) {
+    public OrgRecord(Integer orgId, String orgName, Integer companyFk) {
         super(Org.ORG);
 
         setOrgId(orgId);
         setOrgName(orgName);
+        setCompanyFk(companyFk);
     }
 
     /**
@@ -156,6 +194,7 @@ public class OrgRecord extends UpdatableRecordImpl<OrgRecord> implements Record2
         if (value != null) {
             setOrgId(value.getOrgId());
             setOrgName(value.getOrgName());
+            setCompanyFk(value.getCompanyFk());
         }
     }
 }

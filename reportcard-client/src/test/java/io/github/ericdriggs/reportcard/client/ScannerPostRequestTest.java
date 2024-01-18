@@ -33,6 +33,7 @@ public class ScannerPostRequestTest {
         argMap.put(ClientArg.REPORTCARD_PASS, ClientArg.REPORTCARD_PASS.name());
         argMap.put(ClientArg.REPORTCARD_USER, ClientArg.REPORTCARD_USER.name());
 
+        argMap.put(ClientArg.SCM_COMPANY, ClientArg.SCM_COMPANY.name());
         argMap.put(ClientArg.SCM_ORG, ClientArg.SCM_ORG.name());
         argMap.put(ClientArg.SCM_REPO, ClientArg.SCM_REPO.name());
         argMap.put(ClientArg.SCM_BRANCH, ClientArg.SCM_BRANCH.name());
@@ -56,7 +57,7 @@ public class ScannerPostRequestTest {
         final Set<String> actualValidationErrorKeys = validationErrors.keySet();
 
         final Set<String> expectedValidationErrorKeys =
-                new TreeSet<>(Arrays.asList("REPORTCARD_HOST", "REPORTCARD_PASS", "REPORTCARD_USER", "SCM_BRANCH", "SCM_ORG", "SCM_REPO", "SCM_SHA", "STAGE", "TEST_REPORT_PATH"));
+                new TreeSet<>(Arrays.asList("REPORTCARD_HOST", "REPORTCARD_PASS", "REPORTCARD_USER", "SCM_BRANCH", "SCM_COMPANY", "SCM_ORG", "SCM_REPO", "SCM_SHA", "STAGE", "TEST_REPORT_PATH"));
         assertEquals(expectedValidationErrorKeys, actualValidationErrorKeys);
     }
 
@@ -79,6 +80,7 @@ public class ScannerPostRequestTest {
 
         ReportMetaData reportMetaData = scannerPostRequest.getReportMetaData();
 
+        assertEquals(ClientArg.SCM_COMPANY.name(), reportMetaData.getCompany());
         assertEquals(ClientArg.SCM_ORG.name(), reportMetaData.getOrg());
         assertEquals(ClientArg.SCM_REPO.name(), reportMetaData.getRepo());
         assertEquals(ClientArg.SCM_BRANCH.name(), reportMetaData.getBranch());
@@ -109,11 +111,11 @@ public class ScannerPostRequestTest {
         assertNotNull(message);
         assertTrue(message.contains("400 BAD_REQUEST"));
         final Map<String, String> validationErrors = ex.getValidationErrors();
-        assertEquals(6, validationErrors.size());
+        assertEquals(7, validationErrors.size());
         final Set<String> actualValidationErrorKeys = validationErrors.keySet();
 
         final Set<String> expectedValidationErrorKeys =
-                new TreeSet<>(Arrays.asList("branch", "org", "repo", "sha", "stage", "testReportPath"));
+                new TreeSet<>(Arrays.asList("branch", "company", "org", "repo", "sha", "stage", "testReportPath"));
         assertEquals(expectedValidationErrorKeys, actualValidationErrorKeys);
 
     }
@@ -125,6 +127,7 @@ public class ScannerPostRequestTest {
 
         ReportMetaData reportMetaData = scannerPostRequest.getReportMetaData();
         assertNotNull(reportMetaData);
+        assertEquals(ClientArg.SCM_COMPANY.name(), reportMetaData.getCompany());
         assertEquals(ClientArg.SCM_ORG.name(), reportMetaData.getOrg());
         assertEquals(ClientArg.SCM_REPO.name(), reportMetaData.getRepo());
         assertEquals(ClientArg.SCM_BRANCH.name(), reportMetaData.getBranch());

@@ -5,6 +5,7 @@ package io.github.ericdriggs.reportcard.gen.db;
 
 
 import io.github.ericdriggs.reportcard.gen.db.tables.Branch;
+import io.github.ericdriggs.reportcard.gen.db.tables.Company;
 import io.github.ericdriggs.reportcard.gen.db.tables.Job;
 import io.github.ericdriggs.reportcard.gen.db.tables.Org;
 import io.github.ericdriggs.reportcard.gen.db.tables.Repo;
@@ -16,6 +17,7 @@ import io.github.ericdriggs.reportcard.gen.db.tables.TestResult;
 import io.github.ericdriggs.reportcard.gen.db.tables.TestStatus;
 import io.github.ericdriggs.reportcard.gen.db.tables.TestSuite;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.BranchRecord;
+import io.github.ericdriggs.reportcard.gen.db.tables.records.CompanyRecord;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.JobRecord;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.OrgRecord;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.RepoRecord;
@@ -49,6 +51,8 @@ public class Keys {
     // -------------------------------------------------------------------------
 
     public static final UniqueKey<BranchRecord> KEY_BRANCH_PRIMARY = Internal.createUniqueKey(Branch.BRANCH, DSL.name("KEY_branch_PRIMARY"), new TableField[] { Branch.BRANCH.BRANCH_ID }, true);
+    public static final UniqueKey<CompanyRecord> KEY_COMPANY_COMPANY_NAME_IDX = Internal.createUniqueKey(Company.COMPANY, DSL.name("KEY_company_company_name_idx"), new TableField[] { Company.COMPANY.COMPANY_NAME }, true);
+    public static final UniqueKey<CompanyRecord> KEY_COMPANY_PRIMARY = Internal.createUniqueKey(Company.COMPANY, DSL.name("KEY_company_PRIMARY"), new TableField[] { Company.COMPANY.COMPANY_ID }, true);
     public static final UniqueKey<JobRecord> KEY_JOB_PRIMARY = Internal.createUniqueKey(Job.JOB, DSL.name("KEY_job_PRIMARY"), new TableField[] { Job.JOB.JOB_ID }, true);
     public static final UniqueKey<JobRecord> KEY_JOB_UQ_BRANCH_FK_JOB_INFO_STR = Internal.createUniqueKey(Job.JOB, DSL.name("KEY_job_UQ_BRANCH_FK_JOB_INFO_STR"), new TableField[] { Job.JOB.JOB_INFO_STR, Job.JOB.BRANCH_FK }, true);
     public static final UniqueKey<OrgRecord> KEY_ORG_ORG_NAME_IDX = Internal.createUniqueKey(Org.ORG, DSL.name("KEY_org_org_name_idx"), new TableField[] { Org.ORG.ORG_NAME }, true);
@@ -73,6 +77,7 @@ public class Keys {
 
     public static final ForeignKey<BranchRecord, RepoRecord> BRANCH_REPO_FK = Internal.createForeignKey(Branch.BRANCH, DSL.name("branch_repo_fk"), new TableField[] { Branch.BRANCH.REPO_FK }, Keys.KEY_REPO_PRIMARY, new TableField[] { Repo.REPO.REPO_ID }, true);
     public static final ForeignKey<JobRecord, BranchRecord> FK_JOB_BRANCH = Internal.createForeignKey(Job.JOB, DSL.name("FK_JOB_BRANCH"), new TableField[] { Job.JOB.BRANCH_FK }, Keys.KEY_BRANCH_PRIMARY, new TableField[] { Branch.BRANCH.BRANCH_ID }, true);
+    public static final ForeignKey<OrgRecord, CompanyRecord> FK_COMPANY_ORG = Internal.createForeignKey(Org.ORG, DSL.name("FK_COMPANY_ORG"), new TableField[] { Org.ORG.COMPANY_FK }, Keys.KEY_COMPANY_PRIMARY, new TableField[] { Company.COMPANY.COMPANY_ID }, true);
     public static final ForeignKey<RepoRecord, OrgRecord> REPO_ORG_FK = Internal.createForeignKey(Repo.REPO, DSL.name("repo_org_fk"), new TableField[] { Repo.REPO.ORG_FK }, Keys.KEY_ORG_PRIMARY, new TableField[] { Org.ORG.ORG_ID }, true);
     public static final ForeignKey<RunRecord, JobRecord> RUN_JOB_FK = Internal.createForeignKey(Run.RUN, DSL.name("run_job_fk"), new TableField[] { Run.RUN.JOB_FK }, Keys.KEY_JOB_PRIMARY, new TableField[] { Job.JOB.JOB_ID }, true);
     public static final ForeignKey<StageRecord, RunRecord> STAGE_RUN_FK = Internal.createForeignKey(Stage.STAGE, DSL.name("stage_run_fk"), new TableField[] { Stage.STAGE.RUN_FK }, Keys.KEY_RUN_PRIMARY, new TableField[] { Run.RUN.RUN_ID }, true);

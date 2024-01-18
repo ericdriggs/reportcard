@@ -16,7 +16,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListMap;
-import java.util.concurrent.ConcurrentSkipListSet;
 
 import static io.github.ericdriggs.reportcard.gen.db.Tables.*;
 
@@ -38,15 +37,61 @@ public class BrowseService extends AbstractPersistService {
 
     }
 
-    public Set<Org> getOrgs() {
-        Set<Org> orgs = new TreeSet<>(PojoComparators.ORG_CASE_INSENSITIVE_ORDER);
-        orgs.addAll(dsl.select().from(ORG).fetch().into(Org.class));
-        return orgs;
+    public Set<Company> getCompanies() {
+        Set<Company> companies = new TreeSet<>(PojoComparators.COMPANY_CASE_INSENSITIVE_ORDER);
+        companies.addAll(dsl.select().from(COMPANY).fetch().into(Company.class));
+        return companies;
     }
 
-    public Map<Org, Set<Repo>> getOrgsRepos() {
+    public Map<Company, Set<Org>> getCompanyOrgs() {
+        Result<Record> recordResult = dsl.select().from(COMPANY).leftJoin(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID)).fetch();
 
-        Result<Record> recordResult = dsl.select().from(ORG).leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)).fetch();
+        Map<Company, Set<Org>> companyOrgMap = new TreeMap<>(PojoComparators.COMPANY_CASE_INSENSITIVE_ORDER);
+        for (Record record : recordResult) {
+            Company company = record.into(Company.class);
+            Org org = record.into(Org.class);
+
+            if (!companyOrgMap.containsKey(company)) {
+                companyOrgMap.put(company, new TreeSet<>(PojoComparators.ORG_CASE_INSENSITIVE_ORDER));
+            }
+            companyOrgMap.get(company).add(org);
+        }
+        return companyOrgMap;
+    }
+
+    public Map<Company, Map<Org, Set<Repo>>> getCompanyOrgsRepos(String companyName) {
+        Result<Record> recordResult = dsl.select()
+                .from(COMPANY)
+                .leftJoin(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID))
+                .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID))
+                .where(COMPANY.COMPANY_NAME.eq(companyName))
+                .fetch();
+
+        Map<Org, Set<Repo>> orgRepoMap = new TreeMap<>(PojoComparators.ORG_CASE_INSENSITIVE_ORDER);
+        Company company = null;
+        for (Record record : recordResult) {
+            if (company == null) {
+                company = record.into(Company.class);
+            }
+            Org org = record.into(Org.class);
+            Repo repo = record.into(Repo.class);
+
+            if (!orgRepoMap.containsKey(org)) {
+                orgRepoMap.put(org, new TreeSet<>(PojoComparators.REPO_CASE_INSENSITIVE_ORDER));
+            }
+            orgRepoMap.get(org).add(repo);
+        }
+        return Collections.singletonMap(company, orgRepoMap);
+    }
+
+    public Map<Org, Set<Repo>> getOrgsRepos(String companyName) {
+
+        Result<Record> recordResult = dsl.select()
+                .from(COMPANY)
+                .leftJoin(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID))
+                .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID))
+                .where(COMPANY.COMPANY_NAME.eq(companyName))
+                .fetch();
 
         Map<Org, Set<Repo>> orgRepoMap = new TreeMap<>(PojoComparators.ORG_CASE_INSENSITIVE_ORDER);
         for (Record record : recordResult) {
@@ -61,21 +106,39 @@ public class BrowseService extends AbstractPersistService {
         return orgRepoMap;
     }
 
-    public Org getOrg(String orgName) {
-        Record record = dsl.select(ORG.fields()).from(ORG).where(ORG.ORG_NAME.eq(orgName)).fetchOne();
+    public Company getCompany(String companyName) {
+        Record record = dsl.select(COMPANY.fields()).from(COMPANY).where(COMPANY.COMPANY_NAME.eq(companyName)).fetchOne();
         if (record == null) {
-            throwNotFound("org:" + orgName);
+            throwNotFound("companyName:" + companyName);
         }
-        return record.into(Org.class);
+        return record.into(Company.class);
     }
 
-    public Map<Org, Map<Repo, Set<Branch>>> getOrgReposBranches(String orgName) {
+    public Org getOrg(String companyName, String orgName) {
+        try {
+            return dsl.
+                    select(ORG.fields())
+                    .from(COMPANY)
+                    .join(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID)
+                            .and(ORG.ORG_NAME.eq(orgName)))
+                    .where(COMPANY.COMPANY_NAME.eq(companyName))
+                    .fetchSingle()
+                    .into(Org.class);
+        } catch (NoDataFoundException ex) {
+            throwNotFound("company: " + companyName, "org: " + orgName);
+        }
+        throw new IllegalStateException("unreachable code");
+    }
+
+    public Map<Org, Map<Repo, Set<Branch>>> getOrgReposBranches(String companyName, String orgName) {
 
         Result<Record> recordResult = dsl.select()
-                .from(ORG)
+                .from(COMPANY)
+                .leftJoin(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID)
+                        .and(ORG.ORG_NAME.eq(orgName)))
                 .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID))
                 .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID))
-                .where(ORG.ORG_NAME.eq(orgName))
+                .where(COMPANY.COMPANY_NAME.eq(companyName))
                 .fetch();
 
         Map<Repo, Set<Branch>> repoBranchMap = new TreeMap<>(PojoComparators.REPO_CASE_INSENSITIVE_ORDER);
@@ -95,32 +158,36 @@ public class BrowseService extends AbstractPersistService {
         return Collections.singletonMap(org, repoBranchMap);
     }
 
-    public Repo getRepo(String orgName, String repoName) {
+    public Repo getRepo(String companyName, String orgName, String repoName) {
 
         try {
             return dsl.
                     select(REPO.fields())
-                    .from(ORG)
+                    .from(COMPANY)
+                    .join(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID)
+                            .and(ORG.ORG_NAME.eq(orgName)))
                     .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
                             .and(REPO.REPO_NAME.eq(repoName)))
-                    .where(ORG.ORG_NAME.eq(orgName))
+                    .where(COMPANY.COMPANY_NAME.eq(companyName))
                     .fetchSingle()
                     .into(Repo.class);
         } catch (NoDataFoundException ex) {
-            throwNotFound("org: " + orgName, "repo: " + repoName);
+            throwNotFound("company: " + companyName +", org: " + orgName, "repo: " + repoName);
         }
         throw new IllegalStateException("unreachable code");
     }
 
-    public Map<Repo, Map<Branch, Set<Job>>> getRepoBranchesJobs(String orgName, String repoName) {
+    public Map<Repo, Map<Branch, Set<Job>>> getRepoBranchesJobs(String companyName, String orgName, String repoName) {
 
         Result<Record> recordResult = dsl.select()
-                .from(ORG)
+                .from(COMPANY)
+                .leftJoin(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID)
+                        .and(ORG.ORG_NAME.eq(orgName)))
                 .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
                         .and(REPO.REPO_NAME.eq(repoName)))
                 .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID))
                 .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
-                .where(ORG.ORG_NAME.eq(orgName))
+                .where(COMPANY.COMPANY_NAME.eq(companyName))
                 .fetch();
 
         Map<Branch, Set<Job>> branchesJobsMap = new TreeMap<>(PojoComparators.BRANCH_CASE_INSENSITIVE_ORDER);
@@ -140,37 +207,41 @@ public class BrowseService extends AbstractPersistService {
         return Collections.singletonMap(repo, branchesJobsMap);
     }
 
-    public Branch getBranch(String orgName, String repoName, String branchName) {
+    public Branch getBranch(String companyName, String orgName, String repoName, String branchName) {
         Branch ret = dsl.select(BRANCH.fields())
-                .from(ORG)
-                .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
+                .from(COMPANY)
+                .leftJoin(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID)
+                        .and(ORG.ORG_NAME.eq(orgName)))
+                .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
                         .and(REPO.REPO_NAME.eq(repoName)))
-                .join(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
+                .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
                         .and(BRANCH.BRANCH_NAME.eq(branchName)))
-                .where(ORG.ORG_NAME.eq(orgName))
+                .where(COMPANY.COMPANY_NAME.eq( companyName))
                 .fetchOne()
                 .into(Branch.class);
         if (ret == null) {
-            throwNotFound("org: " + orgName, "repo: " + repoName, "branch: " + branchName);
+            throwNotFound("company: " + companyName + ", org: " + orgName, "repo: " + repoName, "branch: " + branchName);
         }
         return ret;
     }
 
-    public Map<Branch, Map<Job, Set<Run>>> getBranchJobsRuns(String orgName, String repoName, String branchName, Map<String, String> expectedJobFilters) {
+    public Map<Branch, Map<Job, Set<Run>>> getBranchJobsRuns(String companyName, String orgName, String repoName, String branchName, Map<String, String> expectedJobFilters) {
 
         if (expectedJobFilters == null) {
             expectedJobFilters = Collections.emptyMap();
         }
 
         Result<Record> recordResult = dsl.select()
-                .from(ORG)
+                .from(COMPANY)
+                .leftJoin(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID)
+                        .and(ORG.ORG_NAME.eq(orgName)))
                 .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
                         .and(REPO.REPO_NAME.eq(repoName)))
                 .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
                         .and(BRANCH.BRANCH_NAME.eq(branchName)))
                 .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
                 .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID))
-                .where(ORG.ORG_NAME.eq(orgName))
+                .where(COMPANY.COMPANY_NAME.eq(companyName))
                 .fetch();
 
         //TODO: filter jobs
@@ -194,17 +265,19 @@ public class BrowseService extends AbstractPersistService {
         return Collections.singletonMap(branch, jobRunMap);
     }
 
-    public Job getJob(String orgName, String repoName, String branchName, Map<String, String> jobInfo) {
+    public Job getJob(String companyName, String orgName, String repoName, String branchName, Map<String, String> jobInfo) {
         Set<Job> jobs = new TreeSet<>(PojoComparators.JOB_CASE_INSENSITIVE_ORDER);
 
         Result<Record> jobsResult = dsl.select(JOB.fields())
-                .from(ORG)
+                .from(COMPANY)
+                .join(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID)
+                        .and(ORG.ORG_NAME.eq(orgName)))
                 .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
-                        .and(ORG.ORG_NAME.eq(orgName))
                         .and(REPO.REPO_NAME.eq(repoName)))
                 .join(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
                         .and(BRANCH.BRANCH_NAME.eq(branchName)))
                 .join(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
+                .where(COMPANY.COMPANY_NAME.eq(companyName))
                 .fetch();
 
         for (Record record: jobsResult) {
@@ -213,14 +286,16 @@ public class BrowseService extends AbstractPersistService {
                 return job;
             }
         }
-        throwNotFound("org: " + orgName, "repo: " + repoName, "branch: " + branchName, "jobInfo: " + jobInfo);
+        throwNotFound("company: " + companyName + ", org: " + orgName, "repo: " + repoName, "branch: " + branchName, "jobInfo: " + jobInfo);
         throw new IllegalStateException("unreachable code");
     }
 
-    public Map<Job, Map<Run, Set<Stage>>> getJobRunsStages(String orgName, String repoName, String branchName, Long jobId) {
+    public Map<Job, Map<Run, Set<Stage>>> getJobRunsStages(String companyName, String orgName, String repoName, String branchName, Long jobId) {
 
         Result<Record> recordResult = dsl.select()
-                .from(ORG)
+                .from(COMPANY)
+                .leftJoin(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID)
+                        .and(ORG.ORG_NAME.eq(orgName)))
                 .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
                         .and(REPO.REPO_NAME.eq(repoName)))
                 .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
@@ -230,7 +305,7 @@ public class BrowseService extends AbstractPersistService {
                 )
                 .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID))
                 .leftJoin(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID))
-                .where(ORG.ORG_NAME.eq(orgName))
+                .where(COMPANY.COMPANY_NAME.eq(companyName))
                 .fetch();
 
         Map<Run, Set<Stage>> runStageMap = new ConcurrentSkipListMap<>(PojoComparators.RUN_CASE_INSENSITIVE_ORDER);
@@ -250,10 +325,12 @@ public class BrowseService extends AbstractPersistService {
         return Collections.singletonMap(job, runStageMap);
     }
 
-    public Map<Run, Map<Stage, Set<TestResult>>> getRunStagesTestResults(String orgName, String repoName, String branchName, Long jobId, Long runId) {
+    public Map<Run, Map<Stage, Set<TestResult>>> getRunStagesTestResults(String companyName, String orgName, String repoName, String branchName, Long jobId, Long runId) {
 
         Result<Record> recordResult = dsl.select()
-                .from(ORG)
+                .from(COMPANY)
+                .leftJoin(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID)
+                        .and(ORG.ORG_NAME.eq(orgName)))
                 .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
                         .and(REPO.REPO_NAME.eq(repoName)))
                 .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
@@ -264,7 +341,7 @@ public class BrowseService extends AbstractPersistService {
                         .and(RUN.RUN_ID.eq(runId)))
                 .leftJoin(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID))
                 .leftJoin(TEST_RESULT).on(TEST_RESULT.STAGE_FK.eq(TEST_RESULT.TEST_RESULT_ID))
-                .where(ORG.ORG_NAME.eq(orgName))
+                .where(COMPANY.COMPANY_NAME.eq(companyName))
                 .fetch();
 
         Map<Stage, Set<TestResult>> stageTestResultMap = new TreeMap<>(PojoComparators.STAGE_CASE_INSENSITIVE_ORDER);
@@ -284,12 +361,13 @@ public class BrowseService extends AbstractPersistService {
         return Collections.singletonMap(run, stageTestResultMap);
     }
 
-    public Run getRun(String orgName, String repoName, String branchName, Long jobId, Long runId) {
+    public Run getRun(String companyName, String orgName, String repoName, String branchName, Long jobId, Long runId) {
 
         Run ret = dsl.select(RUN.fields())
-                .from(ORG)
+                .from(COMPANY)
+                .join(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID)
+                        .and(ORG.ORG_NAME.eq(orgName)))
                 .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
-                        .and(ORG.ORG_NAME.eq(orgName))
                         .and(REPO.REPO_NAME.eq(repoName)))
                 .join(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
                         .and(BRANCH.BRANCH_NAME.eq(branchName)))
@@ -297,27 +375,30 @@ public class BrowseService extends AbstractPersistService {
                         .and(JOB.JOB_ID.eq(jobId)))
                 .join(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID)
                         .and(RUN.RUN_ID.eq(runId)))
+                .where(COMPANY.COMPANY_NAME.eq(companyName))
                 .fetchOne()
                 .into(Run.class);
 
         if (ret == null) {
-            throwNotFound("org: " + orgName, "repo: " + repoName, "branch: " + branchName, "jobId: " + Long.toString(jobId), "runId: " + Long.toString(runId));
+            throwNotFound("company: " + companyName + ", org: " + orgName, "repo: " + repoName, "branch: " + branchName, "jobId: " + Long.toString(jobId), "runId: " + Long.toString(runId));
         }
         return ret;
     }
 
-    public Map<Branch, Map<Job, Set<Run>>> getBranchJobsRunsForSha(String orgName, String repoName, String branchName, String sha) {
+    public Map<Branch, Map<Job, Set<Run>>> getBranchJobsRunsForSha(String companyName, String orgName, String repoName, String branchName, String sha) {
 
         Result<Record> recordResult = dsl.select()
-                .from(ORG)
-                .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
-                        .and(ORG.ORG_NAME.eq(orgName))
+                .from(COMPANY)
+                .leftJoin(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID)
+                        .and(ORG.ORG_NAME.eq(orgName)))
+                .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
                         .and(REPO.REPO_NAME.eq(repoName)))
-                .join(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
+                .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
                         .and(BRANCH.BRANCH_NAME.eq(branchName)))
-                .join(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
-                .join(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID)
+                .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
+                .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID)
                         .and(RUN.SHA.eq(sha)))
+                .where(COMPANY.COMPANY_NAME.eq(companyName))
                 .fetch();
 
         Map<Job, Set<Run>> jobRunMap = new TreeMap<>(PojoComparators.JOB_CASE_INSENSITIVE_ORDER);
@@ -342,12 +423,13 @@ public class BrowseService extends AbstractPersistService {
         return Collections.singletonMap(branch, jobRunMap);
     }
 
-    public Run getRunFromReference(String orgName, String repoName, String branchName, String sha, String runReference) {
+    public Run getRunFromReference(String companyName, String orgName, String repoName, String branchName, String sha, String runReference) {
 
         Run ret = dsl.select(RUN.fields())
-                .from(ORG)
+                .from(COMPANY)
+                .join(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID)
+                        .and(ORG.ORG_NAME.eq(orgName)))
                 .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
-                        .and(ORG.ORG_NAME.eq(orgName))
                         .and(REPO.REPO_NAME.eq(repoName)))
                 .join(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
                         .and(BRANCH.BRANCH_NAME.eq(branchName)))
@@ -355,34 +437,36 @@ public class BrowseService extends AbstractPersistService {
                 .join(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID)
                         .and(RUN.SHA.eq(sha))
                         .and(RUN.RUN_REFERENCE.eq(runReference)))
+                .where(COMPANY.COMPANY_NAME.eq(companyName))
                 .fetchOne()
                 .into(Run.class);
 
         if (ret == null) {
-            throwNotFound("org: " + orgName, "repo: " + repoName, "branch: " + branchName, "sha:" + sha, "runReference: " + runReference);
+            throwNotFound("company: " + companyName + ", org: " + orgName, "repo: " + repoName, "branch: " + branchName, "sha:" + sha, "runReference: " + runReference);
         }
         return ret;
     }
 
-    public Map<Stage, Map<TestResult, Set<TestSuite>>> getStageTestResultsTestSuites(String orgName, String repoName, String branchName, Long jobId, Long runId, String stageName) {
+    public Map<Stage, Map<TestResult, Set<TestSuite>>> getStageTestResultsTestSuites(String companyName, String orgName, String repoName, String branchName, Long jobId, Long runId, String stageName) {
 
         Result<Record> recordResult =
                 dsl.select()
-                        .from(ORG)
-                        .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
-                                .and(ORG.ORG_NAME.eq(orgName))
+                        .from(COMPANY)
+                        .leftJoin(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID)
+                                .and(ORG.ORG_NAME.eq(orgName)))
+                        .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
                                 .and(REPO.REPO_NAME.eq(repoName)))
-                        .join(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
+                        .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
                                 .and(BRANCH.BRANCH_NAME.eq(branchName)))
-                        .join(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID)
+                        .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID)
                                 .and(JOB.JOB_ID.eq(jobId)))
-                        .join(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID)
+                        .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID)
                                 .and(RUN.RUN_ID.eq(runId)))
-                        .join(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID)
+                        .leftJoin(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID)
                                 .and(STAGE.STAGE_NAME.eq(stageName)))
-                        //TODO: left join?
-                        .join(TEST_RESULT).on(TEST_RESULT.STAGE_FK.eq(STAGE.STAGE_ID))
-                        .join(TEST_SUITE).on(TEST_SUITE.TEST_RESULT_FK.eq(TEST_RESULT.TEST_RESULT_ID))
+                        .leftJoin(TEST_RESULT).on(TEST_RESULT.STAGE_FK.eq(STAGE.STAGE_ID))
+                        .leftJoin(TEST_SUITE).on(TEST_SUITE.TEST_RESULT_FK.eq(TEST_RESULT.TEST_RESULT_ID))
+                        .where(COMPANY.COMPANY_NAME.eq(companyName))
                         .fetch();
 
         Map<TestResult, Set<TestSuite>> testResultSuiteMap = new TreeMap<>(PojoComparators.TEST_RESULT_CASE_INSENSITIVE_ORDER);
@@ -442,7 +526,7 @@ public class BrowseService extends AbstractPersistService {
         return testSuite;
     }
 
-    public Stage getStage(String orgName, String repoName, String branchName, String sha, String runReference, String stageName) {
+    public Stage getStage(String companyName, String orgName, String repoName, String branchName, String sha, String runReference, String stageName) {
         Stage ret = dsl.select(STAGE.fields())
                 .from(ORG)
                 .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
@@ -459,7 +543,7 @@ public class BrowseService extends AbstractPersistService {
                 .fetchOne()
                 .into(Stage.class);
         if (ret == null) {
-            throwNotFound("org: " + orgName, "repo: " + repoName, "branch: " + branchName, "sha: " + sha, "runReference: " + runReference, "stage: " + stageName);
+            throwNotFound("company: " + companyName + ", org: " + orgName, "repo: " + repoName, "branch: " + branchName, "sha: " + sha, "runReference: " + runReference, "stage: " + stageName);
         }
         return ret;
     }

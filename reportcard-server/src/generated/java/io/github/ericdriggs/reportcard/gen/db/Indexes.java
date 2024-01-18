@@ -5,6 +5,7 @@ package io.github.ericdriggs.reportcard.gen.db;
 
 
 import io.github.ericdriggs.reportcard.gen.db.tables.Branch;
+import io.github.ericdriggs.reportcard.gen.db.tables.Org;
 import io.github.ericdriggs.reportcard.gen.db.tables.Repo;
 import io.github.ericdriggs.reportcard.gen.db.tables.Run;
 import io.github.ericdriggs.reportcard.gen.db.tables.Stage;
@@ -33,6 +34,7 @@ public class Indexes {
     // -------------------------------------------------------------------------
 
     public static final Index BRANCH_BRANCH_REPO_IDX = Internal.createIndex(DSL.name("branch_repo_idx"), Branch.BRANCH, new OrderField[] { Branch.BRANCH.REPO_FK }, false);
+    public static final Index ORG_FK_COMPANY_ORG_IDX = Internal.createIndex(DSL.name("FK_COMPANY_ORG_idx"), Org.ORG, new OrderField[] { Org.ORG.COMPANY_FK }, false);
     public static final Index TEST_CASE_FK_TEST_CASE_STATUS_IDX = Internal.createIndex(DSL.name("fk_test_case_status_idx"), TestCase.TEST_CASE, new OrderField[] { TestCase.TEST_CASE.TEST_STATUS_FK }, false);
     public static final Index TEST_CASE_FK_TEST_CASE_TEST_SUITE_IDX = Internal.createIndex(DSL.name("fk_test_case_test_suite_idx"), TestCase.TEST_CASE, new OrderField[] { TestCase.TEST_CASE.TEST_SUITE_FK }, false);
     public static final Index REPO_ORG_IDX = Internal.createIndex(DSL.name("org_idx"), Repo.REPO, new OrderField[] { Repo.REPO.ORG_FK }, false);

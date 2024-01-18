@@ -24,6 +24,7 @@ public class InsertStagePathTest extends AbstractTestResultPersistTest {
     public void insertStagePathAllInserted() {
         StageDetails request =
                 new StageDetails()
+                        .setCompany("newCompany")
                         .setOrg("newOrg")
                         .setRepo("newRepo")
                         .setBranch("newBranch")
@@ -35,6 +36,7 @@ public class InsertStagePathTest extends AbstractTestResultPersistTest {
         StagePath stagePath = testResultPersistService.getUpsertedStagePath(request);
 
         assertNotNull(stagePath);
+        assertNotNull(stagePath.getCompany());
         assertNotNull(stagePath.getOrg());
         assertNotNull(stagePath.getRepo());
         assertNotNull(stagePath.getBranch());
@@ -42,6 +44,7 @@ public class InsertStagePathTest extends AbstractTestResultPersistTest {
         assertNotNull(stagePath.getRun());
         assertNotNull(stagePath.getStage());
 
+        Assertions.assertEquals(request.getCompany(), stagePath.getCompany().getCompanyName());
         Assertions.assertEquals(request.getOrg(), stagePath.getOrg().getOrgName());
         Assertions.assertEquals(request.getRepo(), stagePath.getRepo().getRepoName());
         Assertions.assertEquals(request.getBranch(), stagePath.getBranch().getBranchName());

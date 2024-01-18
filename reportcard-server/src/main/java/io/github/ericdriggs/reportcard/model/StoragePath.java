@@ -17,6 +17,7 @@ public class StoragePath {
     private final static int hashLength = 22;
     private final static int maxStringBytes = 20;
 
+    private final String company;
     private final String org;
     private final String repo;
     private final String branch;
@@ -32,6 +33,7 @@ public class StoragePath {
 
     public StoragePath(StagePath stagePath) {
         stagePath.throwIfIncomplete();
+        this.company = stagePath.getCompany().getCompanyName();
         this.org = stagePath.getOrg().getOrgName();
         this.repo = stagePath.getRepo().getRepoName();
         this.branch = stagePath.getBranch().getBranchName();
@@ -44,7 +46,7 @@ public class StoragePath {
 
     public String getPrefix(StorageType storageType) {
         {
-            final String fullPath = getPath(org, repo, branch, date, jobInfoHash, runCount, sha, stage, storageType);
+            final String fullPath = getPath(company, org, repo, branch, date, jobInfoHash, runCount, sha, stage, storageType);
             if (fullPath.getBytes(StandardCharsets.UTF_8).length <= maxLength) {
                 return fullPath;
             }
@@ -52,6 +54,7 @@ public class StoragePath {
 
         //TODO:
         return getPath(
+                truncateBytes(company, maxStringBytes),
                 truncateBytes(org, maxStringBytes),
                 truncateBytes(repo, maxStringBytes),
                 truncateBytes(branch, maxStringBytes),
@@ -92,6 +95,7 @@ public class StoragePath {
     }
 
     protected static String getPath(
+            String company,
             String org,
             String repo,
             String branch,
@@ -103,6 +107,7 @@ public class StoragePath {
             StorageType storageType) {
 
         return "/rc" +
+                "/" + company +
                 "/" + org +
                 "/" + repo +
                 "/" + branch +

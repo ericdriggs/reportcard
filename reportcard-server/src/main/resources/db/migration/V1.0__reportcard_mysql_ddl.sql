@@ -22,6 +22,21 @@ CREATE SCHEMA IF NOT EXISTS `reportcard` DEFAULT CHARACTER SET utf8mb4 COLLATE u
 USE `reportcard` ;
 
 -- -----------------------------------------------------
+-- Table `reportcard`.`company`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `reportcard`.`company` ;
+
+CREATE TABLE IF NOT EXISTS `reportcard`.`company` (
+  `company_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `company_name` VARCHAR(255) NOT NULL DEFAULT '''',
+  PRIMARY KEY (`company_id`),
+  UNIQUE INDEX `company_name_idx` (`company_name` ASC) VISIBLE)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
+
+-- -----------------------------------------------------
 -- Table `reportcard`.`org`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `reportcard`.`org` ;
@@ -29,11 +44,13 @@ DROP TABLE IF EXISTS `reportcard`.`org` ;
 CREATE TABLE IF NOT EXISTS `reportcard`.`org` (
   `org_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `org_name` VARCHAR(255) NOT NULL DEFAULT '''',
+  `company_fk` int unsigned NOT NULL,
   PRIMARY KEY (`org_id`),
-  UNIQUE INDEX `org_name_idx` (`org_name` ASC) VISIBLE)
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+  UNIQUE KEY `org_name_idx` (`org_name`),
+  KEY `FK_COMPANY_ORG_idx` (`company_fk`),
+  CONSTRAINT `FK_COMPANY_ORG` FOREIGN KEY (`company_fk`) REFERENCES `company` (`company_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 
 
 -- -----------------------------------------------------

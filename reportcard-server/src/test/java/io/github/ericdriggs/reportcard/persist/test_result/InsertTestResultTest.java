@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @Profile("test")
 public class InsertTestResultTest extends AbstractTestResultPersistTest {
 
+    final static String company = "company10";
     final static String org = "org10";
     final static String repo = "repo10";
     final static String branch = "branch10";
@@ -153,6 +154,7 @@ public class InsertTestResultTest extends AbstractTestResultPersistTest {
     private StageDetails getStageDetails() {
 
         return new StageDetails()
+                .setCompany(company)
                 .setOrg(org)
                 .setRepo(repo)
                 .setBranch(branch)

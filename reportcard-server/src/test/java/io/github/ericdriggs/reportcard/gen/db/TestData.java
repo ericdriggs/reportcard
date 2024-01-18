@@ -6,6 +6,7 @@ import java.util.TreeMap;
 
 public enum TestData {
     ;
+    public final static String company = "company1";
     public final static String org = "org1";
     public final static String repo = "repo1";
     public final static String branch = "master";
@@ -28,6 +29,7 @@ public enum TestData {
     public final static Integer testSuiteTestCount = 8;
 
     public final static StageDetails stageDetails = new StageDetails()
+            .setCompany(company)
             .setOrg(org)
             .setRepo(repo)
             .setBranch(branch)

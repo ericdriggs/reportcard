@@ -41,6 +41,7 @@ public class StagePathPersistService extends AbstractPersistService {
 
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
+    final protected CompanyDao companyDao;
     final protected OrgDao orgDao;
     final protected RepoDao repoDao;
     final protected BranchDao branchDao;
@@ -55,6 +56,7 @@ public class StagePathPersistService extends AbstractPersistService {
     public StagePathPersistService(DSLContext dsl) {
         super(dsl);
 
+        companyDao = new CompanyDao(dsl.configuration());
         orgDao = new OrgDao(dsl.configuration());
         repoDao = new RepoDao(dsl.configuration());
         branchDao = new BranchDao(dsl.configuration());
@@ -71,7 +73,8 @@ public class StagePathPersistService extends AbstractPersistService {
 
         SelectConditionStep<Record> selectConditionStep = dsl.
                 select()
-                .from(ORG)
+                .from(COMPANY)
+                .join(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID))
                 .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID))
                 .join(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID))
                 .join(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
@@ -86,7 +89,8 @@ public class StagePathPersistService extends AbstractPersistService {
 
         SelectConditionStep<Record> selectConditionStep = dsl.
                 select()
-                .from(ORG)
+                .from(COMPANY)
+                .join(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID))
                 .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID))
                 .join(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID))
                 .join(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
@@ -101,9 +105,10 @@ public class StagePathPersistService extends AbstractPersistService {
         Map<String, String> metadataFilters = request.getJobInfo();
         SelectConditionStep<Record> selectConditionStep = dsl.
                 select()
-                .from(ORG)
+                .from(COMPANY)
+                .leftJoin(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID)
+                        .and(ORG.ORG_NAME.eq(request.getOrg())))
                 .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
-                        .and(ORG.ORG_NAME.eq(request.getOrg()))
                         .and(REPO.REPO_NAME.eq(request.getRepo())))
                 .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
                         .and(BRANCH.BRANCH_NAME.eq(request.getBranch())))
@@ -113,7 +118,7 @@ public class StagePathPersistService extends AbstractPersistService {
                         .and(RUN.RUN_REFERENCE.eq(request.getRunReference())))
                 .leftJoin(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID)
                         .and(STAGE.STAGE_NAME.eq(request.getStage())))
-                .where(ORG.ORG_NAME.eq(request.getOrg()));
+                .where(COMPANY.COMPANY_NAME.eq(request.getCompany()));
         return doGetStagePath(selectConditionStep, request);
     }
 
@@ -140,6 +145,7 @@ public class StagePathPersistService extends AbstractPersistService {
                 return stagePath;
             }
 
+            Company _company = null;
             Org _org = null;
             Repo _repo = null;
             Branch _branch = null;
@@ -147,6 +153,9 @@ public class StagePathPersistService extends AbstractPersistService {
             Run _run = null;
             Stage _stage = null;
 
+            if (record.get(COMPANY.COMPANY_ID.getName()) != null) {
+                _company = record.into(CompanyRecord.class).into(Company.class);
+            }
             if (record.get(ORG.ORG_ID.getName()) != null) {
                 _org = record.into(OrgRecord.class).into(Org.class);
             }
@@ -181,6 +190,7 @@ public class StagePathPersistService extends AbstractPersistService {
                 _stage = record.into(StageRecord.class).into(Stage.class);
             }
 
+            stagePath.setCompany(_company);
             stagePath.setOrg(_org);
             stagePath.setRepo(_repo);
             stagePath.setBranch(_branch);
@@ -238,9 +248,17 @@ public class StagePathPersistService extends AbstractPersistService {
             stagePath = getStagePath(request);
         }
 
+        if (stagePath.getCompany() == null) {
+            Company company = new Company()
+                    .setCompanyName(request.getCompany());
+            companyDao.insert(company);
+            stagePath.setCompany(company);
+        }
+
         if (stagePath.getOrg() == null) {
             Org org = new Org()
-                    .setOrgName(request.getOrg());
+                    .setOrgName(request.getOrg())
+                    .setCompanyFk(stagePath.getCompany().getCompanyId());
             orgDao.insert(org);
             stagePath.setOrg(org);
         }
