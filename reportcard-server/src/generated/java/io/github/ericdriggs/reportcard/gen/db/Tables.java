@@ -5,6 +5,7 @@ package io.github.ericdriggs.reportcard.gen.db;
 
 
 import io.github.ericdriggs.reportcard.gen.db.tables.Branch;
+import io.github.ericdriggs.reportcard.gen.db.tables.Company;
 import io.github.ericdriggs.reportcard.gen.db.tables.Job;
 import io.github.ericdriggs.reportcard.gen.db.tables.Org;
 import io.github.ericdriggs.reportcard.gen.db.tables.Repo;
@@ -30,6 +31,11 @@ public class Tables {
      * The table <code>reportcard.branch</code>.
      */
     public static final Branch BRANCH = Branch.BRANCH;
+
+    /**
+     * The table <code>reportcard.company</code>.
+     */
+    public static final Company COMPANY = Company.COMPANY;
 
     /**
      * The table <code>reportcard.job</code>.

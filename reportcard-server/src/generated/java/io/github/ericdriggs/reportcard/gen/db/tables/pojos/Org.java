@@ -16,24 +16,28 @@ import lombok.Generated;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Org implements Serializable {
 
-    private static final long serialVersionUID = -367287980;
+    private static final long serialVersionUID = 462410421;
 
     private Integer orgId;
     private String  orgName;
+    private Integer companyFk;
 
     public Org() {}
 
     public Org(Org value) {
         this.orgId = value.orgId;
         this.orgName = value.orgName;
+        this.companyFk = value.companyFk;
     }
 
     public Org(
         Integer orgId,
-        String  orgName
+        String  orgName,
+        Integer companyFk
     ) {
         this.orgId = orgId;
         this.orgName = orgName;
+        this.companyFk = companyFk;
     }
 
     /**
@@ -66,12 +70,28 @@ public class Org implements Serializable {
         return this;
     }
 
+    /**
+     * Getter for <code>reportcard.org.company_fk</code>.
+     */
+    public Integer getCompanyFk() {
+        return this.companyFk;
+    }
+
+    /**
+     * Setter for <code>reportcard.org.company_fk</code>.
+     */
+    public Org setCompanyFk(Integer companyFk) {
+        this.companyFk = companyFk;
+        return this;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("Org (");
 
         sb.append(orgId);
         sb.append(", ").append(orgName);
+        sb.append(", ").append(companyFk);
 
         sb.append(")");
         return sb.toString();

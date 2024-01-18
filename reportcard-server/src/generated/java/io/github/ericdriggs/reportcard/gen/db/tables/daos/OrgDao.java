@@ -99,4 +99,19 @@ public class OrgDao extends DAOImpl<OrgRecord, io.github.ericdriggs.reportcard.g
     public Optional<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Org> fetchOptionalByOrgName(String value) {
         return fetchOptional(Org.ORG.ORG_NAME, value);
     }
+
+    /**
+     * Fetch records that have <code>company_fk BETWEEN lowerInclusive AND
+     * upperInclusive</code>
+     */
+    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Org> fetchRangeOfCompanyFk(Integer lowerInclusive, Integer upperInclusive) {
+        return fetchRange(Org.ORG.COMPANY_FK, lowerInclusive, upperInclusive);
+    }
+
+    /**
+     * Fetch records that have <code>company_fk IN (values)</code>
+     */
+    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Org> fetchByCompanyFk(Integer... values) {
+        return fetch(Org.ORG.COMPANY_FK, values);
+    }
 }

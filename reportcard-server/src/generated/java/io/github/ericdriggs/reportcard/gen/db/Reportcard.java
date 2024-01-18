@@ -5,6 +5,7 @@ package io.github.ericdriggs.reportcard.gen.db;
 
 
 import io.github.ericdriggs.reportcard.gen.db.tables.Branch;
+import io.github.ericdriggs.reportcard.gen.db.tables.Company;
 import io.github.ericdriggs.reportcard.gen.db.tables.Job;
 import io.github.ericdriggs.reportcard.gen.db.tables.Org;
 import io.github.ericdriggs.reportcard.gen.db.tables.Repo;
@@ -33,7 +34,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Reportcard extends SchemaImpl {
 
-    private static final long serialVersionUID = -1565591243;
+    private static final long serialVersionUID = -558305367;
 
     /**
      * The reference instance of <code>reportcard</code>
@@ -44,6 +45,11 @@ public class Reportcard extends SchemaImpl {
      * The table <code>reportcard.branch</code>.
      */
     public final Branch BRANCH = Branch.BRANCH;
+
+    /**
+     * The table <code>reportcard.company</code>.
+     */
+    public final Company COMPANY = Company.COMPANY;
 
     /**
      * The table <code>reportcard.job</code>.
@@ -112,6 +118,7 @@ public class Reportcard extends SchemaImpl {
     public final List<Table<?>> getTables() {
         return Arrays.asList(
             Branch.BRANCH,
+            Company.COMPANY,
             Job.JOB,
             Org.ORG,
             Repo.REPO,
