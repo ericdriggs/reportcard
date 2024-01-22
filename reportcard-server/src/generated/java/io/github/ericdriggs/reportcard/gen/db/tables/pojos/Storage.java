@@ -16,36 +16,36 @@ import lombok.Generated;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Storage implements Serializable {
 
-    private static final long serialVersionUID = -1943702948;
+    private static final long serialVersionUID = -1067741147;
 
     private Long   storageId;
     private Long   stageFk;
-    private String path;
+    private String label;
+    private String prefix;
     private String indexfile;
-    private String type;
 
     public Storage() {}
 
     public Storage(Storage value) {
         this.storageId = value.storageId;
         this.stageFk = value.stageFk;
-        this.path = value.path;
+        this.label = value.label;
+        this.prefix = value.prefix;
         this.indexfile = value.indexfile;
-        this.type = value.type;
     }
 
     public Storage(
         Long   storageId,
         Long   stageFk,
-        String path,
-        String indexfile,
-        String type
+        String label,
+        String prefix,
+        String indexfile
     ) {
         this.storageId = storageId;
         this.stageFk = stageFk;
-        this.path = path;
+        this.label = label;
+        this.prefix = prefix;
         this.indexfile = indexfile;
-        this.type = type;
     }
 
     /**
@@ -79,17 +79,32 @@ public class Storage implements Serializable {
     }
 
     /**
-     * Getter for <code>reportcard.storage.path</code>.
+     * Getter for <code>reportcard.storage.label</code>.
      */
-    public String getPath() {
-        return this.path;
+    public String getLabel() {
+        return this.label;
     }
 
     /**
-     * Setter for <code>reportcard.storage.path</code>.
+     * Setter for <code>reportcard.storage.label</code>.
      */
-    public Storage setPath(String path) {
-        this.path = path;
+    public Storage setLabel(String label) {
+        this.label = label;
+        return this;
+    }
+
+    /**
+     * Getter for <code>reportcard.storage.prefix</code>.
+     */
+    public String getPrefix() {
+        return this.prefix;
+    }
+
+    /**
+     * Setter for <code>reportcard.storage.prefix</code>.
+     */
+    public Storage setPrefix(String prefix) {
+        this.prefix = prefix;
         return this;
     }
 
@@ -108,30 +123,15 @@ public class Storage implements Serializable {
         return this;
     }
 
-    /**
-     * Getter for <code>reportcard.storage.type</code>.
-     */
-    public String getType() {
-        return this.type;
-    }
-
-    /**
-     * Setter for <code>reportcard.storage.type</code>.
-     */
-    public Storage setType(String type) {
-        this.type = type;
-        return this;
-    }
-
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("Storage (");
 
         sb.append(storageId);
         sb.append(", ").append(stageFk);
-        sb.append(", ").append(path);
+        sb.append(", ").append(label);
+        sb.append(", ").append(prefix);
         sb.append(", ").append(indexfile);
-        sb.append(", ").append(type);
 
         sb.append(")");
         return sb.toString();

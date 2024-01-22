@@ -70,11 +70,12 @@ public class S3Service {
 
     @SneakyThrows(IOException.class)
     public DirectoryUploadResponse uploadDirectory(MultipartFile[] files, String prefix) {
-        final Path tmpPath = Files.createTempDirectory("s3");
+        final Path tmpPath = Files.createTempDirectory("s3.");
         final String tmpPathString = tmpPath.toFile().getAbsolutePath();
         try {
             for (MultipartFile file : files) {
-                final Path filepath = Paths.get(tmpPathString, file.getOriginalFilename());
+                final String fileName = file.getName();
+                final Path filepath = Paths.get(tmpPathString, fileName);
                 file.transferTo(filepath);
             }
             return uploadDirectory(tmpPathString , prefix);

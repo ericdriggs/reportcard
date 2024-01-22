@@ -33,16 +33,17 @@ public class StorageController {
 
     @PostMapping(value = {"stage/html/{stageId}"}, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<Map<StagePath, Storage>> postStageHtml(
+            @RequestParam("indexFile") String label,
             @RequestParam("files") MultipartFile[] files,
             @RequestParam("indexFile") String indexFile,
             @PathVariable("stageId") Long stageId
     ) {
         final StorageType storageType = StorageType.HTML;
         final StagePath stagePath = storagePersistService.getStagePath(stageId);
-        final String storagePrefix = new StoragePath(stagePath).getPrefix(storageType);
+        final String prefix = new StoragePath(stagePath).getPrefix();
 
-        s3Service.uploadDirectory(files, storagePrefix);
-        Map<StagePath, Storage> stagePathTestResultMap = storagePersistService.persistStoragePath(stageId, indexFile, storagePrefix, StorageType.HTML);
+        s3Service.uploadDirectory(files, prefix);
+        Map<StagePath, Storage> stagePathTestResultMap = storagePersistService.persistStoragePath(indexFile, label, prefix, stageId);
         return new ResponseEntity<>(stagePathTestResultMap, HttpStatus.OK);
     }
 

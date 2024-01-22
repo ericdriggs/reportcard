@@ -16,6 +16,7 @@ import lombok.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
+import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
@@ -37,7 +38,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Storage extends TableImpl<StorageRecord> {
 
-    private static final long serialVersionUID = -670429693;
+    private static final long serialVersionUID = 1027643934;
 
     /**
      * The reference instance of <code>reportcard.storage</code>
@@ -55,7 +56,7 @@ public class Storage extends TableImpl<StorageRecord> {
     /**
      * The column <code>reportcard.storage.storage_id</code>.
      */
-    public final TableField<StorageRecord, Long> STORAGE_ID = createField(DSL.name("storage_id"), SQLDataType.BIGINT.nullable(false), this, "");
+    public final TableField<StorageRecord, Long> STORAGE_ID = createField(DSL.name("storage_id"), SQLDataType.BIGINT.nullable(false).identity(true), this, "");
 
     /**
      * The column <code>reportcard.storage.stage_fk</code>.
@@ -63,19 +64,19 @@ public class Storage extends TableImpl<StorageRecord> {
     public final TableField<StorageRecord, Long> STAGE_FK = createField(DSL.name("stage_fk"), SQLDataType.BIGINT.nullable(false), this, "");
 
     /**
-     * The column <code>reportcard.storage.path</code>.
+     * The column <code>reportcard.storage.label</code>.
      */
-    public final TableField<StorageRecord, String> PATH = createField(DSL.name("path"), SQLDataType.VARCHAR(1024).nullable(false), this, "");
+    public final TableField<StorageRecord, String> LABEL = createField(DSL.name("label"), SQLDataType.VARCHAR(64).nullable(false), this, "");
+
+    /**
+     * The column <code>reportcard.storage.prefix</code>.
+     */
+    public final TableField<StorageRecord, String> PREFIX = createField(DSL.name("prefix"), SQLDataType.VARCHAR(1024).nullable(false), this, "");
 
     /**
      * The column <code>reportcard.storage.indexFile</code>.
      */
     public final TableField<StorageRecord, String> INDEXFILE = createField(DSL.name("indexFile"), SQLDataType.VARCHAR(1024), this, "");
-
-    /**
-     * The column <code>reportcard.storage.type</code>.
-     */
-    public final TableField<StorageRecord, String> TYPE = createField(DSL.name("type"), SQLDataType.VARCHAR(64).nullable(false), this, "");
 
     private Storage(Name alias, Table<StorageRecord> aliased) {
         this(alias, aliased, null);
@@ -121,8 +122,18 @@ public class Storage extends TableImpl<StorageRecord> {
     }
 
     @Override
+    public Identity<StorageRecord, Long> getIdentity() {
+        return (Identity<StorageRecord, Long>) super.getIdentity();
+    }
+
+    @Override
     public UniqueKey<StorageRecord> getPrimaryKey() {
         return Keys.KEY_STORAGE_PRIMARY;
+    }
+
+    @Override
+    public List<UniqueKey<StorageRecord>> getUniqueKeys() {
+        return Arrays.asList(Keys.KEY_STORAGE_UQ_STABLE_LABEL);
     }
 
     @Override
