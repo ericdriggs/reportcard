@@ -87,18 +87,33 @@ public class StorageDao extends DAOImpl<StorageRecord, io.github.ericdriggs.repo
     }
 
     /**
-     * Fetch records that have <code>path BETWEEN lowerInclusive AND
+     * Fetch records that have <code>label BETWEEN lowerInclusive AND
      * upperInclusive</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Storage> fetchRangeOfPath(String lowerInclusive, String upperInclusive) {
-        return fetchRange(Storage.STORAGE.PATH, lowerInclusive, upperInclusive);
+    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Storage> fetchRangeOfLabel(String lowerInclusive, String upperInclusive) {
+        return fetchRange(Storage.STORAGE.LABEL, lowerInclusive, upperInclusive);
     }
 
     /**
-     * Fetch records that have <code>path IN (values)</code>
+     * Fetch records that have <code>label IN (values)</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Storage> fetchByPath(String... values) {
-        return fetch(Storage.STORAGE.PATH, values);
+    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Storage> fetchByLabel(String... values) {
+        return fetch(Storage.STORAGE.LABEL, values);
+    }
+
+    /**
+     * Fetch records that have <code>prefix BETWEEN lowerInclusive AND
+     * upperInclusive</code>
+     */
+    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Storage> fetchRangeOfPrefix(String lowerInclusive, String upperInclusive) {
+        return fetchRange(Storage.STORAGE.PREFIX, lowerInclusive, upperInclusive);
+    }
+
+    /**
+     * Fetch records that have <code>prefix IN (values)</code>
+     */
+    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Storage> fetchByPrefix(String... values) {
+        return fetch(Storage.STORAGE.PREFIX, values);
     }
 
     /**
@@ -114,20 +129,5 @@ public class StorageDao extends DAOImpl<StorageRecord, io.github.ericdriggs.repo
      */
     public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Storage> fetchByIndexfile(String... values) {
         return fetch(Storage.STORAGE.INDEXFILE, values);
-    }
-
-    /**
-     * Fetch records that have <code>type BETWEEN lowerInclusive AND
-     * upperInclusive</code>
-     */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Storage> fetchRangeOfType(String lowerInclusive, String upperInclusive) {
-        return fetchRange(Storage.STORAGE.TYPE, lowerInclusive, upperInclusive);
-    }
-
-    /**
-     * Fetch records that have <code>type IN (values)</code>
-     */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Storage> fetchByType(String... values) {
-        return fetch(Storage.STORAGE.TYPE, values);
     }
 }

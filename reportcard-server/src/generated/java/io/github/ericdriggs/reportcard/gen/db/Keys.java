@@ -66,6 +66,7 @@ public class Keys {
     public static final UniqueKey<StageRecord> KEY_STAGE_STAGE_ID_UNIQUE = Internal.createUniqueKey(Stage.STAGE, DSL.name("KEY_stage_stage_id_unique"), new TableField[] { Stage.STAGE.STAGE_ID }, true);
     public static final UniqueKey<StageRecord> KEY_STAGE_UQ_RUN_STAGE_NAME = Internal.createUniqueKey(Stage.STAGE, DSL.name("KEY_stage_uq_run_stage_name"), new TableField[] { Stage.STAGE.STAGE_NAME, Stage.STAGE.RUN_FK }, true);
     public static final UniqueKey<StorageRecord> KEY_STORAGE_PRIMARY = Internal.createUniqueKey(Storage.STORAGE, DSL.name("KEY_storage_PRIMARY"), new TableField[] { Storage.STORAGE.STORAGE_ID }, true);
+    public static final UniqueKey<StorageRecord> KEY_STORAGE_UQ_STABLE_LABEL = Internal.createUniqueKey(Storage.STORAGE, DSL.name("KEY_storage_UQ_STABLE_LABEL"), new TableField[] { Storage.STORAGE.STAGE_FK, Storage.STORAGE.LABEL }, true);
     public static final UniqueKey<TestCaseRecord> KEY_TEST_CASE_PRIMARY = Internal.createUniqueKey(TestCase.TEST_CASE, DSL.name("KEY_test_case_PRIMARY"), new TableField[] { TestCase.TEST_CASE.TEST_CASE_ID }, true);
     public static final UniqueKey<TestResultRecord> KEY_TEST_RESULT_PRIMARY = Internal.createUniqueKey(TestResult.TEST_RESULT, DSL.name("KEY_test_result_PRIMARY"), new TableField[] { TestResult.TEST_RESULT.TEST_RESULT_ID }, true);
     public static final UniqueKey<TestStatusRecord> KEY_TEST_STATUS_PRIMARY = Internal.createUniqueKey(TestStatus.TEST_STATUS, DSL.name("KEY_test_status_PRIMARY"), new TableField[] { TestStatus.TEST_STATUS.TEST_STATUS_ID }, true);

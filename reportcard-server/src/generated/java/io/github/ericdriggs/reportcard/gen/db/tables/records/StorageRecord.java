@@ -22,7 +22,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements Record5<Long, Long, String, String, String> {
 
-    private static final long serialVersionUID = -1994468250;
+    private static final long serialVersionUID = -1862234549;
 
     /**
      * Setter for <code>reportcard.storage.storage_id</code>.
@@ -55,25 +55,40 @@ public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements
     }
 
     /**
-     * Setter for <code>reportcard.storage.path</code>.
+     * Setter for <code>reportcard.storage.label</code>.
      */
-    public StorageRecord setPath(String value) {
+    public StorageRecord setLabel(String value) {
         set(2, value);
         return this;
     }
 
     /**
-     * Getter for <code>reportcard.storage.path</code>.
+     * Getter for <code>reportcard.storage.label</code>.
      */
-    public String getPath() {
+    public String getLabel() {
         return (String) get(2);
+    }
+
+    /**
+     * Setter for <code>reportcard.storage.prefix</code>.
+     */
+    public StorageRecord setPrefix(String value) {
+        set(3, value);
+        return this;
+    }
+
+    /**
+     * Getter for <code>reportcard.storage.prefix</code>.
+     */
+    public String getPrefix() {
+        return (String) get(3);
     }
 
     /**
      * Setter for <code>reportcard.storage.indexFile</code>.
      */
     public StorageRecord setIndexfile(String value) {
-        set(3, value);
+        set(4, value);
         return this;
     }
 
@@ -81,21 +96,6 @@ public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements
      * Getter for <code>reportcard.storage.indexFile</code>.
      */
     public String getIndexfile() {
-        return (String) get(3);
-    }
-
-    /**
-     * Setter for <code>reportcard.storage.type</code>.
-     */
-    public StorageRecord setType(String value) {
-        set(4, value);
-        return this;
-    }
-
-    /**
-     * Getter for <code>reportcard.storage.type</code>.
-     */
-    public String getType() {
         return (String) get(4);
     }
 
@@ -134,17 +134,17 @@ public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements
 
     @Override
     public Field<String> field3() {
-        return Storage.STORAGE.PATH;
+        return Storage.STORAGE.LABEL;
     }
 
     @Override
     public Field<String> field4() {
-        return Storage.STORAGE.INDEXFILE;
+        return Storage.STORAGE.PREFIX;
     }
 
     @Override
     public Field<String> field5() {
-        return Storage.STORAGE.TYPE;
+        return Storage.STORAGE.INDEXFILE;
     }
 
     @Override
@@ -159,17 +159,17 @@ public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements
 
     @Override
     public String component3() {
-        return getPath();
+        return getLabel();
     }
 
     @Override
     public String component4() {
-        return getIndexfile();
+        return getPrefix();
     }
 
     @Override
     public String component5() {
-        return getType();
+        return getIndexfile();
     }
 
     @Override
@@ -184,17 +184,17 @@ public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements
 
     @Override
     public String value3() {
-        return getPath();
+        return getLabel();
     }
 
     @Override
     public String value4() {
-        return getIndexfile();
+        return getPrefix();
     }
 
     @Override
     public String value5() {
-        return getType();
+        return getIndexfile();
     }
 
     @Override
@@ -211,19 +211,19 @@ public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements
 
     @Override
     public StorageRecord value3(String value) {
-        setPath(value);
+        setLabel(value);
         return this;
     }
 
     @Override
     public StorageRecord value4(String value) {
-        setIndexfile(value);
+        setPrefix(value);
         return this;
     }
 
     @Override
     public StorageRecord value5(String value) {
-        setType(value);
+        setIndexfile(value);
         return this;
     }
 
@@ -251,14 +251,14 @@ public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements
     /**
      * Create a detached, initialised StorageRecord
      */
-    public StorageRecord(Long storageId, Long stageFk, String path, String indexfile, String type) {
+    public StorageRecord(Long storageId, Long stageFk, String label, String prefix, String indexfile) {
         super(Storage.STORAGE);
 
         setStorageId(storageId);
         setStageFk(stageFk);
-        setPath(path);
+        setLabel(label);
+        setPrefix(prefix);
         setIndexfile(indexfile);
-        setType(type);
     }
 
     /**
@@ -270,9 +270,9 @@ public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements
         if (value != null) {
             setStorageId(value.getStorageId());
             setStageFk(value.getStageFk());
-            setPath(value.getPath());
+            setLabel(value.getLabel());
+            setPrefix(value.getPrefix());
             setIndexfile(value.getIndexfile());
-            setType(value.getType());
         }
     }
 }
