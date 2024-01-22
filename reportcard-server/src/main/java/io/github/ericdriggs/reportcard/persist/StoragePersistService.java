@@ -32,33 +32,22 @@ public class StoragePersistService extends StagePathPersistService {
         storageDao = new StorageDao(dsl.configuration());
     }
 
-//    public Map<StagePath, Storage> persistStoragePath(StageDetails stageDetails, String indexFile, String storagePath, StorageType storageType) {
-//        StagePath stagePath = getOrInsertStagePath(stageDetails);
-//        return persistStoragePath(stagePath, indexFile, storagePath, storageType);
-//
-//    }
-//
-//    public Map<StagePath, Storage> persistStoragePath(Long runId, String stageName, String indexFile, String storagePath, StorageType storageType) {
-//        StagePath stagePath = getOrInsertStage(runId, stageName);
-//        return persistStoragePath(stagePath, indexFile, storagePath, storageType);
-//    }
-
-    public Map<StagePath, Storage> persistStoragePath(Long stageId, String indexFile, String storagePath, StorageType storageType) {
-        StagePath stagePath = getStagePath(stageId);
-        return persistStoragePath(stagePath, indexFile, storagePath, storageType);
+    public Map<StagePath, Storage> persistStoragePath(String indexFile, String label, String prefix, Long stageId, String storagePath) {
+        return persistStoragePath(indexFile, label, prefix, stageId);
     }
 
-    public Map<StagePath, Storage> persistStoragePath(StagePath stagePath, String indexFile, String storagePath, StorageType storageType) {
-        return Collections.singletonMap(stagePath, insertStorage(stagePath, indexFile, storagePath, storageType));
+    public Map<StagePath, Storage> persistStoragePath(String indexFile, String label, String prefix, Long stageFk) {
+        final StagePath stagePath = getStagePath(stageFk);
+        final Storage storage = insertStorage(indexFile, label, prefix, stageFk);
+        return Collections.singletonMap(stagePath, storage);
     }
 
-    protected Storage insertStorage(StagePath stagePath, String indexFile, String storagePath, StorageType storageType) {
+    protected Storage insertStorage(String indexFile, String label, String prefix, Long stageFk) {
         Storage storage = new Storage()
                 .setIndexfile(indexFile)
-                .setPath(storagePath)
-                .setType(storageType.name())
-                .setStageFk(stagePath.getStage().getStageId());
-
+                .setLabel(label)
+                .setPrefix(prefix)
+                .setStageFk(stageFk);
         storageDao.insert(storage);
         return storage;
     }

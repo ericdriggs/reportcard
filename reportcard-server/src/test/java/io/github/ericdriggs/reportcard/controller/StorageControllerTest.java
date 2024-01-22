@@ -2,6 +2,8 @@ package io.github.ericdriggs.reportcard.controller;
 
 import io.github.ericdriggs.reportcard.ReportcardApplication;
 import io.github.ericdriggs.reportcard.config.LocalStackConfig;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.Storage;
+import io.github.ericdriggs.reportcard.model.StagePath;
 import io.github.ericdriggs.reportcard.persist.BrowseService;
 import io.github.ericdriggs.reportcard.persist.test_result.TestResultPersistServiceTest;
 import io.github.ericdriggs.reportcard.storage.DirectoryUploadResponse;
@@ -19,12 +21,12 @@ import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
 
 import java.io.IOException;
+import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(classes = {ReportcardApplication.class, LocalStackConfig.class},
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -35,6 +37,9 @@ public class StorageControllerTest {
 
     @Autowired
     StorageController storageController;
+
+    @Autowired
+    JunitController junitController;
 
     @Autowired
     ResourceReaderComponent resourceReader;
@@ -51,7 +56,7 @@ public class StorageControllerTest {
     void postStorageOnlyTest() throws IOException {
 
         final String prefix = "abcd1234";
-        MultipartFile[] files = TestResultPersistServiceTest.getMockMultipartFiles(TestResultPersistServiceTest.xmlPaths, resourceReader);
+        MultipartFile[] files = TestResultPersistServiceTest.getMockJunitMultipartFiles(TestResultPersistServiceTest.xmlPaths, resourceReader);
 
         ResponseEntity<DirectoryUploadResponse> responseEntity = storageController.postStorageOnly(prefix, files);
         DirectoryUploadResponse response = responseEntity.getBody();
@@ -63,6 +68,34 @@ public class StorageControllerTest {
         assertNotNull(s3Objects.contents());
         assertThat(s3Objects.contents().size(), is(greaterThanOrEqualTo(1)));
         System.out.println(s3Objects);
+    }
 
+    @Test
+    void postStorageToStageTest() throws IOException {
+        MultipartFile[] files = TestResultPersistServiceTest.getMockMultipartFilesFromPathStrings(TestResultPersistServiceTest.htmlPaths, resourceReader);
+        String indexFile = TestResultPersistServiceTest.htmlIndexFile;
+        Long stageId = 1L;
+        final String label = "htmlSample";
+        ResponseEntity<Map<StagePath, Storage>> responseEntity = storageController.postStageHtml(label, files, indexFile, stageId);
+        assertNotNull(responseEntity);
+        Map<StagePath, Storage> stagePathStorageMap = responseEntity.getBody();
+        assertNotNull(stagePathStorageMap);
+        assertFalse(stagePathStorageMap.isEmpty());
+        assertEquals(1, stagePathStorageMap.size());
+        for (Map.Entry<StagePath, Storage> entry : stagePathStorageMap.entrySet()) {
+            StagePath stagePath = entry.getKey();
+            Storage storage = entry.getValue();
+
+            assertNotNull(storage.getStorageId());
+            assertNotNull(storage.getLabel());
+
+            System.out.println("stagePath: " + stagePath);
+            System.out.println("storage: " + storage);
+        }
+
+        ListObjectsV2Response s3Objects = s3Service.listObjectsForBucket();
+        assertNotNull(s3Objects.contents());
+        assertThat(s3Objects.contents().size(), is(greaterThanOrEqualTo(3)));
+        System.out.println(s3Objects);
     }
 }

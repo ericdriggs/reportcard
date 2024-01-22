@@ -175,19 +175,20 @@ COLLATE = utf8mb4_0900_ai_ci;
 DROP TABLE IF EXISTS `reportcard`.`storage` ;
 
 CREATE TABLE IF NOT EXISTS `reportcard`.`storage` (
-  `storage_id` BIGINT UNSIGNED NOT NULL,
-  `stage_fk` BIGINT UNSIGNED NOT NULL,
-  `path` VARCHAR(1024) NOT NULL,
-  `indexFile` VARCHAR(1024) NULL DEFAULT NULL,
-  `type` VARCHAR(64) NOT NULL,
+  `storage_id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `stage_fk` bigint unsigned NOT NULL,
+  `label` varchar(64) NOT NULL,
+  `prefix` varchar(1024) NOT NULL,
+  `indexFile` varchar(1024) DEFAULT NULL,
   PRIMARY KEY (`storage_id`),
-  INDEX `stage_fk_idx` (`stage_fk` ASC) VISIBLE,
+  UNIQUE KEY `UQ_STAGE_LABEL` (`stage_fk`,`label`),
+  KEY `stage_fk_idx` (`stage_fk`),
   CONSTRAINT `stage_fk`
-    FOREIGN KEY (`stage_fk`)
-    REFERENCES `reportcard`.`stage` (`stage_id`))
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+      FOREIGN KEY (`stage_fk`)
+      REFERENCES `stage` (`stage_id`))
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------

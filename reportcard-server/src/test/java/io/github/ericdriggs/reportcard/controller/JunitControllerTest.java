@@ -57,7 +57,7 @@ public class JunitControllerTest {
         assertNotNull(testStatuses);
         log.info("testStatuses: {}", testStatuses);
 
-        MultipartFile[] files = TestResultPersistServiceTest.getMockMultipartFiles(TestResultPersistServiceTest.xmlPaths, resourceReader);
+        MultipartFile[] files = TestResultPersistServiceTest.getMockJunitMultipartFiles(TestResultPersistServiceTest.xmlPaths, resourceReader);
         String stageDetailsJson =
                 """
                         {

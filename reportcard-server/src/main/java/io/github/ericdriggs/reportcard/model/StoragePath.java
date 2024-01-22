@@ -1,100 +1,99 @@
 package io.github.ericdriggs.reportcard.model;
 
-import io.github.ericdriggs.reportcard.persist.StorageType;
-import lombok.Data;
-import lombok.SneakyThrows;
+import lombok.Value;
 import software.amazon.awssdk.utils.Md5Utils;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.regex.Pattern;
 
-@Data
+@Value
 public class StoragePath {
 
     private final static int maxLength = 200;
     private final static int hashLength = 22;
-    private final static int maxStringBytes = 20;
+    private final static int maxStringBytes = 19;
 
-    private final String company;
-    private final String org;
-    private final String repo;
-    private final String branch;
+    String company;
+    String org;
+    String repo;
+    String branch;
 
-    private final String date;
-    private final String jobInfoHash;
-    private final int runCount;
+    String date;
+    String jobInfoHash;
+    int runCount;
 
-    private final String sha;
-    private final String stage;
+    String sha;
+    String stage;
 
-    private final static SimpleDateFormat dateYmd = new SimpleDateFormat("yyyy-MM-dd");
+    final static DateTimeFormatter dateYmd = DateTimeFormatter.ISO_LOCAL_DATE.withZone(ZoneId.of("UTC"));
 
     public StoragePath(StagePath stagePath) {
         stagePath.throwIfIncomplete();
-        this.company = stagePath.getCompany().getCompanyName();
-        this.org = stagePath.getOrg().getOrgName();
-        this.repo = stagePath.getRepo().getRepoName();
-        this.branch = stagePath.getBranch().getBranchName();
+        this.company = sanitize(stagePath.getCompany().getCompanyName());
+        this.org = sanitize(stagePath.getOrg().getOrgName());
+        this.repo = sanitize(stagePath.getRepo().getRepoName());
+        this.branch = sanitize(stagePath.getBranch().getBranchName());
         this.date = dateYmd.format(Instant.now());
-        this.jobInfoHash = getJobInfoHash(stagePath.getJob().getJobInfo());
+        this.jobInfoHash = sanitize(getJobInfoHash(stagePath.getJob().getJobInfo()));
         this.runCount = stagePath.getRun().getJobRunCount();
-        this.sha = stagePath.getRun().getSha();
-        this.stage = stagePath.getStage().getStageName();
+        this.sha = sanitize(stagePath.getRun().getSha());
+        this.stage = sanitize(stagePath.getStage().getStageName());
     }
 
-    public String getPrefix(StorageType storageType) {
+    public String getPrefix() {
         {
-            final String fullPath = getPath(company, org, repo, branch, date, jobInfoHash, runCount, sha, stage, storageType);
+            final String fullPath = getPath(company, org, repo, branch, date, jobInfoHash, runCount, sha, stage);
             if (fullPath.getBytes(StandardCharsets.UTF_8).length <= maxLength) {
                 return fullPath;
             }
         }
 
-        //TODO:
         return getPath(
-                truncateBytes(company, maxStringBytes),
-                truncateBytes(org, maxStringBytes),
-                truncateBytes(repo, maxStringBytes),
-                truncateBytes(branch, maxStringBytes),
+                truncateBytes(company),
+                truncateBytes(org),
+                truncateBytes(repo),
+                truncateBytes(branch),
                 date, //10
-                jobInfoHash, //22
+                jobInfoHash, //6
                 runCount, //6
                 sha, //40
-                truncateBytes(stage, maxStringBytes),
-                storageType);
-
+                truncateBytes(stage));
     }
 
-    @SneakyThrows(UnsupportedEncodingException.class)
-    protected static String truncateBytes(String string, int maxBytes) {
+
+    static String truncateBytes(String str) {
 
         //Nothing to do
-        final byte[] bytes = string.getBytes("UTF-8");
-        if (bytes.length <= maxBytes) {
-            return string;
+        final byte[] bytes = str.getBytes(StandardCharsets.UTF_8);
+        if (bytes.length <= StoragePath.maxStringBytes) {
+            return str;
         }
 
         //Iteratively trim until below target length
-        for (int i = maxBytes; i > 0; i--) {
-            final String subString = string.substring(0, i);
-            final byte[] subStringBytes = subString.getBytes("UTF-8");
-            if (subStringBytes.length <= maxBytes) {
+        for (int i = StoragePath.maxStringBytes; i > 0; i--) {
+            final String subString = str.substring(0, i);
+            final byte[] subStringBytes = subString.getBytes(StandardCharsets.UTF_8);
+            if (subStringBytes.length <= StoragePath.maxStringBytes) {
                 return subString;
             }
         }
         throw new IllegalStateException("truncation coding error -- should be unreachable code");
     }
 
-    protected static String getJobInfoHash(String jobInfo) {
+    static String getJobInfoHash(String jobInfo) {
 
         return Md5Utils.md5AsBase64(jobInfo.getBytes())
                 .replace("/", "-") // base64 encoding includes '/' path character
                 .substring(0, hashLength);
     }
 
-    protected static String getPath(
+    static String getPath(
             String company,
             String org,
             String repo,
@@ -103,8 +102,7 @@ public class StoragePath {
             String jobInfoHash,
             int runCount,
             String sha,
-            String stage,
-            StorageType storageType) {
+            String stage) {
 
         return "/rc" +
                 "/" + company +
@@ -115,8 +113,30 @@ public class StoragePath {
                 "/" + jobInfoHash +
                 "/" + runCount +
                 "/" + sha +
-                "/" + stage +
-                "/" + storageType.name().toLowerCase();
+                "/" + stage;
     }
+
+    //https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-keys.html
+    static String sanitize(String str) {
+        if (str == null) {
+            return null;
+        }
+        str = str.trim();
+        if (str.isEmpty()) {
+            return str;
+        }
+
+        str = restrictedPattern.matcher(str).replaceAll("_");
+        str = str.replaceAll("__", "_").replaceAll("__", "_");
+        return str;
+    }
+
+    final static String replacementCharacter = "_";
+    final static Set<String> restrictedCharacters = new HashSet<>(
+            List.of("&", "$", "@", "=", ";", "/", ":", "+", " ", "?",
+                    "\\", "{", "^", "}", "%", "`", "]", ">", "[", "~", "<", "#", "|")
+    );
+
+    final static Pattern restrictedPattern = Pattern.compile("[" + String.join("", restrictedCharacters)+ "]");
 
 }

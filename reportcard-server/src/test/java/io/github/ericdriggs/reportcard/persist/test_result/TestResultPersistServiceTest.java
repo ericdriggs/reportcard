@@ -3,7 +3,10 @@ package io.github.ericdriggs.reportcard.persist.test_result;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.github.ericdriggs.reportcard.ReportcardApplication;
 import io.github.ericdriggs.reportcard.gen.db.TestData;
-import io.github.ericdriggs.reportcard.model.*;
+import io.github.ericdriggs.reportcard.model.StageDetails;
+import io.github.ericdriggs.reportcard.model.StagePath;
+import io.github.ericdriggs.reportcard.model.TestResult;
+import io.github.ericdriggs.reportcard.model.TestStatus;
 import io.github.ericdriggs.reportcard.persist.TestResultPersistService;
 import io.github.ericdriggs.reportcard.xml.ResourceReaderComponent;
 import net.javacrumbs.jsonunit.JsonAssert;
@@ -36,28 +39,56 @@ public class TestResultPersistServiceTest {
     public static String xmlPath = "classpath:format-samples/sample-junit-small.xml";
     public static List<String> xmlPaths = Collections.singletonList(xmlPath);
 
+    public static final String htmlIndexFile = "classpath:html-samples/foo/index.html";
+    public static List<String> htmlPaths = List.of("classpath:html-samples/foo/index.html", "classpath:html-samples/foo/other.html", "classpath:html-samples/foo/nested/nested.html");
+
     @Autowired
     public TestResultPersistServiceTest(ResourceReaderComponent resourceReader, TestResultPersistService testResultPersistService) {
         this.testResultPersistService = testResultPersistService;
 
         this.xmlJunit = resourceReader.resourceAsString(xmlPath);
-        this.mulipartFiles = getMockMultipartFiles(Collections.singletonList(xmlPath), resourceReader);
+        this.mulipartFiles = getMockJunitMultipartFiles(Collections.singletonList(xmlPath), resourceReader);
     }
 
-    public static MultipartFile[] getMockMultipartFiles(List<String> classPaths, ResourceReaderComponent resourceReader) {
+    public static MultipartFile[] getMockJunitMultipartFiles(List<String> classPaths, ResourceReaderComponent resourceReader) {
         MultipartFile[] files = new MultipartFile[classPaths.size()];
 
-        for (int i = 0;i<classPaths.size();i++){
+        for (int i = 0; i < classPaths.size(); i++) {
             String xmlJunit = resourceReader.resourceAsString("classpath:format-samples/sample-junit-small.xml");
             MockMultipartFile mockMultipartFile
                     = new MockMultipartFile(
                     "file",
-                    "junit-"+i+".xml",
+                    "junit-" + i + ".xml",
                     MediaType.APPLICATION_XML_VALUE,
                     xmlJunit.getBytes()
             );
             files[i] = mockMultipartFile;
             i++;
+        }
+        return files;
+    }
+
+    public static MultipartFile[] getMockMultipartFilesFromPathStrings(List<String> resourceClasspaths, ResourceReaderComponent resourceReader) {
+        return getMockMultipartFiles(resourceClasspaths, resourceReader);
+    }
+
+
+    public static MultipartFile[] getMockMultipartFiles(List<String> resourceClasspaths, ResourceReaderComponent resourceReader)  {
+        MultipartFile[] files = new MultipartFile[resourceClasspaths.size()];
+
+        for (int i = 0; i < resourceClasspaths.size(); i++) {
+            String resourceClasspath = resourceClasspaths.get(i);
+            String fileName = resourceClasspath.substring(resourceClasspath.lastIndexOf('/') + 1).trim();
+            String contents = resourceReader.resourceAsString(resourceClasspath);
+
+            MockMultipartFile mockMultipartFile
+                    = new MockMultipartFile(
+                    fileName,
+                    fileName,
+                    MediaType.ALL_VALUE,
+                    contents.getBytes()
+            );
+            files[i] = mockMultipartFile;
         }
         return files;
     }
