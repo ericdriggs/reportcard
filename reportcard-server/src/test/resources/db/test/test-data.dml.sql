@@ -87,3 +87,5 @@ INSERT `reportcard`.`test_case`
     (`test_suite_fk`, `name`, `class_name`, `time`, `test_status_fk`)
 values (1, 'testCaseName2', 'testCaseClassName2', 0.500, 3);
 
+insert into `reportcard`.`storage` (`stage_fk`, `label`, `prefix`, `indexFile`)
+values (1, 'abcLabel', '/rc/company1/org1/repo1/master/2024-01-22/abcRSr4kRco5b8HqUhSUGg/1/abc15b6fae26738ca58f0b300fc43f5872b429bf/api', 'classpath:html-samples/foo/index.html')

@@ -33,9 +33,9 @@ public class StorageController {
 
     @PostMapping(value = {"stage/html/{stageId}"}, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<Map<StagePath, Storage>> postStageHtml(
-            @RequestParam("indexFile") String label,
-            @RequestParam("files") MultipartFile[] files,
-            @RequestParam("indexFile") String indexFile,
+            @RequestParam("label") String label,
+            @RequestPart("files") MultipartFile[] files,
+            @RequestParam(value = "indexFile", required = false) String indexFile,
             @PathVariable("stageId") Long stageId
     ) {
         final StorageType storageType = StorageType.HTML;

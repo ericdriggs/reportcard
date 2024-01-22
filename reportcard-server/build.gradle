@@ -265,3 +265,7 @@ task integrationTest(type: Test) {
         systemProperties(System.getProperties())
     }
 }
+
+bootRun {
+    systemProperties System.properties
+}

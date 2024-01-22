@@ -154,7 +154,9 @@ public class S3Service {
     }
 
     private String getProperty(String propertyName, String defaultValue) {
-        final String val = environment.getProperty(propertyName);
+        final String envVal = environment.getProperty(propertyName);
+        final String systemVal = System.getProperty(propertyName);
+        final String val = systemVal != null ? systemVal : envVal;
         return val == null ? defaultValue : val;
     }
 

@@ -41,7 +41,8 @@ public class StoragePath {
         this.branch = sanitize(stagePath.getBranch().getBranchName());
         this.date = dateYmd.format(Instant.now());
         this.jobInfoHash = sanitize(getJobInfoHash(stagePath.getJob().getJobInfo()));
-        this.runCount = stagePath.getRun().getJobRunCount();
+        Integer jobRunCount = stagePath.getRun().getJobRunCount();
+        this.runCount = jobRunCount == null ? 0 : jobRunCount;
         this.sha = sanitize(stagePath.getRun().getSha());
         this.stage = sanitize(stagePath.getStage().getStageName());
     }
