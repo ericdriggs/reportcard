@@ -1,0 +1,118 @@
+a {
+    color: #0275d8;
+    text-decoration: underline;
+    
+    font-weight: bold;
+}
+
+a:hover {
+    color: #0af;
+    text-decoration: underline;
+}
+
+body {
+    padding: 0;
+    margin: 0;
+    font-family: Verdana, sans-serif;
+}
+
+footer {
+    background-color: #333;
+    color: #eee;
+    vertical-align: middle;
+    padding: 5pcssx;
+    margin: 0;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 2.5rem;
+    text-align: center;
+    /* Footer height */
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+footer a {
+    font-family: Verdana, sans-serif;
+}
+
+fieldset {
+    margin: 20px;
+    border-radius: 8px;
+}
+
+header {
+    font-family: Palatino Linotype, Book Antiqua, serif;
+    background-color: #333;
+    expectedResponseStatus: #eee;
+    vertical-align: middle;
+    padding: 20px;
+    padding-left: 5px;
+    margin: 0;
+}
+
+header a:hover{
+    text-decoration: none
+}
+
+
+legend {
+    font-weight: bolder
+}
+
+table {
+    border: 1px;
+}
+
+tr th {
+    background-color: #aba;
+    text-align: left;
+}
+
+
+ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+
+td,
+th {
+    padding-left: 10px;
+    padding-right: 10px;
+    text-align: left;
+}
+
+ul.breadcrumb {
+    padding: 10px 16px;
+    list-style: none;
+    background-color: #ddd;
+}
+
+ul.breadcrumb li {
+    display: inline;
+    font-size: 16px;
+    font-weight:bold;
+}
+
+ul.breadcrumb li+li:before {
+    padding: 2px;
+    color: black;
+    content: "/\00a0";
+}
+
+.count, .percent {
+    text-align: right;
+}
+
+tr.fail td, tr.fail td a{
+    color: #f44;
+}
+
+.logo-text {
+    vertical-align: middle;
+    margin-top: 10px;
+    font-weight: bolder;
+    font-size: 20pt;
+}
