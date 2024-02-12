@@ -20,103 +20,150 @@
 </ul>
 
 
-
 <br/>
-<fieldset style="display: inline-block">
-    <legend>Run history</legend>
-    <table style="border:1px" class="sortable">
-        <thead>
-        <tr class="heading">
-            <th>run</th>
-            <th>jobId</th>
-            <th>date</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <td class="count"><a href="run.html"><span class="dot pass"></span>#2</a></td>
-            <td class="info" title='{ "application": "testrepo1", "pipeline": "staging" }'><a href="job.html">114232</a></td>
-            <td class="info">Jan 02, 2024 07:26 UTC</td>
-        </tr>
-        <tr>
-            <td class="count"><a href="run.html"><span class="dot fail"></span>#1</a></td>
-            <td class="info" title='{ "application": "testrepo1", "pipeline": "staging" }'><a href="job.html">114232</a></td>
-            <td class="info">Jan 02, 2024 07:24 UTC</td>
-        </tr>
-        <tr>
-            <td class="count"><a href="run.html"><span class="dot pass"></span>#5</a></td>
-            <td class="info" title='{ "application": "testrepo1", "pipeline": "prod" }'><a href="job.html">221524</a></td>
-            <td class="info">Jan 01, 2024 07:24 UTC</td>
-        </tr>
-        </tbody>
-    </table>
-</fieldset>
+<div class="flex_row">
+    <div class="flex_column">
+        <div>
+            <fieldset style="display: inline-block">
+                <legend>Run history</legend>
+                <table style="border:1px" class="sortable">
+                    <thead>
+                    <tr class="heading">
+                        <th>run</th>
+                        <th>jobId</th>
+                        <th>date</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td class="count"><a href="run.html"><span class="dot pass"></span>#2</a></td>
+                        <td class="info" title='{ "application": "testrepo1", "pipeline": "staging" }'><a
+                                href="job.html">114232</a></td>
+                        <td class="info">2024-03-02 13:26 UTC</td>
+                    </tr>
+                    <tr>
+                        <td class="count"><a href="run.html"><span class="dot fail"></span>#1</a></td>
+                        <td class="info" title='{ "application": "testrepo1", "pipeline": "staging" }'><a
+                                href="job.html">114232</a></td>
+                        <td class="info">2024-02-02 09:24 UTC</td>
+                    </tr>
+                    <tr>
+                        <td class="count"><a href="run.html"><span class="dot pass"></span>#5</a></td>
+                        <td class="info" title='{ "application": "testrepo1", "pipeline": "prod" }'><a
+                                href="job.html">221524</a></td>
+                        <td class="info">2024-01-01 07:24 UTC</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </fieldset>
+        </div>
+        <div>
+            <fieldset style="display: inline-block">
+                <legend>Jobs</legend>
+                <table style="border:1px" class="sortable info">
+                    <thead>
+                    <tr class="heading">
+                        <th>jobId</th>
+                        <th>Last Run</th>
+                        <th>Job Info</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td class="info" title='"application": "testrepo1", "pipeline": "staging"'><a
+                                href="job.html">114232</a></td>
+                        <td class="info">Jan 02, 2024</td>
+                        <td class="info">application: testrepo1<br/>pipeline: staging</td>
+                    </tr>
+                    <tr>
 
+                        <td class="info" title='"application": "testrepo1", "pipeline": "prod"'><a
+                                href="job.html">221524</a></td>
+                        <td class="info">Jan 01, 2024</td>
+                        <td class="info">application: testrepo1<br/>pipeline: prod
+                    </tr>
+                    </tbody>
+                </table>
+            </fieldset>
+        </div>
+    </div> <!-- end flex column -->
 
-<fieldset style="display: inline-block">
-    <legend>Jobs</legend>
-    <table style="border:1px" class="sortable">
-        <thead>
-        <tr class="heading">
-            <th>jobId</th>
-            <th>jobInfo</th>
-            <th>Last Run</th>
+    <div class="flex_column">
+        <fieldset>
+            <legend>Stage View</legend>
+            <table class="sortable">
+                <thead>
+                <tr>
+                    <th>run</th>
+                    <th>job</th>
+                    <th>stages</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td class="count"><a href="run.html"><span class="dot pass"></span>#2</a></td>
+                    <td class="info" title='{ "application": "testrepo1", "pipeline": "staging" }'><a
+                            href="job.html">114232</a></td>
+                    <td>
+                        <div class="flex_row">
+                        <div>
+                            <div>unitTest</div>
+                            <div>27s</div>
+                        </div>
+                            <div>
+                            <div>apiTest</div>
 
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <td><a href="job.html">114232</a></td>
-            <!-- actual href href="company/foocorp/org/content/repo/metadata/branch/main/job/114232" -->
-            <td><a href="job.html">{ "application": "testrepo1", "pipeline": "staging" }</a></td>
-            <!-- actual href company/foocorp/org/content/repo/metadata/branch/main/job/114232 -->
-            <td>2024-01-02</td>
-        </tr>
-        <tr>
+                            <div>31s</div>
+                        </div>
+                        </div>
+                    </td>
 
-            <td><a href="job.html">221524</a></td>
-            <!-- actual href company/foocorp/org/content/repo/metadata/branch/main/job/221524 -->
-            <td><a href="job.html">{ "application": "testrepo1", "pipeline": "prod" }</a></td>
-            <!-- actual href company/foocorp/org/content/repo/metadata/branch/main/job/221524 -->
-            <td>2023-04-01</td>
-        </tr>
-        </tbody>
-    </table>
-</fieldset>
+                </tr>
+                <tr class="run_fail">
+                    <td class="count"><a href="run.html"><span class="dot fail"></span>#1</a></td>
+                    <td class="info" title='{ "application": "testrepo1", "pipeline": "staging" }'><a
+                            href="job.html">114232</a></td>
+                    <td>
+                        <div class="flex_row">
+                            <div class="fail_stripes">
+                                <div>unitTest</div>
+                                <div>27s</div>
+                            </div>
+                            <div>
+                                <div>apiTest</div>
 
-<br/>
-<fieldset style="display: inline-block">
-    <legend>Stage View</legend>
-    <table>
-        <thead>
-        <tr>
-            <td>job run</td>
-            <td>stages</td>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <td>
-                #851
-                ecabe3…
+                                <div>31s</div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="run_fail">
+                    <td class="count"><a href="run.html"><span class="dot fail"></span>#0</a></td>
+                    <td class="info" title='{ "application": "testrepo1", "pipeline": "staging" }'><a
+                            href="job.html">114232</a></td>
+                    <td>
+                        <div class="flex_row">
+                            <div>
+                                <div>unitTest</div>
+                                <div>27s</div>
+                            </div>
+                            <div>
+                                <div>apiTest</div>
 
-            </td>
-            <td>
-                <div>
-                    <div>unitTest</div><br/>
-                    <div>27s</div>
-                </div>
-                <div>
-                    <div>apiTest</div><br/>
-                    <div>31s</div>
-                </div>
-            </td>
-        </tr>
-        </tbody>
+                                <div>31s</div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </fieldset>
+    </div> <!-- end flex column -->
+</div> <!-- end flex row -->
+</td>
 
-
-    </table>
-</fieldset>
+</tr>
+</div>
 <footer>
     <span>Reportcard </span>&nbsp;&nbsp;&nbsp;
     <a href="https://github.com/ericdriggs/reportcard">source</a>&nbsp;&nbsp;&nbsp;
