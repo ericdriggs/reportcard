@@ -10,14 +10,42 @@ a:hover {
     text-decoration: underline;
 }
 
+.dot {
+    height: 12px;
+    width: 12px;
+    border-radius: 50%;
+    border-width:2px;
+    border-style:solid;
+    border-color:#555;
+    display: inline-block;
+    position: relative;
+    top: 1px;
+    margin-right: 3px;
+}
 
-.breadcrumb a {
+.info {
+    color: #777 !important;
+    font-size: 8pt;
+    font-weight: bold;
+}
+
+.pass {
+    background-color: #9e9;
+}
+
+.fail {
+    background-color: #e00;
+    border-color:#000;
+    border-radius: 30%;
+}
+
+.breadcrumb a, .info a {
     position: relative;
     margin: 0 auto;
     font-family: system, sans-serif;
 }
 
-.breadcrumb:hover::after {
+.breadcrumb:hover::after, .info:hover:after {
     position: absolute;
     content: attr(title);
     bottom: -1.5em;
@@ -29,7 +57,6 @@ body {
     margin: 0;
     font-family: Verdana, sans-serif;
 }
-
 
 footer {
     background-color: #333;
