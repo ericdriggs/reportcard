@@ -1,0 +1,94 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="shared.css">
+    <link rel="stylesheet" href="sortable.min.css" />
+    <script src="sortable.min.js"></script>
+</head>
+
+<body>
+    <header>
+        <a href="/"><img src="clipboard-check.svg" width="40px" height="40px" style="vertical-align: middle">
+            <span class="logo-text">ReportCard</span></a>
+    </header>
+    <ul class="breadcrumb">
+        <li><a href="companies.html">Home</a></li>
+        <li><a href="orgs.html">FooCorp</a></li>
+        <li><a href="repos.html">TestOrg1</a></li>
+        <li><a href="branches.html">TestRepo1</a></li>
+        <li><a href="runs.html">main</a></li>
+    </ul>
+    <fieldset style="display: inline-block">
+        <legend>Jobs</legend>
+        <table style="border:1px" class="sortable">
+            <thead>
+                <tr class="heading">
+                    <th>jobId</th>
+                    <th>jobInfo</th>
+                    <th>Last Run</th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><a href="company/foocorp/org/content/repo/metadata/branch/main/job/114232">114232</a></td>
+                    <td><a href="company/foocorp/org/content/repo/metadata/branch/main/job/114232">{ "application": "metadata", "pipeline": "staging" }</a></td>
+                    <td>2024-01-02</td>
+                </tr>
+                <tr>
+                    
+                    <td><a href="company/foocorp/org/content/repo/metadata/branch/main/job/221524">221524</a></td>
+                    <td><a href="company/foocorp/org/content/repo/metadata/branch/main/job/221524">{ "application": "metadata", "pipeline": "prod" }</a></td>
+                    <td>2023-04-01</td>
+                </tr>
+            </tbody>
+        </table>
+    </fieldset>
+    
+    <br />
+    <fieldset style="display: inline-block">
+        <legend>Runs</legend>
+        <table style="border:1px" class="sortable">
+            <thead>
+                <tr class="heading">
+                    <th>run</th>
+                    <th>date</th>
+                    <th>status</th>
+                    <th>jobId</th>
+                    <th>jobInfo</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="count"><a href="company/foocorp/org/content/repo/metadata/branch/main/job/114232/run/2">#2</a></td>
+                    <td>2024-01-02T08:00:21Z</td>
+                    <td class="percent">pass</td>
+                    
+                    <td>114232</td>
+                    <td>{ "application": "metadata", "pipeline": "staging" }</td>
+                </tr>
+                <tr class="fail">
+                    <td class="count"><a href="company/foocorp/org/content/repo/metadata/branch/main/job/114232/run/1">#1</a></td>
+                    <td>2024-01-02T08:00:21Z</td>
+                    <td class="percent">fail</td>
+                    <td>114232</td>
+                    <td>{ "application": "metadata", "pipeline": "staging" }</td>
+                </tr>
+                <tr>
+                    <td class="count"><a href="company/foocorp/org/content/repo/metadata/branch/main/job/221524/run/5">#5</a></td>
+                    <td>2024-01-02T08:00:21Z</td>
+                    <td class="percent">pass</td>
+                    <td>221524</td>
+                    <td>{ "application": "metadata", "pipeline": "prod" }</td>
+                </tr>
+            </tbody>
+        </table>
+    </fieldset>
+    <footer>
+        <span>Reportcard </span>&nbsp;&nbsp;&nbsp;
+        <a href="https://github.com/ericdriggs/reportcard">source</a>&nbsp;&nbsp;&nbsp;
+        <span>version: 0.0.1</span>
+    </footer>
+</body>
+
+</html>

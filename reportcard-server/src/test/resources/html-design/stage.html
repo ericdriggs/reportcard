@@ -1,0 +1,73 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="shared.css">
+    <link rel="stylesheet" href="sortable.min.css" />
+    <script src="sortable.min.js"></script>
+</head>
+
+<body>
+    <header>
+        <a href="/"><img src="clipboard-check.svg" width="40px" height="40px" style="vertical-align: middle">
+            <span class="logo-text">ReportCard</span></a>
+    </header>
+    <ul class="breadcrumb">
+        <li><a href="companies.html">Home</a></li>
+        <li><a href="orgs.html">FooCorp</a></li>
+        <li><a href="repos.html">TestOrg1</a></li>
+        <li><a href="branches.html">TestRepo1</a></li>
+        <li><a href="runs.html">main</a></li>
+        <li><a href="stages.html">114232</a></li>
+        <li><a href="stage.html">2</a></li>
+    </ul>
+    <fieldset style="display: inline-block">
+        <legend>Storage</legend>
+        <table style="border:1px" class="sortable">
+            <tbody>
+                <tr>
+                    <td><a href="#">cucumber_html</a></td>
+                </tr>
+                <tr>
+                    <td><a href="#">junit_xml</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </fieldset>
+    <br/>
+    <fieldset style="display: inline-block">
+        <legend>Test Result</legend>
+    
+
+        <br/>
+        <table style="border:1px" class="sortable">
+            <thead>
+                <tr class="heading">
+                    <th>Test Result</th>
+                    <th>tests</th>
+                    <th>errors</th>
+                    <th>skipped</th>
+                    <th>created</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><a href="#">Tests</a></td>
+                    <td>20</td>
+                    <td>3</td>
+                    <td>2</td>
+                    <td>2023-04-05</td>
+                </tr>
+            </tbody>
+        </table>
+    </fieldset>
+    <!-- <th>testResult</th>
+                <td><a href="#">test_result</td>
+                -->
+    <footer>
+        <span>Reportcard </span>&nbsp;&nbsp;&nbsp;
+        <a href="https://github.com/ericdriggs/reportcard">source</a>&nbsp;&nbsp;&nbsp;
+        <span>version: 0.0.1</span>
+    </footer>
+</body>
+
+</html>

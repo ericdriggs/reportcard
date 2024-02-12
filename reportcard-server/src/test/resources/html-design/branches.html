@@ -1,0 +1,56 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="shared.css">
+    <link rel="stylesheet" href="sortable.min.css" />
+    <script src="sortable.min.js"></script>
+</head>
+
+<body>
+    <header>
+        <a href="/"><img src="clipboard-check.svg" width="40px" height="40px" style="vertical-align: middle">
+            <span class="logo-text">ReportCard</span></a>
+    </header>
+    <ul class="breadcrumb">
+        <li><a href="companies.html">Home</a></li>
+        <li><a href="orgs.html">FooCorp</a></li>
+        <li><a href="repos.html">TestOrg1</a></li>
+        <li><a href="branches.html">TestRepo1</a></li>
+    </ul>
+    <fieldset style="display: inline-block">
+        <legend>Branches</legend>
+        <table style="border:1px" class="sortable">
+            <thead>
+                <tr class="heading">
+                    <th>Name</th>
+                    <th>Branches</th>
+                    <th>Last Updated</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><a href="runs.html">main</a></td> <!-- actual href company/foocorp/org/testorg1/repo/testrepo1/branch/main -->
+                    <td class="count">12</td>
+                    <td>2024-01-02</td>
+                </tr>
+                <tr>
+                    <td><a href="runs.html">develop</a></td> <!-- actual href company/foocorp/org/testorg1/repo/testrepo1/branch/develop -->
+                    <td class="count">5</td>
+                    <td>2023-04-01</td>
+                </tr>
+                <tr>
+                    <td><a href="runs.html">feature-123</a></td> <!-- actual href company/foocorp/org/testorg1/repo/testrepo1/branch/feature-123 -->
+                    <td class="count">2</td>
+                    <td>2023-02-01</td>
+                </tr>
+            </tbody>
+        </table>
+    </fieldset>
+    <footer>
+        <span>Reportcard </span>&nbsp;&nbsp;&nbsp;
+        <a href="https://github.com/ericdriggs/reportcard">source</a>&nbsp;&nbsp;&nbsp;
+        <span>version: 0.0.1</span>
+    </footer>
+</body>
+
+</html>
