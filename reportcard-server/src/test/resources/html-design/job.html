@@ -9,35 +9,34 @@
 <body>
     <header>
         <a href="/"><img src="clipboard-check.svg" width="40px" height="40px" style="vertical-align: middle">
-        <span class="logo-text">ReportCard</span></a>
+            <span class="logo-text">ReportCard</span></a>
     </header>
     <ul class="breadcrumb">
         <li><a href="companies.html">Home</a></li>
-        <li>Companies</li>
+        <li><a href="company.html">FooCorp</a></li>
+        <li><a href="org.html">TestOrg1</a></li>
+        <li><a href="repo.html">TestRepo1</a></li>
+        <li><a href="runs.html">main</a></li>
+        <li><a href="job.html">114232</a></li>
     </ul>
+
     <fieldset style="display: inline-block">
-        <legend>Companies</legend>
+        <legend>Stages</legend>
         <table style="border:1px" class="sortable">
             <thead>
                 <tr class="heading">
-                    <th class="heading">Name</th>
-                    <th class="heading">Organizations</th>
+                    <th>name</th>
                 </tr>
             </thead>
             <tbody>
+                <tr>
+                    <td><a href="stage.html">apiTest</a></td> <!-- actual href company/foocorp/org/content/repo/metadata/branch/main/job/114232/run/2/stage/apiTest -->
+                </tr>
+                <tr>
+                    <td><a href="stage.html">unitTest</a></td> <!-- actual href company/foocorp/org/content/repo/metadata/branch/main/job/114232/run/2/stage/unitTest -->
+                </tr>
                 
-                <tr>
-                    <td><a href="company.html">BarCo</a></td> <!-- company/barcon actual href -->
-                    <td class="count">5</td>
-                </tr>
-                <tr>
-                    <td><a href="company.html">BazLlc</a></td> <!-- company/bazllc actual href -->
-                    <td class="count">12</td>
-                </tr>
-                <tr>
-                    <td><a href="company.html">Foocorp</a></td> <!-- company/foocorp actual href -->
-                    <td class="count">2</td>
-                </tr>
+                
             </tbody>
         </table>
     </fieldset>
