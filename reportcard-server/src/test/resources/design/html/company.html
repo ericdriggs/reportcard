@@ -1,44 +1,43 @@
 <html>
 
 <head>
-    <link rel="stylesheet" href="shared.css"> 
-    <link rel="stylesheet" href="sortable.min.css" />
-    <script src="sortable.min.js"></script>
+    <link rel="stylesheet" href="css/shared.css">
+    <link rel="stylesheet" href="css/sortable.min.css" />
+    <script src="js/sortable.min.js"></script>
 </head>
 
 <body>
     <header>
-        <a href="/"><img src="clipboard-check.svg" width="40px" height="40px" style="vertical-align: middle">
+        <a href="/"><img src="image/clipboard-check.svg" width="40px" height="40px" style="vertical-align: middle">
         <span class="logo-text">ReportCard</span></a>
     </header>
     <ul class="breadcrumb">
         <li><a href="companies.html">Home</a></li>
         <li><a href="company.html">FooCorp</a></li>
-        <li><a href="org.html">TestOrg1</a></li>
     </ul>
     <fieldset style="display: inline-block">
-        <legend>Repos</legend>
+        <legend>Orgs</legend>
         <table style="border:1px" class="sortable">
             <thead>
                 <tr class="heading">
                     <th>Name</th>
-                    <th>Branches</th>
+                    <th>Repos</th>
                     <th>Last Updated</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td><a href="repo.html">blog</a></td> <!-- actual href company/foocorp/org/testorg1/repo/blog -->
+                    <td><a href="org.html">TestOrg1</a></td> <!-- actual href company/foocorp/org/testorg1 -->
                     <td class="count">12</td>
-                    <td>2024-01-02</td>
+                    <td>2024-0-02</td>
                 </tr>
-                <tr>
-                    <td><a href="repo.html">metadata</a></td> <!-- actual href company/foocorp/org/testorg1/repo/metadata -->
+				<tr>
+                    <td><a href="org.html">TestOrg2</a></td> <!-- actual href company/foocorp/org/testorg1 -->
                     <td class="count">5</td>
                     <td>2023-04-01</td>
                 </tr>
                 <tr>
-                    <td><a href="repo.html">translation</a></td> <!-- actual href company/foocorp/org/testorg1/repo/translation -->
+                    <td><a href="org.html">TestOrg3</a></td> <!-- actual href company/foocorp/org/testorg1 -->
                     <td class="count">2</td>
                     <td>2023-02-01</td>
                 </tr>
