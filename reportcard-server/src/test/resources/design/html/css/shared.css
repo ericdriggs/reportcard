@@ -26,9 +26,7 @@ legend {
 }
 
 ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
+    list-style: none;
 }
 
 /**** header ****/
@@ -64,8 +62,9 @@ header {
 
 ul.breadcrumb {
     padding: 10px 16px;
-    list-style: none;
+    /*list-style: none;*/
     background-color: #ddd;
+    margin: 0;
 }
 
 ul.breadcrumb li {
