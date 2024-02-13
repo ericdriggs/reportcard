@@ -1,94 +1,52 @@
+/**** global ****/
 a {
-    color: #0275d8;
-    text-decoration: underline;
-    font-weight: bold;
+    color: #0274d3;
 }
 
 a:hover {
     color: #0af;
-    text-decoration: underline;
 }
 
-.dot {
-    height: 10px;
-    width: 10px;
-    border-radius: 50%;
-    border-width: 1px;
-    border-style: solid;
-    border-color: #555;
-    display: inline-block;
-    position: relative;
-    top: 1px;
-    margin-right: 5px;
-}
-
-
-.info {
-    color: #777 !important;
-    font-size: 8pt;
-    font-weight: bold;
-}
-
-a:hover.info {
-    color: #55f !important;
-}
-
-.flex_row {
-    display: flex;
-    flex-direction: row;
+body {
     vertical-align: top;
+    padding: 0;
+    margin: 0;
+    font-family: Verdana, sans-serif;
 }
 
-.flex_column {
-    display: flex;
-    flex-direction: column;
-    vertical-align: top;
-}
-
-.pass {
-    background-color: #9e9;
-}
-
-.table td {
-    border: 1px solid red;
-    vertical-align: top;
-}
-
-.fail {
-    background-color: #e00;
-    border-color: #000;
-    border-radius: 30%;
-}
-
-.stage_fail {
-    background-image: linear-gradient(135deg, #fdd 25%, #ffe6e6 25%, #ffe6e6 50%, #fdd 50%, #fdd 75%, #ffe6e6 75%, #ffe6e6 100%);
-    background-size: 50px 50px;
-    border: 2px solid #a55;
-}
-
-.stage_pass {
-    background-color: #dbffdb;
-    background-size: 40px 40px;
-    border: 2px solid #cdc;
-}
-
-.stage_legend {
-    font-weight: normal;
-    background-color: rgba(244, 244, 244, .6);
-    opacity: 80%;
-    border-radius: 3px;
-    padding: 2px 5px;
-}
-
-.report-link {
-    background-color: rgba(244, 244, 244, .6);
-}
-
-.stage {
+fieldset {
+    margin: 20px;
     border-radius: 8px;
-    padding:15px;
-    margin:2px;
-    font-weight:normal;
+    vertical-align: top;
+}
+
+legend {
+    font-weight: bolder;
+    text-align: left;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+/**** header ****/
+
+header {
+    font-family: Palatino Linotype, Book Antiqua, serif;
+    background-color: #333;
+    vertical-align: middle;
+    padding: 15px 15px 15px 5px;
+    margin: 0;
+}
+
+.logo-text {
+    vertical-align: middle;
+    color: #eee;
+    text-decoration: none;
+    font-weight: bolder;
+    font-size: 20pt;
 }
 
 .breadcrumb a, .info a {
@@ -102,79 +60,6 @@ a:hover.info {
     content: attr(title);
     bottom: -1.5em;
     right: -1em;
-}
-
-body {
-    vertical-align:top;
-    padding: 0;
-    margin: 0;
-    font-family: Verdana, sans-serif;
-}
-
-footer {
-    background-color: #333;
-    color: #eee;
-    vertical-align: middle;
-    padding: 5px;
-    margin: 0;
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    height: 2.5rem;
-    text-align: center;
-    /* Footer height */
-    padding-top: 10px;
-    padding-bottom: 10px;
-}
-
-footer a {
-    font-family: Verdana, sans-serif;
-}
-
-fieldset {
-    margin: 20px;
-    border-radius: 8px;
-    vertical-align: top;
-}
-
-header {
-    font-family: Palatino Linotype, Book Antiqua, serif;
-    background-color: #333;
-    vertical-align: middle;
-    padding: 15px 15px 15px 5px;
-    margin: 0;
-}
-
-header a:hover {
-    text-decoration: none
-}
-
-legend {
-    font-weight: bolder
-}
-
-table {
-    border: 1px;
-}
-
-tr th {
-    background-color: #aba;
-    text-align: left;
-}
-
-
-ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-}
-
-
-td,
-th {
-    padding-left: 10px;
-    padding-right: 10px;
-    text-align: left;
 }
 
 ul.breadcrumb {
@@ -195,26 +80,97 @@ ul.breadcrumb li + li:before {
     content: "/\00a0";
 }
 
-.count, .percent {
-    text-align: right;
+/**** content ****/
+
+.dot {
+    height: 10px;
+    width: 10px;
+    border: 1px solid #555;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 5px;
 }
 
-tr.fail td, tr.fail td a {
-    color: #f44;
+.dot-pass {
+    background-color: #9e9;
 }
 
-.logo-text {
-    vertical-align: middle;
-    color: #eee;
-    text-decoration: none;
-    font-weight: bolder;
-    font-size: 20pt;
+.dot-fail {
+    background-color: #e00;
+    border-color: #000;
+    border-radius: 30%;
 }
+
+.flex-row {
+    display: flex;
+    flex-direction: row;
+    vertical-align: top;
+}
+
+.info {
+    color: #777 !important;
+    font-size: 8pt;
+    font-weight: bold;
+}
+
+a:hover.info {
+    color: #0af !important;
+}
+
 
 .report-img {
     margin-bottom: 5px;
     height: 25px;
-    margin-right:3px;
+    margin-right: 3px;
     vertical-align: middle;
 }
 
+.stage-fail {
+    background-image: linear-gradient(135deg, #fdd 25%, #fee 25%, #fee 50%, #fdd 50%, #fdd 75%, #fee 75%, #fee 100%);
+    background-size: 90px 90px;
+    border: 2px solid #a55;
+}
+
+.stage-pass {
+    background-color: #e1f6e1;
+    background-size: 40px 40px;
+    border: 2px solid #cdc;
+}
+
+.stage-legend {
+    font-weight: normal;
+    background-color: rgba(244, 244, 244, .6);
+    opacity: 80%;
+    border-radius: 6px;
+    padding: 2px 5px;
+}
+
+.report-link {
+    background-color: rgba(244, 244, 244, .6);
+}
+
+.stage {
+    border-radius: 8px;
+    padding: 15px;
+    margin: 2px;
+    font-weight: normal;
+}
+
+
+/**** footer ****/
+footer {
+    background-color: #333;
+    color: #eee;
+    vertical-align: middle;
+    margin: 0;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 2.5rem;
+    text-align: center;
+    padding: 10px 5px;
+}
+
+footer a {
+    font-family: Verdana, sans-serif;
+}
