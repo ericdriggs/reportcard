@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 //TODO: add reports endpoint after stages
 @RestController
-@RequestMapping("/api/v1/companies")
+@RequestMapping("/v1/api")
 @SuppressWarnings("unused")
 public class BrowseJsonController {
 

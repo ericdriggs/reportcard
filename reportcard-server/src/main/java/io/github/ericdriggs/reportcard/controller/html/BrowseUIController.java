@@ -1,4 +1,4 @@
-package io.github.ericdriggs.reportcard.controller;
+package io.github.ericdriggs.reportcard.controller.html;
 
 import io.github.ericdriggs.reportcard.cache.dto.*;
 import io.github.ericdriggs.reportcard.cache.model.*;
@@ -14,7 +14,7 @@ import java.util.Set;
 
 //TODO: add reports endpoint after stages
 @RestController
-@RequestMapping("/api/v1/companies")
+@RequestMapping("/v1/ui/")
 @SuppressWarnings("unused")
 public class BrowseUIController {
 
@@ -25,21 +25,21 @@ public class BrowseUIController {
         this.browseService = browseService;
     }
 
-    @GetMapping(path = "", produces = "application/json")
-    public ResponseEntity<Map<Company, Set<Org>>> getCompanyOrgs() {
-        return new ResponseEntity<>(CompanyOrgsCache.INSTANCE.getCache(), HttpStatus.OK);
+    @GetMapping(path = "", produces = "text/html")
+    public ResponseEntity<String> getCompanies() {
+        return new ResponseEntity<>(HtmlHelper.getCompaniesHtml(), HttpStatus.OK);
     }
 
-    @GetMapping(path = {"company/{company}", "company/{company}/org"}, produces = "application/json")
-    public ResponseEntity<Map<Company, Map<Org, Set<Repo>>>> getCompanyOrgsRepos(@PathVariable String company) {
-        return new ResponseEntity<>(CompanyOrgsReposCacheMap.INSTANCE.getValue(new CompanyName(company)), HttpStatus.OK);
+    @GetMapping(path = {"company/{company}", "company/{company}/org"}, produces = "text/html")
+    public ResponseEntity<String> getCompanyOrgs(@PathVariable String company) {
+        return new ResponseEntity<>(HtmlHelper.getCompanyHtml(company), HttpStatus.OK);
     }
 
-    @GetMapping(path = {"company/{company}/org/{org}", "org/{org}/repo"}, produces = "application/json")
-    public ResponseEntity<Map<Org, Map<Repo, Set<Branch>>>> getOrgReposBranches(
+    @GetMapping(path = {"company/{company}/org/{org}", "org/{org}/repo"}, produces = "text/html")
+    public ResponseEntity<String> getOrgReposBranches(
             @PathVariable String company,
             @PathVariable String org) {
-        return new ResponseEntity<>(OrgReposBranchesCacheMap.INSTANCE.getValue(CompanyOrg.builder().company(company).org(org).build()), HttpStatus.OK);
+        return new ResponseEntity<>(HtmlHelper.getOrgHtml(company, org), HttpStatus.OK);
     }
 
     @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}", "org/{org}/repo/{repo}/branch"}, produces = "application/json")
