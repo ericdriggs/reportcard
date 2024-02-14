@@ -89,24 +89,24 @@ All URIs are relative to *http://localhost:8080*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
-*MetadataJsonControllerApi* | [**GetBranch**](docs/MetadataJsonControllerApi.md#getbranch) | **Get** /api/v1/orgs/{org}/repos/{repo}/branches/{branch} | 
-*MetadataJsonControllerApi* | [**GetBranches**](docs/MetadataJsonControllerApi.md#getbranches) | **Get** /api/v1/orgs/{org}/repos/{repo}/branches | 
-*MetadataJsonControllerApi* | [**GetContext**](docs/MetadataJsonControllerApi.md#getcontext) | **Get** /api/v1/orgs/{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts/{host} | 
-*MetadataJsonControllerApi* | [**GetContexts**](docs/MetadataJsonControllerApi.md#getcontexts) | **Get** /api/v1/orgs/{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts | 
-*MetadataJsonControllerApi* | [**GetRun**](docs/MetadataJsonControllerApi.md#getexecution) | **Get** /api/v1/orgs/{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts/{host}/executions/{externalRunId} | 
-*MetadataJsonControllerApi* | [**GetRuns**](docs/MetadataJsonControllerApi.md#getexecutions) | **Get** /api/v1/orgs/{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts/{host}/executions | 
-*MetadataJsonControllerApi* | [**GetOrg**](docs/MetadataJsonControllerApi.md#getorg) | **Get** /api/v1/orgs/{org} | 
-*MetadataJsonControllerApi* | [**GetOrgs**](docs/MetadataJsonControllerApi.md#getorgs) | **Get** /api/v1/orgs | 
-*MetadataJsonControllerApi* | [**GetRepo**](docs/MetadataJsonControllerApi.md#getrepo) | **Get** /api/v1/orgs/{org}/repos/{repo} | 
-*MetadataJsonControllerApi* | [**GetRepos**](docs/MetadataJsonControllerApi.md#getrepos) | **Get** /api/v1/orgs/{org}/repos | 
-*MetadataJsonControllerApi* | [**GetSha**](docs/MetadataJsonControllerApi.md#getsha) | **Get** /api/v1/orgs/{org}/repos/{repo}/branches/{branch}/shas/{sha} | 
-*MetadataJsonControllerApi* | [**GetShas**](docs/MetadataJsonControllerApi.md#getshas) | **Get** /api/v1/orgs/{org}/repos/{repo}/branches/{branch}/shas | 
-*MetadataJsonControllerApi* | [**GetStage**](docs/MetadataJsonControllerApi.md#getstage) | **Get** /api/v1/orgs/{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts/{host}/executions/{executionName}/stages/{stage} | 
-*MetadataJsonControllerApi* | [**GetStages**](docs/MetadataJsonControllerApi.md#getstages) | **Get** /api/v1/orgs/{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts/{host}/executions/{executionName}/stages | 
-*ReportControllerApi* | [**GetTestResult**](docs/ReportControllerApi.md#gettestresult) | **Get** /api/v1/reports/{testResultId} | 
-*ReportControllerApi* | [**PostXml**](docs/ReportControllerApi.md#postxml) | **Post** /api/v1/reports | 
-*ReportControllerApi* | [**PostXmlJunit**](docs/ReportControllerApi.md#postxmljunit) | **Post** /api/v1/reports/junit | 
-*ReportControllerApi* | [**PostXmlSurefire**](docs/ReportControllerApi.md#postxmlsurefire) | **Post** /api/v1/reports/surefire | 
+*MetadataJsonControllerApi* | [**GetBranch**](docs/MetadataJsonControllerApi.md#getbranch) | **Get** /v1/api/orgs/{org}/repos/{repo}/branches/{branch} | 
+*MetadataJsonControllerApi* | [**GetBranches**](docs/MetadataJsonControllerApi.md#getbranches) | **Get** /v1/api/orgs/{org}/repos/{repo}/branches | 
+*MetadataJsonControllerApi* | [**GetContext**](docs/MetadataJsonControllerApi.md#getcontext) | **Get** /v1/api/orgs/{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts/{host} | 
+*MetadataJsonControllerApi* | [**GetContexts**](docs/MetadataJsonControllerApi.md#getcontexts) | **Get** /v1/api/orgs/{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts | 
+*MetadataJsonControllerApi* | [**GetRun**](docs/MetadataJsonControllerApi.md#getexecution) | **Get** /v1/api/orgs/{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts/{host}/executions/{externalRunId} | 
+*MetadataJsonControllerApi* | [**GetRuns**](docs/MetadataJsonControllerApi.md#getexecutions) | **Get** /v1/api/orgs/{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts/{host}/executions | 
+*MetadataJsonControllerApi* | [**GetOrg**](docs/MetadataJsonControllerApi.md#getorg) | **Get** /v1/api/orgs/{org} | 
+*MetadataJsonControllerApi* | [**GetOrgs**](docs/MetadataJsonControllerApi.md#getorgs) | **Get** /v1/api/orgs | 
+*MetadataJsonControllerApi* | [**GetRepo**](docs/MetadataJsonControllerApi.md#getrepo) | **Get** /v1/api/orgs/{org}/repos/{repo} | 
+*MetadataJsonControllerApi* | [**GetRepos**](docs/MetadataJsonControllerApi.md#getrepos) | **Get** /v1/api/orgs/{org}/repos | 
+*MetadataJsonControllerApi* | [**GetSha**](docs/MetadataJsonControllerApi.md#getsha) | **Get** /v1/api/orgs/{org}/repos/{repo}/branches/{branch}/shas/{sha} | 
+*MetadataJsonControllerApi* | [**GetShas**](docs/MetadataJsonControllerApi.md#getshas) | **Get** /v1/api/orgs/{org}/repos/{repo}/branches/{branch}/shas | 
+*MetadataJsonControllerApi* | [**GetStage**](docs/MetadataJsonControllerApi.md#getstage) | **Get** /v1/api/orgs/{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts/{host}/executions/{executionName}/stages/{stage} | 
+*MetadataJsonControllerApi* | [**GetStages**](docs/MetadataJsonControllerApi.md#getstages) | **Get** /v1/api/orgs/{org}/repos/{repo}/branches/{branch}/shas/{sha}/contexts/{host}/executions/{executionName}/stages | 
+*ReportControllerApi* | [**GetTestResult**](docs/ReportControllerApi.md#gettestresult) | **Get** /v1/api/reports/{testResultId} | 
+*ReportControllerApi* | [**PostXml**](docs/ReportControllerApi.md#postxml) | **Post** /v1/api/reports | 
+*ReportControllerApi* | [**PostXmlJunit**](docs/ReportControllerApi.md#postxmljunit) | **Post** /v1/api/reports/junit | 
+*ReportControllerApi* | [**PostXmlSurefire**](docs/ReportControllerApi.md#postxmlsurefire) | **Post** /v1/api/reports/surefire | 
 
 
 ## Documentation For Models

@@ -18,7 +18,7 @@ import java.util.Map;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/storage/")
+@RequestMapping("/v1/api/storage/")
 @SuppressWarnings("unused")
 public class StorageController {
 

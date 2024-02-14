@@ -15,7 +15,7 @@ public class PostRequest {
     private ReportMetaData reportMetaData;
 
     public String getPostUrl() {
-        return reportCardServerData.getReportCardHost() + "/api/v1/reports/";
+        return reportCardServerData.getReportCardHost() + "/v1/api/reports/";
     }
 
     public PostRequest(ReportMetaData reportMetaData, ReportCardServerData reportCardServerData) {

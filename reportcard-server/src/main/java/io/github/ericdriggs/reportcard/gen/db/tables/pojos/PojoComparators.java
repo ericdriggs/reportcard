@@ -109,7 +109,7 @@ public class PojoComparators {
         }
         return chainCompare(
                 compareLowerNullSafe(val1.getCompanyName(), val2.getCompanyName()),
-                Integer.compare(val1.getCompanyId(), val2.getCompanyId())
+                compareIntegers(val1.getCompanyId(), val2.getCompanyId())
         );
     }
 
@@ -120,7 +120,7 @@ public class PojoComparators {
         }
         return chainCompare(
                 compareLowerNullSafe(val1.getOrgName(), val2.getOrgName()),
-                Integer.compare(val1.getOrgId(), val2.getOrgId())
+                compareIntegers(val1.getOrgId(), val2.getOrgId())
         );
     }
 
@@ -129,9 +129,9 @@ public class PojoComparators {
             return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
         }
         return chainCompare(
-                Integer.compare(val1.getOrgFk(), val2.getOrgFk()),
+                compareIntegers(val1.getOrgFk(), val2.getOrgFk()),
                 compareLowerNullSafe(val1.getRepoName(), val2.getRepoName()),
-                Integer.compare(val1.getRepoId(), val2.getRepoId())
+                compareIntegers(val1.getRepoId(), val2.getRepoId())
         );
     }
 
@@ -140,9 +140,9 @@ public class PojoComparators {
             return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
         }
         return chainCompare(
-                Integer.compare(val1.getRepoFk(), val2.getRepoFk()),
+                compareIntegers(val1.getRepoFk(), val2.getRepoFk()),
                 compareLowerNullSafe(val1.getBranchName(), val2.getBranchName()),
-                Integer.compare(val1.getBranchId(), val2.getBranchId())
+                compareIntegers(val1.getBranchId(), val2.getBranchId())
         );
     }
 
@@ -236,5 +236,17 @@ public class PojoComparators {
         public int compare(TestCase val1, TestCase val2) {
             return compareTestCase(val1, val2);
         }
+    }
+    
+    public final static int compareIntegers(Integer i1, Integer i2) {
+        if (i1 == null) {
+            if (i2 == null) {
+                return 0;
+            }
+            return -1;
+        } else if (i2 == null) {
+            return 1;
+        }
+        return Integer.compare(i1, i2);
     }
 }
