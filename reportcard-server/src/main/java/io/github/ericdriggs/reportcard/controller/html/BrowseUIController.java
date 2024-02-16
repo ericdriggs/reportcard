@@ -14,7 +14,7 @@ import java.util.Set;
 
 //TODO: add reports endpoint after stages
 @RestController
-@RequestMapping("/v1/ui")
+@RequestMapping("")
 @SuppressWarnings("unused")
 public class BrowseUIController {
 
@@ -72,17 +72,17 @@ public class BrowseUIController {
         return new ResponseEntity<>(HtmlHelper.getJobHtml(company, org, repo, branch, jobId), HttpStatus.OK);
     }
 
-//    @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/{runId}",
-//            "company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/{runId}/stage"}, produces = "text/html")
-//    public ResponseEntity<Map<Run, Map<Stage, Set<TestResult>>>> getStagesByIds(
-//            @PathVariable String company,
-//            @PathVariable String org,
-//            @PathVariable String repo,
-//            @PathVariable String branch,
-//            @PathVariable Long jobId,
-//            @PathVariable Long runId) {
-//        return new ResponseEntity<>(RunStagesTestResultsCacheMap.INSTANCE.getValue(new CompanyOrgRepoBranchJobRun(company, org, repo, branch, jobId, runId)), HttpStatus.OK);
-//    }
+    @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/{runId}",
+            "company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/{runId}/stage"}, produces = "text/html")
+    public ResponseEntity<String> getStagesByIds(
+            @PathVariable String company,
+            @PathVariable String org,
+            @PathVariable String repo,
+            @PathVariable String branch,
+            @PathVariable Long jobId,
+            @PathVariable Long runId) {
+        return new ResponseEntity<>(HtmlHelper.getRunHtml(company, org, repo, branch, jobId, runId), HttpStatus.OK);
+    }
 //
 //    @GetMapping(path = "company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/{runId}/stage/{stage}", produces = "text/html")
 //    public ResponseEntity<Map<Stage, Map<TestResult, Set<TestSuite>>>> getStageTestResultsTestSuites(

@@ -153,6 +153,7 @@ public class StagePathPersistService extends AbstractPersistService {
             Run _run = null;
             Stage _stage = null;
 
+            //TODO: explain why go through record to get to pojo
             if (record.get(COMPANY.COMPANY_ID.getName()) != null) {
                 _company = record.into(CompanyRecord.class).into(Company.class);
             }

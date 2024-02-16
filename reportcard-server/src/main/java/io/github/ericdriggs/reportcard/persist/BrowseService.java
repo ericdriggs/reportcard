@@ -1,5 +1,8 @@
 package io.github.ericdriggs.reportcard.persist;
 
+import io.github.ericdriggs.reportcard.cache.model.BranchStageViewResponse;
+import io.github.ericdriggs.reportcard.cache.model.CompanyOrgRepoBranch;
+import io.github.ericdriggs.reportcard.cache.model.TestResultStorages;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.*;
 
 import io.github.ericdriggs.reportcard.util.JsonCompare;
@@ -359,6 +362,114 @@ public class BrowseService extends AbstractPersistService {
             stageTestResultMap.get(stage).add(testResult);
         }
         return Collections.singletonMap(run, stageTestResultMap);
+    }
+
+
+    public BranchStageViewResponse getStageViewForBranch(String companyName, String orgName, String repoName, String branchName) {
+
+        Result<Record> recordResult = dsl.select()
+                                         .from(COMPANY)
+                                         .join(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID)
+                                                                     .and(ORG.ORG_NAME.eq(orgName)))
+                                         .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
+                                                                   .and(REPO.REPO_NAME.eq(repoName)))
+                                         .join(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
+                                                                        .and(BRANCH.BRANCH_NAME.eq(branchName)))
+                                         .join(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
+                                         .join(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID))
+                                         .join(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID))
+                                         .leftJoin(STORAGE).on(STORAGE.STAGE_FK.eq(STORAGE.STORAGE_ID))
+                                         .leftJoin(TEST_RESULT).on(TEST_RESULT.STAGE_FK.eq(TEST_RESULT.TEST_RESULT_ID))
+                                         .where(COMPANY.COMPANY_NAME.eq(companyName))
+                                         .fetch();
+
+        BranchStageViewResponse.BranchStageViewResponseBuilder rBuilder = BranchStageViewResponse.builder();
+
+        CompanyOrgRepoBranch companyOrgRepoBranch = null;
+        Map<Job, Map<Run, Map<Stage, TestResultStorages>>> jobRunStagesMap = new TreeMap<>(PojoComparators.JOB_CASE_INSENSITIVE_ORDER);
+
+        for (Record record : recordResult) {
+            if (companyOrgRepoBranch == null) {
+                CompanyOrgRepoBranch.CompanyOrgRepoBranchBuilder cBuilder = CompanyOrgRepoBranch.builder();
+                cBuilder.company(record.into(io.github.ericdriggs.reportcard.gen.db.tables.pojos.Company.class));
+
+                cBuilder.org(record.into(Org.class));
+                cBuilder.repo(record.into(Repo.class));
+                cBuilder.branch(record.into(Branch.class));
+                companyOrgRepoBranch = cBuilder.build();
+            }
+
+            Job job = record.into(Job.class);
+
+            if (job != null) {
+                jobRunStagesMap.computeIfAbsent(job, k -> new TreeMap<>(PojoComparators.RUN_CASE_INSENSITIVE_ORDER));
+
+                Map<Run, Map<Stage, TestResultStorages>> runStageResultsMap = jobRunStagesMap.get(job);
+
+                Run run = record.into(Run.class);
+                runStageResultsMap.computeIfAbsent(run, k -> new TreeMap<>(PojoComparators.STAGE_CASE_INSENSITIVE_ORDER));
+
+                Map<Stage, TestResultStorages> stageResultsMap = runStageResultsMap.get(run);
+
+                Stage stage = record.into(Stage.class);
+
+                TestResult testResult = null;
+                try {
+                    testResult = record.into(TestResult.class);
+                } catch (Exception ex) {
+                    //NO-OP. allowed to be null. Would prefer more elegant handling of null
+                }
+
+                TestResultStorages testResultStorages = TestResultStorages.builder().testResult(testResult).build();
+                stageResultsMap.putIfAbsent(stage, testResultStorages);
+
+                testResultStorages = stageResultsMap.get(stage);
+                Storage storage = null;
+                try {
+                    storage = record.into(Storage.class);
+                    testResultStorages.getStorages().add(storage);
+                } catch (Exception ex) {
+                    //NO-OP. allowed to be null. Would prefer more elegant handling of null
+                }
+            }
+        }
+        return BranchStageViewResponse.builder().companyOrgRepoBranch(companyOrgRepoBranch).jobRunStageResultsMap(jobRunStagesMap).build();
+    }
+
+    public Map<Run, Map<Stage, Set<Storage>>> getRunStagesStorages(String companyName, String orgName, String repoName, String branchName, Long jobId, Long runId) {
+
+        Result<Record> recordResult = dsl.select()
+                                         .from(COMPANY)
+                                         .leftJoin(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID)
+                                                                         .and(ORG.ORG_NAME.eq(orgName)))
+                                         .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
+                                                                       .and(REPO.REPO_NAME.eq(repoName)))
+                                         .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
+                                                                            .and(BRANCH.BRANCH_NAME.eq(branchName)))
+                                         .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID)
+                                                                        .and(JOB.JOB_ID.eq(jobId)))
+                                         .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID)
+                                                                     .and(RUN.RUN_ID.eq(runId)))
+                                         .leftJoin(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID))
+                                         .leftJoin(STORAGE).on(STORAGE.STAGE_FK.eq(STORAGE.STORAGE_ID))
+                                         .where(COMPANY.COMPANY_NAME.eq(companyName))
+                                         .fetch();
+
+        Map<Stage, Set<Storage>> stageStorageMap = new TreeMap<>(PojoComparators.STAGE_CASE_INSENSITIVE_ORDER);
+        Run run = null;
+        for (Record record : recordResult) {
+            if (run == null) {
+                run = record.into(Run.class);
+            }
+            Stage stage = record.into(Stage.class);
+            io.github.ericdriggs.reportcard.gen.db.tables.pojos.Storage testResult = record.into(io.github.ericdriggs.reportcard.gen.db.tables.pojos.Storage.class);
+
+            if (!stageStorageMap.containsKey(stage)) {
+                stageStorageMap.put(stage, new TreeSet<>(PojoComparators.STORAGE_CASE_INSENSITIVE_ORDER));
+            }
+            stageStorageMap.get(stage).add(testResult);
+        }
+        return Collections.singletonMap(run, stageStorageMap);
     }
 
     public Run getRun(String companyName, String orgName, String repoName, String branchName, Long jobId, Long runId) {
