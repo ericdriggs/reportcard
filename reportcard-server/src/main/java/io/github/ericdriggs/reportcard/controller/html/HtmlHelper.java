@@ -2,6 +2,8 @@ package io.github.ericdriggs.reportcard.controller.html;
 
 import io.github.ericdriggs.reportcard.cache.dto.*;
 import io.github.ericdriggs.reportcard.cache.model.*;
+import io.github.ericdriggs.reportcard.cache.model.CompanyOrgRepoBranch;
+import io.github.ericdriggs.reportcard.controller.StorageController;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -53,7 +55,7 @@ public enum HtmlHelper {
             final Company company = entry.getKey();
             final Set<Org> orgs = entry.getValue();
 
-            CompanyOrgRepoBranchJobRunStage path = CompanyOrgRepoBranchJobRunStage.builder().company(company.getCompanyName()).build();
+            CompanyOrgRepoBranchJobRunStageDTO path = CompanyOrgRepoBranchJobRunStageDTO.builder().company(company.getCompanyName()).build();
             sb.append(getItemRow(path, company.getCompanyName(), orgs.size(), null));
         }
         return sb.toString();
@@ -61,8 +63,8 @@ public enum HtmlHelper {
 
     //******************** company ********************//
     public static String getCompanyHtml(String company) {
-        final CompanyOrgRepoBranchJobRunStage path = CompanyOrgRepoBranchJobRunStage.builder().company(company).build();
-        Map<Company, Map<Org, Set<Repo>>> companyOrgReposMap = CompanyOrgsReposCacheMap.INSTANCE.getValue(new CompanyName(company));
+        final CompanyOrgRepoBranchJobRunStageDTO path = CompanyOrgRepoBranchJobRunStageDTO.builder().company(company).build();
+        Map<Company, Map<Org, Set<Repo>>> companyOrgReposMap = CompanyOrgsReposCacheMap.INSTANCE.getValue(new CompanyDTO(company));
 
         if (companyOrgReposMap == null || companyOrgReposMap.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Entry not found: " + path.toUrlPath());
@@ -79,7 +81,7 @@ public enum HtmlHelper {
         return getPage(main, getBreadCrumb(path));
     }
 
-    private static String getCompanyOrgs(CompanyOrgRepoBranchJobRunStage path, Map<Org, Set<Repo>> orgRepos) {
+    private static String getCompanyOrgs(CompanyOrgRepoBranchJobRunStageDTO path, Map<Org, Set<Repo>> orgRepos) {
         StringBuilder sb = new StringBuilder();
         for (Map.Entry<Org, Set<Repo>> entry : orgRepos.entrySet()) {
             final Org org = entry.getKey();
@@ -96,8 +98,8 @@ public enum HtmlHelper {
 
     public static String getOrgHtml(String company, String org) {
 
-        final CompanyOrgRepoBranchJobRunStage path = CompanyOrgRepoBranchJobRunStage.builder().company(company).org(org).build();
-        Map<Org, Map<Repo, Set<Branch>>> orgRepoBranchMap = OrgReposBranchesCacheMap.INSTANCE.getValue(new CompanyOrg(company, org));
+        final CompanyOrgRepoBranchJobRunStageDTO path = CompanyOrgRepoBranchJobRunStageDTO.builder().company(company).org(org).build();
+        Map<Org, Map<Repo, Set<Branch>>> orgRepoBranchMap = OrgReposBranchesCacheMap.INSTANCE.getValue(new CompanyOrgDTO(company, org));
 
         if (orgRepoBranchMap == null || orgRepoBranchMap.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Entry not found: " + path.toUrlPath());
@@ -115,13 +117,13 @@ public enum HtmlHelper {
         return getPage(main, getBreadCrumb(path));
     }
 
-    private static String getOrgRepos(CompanyOrgRepoBranchJobRunStage path, Map<Repo, Set<Branch>> repoBranchMap) {
+    private static String getOrgRepos(CompanyOrgRepoBranchJobRunStageDTO path, Map<Repo, Set<Branch>> repoBranchMap) {
 
         StringBuilder sb = new StringBuilder();
         for (Map.Entry<Repo, Set<Branch>> entry : repoBranchMap.entrySet()) {
             final Repo repo = entry.getKey();
             final Set<Branch> branches = entry.getValue();
-            final CompanyOrgRepoBranchJobRunStage itemPath = path.toBuilder().repo(repo.getRepoName()).build();
+            final CompanyOrgRepoBranchJobRunStageDTO itemPath = path.toBuilder().repo(repo.getRepoName()).build();
             final Instant lastRun = mostRecent(branches.stream().map(Branch::getLastRun).collect(Collectors.toSet()));
             sb.append(getItemRow(itemPath, repo.getRepoName(), branches.size(), lastRun));
         }
@@ -132,14 +134,14 @@ public enum HtmlHelper {
 
     public static String getRepoHtml(String company, String org, String repo) {
 
-        final CompanyOrgRepoBranchJobRunStage path = CompanyOrgRepoBranchJobRunStage
+        final CompanyOrgRepoBranchJobRunStageDTO path = CompanyOrgRepoBranchJobRunStageDTO
                 .builder()
                 .company(company)
                 .org(org)
                 .repo(repo)
                 .build();
 
-        Map<Repo, Map<Branch, Set<Job>>> repoBranchJobMap = RepoBranchesJobsCacheMap.INSTANCE.getValue(new CompanyOrgRepo(company, org, repo));
+        Map<Repo, Map<Branch, Set<Job>>> repoBranchJobMap = RepoBranchesJobsCacheMap.INSTANCE.getValue(new CompanyOrgRepoDTO(company, org, repo));
 
         if (repoBranchJobMap == null || repoBranchJobMap.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Entry not found: " + path.toUrlPath());
@@ -156,14 +158,14 @@ public enum HtmlHelper {
         return getPage(main, getBreadCrumb(path));
     }
 
-    private static String getRepoBranches(CompanyOrgRepoBranchJobRunStage path, Map<Branch, Set<Job>> branchJobMap) {
+    private static String getRepoBranches(CompanyOrgRepoBranchJobRunStageDTO path, Map<Branch, Set<Job>> branchJobMap) {
 
         StringBuilder sb = new StringBuilder();
         for (Map.Entry<Branch, Set<Job>> entry : branchJobMap.entrySet()) {
             final Branch branch = entry.getKey();
             final Set<Job> jobs = entry.getValue();
             final Instant lastRun = mostRecent(jobs.stream().map(Job::getLastRun).collect(Collectors.toSet()));
-            final CompanyOrgRepoBranchJobRunStage itemPath = path.toBuilder().branch(branch.getBranchName()).build();
+            final CompanyOrgRepoBranchJobRunStageDTO itemPath = path.toBuilder().branch(branch.getBranchName()).build();
             sb.append(getItemRow(itemPath, branch.getBranchName(), jobs.size(), lastRun));
         }
         return sb.toString();
@@ -171,9 +173,9 @@ public enum HtmlHelper {
 
     //******************** branch ********************//
 
-    public static String getBranchHtml(String company, String org, String repo, String branch) {
+    public static String getBranchHtml(String company, String org, String repo, String branch, BranchStageViewResponse branchStageViewResponse) {
 
-        final CompanyOrgRepoBranchJobRunStage path = CompanyOrgRepoBranchJobRunStage
+        final CompanyOrgRepoBranchJobRunStageDTO path = CompanyOrgRepoBranchJobRunStageDTO
                 .builder()
                 .company(company)
                 .org(org)
@@ -181,7 +183,7 @@ public enum HtmlHelper {
                 .branch(branch)
                 .build();
 
-        Map<Branch, Map<Job, Set<Run>>> branchJobRunMap = BranchJobsRunsCacheMap.INSTANCE.getValue(new CompanyOrgRepoBranch(company, org, repo, branch));
+        Map<Branch, Map<Job, Set<Run>>> branchJobRunMap = BranchJobsRunsCacheMap.INSTANCE.getValue(new CompanyOrgRepoBranchDTO(company, org, repo, branch));
 
         if (branchJobRunMap == null || branchJobRunMap.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Entry not found: " + path.toUrlPath());
@@ -191,21 +193,25 @@ public enum HtmlHelper {
         }
 
         Map<Job, Set<Run>> jobRunMap = branchJobRunMap.values().stream().findFirst().orElseThrow();
-        final String main = baseMain.replace(LEGEND, "Jobs")
+        final String jobMain = baseMain.replace(LEGEND, "Jobs")
                                     .replace(TABLE_HEADERS, branchHeaders)
-                                    .replace(TABLE_ROWS, getJobRuns(path, jobRunMap));
+                                    .replace(TABLE_ROWS, getJobRuns(path, jobRunMap) );
 
-        return getPage(main, getBreadCrumb(path));
+        final String stagesMain = getBranchStageView(branchStageViewResponse);
+
+
+
+        return getPage(jobMain + stagesMain, getBreadCrumb(path));
     }
 
-    private static String getJobRuns(CompanyOrgRepoBranchJobRunStage path, Map<Job, Set<Run>> jobRunMap) {
+    private static String getJobRuns(CompanyOrgRepoBranchJobRunStageDTO path, Map<Job, Set<Run>> jobRunMap) {
 
         StringBuilder sb = new StringBuilder();
         for (Map.Entry<Job, Set<Run>> entry : jobRunMap.entrySet()) {
             final Job job = entry.getKey();
             final Set<Run> runs = entry.getValue();
             final Instant lastRun = mostRecent(runs.stream().map(Run::getCreated).collect(Collectors.toSet()));
-            final CompanyOrgRepoBranchJobRunStage itemPath = path.toBuilder().jobId(job.getJobId()).build();
+            final CompanyOrgRepoBranchJobRunStageDTO itemPath = path.toBuilder().jobId(job.getJobId()).build();
             final String jobInfo = job.getJobInfo();
             sb.append(getItemRow(itemPath, Long.toString(job.getJobId()), runs.size(), jobInfo, lastRun));
 
@@ -216,7 +222,7 @@ public enum HtmlHelper {
 
     public static String getJobHtml(String company, String org, String repo, String branch, Long jobId) {
 
-        final CompanyOrgRepoBranchJobRunStage path = CompanyOrgRepoBranchJobRunStage
+        final CompanyOrgRepoBranchJobRunStageDTO path = CompanyOrgRepoBranchJobRunStageDTO
                 .builder()
                 .company(company)
                 .org(org)
@@ -225,7 +231,7 @@ public enum HtmlHelper {
                 .jobId(jobId)
                 .build();
 
-        Map<Job, Map<Run, Set<Stage>>> jobRunStageMap = JobRunsStagesCacheMap.INSTANCE.getValue(new CompanyOrgRepoBranchJob(company, org, repo, branch, jobId));
+        Map<Job, Map<Run, Set<Stage>>> jobRunStageMap = JobRunsStagesCacheMap.INSTANCE.getValue(new CompanyOrgRepoBranchJobDTO(company, org, repo, branch, jobId));
 
         if (jobRunStageMap == null || jobRunStageMap.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Entry not found: " + path.toUrlPath());
@@ -242,7 +248,7 @@ public enum HtmlHelper {
         return getPage(main, getBreadCrumb(path));
     }
 
-    private static String getRunStages(CompanyOrgRepoBranchJobRunStage path, Map<Run, Set<Stage>> runStageMap) {
+    private static String getRunStages(CompanyOrgRepoBranchJobRunStageDTO path, Map<Run, Set<Stage>> runStageMap) {
 
         StringBuilder sb = new StringBuilder();
         for (Map.Entry<Run, Set<Stage>> entry : runStageMap.entrySet()) {
@@ -250,7 +256,7 @@ public enum HtmlHelper {
             final Set<Stage> stages = entry.getValue();
 
             final Instant lastRun = mostRecent(Set.of(run.getCreated()));
-            final CompanyOrgRepoBranchJobRunStage itemPath = path.toBuilder().runId(run.getRunId()).build();
+            final CompanyOrgRepoBranchJobRunStageDTO itemPath = path.toBuilder().runId(run.getRunId()).build();
             sb.append(getItemRow(itemPath, Long.toString(run.getRunId()), stages.size(), lastRun));
         }
         return sb.toString();
@@ -272,50 +278,83 @@ public enum HtmlHelper {
             """;
 
 
-    public static String getStageView(CompanyOrgRepoBranchJobRunStage path) {
+    public static String getBranchStageView(BranchStageViewResponse branchStageViewResponse) {
 
+        if (branchStageViewResponse == null || branchStageViewResponse.getJobRun_StageTestResult_StoragesMap() == null || branchStageViewResponse.getJobRun_StageTestResult_StoragesMap().isEmpty()) {
+            return "";
+        }
+
+
+        final CompanyOrgRepoBranchJobRunStageDTO branchPath; {
+            final CompanyOrgRepoBranch c = branchStageViewResponse.getCompanyOrgRepoBranch();
+            branchPath = CompanyOrgRepoBranchJobRunStageDTO
+                    .builder()
+                    .company(c.getCompany() == null ? null : c.getCompany().getCompanyName())
+                    .org(c.getOrg() == null ? null : c.getOrg().getOrgName())
+                    .repo(c.getRepo() == null ? null : c.getRepo().getRepoName())
+                    .branch(c.getBranch() == null ? null : c.getBranch().getBranchName())
+                    .build();
+        }
+
+        //JobRun row
+        StringBuilder runRowsHtml = new StringBuilder();
+        for (Map.Entry<JobRun, Map<StageTestResult, Set<Storage>>> jobRunEntry : branchStageViewResponse.getJobRun_StageTestResult_StoragesMap().entrySet()) {
+            final JobRun jobRun = jobRunEntry.getKey();
+            Map<StageTestResult, Set<Storage>> stageTestResult_StorageMap = jobRunEntry.getValue();
+            final Job job = jobRun.getJob();
+            final Run run = jobRun.getRun();
+
+            if (job == null || run == null) {
+                continue;
+            }
+
+            final CompanyOrgRepoBranchJobRunStageDTO jobPath = branchPath.toBuilder().jobId(job.getJobId()).build();
+            final CompanyOrgRepoBranchJobRunStageDTO runPath = branchPath.toBuilder().runId(run.getRunId()).build();
+
+            StringBuilder stagesHtml = new StringBuilder();
+            for (Map.Entry<StageTestResult, Set<Storage>> stageTestResultEntry : stageTestResult_StorageMap.entrySet()) {
+                final StageTestResult stageTestResult = stageTestResultEntry.getKey();
+                final Stage stage = stageTestResult.getStage();
+                final Set<Storage> storages = stageTestResultEntry.getValue();
+                final boolean stageIsSuccess = stageTestResult.isSuccess();
+
+                final String stageHtml = stageItemHtmlBase
+                        .replace("{stageClass}", stageIsSuccess ? "stage-pass" : "stage-fail")
+                        .replace("{stageName}", stage.getStageName())
+                        .replace("{stageTime}", stageTestResult.getDurationString())
+                        .replace("<!--reportLinks-->", getReportLinks(storages));
+                stagesHtml.append(stageHtml);
+            }
+            final String runRowHtml = runRowHtmlBase
+                    .replace("{dotClass}", jobRun.isSuccess() ? "dot-pass" : "dot-fail")
+                    .replace("{jobId}", Long.toString(job.getJobId()))
+                    .replace("{jobInfo}", job.getJobInfo())
+                    .replace("{jobUrl}", getUrl(jobPath))
+                    .replace("{runCount}", Long.toString(run.getJobRunCount()))
+                    .replace("{runDate}", run.getCreated().toString())
+                    .replace("{runId}", Long.toString(run.getRunId()))
+                    .replace("{runLink}", getUrl(runPath))
+                    .replace("<!--stages-->", stagesHtml);
+
+            runRowsHtml.append(runRowHtml);
+        }
+        return stageViewMain.replace("<!--runRows-->", runRowsHtml.toString());
     }
 
-    //{stageName}
-    //{stageTime}
-    //<!--reportLinks-->
-    private final static String stageItem =
-            """
-            <fieldset class="stage stage-pass">
-              <legend class="stage-legend">{stageName}<br><span class="info">({stageTime})</span></legend>
-              <!--reportLinks-->
-            </fieldset>
-            """;
+    private static String getReportLinks(Set<Storage> storages) {
+        if (storages == null || storages.isEmpty()) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder();
+        for(Storage storage : storages) {
+            final String reportLink = reportLinkBase
+                    .replace("{reportName}", storage.getLabel())
+                    .replace("{reportUrl}", StorageController.storageKeyPath + storage.getPrefix());
+            sb.append(reportLink + ls);
+        }
+        return sb.toString();
+    }
 
-    //{runId}
-    //{jobId}
-    //{jobInfo}
-    //{runDate}
-    private final static String stageRow =
-            """
-            <tr>
-              <td>
-                <fieldset class="stage">
-                  <legend id="run-{runId}-job-{jobId}">
-                    <a href="run.html"><span class="dot dot-pass"></span>#2</a>
-                    &nbsp;<a class="info" title='{jobInfo}' href="job.html">114232</a>
-                    &nbsp;<span class="info">{runDate}</span>
-                  </legend>
-                  <div class="flex-row" style="text-align:left">
-                    <fieldset class="stage stage-pass">
-                      <legend class="stage-legend">{stageName}<br><span class="info">({stageTime})</span></legend>
-                      <!--reportLinks-->
-                    </fieldset>
-                    <fieldset class="stage stage-pass">
-                      <legend class="stage-legend">api test<br><span class="info">(5min 24s)</span></legend>
-                      <a class="info report-link" href="#"><img alt="cucumber html" class="report-img" src="image/report-simple.svg">cucumber html</a><br />
-                      <a class="info report-link" href="#"><img alt="junit xml" class="report-img" src="image/report-xml.svg">junit xml</a>
-                    </fieldset>
-                  </div>
-                </fieldset>
-              </td>
-            </tr>
-            """;
     private final static String stageViewMain =
             """
             <div id="stage-view">
@@ -323,18 +362,49 @@ public enum HtmlHelper {
                 <legend>Stage View</legend>
                 <table class="sortable" id="stage-table">
                   <tbody>
-                    <!--stageViewRows-->
+                    <!--runRows-->
                   </tbody>
                 </table> <!-- end stage-table -->
               </fieldset>
             </div><!-- end stage view -->
             """;
 
+    private final static String runRowHtmlBase =
+            """
+            <tr>
+              <td>
+                <fieldset class="stage">
+                  <legend id="run-{runId}-job-{jobId}">
+                    <a href="{runLink}<span class="dot {dotClass}"></span>#{runCount}</a>
+                    &nbsp;<a class="info" title='{jobInfo}' href="{jobUrl}">{jobId}</a>
+                    &nbsp;<span class="info">{runDate}</span>
+                  </legend>
+                  <div class="flex-row" style="text-align:left">
+                    <!--stages-->
+                  </div>
+                </fieldset>
+              </td>
+            </tr>
+            """;
+
+    private final static String stageItemHtmlBase =
+            """
+            <fieldset class="stage {stageClass}">
+              <legend class="stage-legend">{stageName}<br><span class="info">({stageTime})</span></legend>
+              <!--reportLinks-->
+            </fieldset>
+            """;
+
+    private final static String reportLinkBase = "<a class=\"info report-link\" href=\"{reportUrl}\">" +
+                                                 "<img alt=\"{reportName}\" class=\"report-img\" src=\"/image/report-simple.svg\">" +
+                                                 "{reportName}" +
+                                                 "</a>";
+
     //******************** run ********************//
 
     public static String getRunHtml(String company, String org, String repo, String branch, Long jobId, Long runId) {
 
-        final CompanyOrgRepoBranchJobRunStage path = CompanyOrgRepoBranchJobRunStage
+        final CompanyOrgRepoBranchJobRunStageDTO path = CompanyOrgRepoBranchJobRunStageDTO
                 .builder()
                 .company(company)
                 .org(org)
@@ -344,7 +414,7 @@ public enum HtmlHelper {
                 .runId(runId)
                 .build();
 
-        Map<Run, Map<Stage, Set<TestResult>>> runStageTestResultMap = RunStagesTestResultsCacheMap.INSTANCE.getValue(new CompanyOrgRepoBranchJobRun(company, org, repo, branch, jobId, runId));
+        Map<Run, Map<Stage, Set<TestResult>>> runStageTestResultMap = RunStagesTestResultsCacheMap.INSTANCE.getValue(new CompanyOrgRepoBranchJobRunDTO(company, org, repo, branch, jobId, runId));
 
         if (runStageTestResultMap == null || runStageTestResultMap.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Entry not found: " + path.toUrlPath());
@@ -361,7 +431,7 @@ public enum HtmlHelper {
         return getPage(main, getBreadCrumb(path));
     }
 
-    private static String getStageTestResult(CompanyOrgRepoBranchJobRunStage path, Map<Stage, Set<TestResult>> runStageMap) {
+    private static String getStageTestResult(CompanyOrgRepoBranchJobRunStageDTO path, Map<Stage, Set<TestResult>> runStageMap) {
 
         StringBuilder sb = new StringBuilder();
         for (Map.Entry<Stage, Set<TestResult>> entry : runStageMap.entrySet()) {
@@ -369,7 +439,7 @@ public enum HtmlHelper {
             final Set<TestResult> testResults = entry.getValue();
 
             final Instant lastRun = mostRecent(testResults.stream().map(TestResult::getTestResultCreated).collect(Collectors.toSet()));
-            final CompanyOrgRepoBranchJobRunStage itemPath = path.toBuilder().stageName(stage.getStageName()).build();
+            final CompanyOrgRepoBranchJobRunStageDTO itemPath = path.toBuilder().stageName(stage.getStageName()).build();
             sb.append(getItemRow(itemPath, stage.getStageName(), testResults.size(), lastRun));
         }
         return sb.toString();
@@ -378,34 +448,34 @@ public enum HtmlHelper {
 
     //******************** util ********************//
 
-    private static List<Pair<String, String>> getBreadCrumb(CompanyOrgRepoBranchJobRunStage path) {
+    private static List<Pair<String, String>> getBreadCrumb(CompanyOrgRepoBranchJobRunStageDTO path) {
         List<Pair<String, String>> breadCrumbs = new ArrayList<>();
         breadCrumbs.add(Pair.of("home", getUrl(null)));
 
         if (path != null) {
             if (!StringUtils.isEmpty(path.getCompany())) {
                 breadCrumbs.add(Pair.of(path.getCompany(),
-                        getUrl(CompanyOrgRepoBranchJobRunStage.truncateCompany(path))));
+                        getUrl(CompanyOrgRepoBranchJobRunStageDTO.truncateCompany(path))));
 
                 if (!StringUtils.isEmpty(path.getOrg())) {
                     breadCrumbs.add(Pair.of(path.getOrg(),
-                            getUrl(CompanyOrgRepoBranchJobRunStage.truncateOrg(path))));
+                            getUrl(CompanyOrgRepoBranchJobRunStageDTO.truncateOrg(path))));
 
                     if (!StringUtils.isEmpty(path.getRepo())) {
                         breadCrumbs.add(Pair.of(path.getRepo(),
-                                getUrl(CompanyOrgRepoBranchJobRunStage.truncateRepo(path))));
+                                getUrl(CompanyOrgRepoBranchJobRunStageDTO.truncateRepo(path))));
 
                         if (!StringUtils.isEmpty(path.getBranch())) {
                             breadCrumbs.add(Pair.of(path.getBranch(),
-                                    getUrl(CompanyOrgRepoBranchJobRunStage.truncateBranch(path))));
+                                    getUrl(CompanyOrgRepoBranchJobRunStageDTO.truncateBranch(path))));
 
                             if (path.getJobId() != null) {
                                 breadCrumbs.add(Pair.of(String.valueOf("jobId: " + path.getJobId()),
-                                        getUrl(CompanyOrgRepoBranchJobRunStage.truncateJob(path))));
+                                        getUrl(CompanyOrgRepoBranchJobRunStageDTO.truncateJob(path))));
 
                                 if (path.getRunId() != null) {
                                     breadCrumbs.add(Pair.of(String.valueOf("runId: " + path.getRunId()),
-                                            getUrl(CompanyOrgRepoBranchJobRunStage.truncateRun(path))));
+                                            getUrl(CompanyOrgRepoBranchJobRunStageDTO.truncateRun(path))));
 
                                     if (path.getStageName() != null) {
                                         breadCrumbs.add(Pair.of(path.getStageName(), getUrl(path)));
@@ -420,11 +490,11 @@ public enum HtmlHelper {
         return breadCrumbs;
     }
 
-    private static String getItemRow(CompanyOrgRepoBranchJobRunStage path, String name, int count, Instant date) {
+    private static String getItemRow(CompanyOrgRepoBranchJobRunStageDTO path, String name, int count, Instant date) {
         return getItemRow(path, name, count, null, date);
     }
 
-    private static String getItemRow(CompanyOrgRepoBranchJobRunStage path, String name, int count, String info, Instant date) {
+    private static String getItemRow(CompanyOrgRepoBranchJobRunStageDTO path, String name, int count, String info, Instant date) {
         StringBuilder sb = new StringBuilder();
 
         sb.append("<tr>").append(ls)
@@ -440,7 +510,18 @@ public enum HtmlHelper {
         return sb.toString();
     }
 
-    private static String getUrl(CompanyOrgRepoBranchJobRunStage path) {
+    private static String getLink( String text, String url) {
+        return getLink(text, url, null);
+    }
+
+    private static String getLink(String text, String url, String cssClass) {
+        return "<a href=\"{url}\" class=\"{cssClass}\">{text}</a>"
+                       .replace("{url}", url)
+                       .replace("{text}", text)
+                       .replace("{cssClass}", cssClass == null ? "" : cssClass) + ls;
+    }
+
+    private static String getUrl(CompanyOrgRepoBranchJobRunStageDTO path) {
         StringBuilder sb = new StringBuilder();
 
         if (path != null) {
@@ -503,7 +584,7 @@ public enum HtmlHelper {
 
     private final static String baseMain =
             """
-            <div id="browse">
+            <div name="browse">
               <fieldset style="display: inline-block">
                 <legend><!--legend--></legend>
                 <table style="border:1px" class="sortable">

@@ -3,7 +3,7 @@ package io.github.ericdriggs.reportcard.cache.model;
 import io.github.ericdriggs.reportcard.cache.AbstractAsyncCache;
 import io.github.ericdriggs.reportcard.cache.CacheDuration;
 import io.github.ericdriggs.reportcard.cache.SyncAsyncDuration;
-import io.github.ericdriggs.reportcard.cache.dto.CompanyOrgRepoBranchJobRun;
+import io.github.ericdriggs.reportcard.cache.dto.CompanyOrgRepoBranchJobRunDTO;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.Run;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.Stage;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestResult;
@@ -11,9 +11,9 @@ import io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestResult;
 import java.util.Map;
 import java.util.Set;
 
-public class RunStagesTestResultsCache extends AbstractAsyncCache<CompanyOrgRepoBranchJobRun, Map<Run,Map<Stage, Set<TestResult>>>> {
+public class RunStagesTestResultsCache extends AbstractAsyncCache<CompanyOrgRepoBranchJobRunDTO, Map<Run,Map<Stage, Set<TestResult>>>> {
 
-    public RunStagesTestResultsCache(CompanyOrgRepoBranchJobRun key) {
+    public RunStagesTestResultsCache(CompanyOrgRepoBranchJobRunDTO key) {
         super(key);
     }
 

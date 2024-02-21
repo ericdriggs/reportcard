@@ -10,8 +10,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
+import software.amazon.awssdk.core.ResponseBytes;
+import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.S3ClientBuilder;
 import software.amazon.awssdk.services.s3.S3CrtAsyncClientBuilder;
 import software.amazon.awssdk.services.s3.model.*;
 import software.amazon.awssdk.transfer.s3.S3TransferManager;
@@ -61,11 +65,27 @@ public class S3Service {
         return builder.build();
     }
 
+    protected S3Client getS3Client() {
+        S3ClientBuilder builder = S3Client.builder().credentialsProvider(DefaultCredentialsProvider.create())
+                                          .region(region);
+
+        if (endpointOverride != null) {
+            builder.forcePathStyle(true);
+            builder.endpointOverride(endpointOverride);
+        }
+        return builder.build();
+    }
+
     protected S3TransferManager getTransferManager() {
         return S3TransferManager.builder()
                 .s3Client(getS3AsyncClient())
                 .uploadDirectoryFollowSymbolicLinks(true)
                 .build();
+    }
+
+    public ResponseBytes<GetObjectResponse> getObjectBytes(String key) {
+        GetObjectRequest getObjectRequest =  GetObjectRequest.builder().bucket(bucketName).key(key).build();
+        return getS3Client().getObjectAsBytes(getObjectRequest);
     }
 
     @SneakyThrows(IOException.class)
@@ -99,6 +119,8 @@ public class S3Service {
                                         .checksumAlgorithm(CHECKSUM_ALGORITHM)
                                         .key(ufr.build().putObjectRequest().key())
                                         .bucket(bucketName)
+                                        //TO_MAYBE: if content type is not being set correctly, should be able to deduce from extension of key using function here
+                                        //.contentType(ufr.build().putObjectRequest().contentType(getContentTypeFromExtension(key)))
                                         .build())
                         )
                         .build());

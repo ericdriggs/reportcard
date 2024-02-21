@@ -7,7 +7,8 @@ import lombok.Data;
 @Data
 @Builder
 @AllArgsConstructor
-public class CompanyOrg {
+public class CompanyOrgRepoDTO {
     private final String company;
     private final String org;
+    private final String repo;
 }

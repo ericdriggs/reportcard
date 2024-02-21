@@ -58,7 +58,8 @@ public class BrowseUIController {
             @PathVariable String repo,
             @PathVariable String branch,
             @RequestParam(required = false) Map<String, String> jobInfoFilters) {
-        return new ResponseEntity<>(HtmlHelper.getBranchHtml(company, org, repo, branch), HttpStatus.OK);
+        BranchStageViewResponse branchStageViewResponse  = browseService.getStageViewForBranch(company, org, repo, branch);
+        return new ResponseEntity<>(HtmlHelper.getBranchHtml(company, org, repo, branch, branchStageViewResponse), HttpStatus.OK);
     }
 
     @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}",

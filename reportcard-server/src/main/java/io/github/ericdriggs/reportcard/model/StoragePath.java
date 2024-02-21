@@ -1,7 +1,6 @@
 package io.github.ericdriggs.reportcard.model;
 
 import lombok.Value;
-import software.amazon.awssdk.utils.Md5Utils;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
@@ -25,10 +24,9 @@ public class StoragePath {
     String branch;
 
     String date;
-    String jobInfoHash;
+    long jobId;
     int runCount;
 
-    String sha;
     String stage;
 
     final static DateTimeFormatter dateYmd = DateTimeFormatter.ISO_LOCAL_DATE.withZone(ZoneId.of("UTC"));
@@ -40,16 +38,15 @@ public class StoragePath {
         this.repo = sanitize(stagePath.getRepo().getRepoName());
         this.branch = sanitize(stagePath.getBranch().getBranchName());
         this.date = dateYmd.format(Instant.now());
-        this.jobInfoHash = sanitize(getJobInfoHash(stagePath.getJob().getJobInfo()));
+        this.jobId = stagePath.getJob().getJobId();
         Integer jobRunCount = stagePath.getRun().getJobRunCount();
         this.runCount = jobRunCount == null ? 0 : jobRunCount;
-        this.sha = sanitize(stagePath.getRun().getSha());
         this.stage = sanitize(stagePath.getStage().getStageName());
     }
 
     public String getPrefix() {
         {
-            final String fullPath = getPath(company, org, repo, branch, date, jobInfoHash, runCount, sha, stage);
+            final String fullPath = getPath(company, org, repo, branch, date, jobId, runCount, stage);
             if (fullPath.getBytes(StandardCharsets.UTF_8).length <= maxLength) {
                 return fullPath;
             }
@@ -61,23 +58,21 @@ public class StoragePath {
                 truncateBytes(repo),
                 truncateBytes(branch),
                 date, //10
-                jobInfoHash, //6
+                jobId, //6
                 runCount, //6
-                sha, //40
                 truncateBytes(stage));
     }
-
 
     static String truncateBytes(String str) {
 
         //Nothing to do
         final byte[] bytes = str.getBytes(StandardCharsets.UTF_8);
-        if (bytes.length <= StoragePath.maxStringBytes) {
+        if (bytes.length <= maxStringBytes) {
             return str;
         }
 
         //Iteratively trim until below target length
-        for (int i = StoragePath.maxStringBytes; i > 0; i--) {
+        for (int i = maxStringBytes; i > 0; i--) {
             final String subString = str.substring(0, i);
             final byte[] subStringBytes = subString.getBytes(StandardCharsets.UTF_8);
             if (subStringBytes.length <= StoragePath.maxStringBytes) {
@@ -87,22 +82,14 @@ public class StoragePath {
         throw new IllegalStateException("truncation coding error -- should be unreachable code");
     }
 
-    static String getJobInfoHash(String jobInfo) {
-
-        return Md5Utils.md5AsBase64(jobInfo.getBytes())
-                .replace("/", "-") // base64 encoding includes '/' path character
-                .substring(0, hashLength);
-    }
-
     static String getPath(
             String company,
             String org,
             String repo,
             String branch,
             String date,
-            String jobInfoHash,
+            long jobId,
             int runCount,
-            String sha,
             String stage) {
 
         return "/rc" +
@@ -111,9 +98,8 @@ public class StoragePath {
                 "/" + repo +
                 "/" + branch +
                 "/" + date +
-                "/" + jobInfoHash +
+                "/" + jobId +
                 "/" + runCount +
-                "/" + sha +
                 "/" + stage;
     }
 

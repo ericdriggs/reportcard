@@ -1,10 +1,12 @@
 package io.github.ericdriggs.reportcard.gen.db.tables.pojos;
 
-import io.github.ericdriggs.reportcard.cache.model.TestResultStorages;
+import io.github.ericdriggs.reportcard.cache.model.JobRun;
+import io.github.ericdriggs.reportcard.cache.model.StageTestResult;
 import io.github.ericdriggs.reportcard.util.JsonCompare;
 import org.apache.commons.lang3.ObjectUtils;
 
 import java.io.Serial;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 
 import static io.github.ericdriggs.reportcard.util.CompareUtil.*;
@@ -24,16 +26,18 @@ public class PojoComparators {
             = new PojoComparators.BranchCaseInsensitiveComparator();
 
     public static final Comparator<Job> JOB_CASE_INSENSITIVE_ORDER
-            = new PojoComparators.ContextCaseInsensitiveComparator();
+            = new JobCaseInsensitiveComparator();
+
+    public static final Comparator<JobRun> JOB_RUN_CASE_INSENSITIVE_ORDER
+            = new JobRunDateDescendingComparator();
 
     public static final Comparator<Run> RUN_CASE_INSENSITIVE_ORDER
             = new PojoComparators.RunCaseInsensitiveComparator();
 
     public static final Comparator<Stage> STAGE_CASE_INSENSITIVE_ORDER
             = new PojoComparators.StageCaseInsensitiveComparator();
-
-    public static final Comparator<TestResultStorages> TEST_RESULT_STORAGES_CASE_INSENSITIVE_ORDER
-            = new TestResultStoragesCaseInsensitiveComparator();
+    public static final Comparator<StageTestResult> STAGE_TEST_RESULT_COMPARATOR_CASE_INSENSITIVE_ORDER
+            = new StageTestResultCaseInsensitiveComparator();
 
     public static final Comparator<TestResult> TEST_RESULT_CASE_INSENSITIVE_ORDER
             = new PojoComparators.TestResultCaseInsensitiveComparator();
@@ -89,13 +93,23 @@ public class PojoComparators {
         }
     }
 
-    private static class ContextCaseInsensitiveComparator
+    private static class JobCaseInsensitiveComparator
             implements Comparator<Job>, java.io.Serializable {
         @Serial
         private static final long serialVersionUID = 9214266396218473015L;
 
         public int compare(Job val1, Job val2) {
             return compareJob(val1, val2);
+        }
+    }
+
+    private static class JobRunDateDescendingComparator
+            implements Comparator<JobRun>, java.io.Serializable {
+        @Serial
+        private static final long serialVersionUID = 3672789840075706826L;
+
+        public int compare(JobRun val1, JobRun val2) {
+            return compareJobRunDateDescending(val1, val2);
         }
     }
 
@@ -119,19 +133,19 @@ public class PojoComparators {
         }
     }
 
-    private static class TestResultStoragesCaseInsensitiveComparator
-            implements Comparator<TestResultStorages>, java.io.Serializable {
+    private static class StageTestResultCaseInsensitiveComparator
+            implements Comparator<StageTestResult>, java.io.Serializable {
         @Serial
         private static final long serialVersionUID = 3819926002811665135L;
 
-        public int compare(TestResultStorages val1, TestResultStorages val2) {
+        public int compare(StageTestResult val1, StageTestResult val2) {
+            if (val1 == null || val2 == null) {
+                return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+            }
             return chainCompare(
-                    ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2)),
-                    ObjectUtils.compare(ObjectUtils.isEmpty(val1.getTestResult()), ObjectUtils.isEmpty(val2.getTestResult())),
-                    compareTestResult(val1.getTestResult(), val2.getTestResult()),
-                    ObjectUtils.compare(ObjectUtils.isEmpty(val1.getStorages()), ObjectUtils.isEmpty(val2.getStorages())),
-                    //TO_MAYBE: better comparison on storage collections?
-                    compareIntegers(val1.getStorages().size(), val2.getStorages().size()));
+                    compareStage(val1.getStage(), val2.getStage()),
+                    compareTestResult(val1.getTestResult(), val2.getTestResult())
+            );
         }
     }
 
@@ -189,6 +203,35 @@ public class PojoComparators {
         );
     }
 
+    public static int compareJobDateDescending(Job val1, Job val2) {
+        if (val1 == null || val2 == null) {
+            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+        }
+        return chainCompare(
+                compareLocalDateTimeDescending(val1.getLastRun(), val2.getLastRun()),
+                compareJob(val1, val2)
+        );
+    }
+
+    public static int compareJobRunDateDescending(JobRun val1, JobRun val2) {
+        if (val1 == null || val2 == null) {
+            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+        }
+        return chainCompare(
+                //compare run before job since it will be more recent
+                compareRun(val1.getRun(), val2.getRun()),
+                compareJob(val1.getJob(), val2.getJob())
+        );
+    }
+
+    public static int compareLocalDateTimeDescending(LocalDateTime val1, LocalDateTime val2) {
+        if (val1 == null || val2 == null) {
+            //val2 then val1 since descending
+            return ObjectUtils.compare(ObjectUtils.isEmpty(val2), ObjectUtils.isEmpty(val1));
+        }
+        return val2.compareTo(val1);
+    }
+
     public static int compareRun(Run val1, Run val2) {
         if (val1 == null || val2 == null) {
             return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
@@ -199,6 +242,16 @@ public class PojoComparators {
                 ObjectUtils.compare(val1.getRunId(), val2.getRunId()),
                 ObjectUtils.compare(val1.getSha(), val2.getSha()),
                 compareLong(val1.getRunId(), val2.getRunId())
+        );
+    }
+
+    public static int compareRunDateDescending(Run val1, Run val2) {
+        if (val1 == null || val2 == null) {
+            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+        }
+        return chainCompare(
+                compareLocalDateTimeDescending(val1.getCreated(), val2.getCreated()),
+                compareRun(val1, val2)
         );
     }
 

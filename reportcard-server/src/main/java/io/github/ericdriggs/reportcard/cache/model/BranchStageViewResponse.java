@@ -5,10 +5,11 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.util.Map;
+import java.util.Set;
 
 @Data
 @Builder(toBuilder = true)
 public class BranchStageViewResponse {
     CompanyOrgRepoBranch companyOrgRepoBranch;
-    Map<Job, Map<Run, Map<Stage,TestResultStorages>>> jobRunStageResultsMap;
+    Map<JobRun, Map<StageTestResult, Set<Storage>>> jobRun_StageTestResult_StoragesMap;
 }

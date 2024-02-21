@@ -2,7 +2,8 @@ package io.github.ericdriggs.reportcard.persist;
 
 import io.github.ericdriggs.reportcard.cache.model.BranchStageViewResponse;
 import io.github.ericdriggs.reportcard.cache.model.CompanyOrgRepoBranch;
-import io.github.ericdriggs.reportcard.cache.model.TestResultStorages;
+import io.github.ericdriggs.reportcard.cache.model.JobRun;
+import io.github.ericdriggs.reportcard.cache.model.StageTestResult;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.*;
 
 import io.github.ericdriggs.reportcard.util.JsonCompare;
@@ -378,15 +379,15 @@ public class BrowseService extends AbstractPersistService {
                                          .join(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
                                          .join(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID))
                                          .join(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID))
-                                         .leftJoin(STORAGE).on(STORAGE.STAGE_FK.eq(STORAGE.STORAGE_ID))
-                                         .leftJoin(TEST_RESULT).on(TEST_RESULT.STAGE_FK.eq(TEST_RESULT.TEST_RESULT_ID))
+                                         .leftJoin(STORAGE).on(STORAGE.STAGE_FK.eq(STAGE.STAGE_ID))
+                                         .leftJoin(TEST_RESULT).on(TEST_RESULT.STAGE_FK.eq(STAGE.STAGE_ID))
                                          .where(COMPANY.COMPANY_NAME.eq(companyName))
                                          .fetch();
 
         BranchStageViewResponse.BranchStageViewResponseBuilder rBuilder = BranchStageViewResponse.builder();
 
         CompanyOrgRepoBranch companyOrgRepoBranch = null;
-        Map<Job, Map<Run, Map<Stage, TestResultStorages>>> jobRunStagesMap = new TreeMap<>(PojoComparators.JOB_CASE_INSENSITIVE_ORDER);
+        Map<JobRun, Map<StageTestResult, Set<Storage>>> jobRunStagesMap = new TreeMap<>(PojoComparators.JOB_RUN_CASE_INSENSITIVE_ORDER);
 
         for (Record record : recordResult) {
             if (companyOrgRepoBranch == null) {
@@ -400,40 +401,36 @@ public class BrowseService extends AbstractPersistService {
             }
 
             Job job = record.into(Job.class);
+            Run run = record.into(Run.class);
 
-            if (job != null) {
-                jobRunStagesMap.computeIfAbsent(job, k -> new TreeMap<>(PojoComparators.RUN_CASE_INSENSITIVE_ORDER));
+            if (job.getJobId() != null || run.getRunId() != null) {
+                JobRun jobRun = JobRun.builder().job(job).run(run).build();
 
-                Map<Run, Map<Stage, TestResultStorages>> runStageResultsMap = jobRunStagesMap.get(job);
 
-                Run run = record.into(Run.class);
-                runStageResultsMap.computeIfAbsent(run, k -> new TreeMap<>(PojoComparators.STAGE_CASE_INSENSITIVE_ORDER));
+                jobRunStagesMap.computeIfAbsent(jobRun, k -> new TreeMap<>(PojoComparators.STAGE_TEST_RESULT_COMPARATOR_CASE_INSENSITIVE_ORDER));
 
-                Map<Stage, TestResultStorages> stageResultsMap = runStageResultsMap.get(run);
+                Map<StageTestResult, Set<Storage>> stageTestResult_StorageMap = jobRunStagesMap.get(jobRun);
 
                 Stage stage = record.into(Stage.class);
-
                 TestResult testResult = null;
                 try {
                     testResult = record.into(TestResult.class);
                 } catch (Exception ex) {
                     //NO-OP. allowed to be null. Would prefer more elegant handling of null
                 }
+                StageTestResult stageTestResult = StageTestResult.builder().stage(stage).testResult(testResult).build();
+                stageTestResult_StorageMap.putIfAbsent(stageTestResult, new TreeSet<>(PojoComparators.STORAGE_CASE_INSENSITIVE_ORDER));
 
-                TestResultStorages testResultStorages = TestResultStorages.builder().testResult(testResult).build();
-                stageResultsMap.putIfAbsent(stage, testResultStorages);
-
-                testResultStorages = stageResultsMap.get(stage);
                 Storage storage = null;
                 try {
                     storage = record.into(Storage.class);
-                    testResultStorages.getStorages().add(storage);
+                    stageTestResult_StorageMap.get(stageTestResult).add(storage);
                 } catch (Exception ex) {
                     //NO-OP. allowed to be null. Would prefer more elegant handling of null
                 }
             }
         }
-        return BranchStageViewResponse.builder().companyOrgRepoBranch(companyOrgRepoBranch).jobRunStageResultsMap(jobRunStagesMap).build();
+        return BranchStageViewResponse.builder().companyOrgRepoBranch(companyOrgRepoBranch).jobRun_StageTestResult_StoragesMap(jobRunStagesMap).build();
     }
 
     public Map<Run, Map<Stage, Set<Storage>>> getRunStagesStorages(String companyName, String orgName, String repoName, String branchName, Long jobId, Long runId) {
