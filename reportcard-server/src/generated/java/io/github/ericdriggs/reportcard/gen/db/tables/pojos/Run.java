@@ -17,7 +17,7 @@ import lombok.Generated;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Run implements Serializable {
 
-    private static final long serialVersionUID = -1538459714;
+    private static final long serialVersionUID = -1152188101;
 
     private Long          runId;
     private String        runReference;
@@ -25,6 +25,7 @@ public class Run implements Serializable {
     private Integer       jobRunCount;
     private String        sha;
     private LocalDateTime created;
+    private Boolean       isSuccess;
 
     public Run() {}
 
@@ -35,6 +36,7 @@ public class Run implements Serializable {
         this.jobRunCount = value.jobRunCount;
         this.sha = value.sha;
         this.created = value.created;
+        this.isSuccess = value.isSuccess;
     }
 
     public Run(
@@ -43,7 +45,8 @@ public class Run implements Serializable {
         Long          jobFk,
         Integer       jobRunCount,
         String        sha,
-        LocalDateTime created
+        LocalDateTime created,
+        Boolean       isSuccess
     ) {
         this.runId = runId;
         this.runReference = runReference;
@@ -51,6 +54,7 @@ public class Run implements Serializable {
         this.jobRunCount = jobRunCount;
         this.sha = sha;
         this.created = created;
+        this.isSuccess = isSuccess;
     }
 
     /**
@@ -143,6 +147,21 @@ public class Run implements Serializable {
         return this;
     }
 
+    /**
+     * Getter for <code>reportcard.run.is_success</code>.
+     */
+    public Boolean getIsSuccess() {
+        return this.isSuccess;
+    }
+
+    /**
+     * Setter for <code>reportcard.run.is_success</code>.
+     */
+    public Run setIsSuccess(Boolean isSuccess) {
+        this.isSuccess = isSuccess;
+        return this;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("Run (");
@@ -153,6 +172,7 @@ public class Run implements Serializable {
         sb.append(", ").append(jobRunCount);
         sb.append(", ").append(sha);
         sb.append(", ").append(created);
+        sb.append(", ").append(isSuccess);
 
         sb.append(")");
         return sb.toString();
