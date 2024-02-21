@@ -56,7 +56,7 @@ EOT
 CURL_CMD="curl \
 --user $REPORTCARD_USER:$REPORTCARD_PASS \
 --verbose \
---request POST "$REPORTCARD_HOST/api/v1/reports" \
+--request POST "$REPORTCARD_HOST/v1/api/reports" \
 --form stageDetails=${STAGE_DETAILS};type=application/json \
 $REPORT_FILES_FLAGS"
 

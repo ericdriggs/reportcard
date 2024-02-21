@@ -1,0 +1,133 @@
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="css/shared.css">
+    <link rel="stylesheet" href="css/sortable.min.css"/>
+    <script src="js/sortable.min.js"></script>
+    <title>ReportCard</title>
+</head>
+<body>
+<header><img alt="reportcard logo" src="image/clipboard-check.svg" width="40px" height="40px" style="vertical-align: middle"> <span class="logo-text">ReportCard</span></header>
+<nav aria-label="breadcrumb">
+    <ul class="breadcrumb">
+        <li><a href="home.html">Home</a></li>
+        <li><a href="company.html" id="company-foocorp">FooCorp</a></li>
+        <li><a href="org.html" id="org-testorg">TestOrg1</a></li>
+        <li><a href="repo.html" id="repo-testrepo">TestRepo1</a></li>
+        <li><a href="branch.html" id="branch-main">main</a></li>
+    </ul>
+</nav>
+<br/>
+<div class="flex-row" role="main" id="main">
+    <div id="jobs">
+        <fieldset style="display: inline-block">
+            <legend>Jobs</legend>
+            <table style="border:1px" class="sortable info">
+                <thead>
+                <tr class="heading">
+                    <th>jobId</th>
+                    <th>Last Run</th>
+                    <th>Job Info</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td class="info" title='"application": "testrepo1", "pipeline": "staging"'><a href="job.html">114232</a></td>
+                    <td class="info">2024-01-02 13:26 UTC</td>
+                    <td class="info">application: testrepo1<br/>pipeline: staging</td>
+                </tr>
+                <tr>
+                    <td class="info" title='"application": "testrepo1", "pipeline": "prod"'><a href="job.html">221524</a></td>
+                    <td class="info">2024-01-01 03:54 UTC</td>
+                    <td class="info">application: testrepo1<br/>pipeline: prod
+                </tr>
+                <tr>
+                    <td class="info" title='"application": "testrepo1", "pipeline": "dev"'><a href="job.html">321524</a></td>
+                    <td class="info">2023-01-01 16:32 UTC</td>
+                    <td class="info">application: testrepo1<br/>pipeline: dev
+                </tr>
+                </tbody>
+            </table>
+        </fieldset>
+    </div> <!-- end jobs -->
+
+    <div id="stage-view">
+        <fieldset>
+            <legend>Stage View</legend>
+            <table class="sortable" id="stage-table">
+                <tbody>
+                <tr>
+                    <td>
+                        <fieldset class="stage">
+                            <legend id="run-2-job-114232">
+                                <a href="run.html"><span class="dot dot-pass"></span>#2</a>
+                                &nbsp;<a class="info" title='{ "application": "testrepo1", "pipeline": "staging" }' href="job.html">114232</a>
+                                &nbsp;<span class="info">2024-01-02 13:26 UTC</span>
+                            </legend>
+                            <div class="flex-row" style="text-align:left">
+                                <fieldset class="stage stage-pass">
+                                    <legend class="stage-legend">unit test<br><span class="info">(1min 24s)</span></legend>
+                                    <a class="info report-link" href="#"><img alt="cucumber html" class="report-img" src="image/report-simple.svg">cucumber html</a><br/>
+                                    <a class="info report-link" href="#"><img alt="junit xml" class="report-img" src="image/report-xml.svg">junit xml</a></fieldset>
+                                <fieldset class="stage stage-pass">
+                                    <legend class="stage-legend">api test<br><span class="info">(5min 24s)</span></legend>
+                                    <a class="info report-link" href="#"><img alt="cucumber html" class="report-img" src="image/report-simple.svg">cucumber html</a><br/>
+                                    <a class="info report-link" href="#"><img alt="junit xml" class="report-img" src="image/report-xml.svg">junit xml</a></fieldset>
+                            </div>
+                        </fieldset>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <fieldset class="stage">
+                            <legend style="text-align:left">
+                                <a href="run.html"><span class="dot dot-fail"></span>#1</a>
+                                &nbsp;<a class="info" title='{ "application": "testrepo1", "pipeline": "staging" }' href="job.html">114232</a>
+                                &nbsp;<span class="info">2024-01-01 03:54 UTC</span>
+                            </legend>
+                            <div class="flex-row" style="text-align:left">
+                                <fieldset class="stage stage-pass">
+                                    <legend class="stage-legend">unit test<br><span class="info">(1min 24s)</span></legend>
+                                    <a class="info report-link" href="#"><img alt="cucumber html" class="report-img" src="image/report-simple.svg">cucumber html</a><br/>
+                                    <a class="info report-link" href="#"><img alt="junit xml" class="report-img" src="image/report-xml.svg">junit xml</a></fieldset>
+                                <fieldset class="stage stage-fail">
+                                    <legend class="stage-legend">api test<br><span class="info">(5min 24s)</span></legend>
+                                    <a class="info report-link" href="#"><img alt="cucumber html" class="report-img" src="image/report-simple.svg">cucumber html</a><br/>
+                                    <a class="info report-link" href="#"><img alt="junit xml" class="report-img" src="image/report-xml.svg">junit xml</a></fieldset>
+                            </div>
+                        </fieldset>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <fieldset class="stage">
+                            <legend style="text-align:left">
+                                <a href="run.html"><span class="dot dot-fail"></span>#1</a>
+                                &nbsp;<a class="info" title='{ "application": "testrepo1", "pipeline": "staging" }' href="job.html">114232</a>
+                                &nbsp;<span class="info">2024-01-01 02:21 UTC</span>
+                            </legend>
+                            <div class="flex-row" style="text-align:left">
+                                <fieldset class="stage stage-fail">
+                                    <legend class="stage-legend">unit test<br><span class="info">(1min 24s)</span></legend>
+                                    <a class="info report-link" href="#"><img alt="cucumber html" class="report-img" src="image/report-simple.svg">cucumber html</a><br/>
+                                    <a class="info report-link" href="#"><img alt="junit xml" class="report-img" src="image/report-xml.svg">junit xml</a></fieldset>
+                                <fieldset class="stage stage-fail">
+                                    <legend class="stage-legend">api test<br><span class="info">(5min 24s)</span></legend>
+                                    <a class="info report-link" href="#"><img alt="cucumber html" class="report-img" src="image/report-simple.svg">cucumber html</a><br/>
+                                    <a class="info report-link" href="#"><img alt="junit xml" class="report-img" src="image/report-xml.svg">junit xml</a></fieldset>
+                            </div>
+                        </fieldset>
+                    </td>
+                </tr>
+                </tbody>
+            </table> <!-- end stage-table -->
+        </fieldset>
+    </div><!-- end stage view -->
+</div> <!-- end main -->
+
+<footer>
+    <span>Reportcard </span>&nbsp;&nbsp;&nbsp;
+    <a href="https://github.com/ericdriggs/reportcard">source</a>&nbsp;&nbsp;&nbsp;
+    <span>version: 0.0.1</span>
+</footer>
+</body>
+</html>

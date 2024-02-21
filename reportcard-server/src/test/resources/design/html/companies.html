@@ -1,0 +1,51 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="css/shared.css">
+    <link rel="stylesheet" href="css/sortable.min.css"/>
+    <script src="js/sortable.min.js"></script>
+</head>
+
+<body>
+<header>
+    <a href="/"><img src="image/clipboard-check.svg" width="40px" height="40px" style="vertical-align: middle">
+        <span class="logo-text">ReportCard</span></a>
+</header>
+<ul class="breadcrumb">
+    <li><a href="home.html">Home</a></li>
+    <li>Companies</li>
+</ul>
+<div class="flex-row" role="main" id="main">
+    <fieldset style="display: inline-block">
+        <legend>Companies</legend>
+        <table style="border:1px" class="sortable">
+            <thead>
+            <tr class="heading">
+                <th class="heading">Name</th>
+                <th class="heading">Organizations</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><a href="company.html">BarCo</a></td> <!-- company/barcon actual href -->
+                <td class="count">5</td>
+            </tr>
+            <tr>
+                <td><a href="company.html">BazLlc</a></td> <!-- company/bazllc actual href -->
+                <td class="count">12</td>
+            </tr>
+            <tr>
+                <td><a href="company.html">Foocorp</a></td> <!-- company/foocorp actual href -->
+                <td class="count">2</td>
+            </tr>
+            </tbody>
+        </table>
+    </fieldset>
+</div>
+<footer>
+    <span>Reportcard </span>&nbsp;&nbsp;&nbsp;
+    <a href="https://github.com/ericdriggs/reportcard">source</a>&nbsp;&nbsp;&nbsp;
+    <span>version: 0.0.1</span>
+</footer>
+</body>
+</html>

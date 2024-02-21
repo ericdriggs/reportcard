@@ -21,7 +21,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row6;
+import org.jooq.Row7;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -39,7 +39,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Run extends TableImpl<RunRecord> {
 
-    private static final long serialVersionUID = -701107586;
+    private static final long serialVersionUID = 1517877952;
 
     /**
      * The reference instance of <code>reportcard.run</code>
@@ -83,6 +83,11 @@ public class Run extends TableImpl<RunRecord> {
      * The column <code>reportcard.run.created</code>.
      */
     public final TableField<RunRecord, LocalDateTime> CREATED = createField(DSL.name("created"), SQLDataType.LOCALDATETIME(0).nullable(false).defaultValue(DSL.inline("utc_timestamp()", SQLDataType.LOCALDATETIME)), this, "");
+
+    /**
+     * The column <code>reportcard.run.is_success</code>.
+     */
+    public final TableField<RunRecord, Boolean> IS_SUCCESS = createField(DSL.name("is_success"), SQLDataType.BOOLEAN, this, "");
 
     private Run(Name alias, Table<RunRecord> aliased) {
         this(alias, aliased, null);
@@ -186,11 +191,11 @@ public class Run extends TableImpl<RunRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row6 type methods
+    // Row7 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row6<Long, String, Long, Integer, String, LocalDateTime> fieldsRow() {
-        return (Row6) super.fieldsRow();
+    public Row7<Long, String, Long, Integer, String, LocalDateTime, Boolean> fieldsRow() {
+        return (Row7) super.fieldsRow();
     }
 }

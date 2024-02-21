@@ -14,13 +14,21 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.ResponseBytes;
+import software.amazon.awssdk.http.SdkHttpResponse;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/storage/")
+@RequestMapping("/v1/api/storage")
 @SuppressWarnings("unused")
 public class StorageController {
+
+    public static String storageKeyPath = "/v1/api/storage/key";
 
     @Autowired
     public StorageController(StoragePersistService storagePersistService, S3Service s3Service) {
@@ -49,14 +57,34 @@ public class StorageController {
 
     //For testing only
     //TODO: hide when not running locally
-    @PostMapping(value = {"path/{storagePrefix}"},
+    @PostMapping(value = {"path/"},
             consumes= MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<DirectoryUploadResponse> postStorageOnly(
-            @PathVariable("storagePrefix") String storagePrefix,
-            //@Schema(type = "string", format = "binary")
+            @RequestParam("storagePrefix") String storagePrefix,
             @RequestPart("files") MultipartFile[] files
     ) {
         return new ResponseEntity<>(s3Service.uploadDirectory(files, storagePrefix), HttpStatus.OK);
+    }
+
+    @GetMapping(value = {"key/**"})
+    public ResponseEntity<?> getKeyContents(HttpServletRequest request)
+    {
+        final String key = request.getRequestURI().split(request.getContextPath() + "/key/")[1];
+
+        ResponseBytes<GetObjectResponse> responseBytes = s3Service.getObjectBytes(key);
+        SdkHttpResponse sdkHttpResponse = responseBytes.response().sdkHttpResponse();
+        if (!sdkHttpResponse.isSuccessful()) {
+            return ResponseEntity.status(sdkHttpResponse.statusCode()).body(sdkHttpResponse.statusText().orElse(""));
+        }
+
+        final byte[] responseBody = responseBytes.asByteArray();
+        List<String> contentTypeList = sdkHttpResponse.headers().get("Content-Type");
+        String contentType = contentTypeList.stream().findFirst().orElse("unknown");
+        return ResponseEntity
+                .status(sdkHttpResponse.statusCode())
+                .header("Content-type", contentType)
+                .body(responseBody);
+
     }
 
 }

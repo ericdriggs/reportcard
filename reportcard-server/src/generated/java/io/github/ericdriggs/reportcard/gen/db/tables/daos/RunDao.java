@@ -146,4 +146,19 @@ public class RunDao extends DAOImpl<RunRecord, io.github.ericdriggs.reportcard.g
     public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Run> fetchByCreated(LocalDateTime... values) {
         return fetch(Run.RUN.CREATED, values);
     }
+
+    /**
+     * Fetch records that have <code>is_success BETWEEN lowerInclusive AND
+     * upperInclusive</code>
+     */
+    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Run> fetchRangeOfIsSuccess(Boolean lowerInclusive, Boolean upperInclusive) {
+        return fetchRange(Run.RUN.IS_SUCCESS, lowerInclusive, upperInclusive);
+    }
+
+    /**
+     * Fetch records that have <code>is_success IN (values)</code>
+     */
+    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Run> fetchByIsSuccess(Boolean... values) {
+        return fetch(Run.RUN.IS_SUCCESS, values);
+    }
 }

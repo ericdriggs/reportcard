@@ -12,8 +12,8 @@ import lombok.Generated;
 
 import org.jooq.Field;
 import org.jooq.Record1;
-import org.jooq.Record6;
-import org.jooq.Row6;
+import org.jooq.Record7;
+import org.jooq.Row7;
 import org.jooq.impl.UpdatableRecordImpl;
 
 
@@ -22,9 +22,9 @@ import org.jooq.impl.UpdatableRecordImpl;
  */
 @Generated
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record6<Long, String, Long, Integer, String, LocalDateTime> {
+public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7<Long, String, Long, Integer, String, LocalDateTime, Boolean> {
 
-    private static final long serialVersionUID = -607497149;
+    private static final long serialVersionUID = -1676779740;
 
     /**
      * Setter for <code>reportcard.run.run_id</code>.
@@ -116,6 +116,21 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record6
         return (LocalDateTime) get(5);
     }
 
+    /**
+     * Setter for <code>reportcard.run.is_success</code>.
+     */
+    public RunRecord setIsSuccess(Boolean value) {
+        set(6, value);
+        return this;
+    }
+
+    /**
+     * Getter for <code>reportcard.run.is_success</code>.
+     */
+    public Boolean getIsSuccess() {
+        return (Boolean) get(6);
+    }
+
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
@@ -126,17 +141,17 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record6
     }
 
     // -------------------------------------------------------------------------
-    // Record6 type implementation
+    // Record7 type implementation
     // -------------------------------------------------------------------------
 
     @Override
-    public Row6<Long, String, Long, Integer, String, LocalDateTime> fieldsRow() {
-        return (Row6) super.fieldsRow();
+    public Row7<Long, String, Long, Integer, String, LocalDateTime, Boolean> fieldsRow() {
+        return (Row7) super.fieldsRow();
     }
 
     @Override
-    public Row6<Long, String, Long, Integer, String, LocalDateTime> valuesRow() {
-        return (Row6) super.valuesRow();
+    public Row7<Long, String, Long, Integer, String, LocalDateTime, Boolean> valuesRow() {
+        return (Row7) super.valuesRow();
     }
 
     @Override
@@ -170,6 +185,11 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record6
     }
 
     @Override
+    public Field<Boolean> field7() {
+        return Run.RUN.IS_SUCCESS;
+    }
+
+    @Override
     public Long component1() {
         return getRunId();
     }
@@ -200,6 +220,11 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record6
     }
 
     @Override
+    public Boolean component7() {
+        return getIsSuccess();
+    }
+
+    @Override
     public Long value1() {
         return getRunId();
     }
@@ -227,6 +252,11 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record6
     @Override
     public LocalDateTime value6() {
         return getCreated();
+    }
+
+    @Override
+    public Boolean value7() {
+        return getIsSuccess();
     }
 
     @Override
@@ -266,13 +296,20 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record6
     }
 
     @Override
-    public RunRecord values(Long value1, String value2, Long value3, Integer value4, String value5, LocalDateTime value6) {
+    public RunRecord value7(Boolean value) {
+        setIsSuccess(value);
+        return this;
+    }
+
+    @Override
+    public RunRecord values(Long value1, String value2, Long value3, Integer value4, String value5, LocalDateTime value6, Boolean value7) {
         value1(value1);
         value2(value2);
         value3(value3);
         value4(value4);
         value5(value5);
         value6(value6);
+        value7(value7);
         return this;
     }
 
@@ -290,7 +327,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record6
     /**
      * Create a detached, initialised RunRecord
      */
-    public RunRecord(Long runId, String runReference, Long jobFk, Integer jobRunCount, String sha, LocalDateTime created) {
+    public RunRecord(Long runId, String runReference, Long jobFk, Integer jobRunCount, String sha, LocalDateTime created, Boolean isSuccess) {
         super(Run.RUN);
 
         setRunId(runId);
@@ -299,6 +336,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record6
         setJobRunCount(jobRunCount);
         setSha(sha);
         setCreated(created);
+        setIsSuccess(isSuccess);
     }
 
     /**
@@ -314,6 +352,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record6
             setJobRunCount(value.getJobRunCount());
             setSha(value.getSha());
             setCreated(value.getCreated());
+            setIsSuccess(value.getIsSuccess());
         }
     }
 }

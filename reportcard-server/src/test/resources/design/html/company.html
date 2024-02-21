@@ -1,0 +1,52 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="css/shared.css">
+    <link rel="stylesheet" href="css/sortable.min.css"/>
+    <script src="js/sortable.min.js"></script>
+</head>
+
+<body>
+<header>
+    <a href="/"><img src="image/clipboard-check.svg" width="40px" height="40px" style="vertical-align: middle">
+        <span class="logo-text">ReportCard</span></a>
+</header>
+<ul class="breadcrumb">
+    <li><a href="home.html">Home</a></li>
+    <li><a href="company.html">FooCorp</a></li>
+</ul>
+<div class="flex-row" role="main" id="main">
+    <fieldset style="display: inline-block">
+        <legend>Orgs</legend>
+        <table style="border:1px" class="sortable">
+            <thead>
+            <tr class="heading">
+                <th>Name</th>
+                <th>Repos</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><a href="org.html">TestOrg1</a></td> <!-- actual href company/foocorp/org/testorg1 -->
+                <td class="count">12</td>
+            </tr>
+            <tr>
+                <td><a href="org.html">TestOrg2</a></td> <!-- actual href company/foocorp/org/testorg1 -->
+                <td class="count">5</td>
+            </tr>
+            <tr>
+                <td><a href="org.html">TestOrg3</a></td> <!-- actual href company/foocorp/org/testorg1 -->
+                <td class="count">2</td>
+            </tr>
+            </tbody>
+        </table>
+    </fieldset>
+</div>
+<footer>
+    <span>Reportcard </span>&nbsp;&nbsp;&nbsp;
+    <a href="https://github.com/ericdriggs/reportcard">source</a>&nbsp;&nbsp;&nbsp;
+    <span>version: 0.0.1</span>
+</footer>
+</body>
+
+</html>

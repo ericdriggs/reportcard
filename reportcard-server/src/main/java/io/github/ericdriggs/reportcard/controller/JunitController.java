@@ -19,7 +19,7 @@ import java.util.Map;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/junit")
+@RequestMapping("/v1/api/junit")
 @SuppressWarnings("unused")
 public class JunitController {
 
