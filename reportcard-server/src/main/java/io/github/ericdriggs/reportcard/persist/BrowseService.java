@@ -387,7 +387,7 @@ public class BrowseService extends AbstractPersistService {
         BranchStageViewResponse.BranchStageViewResponseBuilder rBuilder = BranchStageViewResponse.builder();
 
         CompanyOrgRepoBranch companyOrgRepoBranch = null;
-        Map<JobRun, Map<StageTestResult, Set<Storage>>> jobRunStagesMap = new TreeMap<>(PojoComparators.JOB_RUN_CASE_INSENSITIVE_ORDER);
+        Map<JobRun, Map<StageTestResult, Set<Storage>>> jobRunStagesMap = new TreeMap<>(PojoComparators.JOB_RUN_DATE_DESCENDING_ORDER);
 
         for (Record record : recordResult) {
             if (companyOrgRepoBranch == null) {
@@ -407,7 +407,7 @@ public class BrowseService extends AbstractPersistService {
                 JobRun jobRun = JobRun.builder().job(job).run(run).build();
 
 
-                jobRunStagesMap.computeIfAbsent(jobRun, k -> new TreeMap<>(PojoComparators.STAGE_TEST_RESULT_COMPARATOR_CASE_INSENSITIVE_ORDER));
+                jobRunStagesMap.computeIfAbsent(jobRun, k -> new TreeMap<>(PojoComparators.STAGE_TEST_RESULT_DATE_DESCENDING));
 
                 Map<StageTestResult, Set<Storage>> stageTestResult_StorageMap = jobRunStagesMap.get(jobRun);
 

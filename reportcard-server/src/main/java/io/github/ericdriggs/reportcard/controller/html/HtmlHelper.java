@@ -526,6 +526,8 @@ public enum HtmlHelper {
 
         if (path != null) {
             sb.append(path.toUrlPath());
+        } else {
+            sb.append("/");
         }
         return sb.toString();
     }
