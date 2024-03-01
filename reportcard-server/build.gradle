@@ -30,7 +30,6 @@ configurations {
 repositories {
     mavenLocal()
     mavenCentral()
-    jcenter()
 }
 
 dependencies {

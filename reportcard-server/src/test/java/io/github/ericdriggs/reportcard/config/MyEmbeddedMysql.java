@@ -71,7 +71,7 @@ public class MyEmbeddedMysql {
 
 
 
-        System.setProperty("db.url", mySQLContainer.getJdbcUrl());
+        System.setProperty("db.connection.string", mySQLContainer.getJdbcUrl());
         System.setProperty("db.port", Integer.toString(mySQLContainer.getMappedPort(MYSQL_PORT)));
     }
 

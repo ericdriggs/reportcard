@@ -25,7 +25,7 @@ public class BrowseUIController {
         this.browseService = browseService;
     }
 
-    @GetMapping(path = {"", "company}"}, produces = "text/html")
+    @GetMapping(path = {"", "company"}, produces = "text/html")
     public ResponseEntity<String> getCompanies() {
         return new ResponseEntity<>(HtmlHelper.getCompaniesHtml(), HttpStatus.OK);
     }

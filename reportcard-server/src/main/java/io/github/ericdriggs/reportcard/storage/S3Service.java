@@ -48,8 +48,8 @@ public class S3Service {
     @Autowired
     public S3Service(Environment environment) {
         this.environment = environment;
-        this.region = Region.of(getProperty("s3.region", "us-east-1"));
-        this.bucketName = getProperty("s3.bucket", "testbucket");
+        this.region = Region.of(getProperty("S3_REGION", "us-east-1"));
+        this.bucketName = getProperty("S3_BUCKET", "testbucket");
         this.endpointOverride = getEndpointOverride();
     }
 
