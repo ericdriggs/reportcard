@@ -28,13 +28,14 @@ public enum TestData {
     public final static Integer testResultTestCount = 70;
     public final static Integer testSuiteTestCount = 8;
 
-    public final static StageDetails stageDetails = new StageDetails()
-            .setCompany(company)
-            .setOrg(org)
-            .setRepo(repo)
-            .setBranch(branch)
-            .setSha(sha)
-            .setJobInfo(jobInfo)
-            .setRunReference(runReference)
-            .setStage(stage);
+    public final static StageDetails stageDetails = StageDetails.builder()
+            .company(company)
+            .org(org)
+            .repo(repo)
+            .branch(branch)
+            .sha(sha)
+            .jobInfo(jobInfo)
+            .runReference(runReference)
+            .stage(stage)
+            .build();
 }

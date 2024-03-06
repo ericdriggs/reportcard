@@ -23,15 +23,16 @@ public class InsertStagePathTest extends AbstractTestResultPersistTest {
     @Test
     public void insertStagePathAllInserted() {
         StageDetails request =
-                new StageDetails()
-                        .setCompany("newCompany")
-                        .setOrg("newOrg")
-                        .setRepo("newRepo")
-                        .setBranch("newBranch")
-                        .setSha("newSha")
-                        .setJobInfo(TestData.jobInfo)
-                        .setRunReference("64bb0231-9a2e-4492-bbd1-e0aeba24c982")
-                        .setStage("newStage");
+                StageDetails.builder()
+                        .company("newCompany")
+                        .org("newOrg")
+                        .repo("newRepo")
+                        .branch("newBranch")
+                        .sha("newSha")
+                        .jobInfo(TestData.jobInfo)
+                        .runReference("64bb0231-9a2e-4492-bbd1-e0aeba24c982")
+                        .stage("newStage")
+                        .build();
 
         StagePath stagePath = testResultPersistService.getUpsertedStagePath(request);
 

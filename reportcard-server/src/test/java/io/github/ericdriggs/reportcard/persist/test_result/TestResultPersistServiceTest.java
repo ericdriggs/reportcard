@@ -179,15 +179,16 @@ public class TestResultPersistServiceTest {
 
         long randLong = random.nextLong();
         StageDetails request =
-                new StageDetails()
-                        .setCompany("company" + randLong)
-                        .setOrg("org" + randLong)
-                        .setRepo("repo" + randLong)
-                        .setBranch("branch" + randLong)
-                        .setSha("sha" + randLong)
-                        .setJobInfo(TestData.jobInfo)
-                        .setRunReference("runReference" + randLong)
-                        .setStage("stage" + randLong);
+                StageDetails.builder()
+                        .company("company" + randLong)
+                        .org("org" + randLong)
+                        .repo("repo" + randLong)
+                        .branch("branch" + randLong)
+                        .sha("sha" + randLong)
+                        .jobInfo(TestData.jobInfo)
+                        .runReference("runReference" + randLong)
+                        .stage("stage" + randLong)
+                        .build();
         return request;
     }
 

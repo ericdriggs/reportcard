@@ -39,7 +39,11 @@ public enum JsonCompare {
 
     @SneakyThrows(JsonProcessingException.class)
     public static boolean containsMap(Map<String,String> expectedMap, String actualJson) {
-        Map<String,String> actualMap = mapper.readValue(actualJson, TreeMap.class);
+        if (expectedMap == null) {
+            return true;
+        }
+        @SuppressWarnings("unchecked")
+        TreeMap<String,String> actualMap = mapper.readValue(actualJson, TreeMap.class);
         return actualMap.entrySet().containsAll(expectedMap.entrySet());
     }
 
