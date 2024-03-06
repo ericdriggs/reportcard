@@ -20,7 +20,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row5;
+import org.jooq.Row6;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -38,7 +38,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Storage extends TableImpl<StorageRecord> {
 
-    private static final long serialVersionUID = 1027643934;
+    private static final long serialVersionUID = 553546207;
 
     /**
      * The reference instance of <code>reportcard.storage</code>
@@ -74,9 +74,14 @@ public class Storage extends TableImpl<StorageRecord> {
     public final TableField<StorageRecord, String> PREFIX = createField(DSL.name("prefix"), SQLDataType.VARCHAR(1024).nullable(false), this, "");
 
     /**
-     * The column <code>reportcard.storage.indexFile</code>.
+     * The column <code>reportcard.storage.index_file</code>.
      */
-    public final TableField<StorageRecord, String> INDEXFILE = createField(DSL.name("indexFile"), SQLDataType.VARCHAR(1024), this, "");
+    public final TableField<StorageRecord, String> INDEX_FILE = createField(DSL.name("index_file"), SQLDataType.VARCHAR(1024), this, "");
+
+    /**
+     * The column <code>reportcard.storage.storage_type</code>.
+     */
+    public final TableField<StorageRecord, Byte> STORAGE_TYPE = createField(DSL.name("storage_type"), SQLDataType.TINYINT, this, "");
 
     private Storage(Name alias, Table<StorageRecord> aliased) {
         this(alias, aliased, null);
@@ -118,7 +123,7 @@ public class Storage extends TableImpl<StorageRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.asList(Indexes.STORAGE_STAGE_FK_IDX);
+        return Arrays.asList(Indexes.STORAGE_STAGE_FK_IDX, Indexes.STORAGE_STORAGE_TYPE_FK_IDX);
     }
 
     @Override
@@ -138,10 +143,11 @@ public class Storage extends TableImpl<StorageRecord> {
 
     @Override
     public List<ForeignKey<StorageRecord, ?>> getReferences() {
-        return Arrays.asList(Keys.STAGE_FK);
+        return Arrays.asList(Keys.STAGE_FK, Keys.STORAGE_TYPE_FK);
     }
 
     private transient Stage _stage;
+    private transient StorageType _storageType;
 
     /**
      * Get the implicit join path to the <code>reportcard.stage</code> table.
@@ -151,6 +157,17 @@ public class Storage extends TableImpl<StorageRecord> {
             _stage = new Stage(this, Keys.STAGE_FK);
 
         return _stage;
+    }
+
+    /**
+     * Get the implicit join path to the <code>reportcard.storage_type</code>
+     * table.
+     */
+    public StorageType storageType() {
+        if (_storageType == null)
+            _storageType = new StorageType(this, Keys.STORAGE_TYPE_FK);
+
+        return _storageType;
     }
 
     @Override
@@ -180,11 +197,11 @@ public class Storage extends TableImpl<StorageRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row5 type methods
+    // Row6 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row5<Long, Long, String, String, String> fieldsRow() {
-        return (Row5) super.fieldsRow();
+    public Row6<Long, Long, String, String, String, Byte> fieldsRow() {
+        return (Row6) super.fieldsRow();
     }
 }

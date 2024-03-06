@@ -16,13 +16,14 @@ import lombok.Generated;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Storage implements Serializable {
 
-    private static final long serialVersionUID = -1067741147;
+    private static final long serialVersionUID = -2077623098;
 
     private Long   storageId;
     private Long   stageFk;
     private String label;
     private String prefix;
-    private String indexfile;
+    private String indexFile;
+    private Byte   storageType;
 
     public Storage() {}
 
@@ -31,7 +32,8 @@ public class Storage implements Serializable {
         this.stageFk = value.stageFk;
         this.label = value.label;
         this.prefix = value.prefix;
-        this.indexfile = value.indexfile;
+        this.indexFile = value.indexFile;
+        this.storageType = value.storageType;
     }
 
     public Storage(
@@ -39,13 +41,15 @@ public class Storage implements Serializable {
         Long   stageFk,
         String label,
         String prefix,
-        String indexfile
+        String indexFile,
+        Byte   storageType
     ) {
         this.storageId = storageId;
         this.stageFk = stageFk;
         this.label = label;
         this.prefix = prefix;
-        this.indexfile = indexfile;
+        this.indexFile = indexFile;
+        this.storageType = storageType;
     }
 
     /**
@@ -109,17 +113,32 @@ public class Storage implements Serializable {
     }
 
     /**
-     * Getter for <code>reportcard.storage.indexFile</code>.
+     * Getter for <code>reportcard.storage.index_file</code>.
      */
-    public String getIndexfile() {
-        return this.indexfile;
+    public String getIndexFile() {
+        return this.indexFile;
     }
 
     /**
-     * Setter for <code>reportcard.storage.indexFile</code>.
+     * Setter for <code>reportcard.storage.index_file</code>.
      */
-    public Storage setIndexfile(String indexfile) {
-        this.indexfile = indexfile;
+    public Storage setIndexFile(String indexFile) {
+        this.indexFile = indexFile;
+        return this;
+    }
+
+    /**
+     * Getter for <code>reportcard.storage.storage_type</code>.
+     */
+    public Byte getStorageType() {
+        return this.storageType;
+    }
+
+    /**
+     * Setter for <code>reportcard.storage.storage_type</code>.
+     */
+    public Storage setStorageType(Byte storageType) {
+        this.storageType = storageType;
         return this;
     }
 
@@ -131,7 +150,8 @@ public class Storage implements Serializable {
         sb.append(", ").append(stageFk);
         sb.append(", ").append(label);
         sb.append(", ").append(prefix);
-        sb.append(", ").append(indexfile);
+        sb.append(", ").append(indexFile);
+        sb.append(", ").append(storageType);
 
         sb.append(")");
         return sb.toString();

@@ -117,17 +117,32 @@ public class StorageDao extends DAOImpl<StorageRecord, io.github.ericdriggs.repo
     }
 
     /**
-     * Fetch records that have <code>indexFile BETWEEN lowerInclusive AND
+     * Fetch records that have <code>index_file BETWEEN lowerInclusive AND
      * upperInclusive</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Storage> fetchRangeOfIndexfile(String lowerInclusive, String upperInclusive) {
-        return fetchRange(Storage.STORAGE.INDEXFILE, lowerInclusive, upperInclusive);
+    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Storage> fetchRangeOfIndexFile(String lowerInclusive, String upperInclusive) {
+        return fetchRange(Storage.STORAGE.INDEX_FILE, lowerInclusive, upperInclusive);
     }
 
     /**
-     * Fetch records that have <code>indexFile IN (values)</code>
+     * Fetch records that have <code>index_file IN (values)</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Storage> fetchByIndexfile(String... values) {
-        return fetch(Storage.STORAGE.INDEXFILE, values);
+    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Storage> fetchByIndexFile(String... values) {
+        return fetch(Storage.STORAGE.INDEX_FILE, values);
+    }
+
+    /**
+     * Fetch records that have <code>storage_type BETWEEN lowerInclusive AND
+     * upperInclusive</code>
+     */
+    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Storage> fetchRangeOfStorageType(Byte lowerInclusive, Byte upperInclusive) {
+        return fetchRange(Storage.STORAGE.STORAGE_TYPE, lowerInclusive, upperInclusive);
+    }
+
+    /**
+     * Fetch records that have <code>storage_type IN (values)</code>
+     */
+    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Storage> fetchByStorageType(Byte... values) {
+        return fetch(Storage.STORAGE.STORAGE_TYPE, values);
     }
 }

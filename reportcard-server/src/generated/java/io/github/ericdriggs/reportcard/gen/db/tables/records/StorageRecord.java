@@ -10,8 +10,8 @@ import lombok.Generated;
 
 import org.jooq.Field;
 import org.jooq.Record1;
-import org.jooq.Record5;
-import org.jooq.Row5;
+import org.jooq.Record6;
+import org.jooq.Row6;
 import org.jooq.impl.UpdatableRecordImpl;
 
 
@@ -20,9 +20,9 @@ import org.jooq.impl.UpdatableRecordImpl;
  */
 @Generated
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements Record5<Long, Long, String, String, String> {
+public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements Record6<Long, Long, String, String, String, Byte> {
 
-    private static final long serialVersionUID = -1862234549;
+    private static final long serialVersionUID = -223962386;
 
     /**
      * Setter for <code>reportcard.storage.storage_id</code>.
@@ -85,18 +85,33 @@ public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements
     }
 
     /**
-     * Setter for <code>reportcard.storage.indexFile</code>.
+     * Setter for <code>reportcard.storage.index_file</code>.
      */
-    public StorageRecord setIndexfile(String value) {
+    public StorageRecord setIndexFile(String value) {
         set(4, value);
         return this;
     }
 
     /**
-     * Getter for <code>reportcard.storage.indexFile</code>.
+     * Getter for <code>reportcard.storage.index_file</code>.
      */
-    public String getIndexfile() {
+    public String getIndexFile() {
         return (String) get(4);
+    }
+
+    /**
+     * Setter for <code>reportcard.storage.storage_type</code>.
+     */
+    public StorageRecord setStorageType(Byte value) {
+        set(5, value);
+        return this;
+    }
+
+    /**
+     * Getter for <code>reportcard.storage.storage_type</code>.
+     */
+    public Byte getStorageType() {
+        return (Byte) get(5);
     }
 
     // -------------------------------------------------------------------------
@@ -109,17 +124,17 @@ public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements
     }
 
     // -------------------------------------------------------------------------
-    // Record5 type implementation
+    // Record6 type implementation
     // -------------------------------------------------------------------------
 
     @Override
-    public Row5<Long, Long, String, String, String> fieldsRow() {
-        return (Row5) super.fieldsRow();
+    public Row6<Long, Long, String, String, String, Byte> fieldsRow() {
+        return (Row6) super.fieldsRow();
     }
 
     @Override
-    public Row5<Long, Long, String, String, String> valuesRow() {
-        return (Row5) super.valuesRow();
+    public Row6<Long, Long, String, String, String, Byte> valuesRow() {
+        return (Row6) super.valuesRow();
     }
 
     @Override
@@ -144,7 +159,12 @@ public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements
 
     @Override
     public Field<String> field5() {
-        return Storage.STORAGE.INDEXFILE;
+        return Storage.STORAGE.INDEX_FILE;
+    }
+
+    @Override
+    public Field<Byte> field6() {
+        return Storage.STORAGE.STORAGE_TYPE;
     }
 
     @Override
@@ -169,7 +189,12 @@ public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements
 
     @Override
     public String component5() {
-        return getIndexfile();
+        return getIndexFile();
+    }
+
+    @Override
+    public Byte component6() {
+        return getStorageType();
     }
 
     @Override
@@ -194,7 +219,12 @@ public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements
 
     @Override
     public String value5() {
-        return getIndexfile();
+        return getIndexFile();
+    }
+
+    @Override
+    public Byte value6() {
+        return getStorageType();
     }
 
     @Override
@@ -223,17 +253,24 @@ public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements
 
     @Override
     public StorageRecord value5(String value) {
-        setIndexfile(value);
+        setIndexFile(value);
         return this;
     }
 
     @Override
-    public StorageRecord values(Long value1, Long value2, String value3, String value4, String value5) {
+    public StorageRecord value6(Byte value) {
+        setStorageType(value);
+        return this;
+    }
+
+    @Override
+    public StorageRecord values(Long value1, Long value2, String value3, String value4, String value5, Byte value6) {
         value1(value1);
         value2(value2);
         value3(value3);
         value4(value4);
         value5(value5);
+        value6(value6);
         return this;
     }
 
@@ -251,14 +288,15 @@ public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements
     /**
      * Create a detached, initialised StorageRecord
      */
-    public StorageRecord(Long storageId, Long stageFk, String label, String prefix, String indexfile) {
+    public StorageRecord(Long storageId, Long stageFk, String label, String prefix, String indexFile, Byte storageType) {
         super(Storage.STORAGE);
 
         setStorageId(storageId);
         setStageFk(stageFk);
         setLabel(label);
         setPrefix(prefix);
-        setIndexfile(indexfile);
+        setIndexFile(indexFile);
+        setStorageType(storageType);
     }
 
     /**
@@ -272,7 +310,8 @@ public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements
             setStageFk(value.getStageFk());
             setLabel(value.getLabel());
             setPrefix(value.getPrefix());
-            setIndexfile(value.getIndexfile());
+            setIndexFile(value.getIndexFile());
+            setStorageType(value.getStorageType());
         }
     }
 }
