@@ -1,5 +1,6 @@
 package io.github.ericdriggs.reportcard.storage;
 
+import io.github.ericdriggs.reportcard.util.tar.TarExtractorCommonsCompress;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
@@ -23,6 +24,7 @@ import software.amazon.awssdk.transfer.s3.model.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -89,29 +91,44 @@ public class S3Service {
     }
 
     @SneakyThrows(IOException.class)
-    public DirectoryUploadResponse uploadDirectory(MultipartFile[] files, String prefix) {
-        final Path tmpPath = Files.createTempDirectory("s3.");
-        final String tmpPathString = tmpPath.toFile().getAbsolutePath();
+    public DirectoryUploadResponse uploadTarGZ(MultipartFile tarGz, String prefix) {
+        final Path tempDir = Files.createTempDirectory("s3.");
+
+        InputStream inputStream = tarGz.getInputStream();
+        TarExtractorCommonsCompress tarExtractor = new TarExtractorCommonsCompress(inputStream, true, tempDir);
+
         try {
-            for (MultipartFile file : files) {
-                final String fileName = file.getName();
-                final Path filepath = Paths.get(tmpPathString, fileName);
-                file.transferTo(filepath);
-            }
-            return uploadDirectory(tmpPathString , prefix);
+            tarExtractor.untar();
+            return uploadDirectory(tempDir, prefix);
         } finally {
-            FileUtils.deleteDirectory(new File(tmpPathString));
+            FileUtils.deleteDirectory(tempDir.toFile());
         }
     }
 
-    public DirectoryUploadResponse uploadDirectory(String sourceDirectory, String prefix) {
+        @SneakyThrows(IOException.class)
+    public DirectoryUploadResponse uploadDirectory(MultipartFile[] files, String prefix) {
+        final Path tempDir = Files.createTempDirectory("s3.");
+
+        try {
+            for (MultipartFile file : files) {
+                final String fileName = file.getName();
+                final Path filepath = Paths.get(tempDir.toString(), fileName);
+                file.transferTo(filepath);
+            }
+            return uploadDirectory(tempDir, prefix);
+        } finally {
+            FileUtils.deleteDirectory(tempDir.toFile());
+        }
+    }
+
+    public DirectoryUploadResponse uploadDirectory(Path path, String prefix) {
 
         S3TransferManager s3TransferManager = getTransferManager();
 
-        UploadFileRequest.builder();
+        //UploadFileRequest.builder();
         DirectoryUpload directoryUpload =
                 s3TransferManager.uploadDirectory(UploadDirectoryRequest.builder()
-                        .source(Paths.get(sourceDirectory))
+                        .source(path)
                         .bucket(bucketName)
                         .s3Prefix(prefix)
                         .uploadFileRequestTransformer(ufr -> ufr.putObjectRequest(

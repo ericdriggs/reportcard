@@ -4,6 +4,7 @@ import io.github.ericdriggs.reportcard.model.StageDetails;
 import io.github.ericdriggs.reportcard.model.StagePath;
 import io.github.ericdriggs.reportcard.model.TestResult;
 import io.github.ericdriggs.reportcard.persist.TestResultPersistService;
+import io.github.ericdriggs.reportcard.util.StringMapUtil;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -32,12 +33,48 @@ public class JunitController {
 
     @PostMapping(path = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = "application/json")
     public ResponseEntity<Map<StagePath, TestResult>> postJunitXml(
+            @RequestParam("company") String company,
+            @RequestParam("org") String org,
+            @RequestParam("repo") String repo,
+            @RequestParam("branch") String branch,
+            @RequestParam("sha") String sha,
+            @RequestParam("stage") String stage,
+            @RequestParam(value = "jobInfo", required = false) String jobInfo,
+            @RequestParam(value = "runReference", required = false) String runReference,
+            @RequestParam(value = "externalLinks", required = false) String externalLinks,
             @Parameter(content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM_VALUE))
-            @Schema(type = "array", format = "binary", implementation = String.class) MultipartFile[] files,
 
-            @Parameter(schema = @Schema(type = "string", implementation = StageDetails.class))
-            @RequestPart("stageDetails") StageDetails stageDetails
+            //@Schema(type = "array", format = "binary", implementation = String.class)
+            MultipartFile file
     ) {
+        StageDetails stageDetails = StageDetails.builder()
+                .company(company)
+                .org(org)
+                .repo(repo)
+                .branch(branch)
+                .sha(sha)
+                .stage(stage)
+                .jobInfo(StringMapUtil.stringToMap(jobInfo))
+                .runReference(runReference)
+                .externalLinks(StringMapUtil.stringToMap(externalLinks))
+                .build();
+
+        stageDetails.validateAndSetDefaults();
+
+        return postJunitXmlStageDetails(stageDetails, file);
+    }
+
+    @PostMapping(path = "stage-details", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = "application/json")
+    public ResponseEntity<Map<StagePath, TestResult>> postJunitXmlStageDetails(
+            @Parameter(schema = @Schema(type = "string", format = "binary", implementation = StageDetails.class))
+            @RequestPart("stageDetails") StageDetails stageDetails,
+            @Parameter(content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM_VALUE))
+            //@Schema(type = "array", format = "binary", implementation = String.class)
+            MultipartFile file
+
+    ) {
+        MultipartFile[] files = new MultipartFile[1];
+        files[0] = file;
         Map<StagePath, TestResult> stagePathTestResultMap = testResultPersistService.doPostXml(stageDetails, files);
         log.info("post success for postJunitXml -- stageDetails: {}", stageDetails);
         return new ResponseEntity<>(stagePathTestResultMap, HttpStatus.OK);
