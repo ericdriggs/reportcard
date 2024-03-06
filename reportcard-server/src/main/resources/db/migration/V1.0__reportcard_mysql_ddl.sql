@@ -169,6 +169,18 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
+-- -----------------------------------------------------
+-- Table `reportcard`.`storage_type`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `reportcard`.`storage_type` ;
+
+CREATE TABLE IF NOT EXISTS `reportcard`.`storage_type` (
+  `storage_type_id` TINYINT NOT NULL AUTO_INCREMENT,
+  `storage_type_name` VARCHAR(64) NOT NULL,
+  PRIMARY KEY (`storage_type_id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
 
 -- -----------------------------------------------------
 -- Table `reportcard`.`storage`
@@ -181,12 +193,18 @@ CREATE TABLE IF NOT EXISTS `reportcard`.`storage` (
   `label` varchar(64) NOT NULL,
   `prefix` varchar(1024) NOT NULL,
   `indexFile` varchar(1024) DEFAULT NULL,
+  `storage_type` tinyint DEFAULT NOT NULL,
   PRIMARY KEY (`storage_id`),
   UNIQUE KEY `UQ_STAGE_LABEL` (`stage_fk`,`label`),
   KEY `stage_fk_idx` (`stage_fk`),
   CONSTRAINT `stage_fk`
       FOREIGN KEY (`stage_fk`)
-      REFERENCES `stage` (`stage_id`))
+      REFERENCES `stage` (`stage_id`),
+  CONSTRAINT `storage_type_fk`
+      FOREIGN KEY (`storage_type`)
+      REFERENCES `storage_type` (`storage_type_id`)
+  )
+
 ENGINE=InnoDB
 DEFAULT CHARSET=utf8mb4
 COLLATE=utf8mb4_0900_ai_ci;
