@@ -30,6 +30,8 @@ public class StorageController {
 
     public static String storageKeyPath = "/v1/api/storage/key";
 
+
+
     @Autowired
     public StorageController(StoragePersistService storagePersistService, S3Service s3Service) {
         this.storagePersistService = storagePersistService;
@@ -52,7 +54,7 @@ public class StorageController {
             storageType = StorageType.HTML;
         }
         final StagePath stagePath = storagePersistService.getStagePath(stageId);
-        final String prefix = new StoragePath(stagePath).getPrefix();
+        final String prefix = new StoragePath(stagePath, label).getPrefix();
 
         s3Service.uploadTarGZ(file, prefix);
          Map<StagePath, Storage> stagePathTestResultMap = storagePersistService.persistStoragePath(indexFile, label, prefix, stageId, storageType);
@@ -68,7 +70,7 @@ public class StorageController {
     ) {
         final StorageType storageType = StorageType.HTML;
         final StagePath stagePath = storagePersistService.getStagePath(stageId);
-        final String prefix = new StoragePath(stagePath).getPrefix();
+        final String prefix = new StoragePath(stagePath, label).getPrefix();
 
         s3Service.uploadDirectory(files, prefix);
         Map<StagePath, Storage> stagePathTestResultMap = storagePersistService.persistStoragePath(indexFile, label, prefix, stageId, storageType);

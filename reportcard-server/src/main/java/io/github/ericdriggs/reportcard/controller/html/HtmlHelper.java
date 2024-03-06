@@ -350,7 +350,7 @@ public enum HtmlHelper {
         for(Storage storage : storages) {
             final String reportLink = reportLinkBase
                     .replace("{reportName}", storage.getLabel())
-                    .replace("{reportUrl}", StorageController.storageKeyPath + storage.getPrefix());
+                    .replace("{reportUrl}", getStorageKey(storage));
             sb.append(reportLink + ls);
         }
         return sb.toString();
@@ -630,6 +630,14 @@ public enum HtmlHelper {
             </body>
             </html>
             """;
+
+    public static String getStorageKey(Storage storage) {
+        if (storage == null) {
+            return StorageController.storageKeyPath;
+        }
+        final String indexFile = storage.getIndexFile() == null ? "" : "/" + storage.getIndexFile();
+        return StorageController.storageKeyPath + "/" + storage.getPrefix() + indexFile;
+    }
 
 }
 

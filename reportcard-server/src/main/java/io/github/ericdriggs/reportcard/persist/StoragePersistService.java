@@ -52,5 +52,4 @@ public class StoragePersistService extends StagePathPersistService {
         storageDao.insert(storage);
         return storage;
     }
-
 }
