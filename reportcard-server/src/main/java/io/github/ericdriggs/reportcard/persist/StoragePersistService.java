@@ -32,22 +32,23 @@ public class StoragePersistService extends StagePathPersistService {
         storageDao = new StorageDao(dsl.configuration());
     }
 
-    public Map<StagePath, Storage> persistStoragePath(String indexFile, String label, String prefix, Long stageId, String storagePath) {
-        return persistStoragePath(indexFile, label, prefix, stageId);
+    public Map<StagePath, Storage> persistStoragePath(String indexFile, String label, String prefix, Long stageId, String storagePath, StorageType storageType) {
+        return persistStoragePath(indexFile, label, prefix, stageId, storageType);
     }
 
-    public Map<StagePath, Storage> persistStoragePath(String indexFile, String label, String prefix, Long stageFk) {
+    public Map<StagePath, Storage> persistStoragePath(String indexFile, String label, String prefix, Long stageFk, StorageType storageType) {
         final StagePath stagePath = getStagePath(stageFk);
-        final Storage storage = insertStorage(indexFile, label, prefix, stageFk);
+        final Storage storage = insertStorage(indexFile, label, prefix, stageFk, storageType);
         return Collections.singletonMap(stagePath, storage);
     }
 
-    protected Storage insertStorage(String indexFile, String label, String prefix, Long stageFk) {
+    protected Storage insertStorage(String indexFile, String label, String prefix, Long stageFk, StorageType storageType) {
         Storage storage = new Storage()
-                .setIndexfile(indexFile)
+                .setIndexFile(indexFile)
                 .setLabel(label)
                 .setPrefix(prefix)
-                .setStageFk(stageFk);
+                .setStageFk(stageFk)
+                .setStorageType(storageType.getStorageTypeId());
         storageDao.insert(storage);
         return storage;
     }

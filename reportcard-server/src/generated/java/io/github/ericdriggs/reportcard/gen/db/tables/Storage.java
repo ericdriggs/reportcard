@@ -38,7 +38,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Storage extends TableImpl<StorageRecord> {
 
-    private static final long serialVersionUID = 553546207;
+    private static final long serialVersionUID = 882692506;
 
     /**
      * The reference instance of <code>reportcard.storage</code>
@@ -81,7 +81,7 @@ public class Storage extends TableImpl<StorageRecord> {
     /**
      * The column <code>reportcard.storage.storage_type</code>.
      */
-    public final TableField<StorageRecord, Byte> STORAGE_TYPE = createField(DSL.name("storage_type"), SQLDataType.TINYINT, this, "");
+    public final TableField<StorageRecord, Integer> STORAGE_TYPE = createField(DSL.name("storage_type"), SQLDataType.INTEGER, this, "");
 
     private Storage(Name alias, Table<StorageRecord> aliased) {
         this(alias, aliased, null);
@@ -201,7 +201,7 @@ public class Storage extends TableImpl<StorageRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row6<Long, Long, String, String, String, Byte> fieldsRow() {
+    public Row6<Long, Long, String, String, String, Integer> fieldsRow() {
         return (Row6) super.fieldsRow();
     }
 }

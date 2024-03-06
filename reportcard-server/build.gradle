@@ -133,7 +133,10 @@ task generateJooqSchemaSource {
                                                 new ForcedType()
                                                         .withName('BOOLEAN').withIncludeExpression("is_.*").withIncludeTypes('tinyint.*'),
                                                 new ForcedType()
-                                                        .withName('Boolean').withIncludeExpression("has_.*").withIncludeTypes('tinyint.*')
+                                                        .withName('Boolean').withIncludeExpression("has_.*").withIncludeTypes('tinyint.*'),
+                                                new ForcedType()
+                                                        .withName('Integer').withIncludeExpression("storage_type").withIncludeTypes('tinyint.*')
+
                                         )
                                 )
                         )

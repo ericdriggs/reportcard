@@ -20,9 +20,9 @@ import org.jooq.impl.UpdatableRecordImpl;
  */
 @Generated
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements Record6<Long, Long, String, String, String, Byte> {
+public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements Record6<Long, Long, String, String, String, Integer> {
 
-    private static final long serialVersionUID = -223962386;
+    private static final long serialVersionUID = -392325944;
 
     /**
      * Setter for <code>reportcard.storage.storage_id</code>.
@@ -102,7 +102,7 @@ public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements
     /**
      * Setter for <code>reportcard.storage.storage_type</code>.
      */
-    public StorageRecord setStorageType(Byte value) {
+    public StorageRecord setStorageType(Integer value) {
         set(5, value);
         return this;
     }
@@ -110,8 +110,8 @@ public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements
     /**
      * Getter for <code>reportcard.storage.storage_type</code>.
      */
-    public Byte getStorageType() {
-        return (Byte) get(5);
+    public Integer getStorageType() {
+        return (Integer) get(5);
     }
 
     // -------------------------------------------------------------------------
@@ -128,12 +128,12 @@ public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements
     // -------------------------------------------------------------------------
 
     @Override
-    public Row6<Long, Long, String, String, String, Byte> fieldsRow() {
+    public Row6<Long, Long, String, String, String, Integer> fieldsRow() {
         return (Row6) super.fieldsRow();
     }
 
     @Override
-    public Row6<Long, Long, String, String, String, Byte> valuesRow() {
+    public Row6<Long, Long, String, String, String, Integer> valuesRow() {
         return (Row6) super.valuesRow();
     }
 
@@ -163,7 +163,7 @@ public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements
     }
 
     @Override
-    public Field<Byte> field6() {
+    public Field<Integer> field6() {
         return Storage.STORAGE.STORAGE_TYPE;
     }
 
@@ -193,7 +193,7 @@ public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements
     }
 
     @Override
-    public Byte component6() {
+    public Integer component6() {
         return getStorageType();
     }
 
@@ -223,7 +223,7 @@ public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements
     }
 
     @Override
-    public Byte value6() {
+    public Integer value6() {
         return getStorageType();
     }
 
@@ -258,13 +258,13 @@ public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements
     }
 
     @Override
-    public StorageRecord value6(Byte value) {
+    public StorageRecord value6(Integer value) {
         setStorageType(value);
         return this;
     }
 
     @Override
-    public StorageRecord values(Long value1, Long value2, String value3, String value4, String value5, Byte value6) {
+    public StorageRecord values(Long value1, Long value2, String value3, String value4, String value5, Integer value6) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -288,7 +288,7 @@ public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements
     /**
      * Create a detached, initialised StorageRecord
      */
-    public StorageRecord(Long storageId, Long stageFk, String label, String prefix, String indexFile, Byte storageType) {
+    public StorageRecord(Long storageId, Long stageFk, String label, String prefix, String indexFile, Integer storageType) {
         super(Storage.STORAGE);
 
         setStorageId(storageId);

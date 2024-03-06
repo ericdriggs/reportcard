@@ -92,16 +92,18 @@ public class S3Service {
 
     @SneakyThrows(IOException.class)
     public DirectoryUploadResponse uploadTarGZ(MultipartFile tarGz, String prefix) {
-        final Path tempDir = Files.createTempDirectory("s3.");
-
-        InputStream inputStream = tarGz.getInputStream();
-        TarExtractorCommonsCompress tarExtractor = new TarExtractorCommonsCompress(inputStream, true, tempDir);
-
+        Path tempDir = null;
         try {
+            tempDir = Files.createTempDirectory("s3.");
+            InputStream inputStream = tarGz.getInputStream();
+            TarExtractorCommonsCompress tarExtractor = new TarExtractorCommonsCompress(inputStream, true, tempDir);
+
             tarExtractor.untar();
             return uploadDirectory(tempDir, prefix);
         } finally {
-            FileUtils.deleteDirectory(tempDir.toFile());
+            if (tempDir != null) {
+                FileUtils.deleteDirectory(tempDir.toFile());
+            }
         }
     }
 

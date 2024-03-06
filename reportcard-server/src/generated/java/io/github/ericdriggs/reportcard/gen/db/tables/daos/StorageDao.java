@@ -135,14 +135,14 @@ public class StorageDao extends DAOImpl<StorageRecord, io.github.ericdriggs.repo
      * Fetch records that have <code>storage_type BETWEEN lowerInclusive AND
      * upperInclusive</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Storage> fetchRangeOfStorageType(Byte lowerInclusive, Byte upperInclusive) {
+    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Storage> fetchRangeOfStorageType(Integer lowerInclusive, Integer upperInclusive) {
         return fetchRange(Storage.STORAGE.STORAGE_TYPE, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>storage_type IN (values)</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Storage> fetchByStorageType(Byte... values) {
+    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Storage> fetchByStorageType(Integer... values) {
         return fetch(Storage.STORAGE.STORAGE_TYPE, values);
     }
 }

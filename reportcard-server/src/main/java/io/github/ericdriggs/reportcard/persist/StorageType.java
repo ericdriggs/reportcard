@@ -13,6 +13,10 @@ public enum StorageType {
         this.storageTypeId = storageTypeId;
     }
 
-    int storageTypeId;
+    final int storageTypeId;
+
+    public int getStorageTypeId() {
+        return storageTypeId;
+    }
 
 }

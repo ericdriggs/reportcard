@@ -16,14 +16,14 @@ import lombok.Generated;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Storage implements Serializable {
 
-    private static final long serialVersionUID = -2077623098;
+    private static final long serialVersionUID = -741296756;
 
-    private Long   storageId;
-    private Long   stageFk;
-    private String label;
-    private String prefix;
-    private String indexFile;
-    private Byte   storageType;
+    private Long    storageId;
+    private Long    stageFk;
+    private String  label;
+    private String  prefix;
+    private String  indexFile;
+    private Integer storageType;
 
     public Storage() {}
 
@@ -37,12 +37,12 @@ public class Storage implements Serializable {
     }
 
     public Storage(
-        Long   storageId,
-        Long   stageFk,
-        String label,
-        String prefix,
-        String indexFile,
-        Byte   storageType
+        Long    storageId,
+        Long    stageFk,
+        String  label,
+        String  prefix,
+        String  indexFile,
+        Integer storageType
     ) {
         this.storageId = storageId;
         this.stageFk = stageFk;
@@ -130,14 +130,14 @@ public class Storage implements Serializable {
     /**
      * Getter for <code>reportcard.storage.storage_type</code>.
      */
-    public Byte getStorageType() {
+    public Integer getStorageType() {
         return this.storageType;
     }
 
     /**
      * Setter for <code>reportcard.storage.storage_type</code>.
      */
-    public Storage setStorageType(Byte storageType) {
+    public Storage setStorageType(Integer storageType) {
         this.storageType = storageType;
         return this;
     }

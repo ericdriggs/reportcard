@@ -39,6 +39,7 @@ public class StorageController {
     private final StoragePersistService storagePersistService;
     private final S3Service s3Service;
 
+    @SuppressWarnings("ReassignedVariable")
     @PostMapping(value = {"stage/{stageId}/reports/{label}/tar.gz"}, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<Map<StagePath, Storage>> postStageReportsTarGZ(
             @PathVariable("stageId") Long stageId,
@@ -54,7 +55,7 @@ public class StorageController {
         final String prefix = new StoragePath(stagePath).getPrefix();
 
         s3Service.uploadTarGZ(file, prefix);
-        Map<StagePath, Storage> stagePathTestResultMap = storagePersistService.persistStoragePath(indexFile, label, prefix, stageId);
+         Map<StagePath, Storage> stagePathTestResultMap = storagePersistService.persistStoragePath(indexFile, label, prefix, stageId, storageType);
         return new ResponseEntity<>(stagePathTestResultMap, HttpStatus.OK);
     }
 
@@ -70,7 +71,7 @@ public class StorageController {
         final String prefix = new StoragePath(stagePath).getPrefix();
 
         s3Service.uploadDirectory(files, prefix);
-        Map<StagePath, Storage> stagePathTestResultMap = storagePersistService.persistStoragePath(indexFile, label, prefix, stageId);
+        Map<StagePath, Storage> stagePathTestResultMap = storagePersistService.persistStoragePath(indexFile, label, prefix, stageId, storageType);
         return new ResponseEntity<>(stagePathTestResultMap, HttpStatus.OK);
     }
 
