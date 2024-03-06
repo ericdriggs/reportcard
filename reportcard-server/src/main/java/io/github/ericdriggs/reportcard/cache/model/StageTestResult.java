@@ -41,7 +41,7 @@ public class StageTestResult {
 
         String hourString = hours > 0 ? hours + "h " : "";
         String minuteString = minutes > 0 || hours > 0 ? minutes + "min " : "";
-        String secondString = seconds > 0 ? seconds + "s" : "";
+        String secondString = seconds + "s";
         return hourString + minuteString + secondString;
     }
 }
