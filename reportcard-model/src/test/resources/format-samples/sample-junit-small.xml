@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="io.github.ericdriggs.file.FileUtilsTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2023-01-27T19:12:54" hostname="MAC-W43G39" time="18.4">
+    <properties/>
+    <testcase name="findFilesTest()" classname="io.github.ericdriggs.file.FileUtilsTest" time="15.3"/>
+    <testcase name="readFilesTest()" classname="io.github.ericdriggs.file.FileUtilsTest" time="3.1"/>
+    <system-out><![CDATA[]]></system-out>
+    <system-err><![CDATA[]]></system-err>
+</testsuite>
