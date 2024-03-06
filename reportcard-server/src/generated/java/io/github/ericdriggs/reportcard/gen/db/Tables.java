@@ -12,6 +12,7 @@ import io.github.ericdriggs.reportcard.gen.db.tables.Repo;
 import io.github.ericdriggs.reportcard.gen.db.tables.Run;
 import io.github.ericdriggs.reportcard.gen.db.tables.Stage;
 import io.github.ericdriggs.reportcard.gen.db.tables.Storage;
+import io.github.ericdriggs.reportcard.gen.db.tables.StorageType;
 import io.github.ericdriggs.reportcard.gen.db.tables.TestCase;
 import io.github.ericdriggs.reportcard.gen.db.tables.TestResult;
 import io.github.ericdriggs.reportcard.gen.db.tables.TestStatus;
@@ -66,6 +67,11 @@ public class Tables {
      * The table <code>reportcard.storage</code>.
      */
     public static final Storage STORAGE = Storage.STORAGE;
+
+    /**
+     * The table <code>reportcard.storage_type</code>.
+     */
+    public static final StorageType STORAGE_TYPE = StorageType.STORAGE_TYPE;
 
     /**
      * The table <code>reportcard.test_case</code>.

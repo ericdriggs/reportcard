@@ -28,10 +28,11 @@ public class StoragePath {
     int runCount;
 
     String stage;
+    String label;
 
     final static DateTimeFormatter dateYmd = DateTimeFormatter.ISO_LOCAL_DATE.withZone(ZoneId.of("UTC"));
 
-    public StoragePath(StagePath stagePath) {
+    public StoragePath(StagePath stagePath, String label) {
         stagePath.throwIfIncomplete();
         this.company = sanitize(stagePath.getCompany().getCompanyName());
         this.org = sanitize(stagePath.getOrg().getOrgName());
@@ -42,11 +43,12 @@ public class StoragePath {
         Integer jobRunCount = stagePath.getRun().getJobRunCount();
         this.runCount = jobRunCount == null ? 0 : jobRunCount;
         this.stage = sanitize(stagePath.getStage().getStageName());
+        this.label = sanitize(label);
     }
 
     public String getPrefix() {
         {
-            final String fullPath = getPath(company, org, repo, branch, date, jobId, runCount, stage);
+            final String fullPath = getPath(company, org, repo, branch, date, jobId, runCount, stage, label);
             if (fullPath.getBytes(StandardCharsets.UTF_8).length <= maxLength) {
                 return fullPath;
             }
@@ -60,7 +62,9 @@ public class StoragePath {
                 date, //10
                 jobId, //6
                 runCount, //6
-                truncateBytes(stage));
+                truncateBytes(stage),
+                truncateBytes(label)
+        );
     }
 
     static String truncateBytes(String str) {
@@ -90,9 +94,10 @@ public class StoragePath {
             String date,
             long jobId,
             int runCount,
-            String stage) {
+            String stage,
+            String label) {
 
-        return "/rc" +
+        return "rc" +
                 "/" + company +
                 "/" + org +
                 "/" + repo +
@@ -100,7 +105,9 @@ public class StoragePath {
                 "/" + date +
                 "/" + jobId +
                 "/" + runCount +
-                "/" + stage;
+                "/" + stage +
+                "/" + label
+                ;
     }
 
     //https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-keys.html

@@ -12,6 +12,7 @@ import io.github.ericdriggs.reportcard.gen.db.tables.Repo;
 import io.github.ericdriggs.reportcard.gen.db.tables.Run;
 import io.github.ericdriggs.reportcard.gen.db.tables.Stage;
 import io.github.ericdriggs.reportcard.gen.db.tables.Storage;
+import io.github.ericdriggs.reportcard.gen.db.tables.StorageType;
 import io.github.ericdriggs.reportcard.gen.db.tables.TestCase;
 import io.github.ericdriggs.reportcard.gen.db.tables.TestResult;
 import io.github.ericdriggs.reportcard.gen.db.tables.TestStatus;
@@ -34,7 +35,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Reportcard extends SchemaImpl {
 
-    private static final long serialVersionUID = -558305367;
+    private static final long serialVersionUID = -1652152945;
 
     /**
      * The reference instance of <code>reportcard</code>
@@ -82,6 +83,11 @@ public class Reportcard extends SchemaImpl {
     public final Storage STORAGE = Storage.STORAGE;
 
     /**
+     * The table <code>reportcard.storage_type</code>.
+     */
+    public final StorageType STORAGE_TYPE = StorageType.STORAGE_TYPE;
+
+    /**
      * The table <code>reportcard.test_case</code>.
      */
     public final TestCase TEST_CASE = TestCase.TEST_CASE;
@@ -125,6 +131,7 @@ public class Reportcard extends SchemaImpl {
             Run.RUN,
             Stage.STAGE,
             Storage.STORAGE,
+            StorageType.STORAGE_TYPE,
             TestCase.TEST_CASE,
             TestResult.TEST_RESULT,
             TestStatus.TEST_STATUS,

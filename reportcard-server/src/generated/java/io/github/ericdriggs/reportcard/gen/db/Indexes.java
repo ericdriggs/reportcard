@@ -42,6 +42,7 @@ public class Indexes {
     public static final Index RUN_RUN_JOB_SHA = Internal.createIndex(DSL.name("run_job_sha"), Run.RUN, new OrderField[] { Run.RUN.JOB_FK, Run.RUN.SHA }, false);
     public static final Index STORAGE_STAGE_FK_IDX = Internal.createIndex(DSL.name("stage_fk_idx"), Storage.STORAGE, new OrderField[] { Storage.STORAGE.STAGE_FK }, false);
     public static final Index STAGE_STAGE_RUN_FK_IDX = Internal.createIndex(DSL.name("stage_run_fk_idx"), Stage.STAGE, new OrderField[] { Stage.STAGE.RUN_FK }, false);
+    public static final Index STORAGE_STORAGE_TYPE_FK_IDX = Internal.createIndex(DSL.name("storage_type_fk_idx"), Storage.STORAGE, new OrderField[] { Storage.STORAGE.STORAGE_TYPE }, false);
     public static final Index TEST_SUITE_TEST_RESULT_FK_IDX = Internal.createIndex(DSL.name("test_result_fk_idx"), TestSuite.TEST_SUITE, new OrderField[] { TestSuite.TEST_SUITE.TEST_RESULT_FK }, false);
     public static final Index TEST_RESULT_TEST_RESULT_STAGE_FK_IDX = Internal.createIndex(DSL.name("test_result_stage_fk_idx"), TestResult.TEST_RESULT, new OrderField[] { TestResult.TEST_RESULT.STAGE_FK }, false);
 }

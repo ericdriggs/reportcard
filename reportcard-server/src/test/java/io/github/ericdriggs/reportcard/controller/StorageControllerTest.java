@@ -76,7 +76,7 @@ public class StorageControllerTest {
         String indexFile = TestResultPersistServiceTest.htmlIndexFile;
         Long stageId = 1L;
         final String label = "htmlSample";
-        ResponseEntity<Map<StagePath, Storage>> responseEntity = storageController.postStageHtml(label, files, indexFile, stageId);
+        ResponseEntity<Map<StagePath, Storage>> responseEntity = storageController.postStageHtml(stageId, label, files, indexFile);
         assertNotNull(responseEntity);
         Map<StagePath, Storage> stagePathStorageMap = responseEntity.getBody();
         assertNotNull(stagePathStorageMap);

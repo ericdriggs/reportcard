@@ -153,15 +153,16 @@ public class InsertTestResultTest extends AbstractTestResultPersistTest {
 
     private StageDetails getStageDetails() {
 
-        return new StageDetails()
-                .setCompany(company)
-                .setOrg(org)
-                .setRepo(repo)
-                .setBranch(branch)
-                .setSha(sha)
-                .setJobInfo(metadata)
-                .setRunReference(runReference)
-                .setStage(stage);
+        return StageDetails.builder()
+                .company(company)
+                .org(org)
+                .repo(repo)
+                .branch(branch)
+                .sha(sha)
+                .jobInfo(metadata)
+                .runReference(runReference)
+                .stage(stage)
+                .build();
 
     }
 

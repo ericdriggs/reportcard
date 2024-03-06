@@ -424,7 +424,9 @@ public class BrowseService extends AbstractPersistService {
                 Storage storage = null;
                 try {
                     storage = record.into(Storage.class);
-                    stageTestResult_StorageMap.get(stageTestResult).add(storage);
+                    if (storage.getStorageId() != null) {
+                        stageTestResult_StorageMap.get(stageTestResult).add(storage);
+                    }
                 } catch (Exception ex) {
                     //NO-OP. allowed to be null. Would prefer more elegant handling of null
                 }

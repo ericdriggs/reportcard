@@ -75,7 +75,7 @@ public class JunitControllerTest {
                         """;
 
         StageDetails stageDetails = mappper.readValue(stageDetailsJson, StageDetails.class);
-        ResponseEntity<Map<StagePath, TestResult>> response = junitController.postJunitXml(files, stageDetails);
+        ResponseEntity<Map<StagePath, TestResult>> response = junitController.postJunitXmlStageDetails(stageDetails, files[0]);
         Map<StagePath, TestResult> result = response.getBody();
         assertNotNull(result);
         assertEquals(1, result.size());

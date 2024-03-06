@@ -24,15 +24,16 @@ public class GetStagePathTest extends AbstractTestResultPersistTest {
     @Test
     public void getStagePathAllFound() throws JsonProcessingException {
         StageDetails request =
-                new StageDetails()
-                        .setCompany(TestData.company)
-                        .setOrg(TestData.org)
-                        .setRepo(TestData.repo)
-                        .setBranch(TestData.branch)
-                        .setSha(TestData.sha)
-                        .setJobInfo(TestData.jobInfo)
-                        .setRunReference(TestData.runReference)
-                        .setStage(TestData.stage);
+                StageDetails.builder()
+                        .company(TestData.company)
+                        .org(TestData.org)
+                        .repo(TestData.repo)
+                        .branch(TestData.branch)
+                        .sha(TestData.sha)
+                        .jobInfo(TestData.jobInfo)
+                        .runReference(TestData.runReference)
+                        .stage(TestData.stage)
+                        .build();
 
         StagePath stagePath = testResultPersistService.getStagePath(request);
         assertTrue(stagePath.isComplete(), stagePath.validate().toString());
@@ -53,15 +54,16 @@ public class GetStagePathTest extends AbstractTestResultPersistTest {
     @Test
     public void getStagePath_Missing_build() {
         StageDetails request =
-                new StageDetails()
-                        .setCompany(TestData.company)
-                        .setOrg(TestData.org)
-                        .setRepo(TestData.repo)
-                        .setBranch(TestData.branch)
-                        .setSha(TestData.sha)
-                        .setJobInfo(TestData.jobInfo)
-                        .setRunReference("not_found")
-                        .setStage(TestData.stage);
+                StageDetails.builder()
+                        .company(TestData.company)
+                        .org(TestData.org)
+                        .repo(TestData.repo)
+                        .branch(TestData.branch)
+                        .sha(TestData.sha)
+                        .jobInfo(TestData.jobInfo)
+                        .runReference("not_found")
+                        .stage(TestData.stage)
+                        .build();
 
         StagePath stagePath = testResultPersistService.getStagePath(request);
         assertNotNull(stagePath);

@@ -30,6 +30,8 @@ public class StorageController {
 
     public static String storageKeyPath = "/v1/api/storage/key";
 
+
+
     @Autowired
     public StorageController(StoragePersistService storagePersistService, S3Service s3Service) {
         this.storagePersistService = storagePersistService;
@@ -39,21 +41,44 @@ public class StorageController {
     private final StoragePersistService storagePersistService;
     private final S3Service s3Service;
 
-    @PostMapping(value = {"stage/html/{stageId}"}, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<Map<StagePath, Storage>> postStageHtml(
-            @RequestParam("label") String label,
-            @RequestPart("files") MultipartFile[] files,
+    @SuppressWarnings("ReassignedVariable")
+    @PostMapping(value = {"stage/{stageId}/reports/{label}/tar.gz"}, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<Map<StagePath, Storage>> postStageReportsTarGZ(
+            @PathVariable("stageId") Long stageId,
+            @PathVariable("label") String label,
+            @RequestPart("reports.tar.gz") MultipartFile file,
             @RequestParam(value = "indexFile", required = false) String indexFile,
-            @PathVariable("stageId") Long stageId
+            @RequestParam(value="storageType", required = false) StorageType storageType)
+    {
+        if (storageType == null) {
+            storageType = StorageType.HTML;
+        }
+        final StagePath stagePath = storagePersistService.getStagePath(stageId);
+        final String prefix = new StoragePath(stagePath, label).getPrefix();
+
+        s3Service.uploadTarGZ(file, prefix);
+         Map<StagePath, Storage> stagePathTestResultMap = storagePersistService.persistStoragePath(indexFile, label, prefix, stageId, storageType);
+        return new ResponseEntity<>(stagePathTestResultMap, HttpStatus.OK);
+    }
+
+    @PostMapping(value = {"stage/{stageId}/reports/{label}/files"}, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<Map<StagePath, Storage>> postStageHtml(
+            @PathVariable("stageId") Long stageId,
+            @PathVariable("label") String label,
+            @RequestPart("files") MultipartFile[] files,
+            @RequestParam(value = "indexFile", required = false) String indexFile
     ) {
         final StorageType storageType = StorageType.HTML;
         final StagePath stagePath = storagePersistService.getStagePath(stageId);
-        final String prefix = new StoragePath(stagePath).getPrefix();
+        final String prefix = new StoragePath(stagePath, label).getPrefix();
 
         s3Service.uploadDirectory(files, prefix);
-        Map<StagePath, Storage> stagePathTestResultMap = storagePersistService.persistStoragePath(indexFile, label, prefix, stageId);
+        Map<StagePath, Storage> stagePathTestResultMap = storagePersistService.persistStoragePath(indexFile, label, prefix, stageId, storageType);
         return new ResponseEntity<>(stagePathTestResultMap, HttpStatus.OK);
     }
+
+
+
 
     //For testing only
     //TODO: hide when not running locally
