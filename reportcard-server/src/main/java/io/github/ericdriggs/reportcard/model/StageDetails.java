@@ -3,9 +3,11 @@ package io.github.ericdriggs.reportcard.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Builder;
 import lombok.Data;
 
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
@@ -13,6 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.*;
 
 @Data
+@Builder
 public class StageDetails {
 
     @JsonIgnore
@@ -35,7 +38,7 @@ public class StageDetails {
         addErrorIfMissing(errors, repo, "repo");
         addErrorIfMissing(errors, branch, "branch");
         addErrorIfMissing(errors, sha, "sha");
-        addErrorIfMissing(errors, runReference, "runReference");
+        generateRunReferenceIfMissing();
         addErrorIfMissing(errors, stage, "stage");
         if (!errors.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
@@ -50,6 +53,11 @@ public class StageDetails {
         }
     }
 
+    protected void generateRunReferenceIfMissing() {
+        if (runReference == null || runReference.trim().isEmpty()) {
+            runReference = UUID.randomUUID().toString();
+        }
+    }
 
     @JsonIgnore
     public String getExternalLinksJson() {
@@ -64,6 +72,8 @@ public class StageDetails {
             throw new RuntimeException(e);
         }
     }
+
+
 
     @JsonIgnore
     @SneakyThrows(JsonProcessingException.class)

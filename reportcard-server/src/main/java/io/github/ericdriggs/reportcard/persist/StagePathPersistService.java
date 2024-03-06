@@ -8,11 +8,9 @@ import io.github.ericdriggs.reportcard.gen.db.tables.records.*;
 
 import io.github.ericdriggs.reportcard.model.*;
 import lombok.SneakyThrows;
-import org.jooq.DSLContext;
-import org.jooq.Record;
+import org.jooq.*;
 
-import org.jooq.Result;
-import org.jooq.SelectConditionStep;
+import org.jooq.Record;
 import org.jooq.tools.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,12 +18,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import static io.github.ericdriggs.reportcard.gen.db.Tables.*;
+import static org.jooq.impl.DSL.*;
 
 /**
  * Main db service class.
@@ -301,10 +301,14 @@ public class StagePathPersistService extends AbstractPersistService {
         }
 
         if (stagePath.getRun() == null) {
+            //Result<Record1<Integer>> countRecord = dsl.selectCount().from(RUN).where(RUN.JOB_FK.eq(JOB.JOB_ID)).fetch();
+            int runCount = 1 + dsl.fetchCount(selectFrom(RUN).where(RUN.JOB_FK.eq(stagePath.getJob().getJobId())));
+
             Run run = new Run()
                     .setRunReference(request.getRunReference())
                     .setSha(request.getSha())
                     .setJobFk(stagePath.getJob().getJobId())
+                    .setJobRunCount(runCount)
                     .setCreated(nowUTC);
             runDao.insert(run);
             stagePath.setRun(run);

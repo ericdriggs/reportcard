@@ -5,6 +5,7 @@ import io.github.ericdriggs.reportcard.cache.model.*;
 import io.github.ericdriggs.reportcard.cache.model.CompanyOrgRepoBranch;
 import io.github.ericdriggs.reportcard.controller.StorageController;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.*;
+import io.github.ericdriggs.reportcard.util.NumberStringUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.http.HttpStatus;
@@ -267,7 +268,7 @@ public enum HtmlHelper {
             <th>JobId</th>
             <th>Runs</th>
             <th>Job Info</th>
-            <th>Last Updated</th>
+            <th>Last Run</th>
             """;
 
     private final static String jobHeaders =
@@ -304,7 +305,7 @@ public enum HtmlHelper {
             final Job job = jobRun.getJob();
             final Run run = jobRun.getRun();
 
-            if (job == null || run == null) {
+            if (job == null || run == null || job.getJobId() == null || run.getRunId() == null) {
                 continue;
             }
 
@@ -330,7 +331,7 @@ public enum HtmlHelper {
                     .replace("{jobId}", Long.toString(job.getJobId()))
                     .replace("{jobInfo}", job.getJobInfo())
                     .replace("{jobUrl}", getUrl(jobPath))
-                    .replace("{runCount}", Long.toString(run.getJobRunCount()))
+                    .replace("{runCount}", NumberStringUtil.toString(run.getJobRunCount()))
                     .replace("{runDate}", run.getCreated().toString())
                     .replace("{runId}", Long.toString(run.getRunId()))
                     .replace("{runLink}", getUrl(runPath))
