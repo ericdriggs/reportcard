@@ -71,6 +71,10 @@ dependencies {
     //File
     implementation 'commons-io:commons-io:2.11.0'
 
+    //compress/decompress files
+    implementation 'org.apache.commons:commons-compress:1.26.0'
+
+
     //AWS
     implementation platform("software.amazon.awssdk:bom:${awsSdkVersion}")
     implementation("software.amazon.awssdk:s3-transfer-manager")
