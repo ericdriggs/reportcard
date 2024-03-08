@@ -85,6 +85,17 @@ public class S3Service {
                 .build();
     }
 
+    public ListObjectsV2Response listObjects(String prefix) {
+        ListObjectsV2Request request = ListObjectsV2Request
+                .builder()
+                .bucket(bucketName)
+                .prefix(prefix)
+                .delimiter("/")
+                .maxKeys(1000) //more than this would require pagination
+                .build();
+        return getS3Client().listObjectsV2(request);
+    }
+
     public ResponseBytes<GetObjectResponse> getObjectBytes(String key) {
         GetObjectRequest getObjectRequest =  GetObjectRequest.builder().bucket(bucketName).key(key).build();
         return getS3Client().getObjectAsBytes(getObjectRequest);

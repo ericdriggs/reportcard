@@ -21,12 +21,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public enum HtmlHelper {
+public class HtmlHelper {
 
     ;//static methods only
 
     //******************** home ********************//
-    private final static String homeMain =
+    protected final static String homeMain =
             """
             <div class="flex-row" role="main" id="main">
               <fieldset>
@@ -48,7 +48,7 @@ public enum HtmlHelper {
         return getPage(main, getBreadCrumb(null));
     }
 
-    private static String getCompaniesItems() {
+    protected static String getCompaniesItems() {
 
         final Map<Company, Set<Org>> companyOrgs = CompanyOrgsCache.INSTANCE.getCache();
         StringBuilder sb = new StringBuilder();
@@ -82,7 +82,7 @@ public enum HtmlHelper {
         return getPage(main, getBreadCrumb(path));
     }
 
-    private static String getCompanyOrgs(CompanyOrgRepoBranchJobRunStageDTO path, Map<Org, Set<Repo>> orgRepos) {
+    protected static String getCompanyOrgs(CompanyOrgRepoBranchJobRunStageDTO path, Map<Org, Set<Repo>> orgRepos) {
         StringBuilder sb = new StringBuilder();
         for (Map.Entry<Org, Set<Repo>> entry : orgRepos.entrySet()) {
             final Org org = entry.getKey();
@@ -118,7 +118,7 @@ public enum HtmlHelper {
         return getPage(main, getBreadCrumb(path));
     }
 
-    private static String getOrgRepos(CompanyOrgRepoBranchJobRunStageDTO path, Map<Repo, Set<Branch>> repoBranchMap) {
+    protected static String getOrgRepos(CompanyOrgRepoBranchJobRunStageDTO path, Map<Repo, Set<Branch>> repoBranchMap) {
 
         StringBuilder sb = new StringBuilder();
         for (Map.Entry<Repo, Set<Branch>> entry : repoBranchMap.entrySet()) {
@@ -159,7 +159,7 @@ public enum HtmlHelper {
         return getPage(main, getBreadCrumb(path));
     }
 
-    private static String getRepoBranches(CompanyOrgRepoBranchJobRunStageDTO path, Map<Branch, Set<Job>> branchJobMap) {
+    protected static String getRepoBranches(CompanyOrgRepoBranchJobRunStageDTO path, Map<Branch, Set<Job>> branchJobMap) {
 
         StringBuilder sb = new StringBuilder();
         for (Map.Entry<Branch, Set<Job>> entry : branchJobMap.entrySet()) {
@@ -205,7 +205,7 @@ public enum HtmlHelper {
         return getPage(jobMain + stagesMain, getBreadCrumb(path));
     }
 
-    private static String getJobRuns(CompanyOrgRepoBranchJobRunStageDTO path, Map<Job, Set<Run>> jobRunMap) {
+    protected static String getJobRuns(CompanyOrgRepoBranchJobRunStageDTO path, Map<Job, Set<Run>> jobRunMap) {
 
         StringBuilder sb = new StringBuilder();
         for (Map.Entry<Job, Set<Run>> entry : jobRunMap.entrySet()) {
@@ -249,7 +249,7 @@ public enum HtmlHelper {
         return getPage(main, getBreadCrumb(path));
     }
 
-    private static String getRunStages(CompanyOrgRepoBranchJobRunStageDTO path, Map<Run, Set<Stage>> runStageMap) {
+    protected static String getRunStages(CompanyOrgRepoBranchJobRunStageDTO path, Map<Run, Set<Stage>> runStageMap) {
 
         StringBuilder sb = new StringBuilder();
         for (Map.Entry<Run, Set<Stage>> entry : runStageMap.entrySet()) {
@@ -263,7 +263,7 @@ public enum HtmlHelper {
         return sb.toString();
     }
 
-    private final static String branchHeaders =
+    protected final static String branchHeaders =
             """
             <th>JobId</th>
             <th>Runs</th>
@@ -271,7 +271,7 @@ public enum HtmlHelper {
             <th>Last Run</th>
             """;
 
-    private final static String jobHeaders =
+    protected final static String jobHeaders =
             """
             <th>runId</th>
             <th>stages</th>
@@ -342,7 +342,7 @@ public enum HtmlHelper {
         return stageViewMain.replace("<!--runRows-->", runRowsHtml.toString());
     }
 
-    private static String getReportLinks(Set<Storage> storages) {
+    protected static String getReportLinks(Set<Storage> storages) {
         if (storages == null || storages.isEmpty()) {
             return "";
         }
@@ -356,7 +356,7 @@ public enum HtmlHelper {
         return sb.toString();
     }
 
-    private final static String stageViewMain =
+    protected final static String stageViewMain =
             """
             <div id="stage-view">
               <fieldset>
@@ -370,7 +370,7 @@ public enum HtmlHelper {
             </div><!-- end stage view -->
             """;
 
-    private final static String runRowHtmlBase =
+    protected final static String runRowHtmlBase =
             """
             <tr>
               <td>
@@ -388,7 +388,7 @@ public enum HtmlHelper {
             </tr>
             """;
 
-    private final static String stageItemHtmlBase =
+    protected final static String stageItemHtmlBase =
             """
             <fieldset class="stage {stageClass}">
               <legend class="stage-legend">{stageName}<br><span class="info">({stageTime})</span></legend>
@@ -396,7 +396,7 @@ public enum HtmlHelper {
             </fieldset>
             """;
 
-    private final static String reportLinkBase = "<a class=\"info report-link\" href=\"{reportUrl}\">" +
+    protected final static String reportLinkBase = "<a class=\"info report-link\" href=\"{reportUrl}\">" +
                                                  "<img alt=\"{reportName}\" class=\"report-img\" src=\"/image/report-simple.svg\">" +
                                                  "{reportName}" +
                                                  "</a>";
@@ -432,7 +432,7 @@ public enum HtmlHelper {
         return getPage(main, getBreadCrumb(path));
     }
 
-    private static String getStageTestResult(CompanyOrgRepoBranchJobRunStageDTO path, Map<Stage, Set<TestResult>> runStageMap) {
+    protected static String getStageTestResult(CompanyOrgRepoBranchJobRunStageDTO path, Map<Stage, Set<TestResult>> runStageMap) {
 
         StringBuilder sb = new StringBuilder();
         for (Map.Entry<Stage, Set<TestResult>> entry : runStageMap.entrySet()) {
@@ -449,7 +449,7 @@ public enum HtmlHelper {
 
     //******************** util ********************//
 
-    private static List<Pair<String, String>> getBreadCrumb(CompanyOrgRepoBranchJobRunStageDTO path) {
+    protected static List<Pair<String, String>> getBreadCrumb(CompanyOrgRepoBranchJobRunStageDTO path) {
         List<Pair<String, String>> breadCrumbs = new ArrayList<>();
         breadCrumbs.add(Pair.of("home", getUrl(null)));
 
@@ -491,11 +491,11 @@ public enum HtmlHelper {
         return breadCrumbs;
     }
 
-    private static String getItemRow(CompanyOrgRepoBranchJobRunStageDTO path, String name, int count, Instant date) {
+    protected static String getItemRow(CompanyOrgRepoBranchJobRunStageDTO path, String name, int count, Instant date) {
         return getItemRow(path, name, count, null, date);
     }
 
-    private static String getItemRow(CompanyOrgRepoBranchJobRunStageDTO path, String name, int count, String info, Instant date) {
+    protected static String getItemRow(CompanyOrgRepoBranchJobRunStageDTO path, String name, int count, String info, Instant date) {
         StringBuilder sb = new StringBuilder();
 
         sb.append("<tr>").append(ls)
@@ -511,18 +511,18 @@ public enum HtmlHelper {
         return sb.toString();
     }
 
-    private static String getLink( String text, String url) {
+    protected static String getLink( String text, String url) {
         return getLink(text, url, null);
     }
 
-    private static String getLink(String text, String url, String cssClass) {
+    protected static String getLink(String text, String url, String cssClass) {
         return "<a href=\"{url}\" class=\"{cssClass}\">{text}</a>"
                        .replace("{url}", url)
                        .replace("{text}", text)
                        .replace("{cssClass}", cssClass == null ? "" : cssClass) + ls;
     }
 
-    private static String getUrl(CompanyOrgRepoBranchJobRunStageDTO path) {
+    protected static String getUrl(CompanyOrgRepoBranchJobRunStageDTO path) {
         StringBuilder sb = new StringBuilder();
 
         if (path != null) {
@@ -533,7 +533,7 @@ public enum HtmlHelper {
         return sb.toString();
     }
 
-    private final static String ls = System.getProperty("line.separator");
+    protected final static String ls = System.getProperty("line.separator");
 
     public static String getPage(String main, List<Pair<String, String>> breadCrumbs) {
         return basePage
@@ -541,7 +541,7 @@ public enum HtmlHelper {
                 .replace("<!--main-->", main);
     }
 
-    private static String getBreadCrumbItems(List<Pair<String, String>> breadCrumbs) {
+    protected static String getBreadCrumbItems(List<Pair<String, String>> breadCrumbs) {
         StringBuilder sb = new StringBuilder();
         for (Pair<String, String> breadCrumb : breadCrumbs) {
             sb.append("<li><a href=\"").append(breadCrumb.getValue()).append("\">")
@@ -568,24 +568,24 @@ public enum HtmlHelper {
         return lastRun.atZone(ZoneOffset.UTC).toInstant();
     }
 
-    private final static String nameCountHeaders =
+    protected final static String nameCountHeaders =
             """
             <th>Name</th>
             <th>Count</th>
             """;
 
-    private final static String nameCountLastUpdatedHeaders =
+    protected final static String nameCountLastUpdatedHeaders =
             """
             <th>Name</th>
             <th>Count</th>
             <th>Last Updated</th>
             """;
 
-    private final static String LEGEND = "<!--legend-->";
-    private final static String TABLE_HEADERS = "<!--tableHeaders-->";
-    private final static String TABLE_ROWS = "<!--tableRows-->";
+    protected final static String LEGEND = "<!--legend-->";
+    protected final static String TABLE_HEADERS = "<!--tableHeaders-->";
+    protected final static String TABLE_ROWS = "<!--tableRows-->";
 
-    private final static String baseMain =
+    protected final static String baseMain =
             """
             <div name="browse">
               <fieldset style="display: inline-block">
@@ -602,7 +602,7 @@ public enum HtmlHelper {
             </div>
             """;
 
-    private final static String basePage =
+    protected final static String basePage =
             """
             <html lang="en">
             <head>
