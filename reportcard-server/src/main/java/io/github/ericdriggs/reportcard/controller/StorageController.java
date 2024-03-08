@@ -1,5 +1,6 @@
 package io.github.ericdriggs.reportcard.controller;
 
+import io.github.ericdriggs.reportcard.controller.html.StorageHtmlHelper;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.Storage;
 import io.github.ericdriggs.reportcard.model.StagePath;
 import io.github.ericdriggs.reportcard.model.StoragePath;
@@ -12,11 +13,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.http.SdkHttpResponse;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
+import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
+import software.amazon.awssdk.services.s3.model.S3Object;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -29,8 +35,6 @@ import java.util.Map;
 public class StorageController {
 
     public static String storageKeyPath = "/v1/api/storage/key";
-
-
 
     @Autowired
     public StorageController(StoragePersistService storagePersistService, S3Service s3Service) {
@@ -48,8 +52,7 @@ public class StorageController {
             @PathVariable("label") String label,
             @RequestPart("reports.tar.gz") MultipartFile file,
             @RequestParam(value = "indexFile", required = false) String indexFile,
-            @RequestParam(value="storageType", required = false) StorageType storageType)
-    {
+            @RequestParam(value = "storageType", required = false) StorageType storageType) {
         if (storageType == null) {
             storageType = StorageType.HTML;
         }
@@ -57,7 +60,7 @@ public class StorageController {
         final String prefix = new StoragePath(stagePath, label).getPrefix();
 
         s3Service.uploadTarGZ(file, prefix);
-         Map<StagePath, Storage> stagePathTestResultMap = storagePersistService.persistStoragePath(indexFile, label, prefix, stageId, storageType);
+        Map<StagePath, Storage> stagePathTestResultMap = storagePersistService.persistStoragePath(indexFile, label, prefix, stageId, storageType);
         return new ResponseEntity<>(stagePathTestResultMap, HttpStatus.OK);
     }
 
@@ -77,13 +80,10 @@ public class StorageController {
         return new ResponseEntity<>(stagePathTestResultMap, HttpStatus.OK);
     }
 
-
-
-
     //For testing only
     //TODO: hide when not running locally
     @PostMapping(value = {"path/"},
-            consumes= MediaType.MULTIPART_FORM_DATA_VALUE)
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<DirectoryUploadResponse> postStorageOnly(
             @RequestParam("storagePrefix") String storagePrefix,
             @RequestPart("files") MultipartFile[] files
@@ -92,11 +92,43 @@ public class StorageController {
     }
 
     @GetMapping(value = {"key/**"})
-    public ResponseEntity<?> getKeyContents(HttpServletRequest request)
-    {
-        final String key = request.getRequestURI().split(request.getContextPath() + "/key/")[1];
+    public ResponseEntity<?> getKey(HttpServletRequest request) {
+        final String prefix = request.getRequestURI().split(request.getContextPath() + "/key/")[1];
 
-        ResponseBytes<GetObjectResponse> responseBytes = s3Service.getObjectBytes(key);
+        //TODO: implement static cache for html reporting css/js/fonts/images
+
+        ListObjectsV2Response listResponse = s3Service.listObjects(prefix);
+        if (isS3File(listResponse)) {
+            return getKeyContents(prefix);
+        } else {
+            return browseS3(prefix, listResponse);
+        }
+    }
+
+    protected boolean isS3File(ListObjectsV2Response response) {
+        if (!CollectionUtils.isEmpty(response.commonPrefixes())) {
+            return false;
+        }
+
+        if (CollectionUtils.isEmpty(response.contents())) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "no match found for key: " + response.prefix());
+        }
+
+        if (response.contents().size() != 1) {
+            return false;
+        }
+        for (S3Object obj : response.contents()) {
+            if (obj.size() > 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected ResponseEntity<?> getKeyContents(String prefix) {
+
+
+        ResponseBytes<GetObjectResponse> responseBytes = s3Service.getObjectBytes(prefix);
         SdkHttpResponse sdkHttpResponse = responseBytes.response().sdkHttpResponse();
         if (!sdkHttpResponse.isSuccessful()) {
             return ResponseEntity.status(sdkHttpResponse.statusCode()).body(sdkHttpResponse.statusText().orElse(""));
@@ -109,7 +141,10 @@ public class StorageController {
                 .status(sdkHttpResponse.statusCode())
                 .header("Content-type", contentType)
                 .body(responseBody);
+    }
 
+    protected ResponseEntity<String> browseS3(String prefix, ListObjectsV2Response listResponse) {
+        return ResponseEntity.ok(StorageHtmlHelper.getS3BrowsePage(listResponse, prefix));
     }
 
 }
