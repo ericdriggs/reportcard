@@ -17,14 +17,14 @@ import lombok.Generated;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Run implements Serializable {
 
-    private static final long serialVersionUID = -1152188101;
+    private static final long serialVersionUID = -2123845338;
 
     private Long          runId;
     private String        runReference;
     private Long          jobFk;
     private Integer       jobRunCount;
     private String        sha;
-    private LocalDateTime created;
+    private LocalDateTime runDate;
     private Boolean       isSuccess;
 
     public Run() {}
@@ -35,7 +35,7 @@ public class Run implements Serializable {
         this.jobFk = value.jobFk;
         this.jobRunCount = value.jobRunCount;
         this.sha = value.sha;
-        this.created = value.created;
+        this.runDate = value.runDate;
         this.isSuccess = value.isSuccess;
     }
 
@@ -45,7 +45,7 @@ public class Run implements Serializable {
         Long          jobFk,
         Integer       jobRunCount,
         String        sha,
-        LocalDateTime created,
+        LocalDateTime runDate,
         Boolean       isSuccess
     ) {
         this.runId = runId;
@@ -53,7 +53,7 @@ public class Run implements Serializable {
         this.jobFk = jobFk;
         this.jobRunCount = jobRunCount;
         this.sha = sha;
-        this.created = created;
+        this.runDate = runDate;
         this.isSuccess = isSuccess;
     }
 
@@ -133,17 +133,17 @@ public class Run implements Serializable {
     }
 
     /**
-     * Getter for <code>reportcard.run.created</code>.
+     * Getter for <code>reportcard.run.run_date</code>.
      */
-    public LocalDateTime getCreated() {
-        return this.created;
+    public LocalDateTime getRunDate() {
+        return this.runDate;
     }
 
     /**
-     * Setter for <code>reportcard.run.created</code>.
+     * Setter for <code>reportcard.run.run_date</code>.
      */
-    public Run setCreated(LocalDateTime created) {
-        this.created = created;
+    public Run setRunDate(LocalDateTime runDate) {
+        this.runDate = runDate;
         return this;
     }
 
@@ -171,7 +171,7 @@ public class Run implements Serializable {
         sb.append(", ").append(jobFk);
         sb.append(", ").append(jobRunCount);
         sb.append(", ").append(sha);
-        sb.append(", ").append(created);
+        sb.append(", ").append(runDate);
         sb.append(", ").append(isSuccess);
 
         sb.append(")");

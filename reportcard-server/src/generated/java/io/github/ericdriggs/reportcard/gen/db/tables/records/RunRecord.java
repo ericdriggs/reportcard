@@ -24,7 +24,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7<Long, String, Long, Integer, String, LocalDateTime, Boolean> {
 
-    private static final long serialVersionUID = -1676779740;
+    private static final long serialVersionUID = 508085510;
 
     /**
      * Setter for <code>reportcard.run.run_id</code>.
@@ -102,17 +102,17 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
     }
 
     /**
-     * Setter for <code>reportcard.run.created</code>.
+     * Setter for <code>reportcard.run.run_date</code>.
      */
-    public RunRecord setCreated(LocalDateTime value) {
+    public RunRecord setRunDate(LocalDateTime value) {
         set(5, value);
         return this;
     }
 
     /**
-     * Getter for <code>reportcard.run.created</code>.
+     * Getter for <code>reportcard.run.run_date</code>.
      */
-    public LocalDateTime getCreated() {
+    public LocalDateTime getRunDate() {
         return (LocalDateTime) get(5);
     }
 
@@ -181,7 +181,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
 
     @Override
     public Field<LocalDateTime> field6() {
-        return Run.RUN.CREATED;
+        return Run.RUN.RUN_DATE;
     }
 
     @Override
@@ -216,7 +216,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
 
     @Override
     public LocalDateTime component6() {
-        return getCreated();
+        return getRunDate();
     }
 
     @Override
@@ -251,7 +251,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
 
     @Override
     public LocalDateTime value6() {
-        return getCreated();
+        return getRunDate();
     }
 
     @Override
@@ -291,7 +291,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
 
     @Override
     public RunRecord value6(LocalDateTime value) {
-        setCreated(value);
+        setRunDate(value);
         return this;
     }
 
@@ -327,7 +327,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
     /**
      * Create a detached, initialised RunRecord
      */
-    public RunRecord(Long runId, String runReference, Long jobFk, Integer jobRunCount, String sha, LocalDateTime created, Boolean isSuccess) {
+    public RunRecord(Long runId, String runReference, Long jobFk, Integer jobRunCount, String sha, LocalDateTime runDate, Boolean isSuccess) {
         super(Run.RUN);
 
         setRunId(runId);
@@ -335,7 +335,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
         setJobFk(jobFk);
         setJobRunCount(jobRunCount);
         setSha(sha);
-        setCreated(created);
+        setRunDate(runDate);
         setIsSuccess(isSuccess);
     }
 
@@ -351,7 +351,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
             setJobFk(value.getJobFk());
             setJobRunCount(value.getJobRunCount());
             setSha(value.getSha());
-            setCreated(value.getCreated());
+            setRunDate(value.getRunDate());
             setIsSuccess(value.getIsSuccess());
         }
     }

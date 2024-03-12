@@ -133,18 +133,18 @@ public class RunDao extends DAOImpl<RunRecord, io.github.ericdriggs.reportcard.g
     }
 
     /**
-     * Fetch records that have <code>created BETWEEN lowerInclusive AND
+     * Fetch records that have <code>run_date BETWEEN lowerInclusive AND
      * upperInclusive</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Run> fetchRangeOfCreated(LocalDateTime lowerInclusive, LocalDateTime upperInclusive) {
-        return fetchRange(Run.RUN.CREATED, lowerInclusive, upperInclusive);
+    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Run> fetchRangeOfRunDate(LocalDateTime lowerInclusive, LocalDateTime upperInclusive) {
+        return fetchRange(Run.RUN.RUN_DATE, lowerInclusive, upperInclusive);
     }
 
     /**
-     * Fetch records that have <code>created IN (values)</code>
+     * Fetch records that have <code>run_date IN (values)</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Run> fetchByCreated(LocalDateTime... values) {
-        return fetch(Run.RUN.CREATED, values);
+    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Run> fetchByRunDate(LocalDateTime... values) {
+        return fetch(Run.RUN.RUN_DATE, values);
     }
 
     /**

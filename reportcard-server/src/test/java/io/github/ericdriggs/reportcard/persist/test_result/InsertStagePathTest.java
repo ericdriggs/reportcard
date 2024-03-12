@@ -55,8 +55,8 @@ public class InsertStagePathTest extends AbstractTestResultPersistTest {
         Assertions.assertEquals(request.getStage(), stagePath.getStage().getStageName());
         assertNotNull(stagePath.getStage().getStageId());
 
-        Assertions.assertEquals(stagePath.getRun().getCreated(), stagePath.getBranch().getLastRun());
-        Assertions.assertEquals(stagePath.getRun().getCreated(), stagePath.getJob().getLastRun());
+        Assertions.assertEquals(stagePath.getRun().getRunDate(), stagePath.getBranch().getLastRun());
+        Assertions.assertEquals(stagePath.getRun().getRunDate(), stagePath.getJob().getLastRun());
 
         //duplicate request should be idempotent
         StagePath stagePath2 = testResultPersistService.getUpsertedStagePath(request);

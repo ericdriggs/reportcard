@@ -276,7 +276,7 @@ public class PojoComparators {
             return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
         }
         return chainCompare(
-                compareLocalDateTimeDescending(val1.getCreated(), val2.getCreated()),
+                compareLocalDateTimeDescending(val1.getRunDate(), val2.getRunDate()),
                 compareRun(val1, val2)
         );
     }

@@ -354,8 +354,8 @@ public class BrowseServiceTest extends AbstractBrowseServiceTest {
         assertEquals(1, run.getJobFk());
         assertEquals(1, run.getJobRunCount());
         assertEquals(TestData.sha, run.getSha());
-        assertNotNull(run.getCreated());
-        assertNotNull(run.getCreated());
+        assertNotNull(run.getRunDate());
+        assertNotNull(run.getRunDate());
     }
 
     private void validateTestStage(Stage stage) {

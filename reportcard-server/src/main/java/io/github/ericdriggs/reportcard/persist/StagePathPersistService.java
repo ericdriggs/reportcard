@@ -308,7 +308,7 @@ public class StagePathPersistService extends AbstractPersistService {
                     .setSha(request.getSha())
                     .setJobFk(stagePath.getJob().getJobId())
                     .setJobRunCount(runCount)
-                    .setCreated(nowUTC);
+                    .setRunDate(nowUTC);
             runDao.insert(run);
             stagePath.setRun(run);
         }

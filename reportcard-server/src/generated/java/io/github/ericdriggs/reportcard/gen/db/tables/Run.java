@@ -39,7 +39,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Run extends TableImpl<RunRecord> {
 
-    private static final long serialVersionUID = 1517877952;
+    private static final long serialVersionUID = -85603148;
 
     /**
      * The reference instance of <code>reportcard.run</code>
@@ -80,9 +80,9 @@ public class Run extends TableImpl<RunRecord> {
     public final TableField<RunRecord, String> SHA = createField(DSL.name("sha"), SQLDataType.VARCHAR(128), this, "");
 
     /**
-     * The column <code>reportcard.run.created</code>.
+     * The column <code>reportcard.run.run_date</code>.
      */
-    public final TableField<RunRecord, LocalDateTime> CREATED = createField(DSL.name("created"), SQLDataType.LOCALDATETIME(0).nullable(false).defaultValue(DSL.inline("utc_timestamp()", SQLDataType.LOCALDATETIME)), this, "");
+    public final TableField<RunRecord, LocalDateTime> RUN_DATE = createField(DSL.name("run_date"), SQLDataType.LOCALDATETIME(0).nullable(false).defaultValue(DSL.inline("utc_timestamp()", SQLDataType.LOCALDATETIME)), this, "");
 
     /**
      * The column <code>reportcard.run.is_success</code>.

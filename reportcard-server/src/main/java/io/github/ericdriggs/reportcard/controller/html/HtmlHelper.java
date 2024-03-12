@@ -211,7 +211,7 @@ public class HtmlHelper {
         for (Map.Entry<Job, Set<Run>> entry : jobRunMap.entrySet()) {
             final Job job = entry.getKey();
             final Set<Run> runs = entry.getValue();
-            final Instant lastRun = mostRecent(runs.stream().map(Run::getCreated).collect(Collectors.toSet()));
+            final Instant lastRun = mostRecent(runs.stream().map(Run::getRunDate).collect(Collectors.toSet()));
             final CompanyOrgRepoBranchJobRunStageDTO itemPath = path.toBuilder().jobId(job.getJobId()).build();
             final String jobInfo = job.getJobInfo();
             sb.append(getItemRow(itemPath, Long.toString(job.getJobId()), runs.size(), jobInfo, lastRun));
@@ -256,7 +256,7 @@ public class HtmlHelper {
             final Run run = entry.getKey();
             final Set<Stage> stages = entry.getValue();
 
-            final Instant lastRun = mostRecent(Set.of(run.getCreated()));
+            final Instant lastRun = mostRecent(Set.of(run.getRunDate()));
             final CompanyOrgRepoBranchJobRunStageDTO itemPath = path.toBuilder().runId(run.getRunId()).build();
             sb.append(getItemRow(itemPath, Long.toString(run.getRunId()), stages.size(), lastRun));
         }
@@ -332,7 +332,7 @@ public class HtmlHelper {
                     .replace("{jobInfo}", job.getJobInfo())
                     .replace("{jobUrl}", getUrl(jobPath))
                     .replace("{runCount}", NumberStringUtil.toString(run.getJobRunCount()))
-                    .replace("{runDate}", run.getCreated().toString())
+                    .replace("{runDate}", run.getRunDate().toString())
                     .replace("{runId}", Long.toString(run.getRunId()))
                     .replace("{runLink}", getUrl(runPath))
                     .replace("<!--stages-->", stagesHtml);
