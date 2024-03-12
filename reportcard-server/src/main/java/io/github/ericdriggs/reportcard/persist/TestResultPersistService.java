@@ -6,9 +6,12 @@ import io.github.ericdriggs.reportcard.model.TestResult;
 import io.github.ericdriggs.reportcard.model.TestSuite;
 import io.github.ericdriggs.reportcard.model.*;
 import io.github.ericdriggs.reportcard.model.converter.junit.JunitConvertersUtil;
+import io.github.ericdriggs.reportcard.model.StagePathTestResult;
 import io.github.ericdriggs.reportcard.xml.XmlUtil;
 import io.github.ericdriggs.reportcard.xml.junit.JunitParserUtil;
 import io.github.ericdriggs.reportcard.xml.junit.Testsuites;
+import lombok.SneakyThrows;
+import org.apache.commons.lang3.StringUtils;
 import org.jooq.DSLContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +22,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 
 import static io.github.ericdriggs.reportcard.gen.db.Tables.*;
@@ -41,57 +46,60 @@ public class TestResultPersistService extends StagePathPersistService {
 
     }
 
-    public Map<StagePath, TestResult> doPostXml(StageDetails reportMetatData, MultipartFile[] files) {
-        List<String> xmlStrings = new ArrayList<>();
-        Arrays.stream(files)
-                .forEach(file -> xmlStrings.add(fileToString(file)));
-
-        return doPostXmlStrings(reportMetatData, xmlStrings);
+    public StagePathTestResult doPostXml(StageDetails stageDetails, MultipartFile file) {
+        final String xmlString = fileToString(file);
+        return doPostXmlString(stageDetails, xmlString);
     }
 
-    public Map<StagePath, TestResult> doPostXml(Long runId, String stageName, MultipartFile[] files) {
+    public StagePathTestResult doPostXml(Long runId, String stageName, MultipartFile file) {
 
-        List<String> xmlStrings = new ArrayList<>();
-        Arrays.stream(files)
-                .forEach(file -> xmlStrings.add(fileToString(file)));
+        String xmlString = fileToString(file);
 
-        return doPostXmlStrings(runId, stageName, xmlStrings);
+        return doPostXmlString(runId, stageName, xmlString);
     }
 
-    public Map<StagePath, TestResult> doPostXmlStrings(StageDetails stageDetails, List<String> xmlStrings) {
-        stageDetails.validateAndSetDefaults();
-
-        Map<StagePath, TestResult> stagePathTestResultMap = null;
-        TestResult testResult = fromXmlStrings(xmlStrings);
+    public StagePathTestResult doPostXmlString(StageDetails stageDetails, String xmlString) {
+        TestResult testResult = fromXmlString(xmlString);
         testResult.setExternalLinks(stageDetails.getExternalLinksJson());
         return insertTestResult(stageDetails, testResult);
     }
 
-    public Map<StagePath, TestResult> doPostXmlStrings(Long runId, String stageName, List<String> xmlStrings) {
+    public StagePathTestResult doPostXmlString(Long runId, String stageName, String xmlString) {
         StagePath stagePath = getOrInsertStage(runId, stageName);
 
         Map<StagePath, TestResult> stagePathTestResultMap = null;
-        TestResult testResult = fromXmlStrings(xmlStrings);
+        TestResult testResult = fromXmlString(xmlString);
         return insertTestResult(stagePath, testResult);
     }
 
-    public TestResult fromXmlStrings(List<String> xmlStrings) {
+    public StagePathTestResult doPostXmlString(Long runId, String stageName, Path xmlPath) {
+        StagePath stagePath = getOrInsertStage(runId, stageName);
 
-        if (xmlStrings == null || xmlStrings.size() == 0) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing files");
-        } else if (xmlStrings.size() > 1) {
-            fromTestSuiteList(xmlStrings);
-        } else { //xmlString.size == 1
-            //TODO: check all strings -- handle mixed case of testsuite and testsuites
-            String xmlString = xmlStrings.get(0);
-            String rootElementName = XmlUtil.getXmlRootElementName(xmlString);
-            if ("testsuite".equals(rootElementName)) {
-                return fromTestSuiteList(xmlStrings);
-            } else if ("testsuites".equals(rootElementName)) {
-                return fromTestSuites(xmlString);
-            }
+        Map<StagePath, TestResult> stagePathTestResultMap = null;
+        TestResult testResult = fromXmlPath(xmlPath);
+        return insertTestResult(stagePath, testResult);
+    }
+
+    public TestResult fromXmlString(String xmlString) {
+
+        if (StringUtils.isEmpty(xmlString)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing file");
+        }
+
+        //TODO: check all strings -- handle mixed case of testsuite and testsuites
+        String rootElementName = XmlUtil.getXmlRootElementName(xmlString);
+        if ("testsuite".equals(rootElementName)) {
+            return fromTestSuiteList(xmlString);
+        } else if ("testsuites".equals(rootElementName)) {
+            return fromTestSuites(xmlString);
         }
         throw new IllegalArgumentException("not list of junit xml");
+    }
+
+    @SneakyThrows(IOException.class)
+    public TestResult fromXmlPath(Path xmlPath)  {
+
+        return fromXmlString(Files.readString(xmlPath));
     }
 
     public TestResult fromTestSuites(String xmlString) {
@@ -99,21 +107,21 @@ public class TestResultPersistService extends StagePathPersistService {
         return JunitConvertersUtil.modelMapper.map(testsuites, TestResult.class);
     }
 
-    public TestResult fromTestSuiteList(List<String> xmlStrings) {
-        Testsuites testsuites = JunitParserUtil.parseTestSuiteList(xmlStrings);
+    public TestResult fromTestSuiteList(String xmlString) {
+        Testsuites testsuites = JunitParserUtil.parseTestSuite(xmlString);
         return JunitConvertersUtil.doFromJunitToModelTestResult(testsuites);
     }
 
-    public Map<StagePath, TestResult> insertTestResult(StageDetails reportMetatData, TestResult testResult) {
+    public StagePathTestResult insertTestResult(StageDetails reportMetatData, TestResult testResult) {
         StagePath stagePath = getUpsertedStagePath(reportMetatData);
         return insertTestResult(stagePath, testResult);
     }
 
-    public Map<StagePath, TestResult> insertTestResult(StagePath stagePath, TestResult testResult) {
+    public StagePathTestResult insertTestResult(StagePath stagePath, TestResult testResult) {
         testResult.setStageFk(stagePath.getStage().getStageId());
         TestResult inserted = insertTestResult(testResult);
         updateLastRunToNow(stagePath);
-        return Collections.singletonMap(stagePath, inserted);
+        return StagePathTestResult.builder().stagePath(stagePath).testResult(inserted).build();
     }
 
     public static String fileToString(MultipartFile file) {

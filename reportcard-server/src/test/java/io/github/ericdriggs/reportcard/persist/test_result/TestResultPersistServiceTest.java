@@ -3,10 +3,7 @@ package io.github.ericdriggs.reportcard.persist.test_result;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.github.ericdriggs.reportcard.ReportcardApplication;
 import io.github.ericdriggs.reportcard.gen.db.TestData;
-import io.github.ericdriggs.reportcard.model.StageDetails;
-import io.github.ericdriggs.reportcard.model.StagePath;
-import io.github.ericdriggs.reportcard.model.TestResult;
-import io.github.ericdriggs.reportcard.model.TestStatus;
+import io.github.ericdriggs.reportcard.model.*;
 import io.github.ericdriggs.reportcard.persist.TestResultPersistService;
 import io.github.ericdriggs.reportcard.xml.ResourceReaderComponent;
 import net.javacrumbs.jsonunit.JsonAssert;
@@ -22,10 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -37,8 +31,6 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TestResultPersistServiceTest {
 
     public static String xmlPath = "classpath:format-samples/sample-junit-small.xml";
-    public static List<String> xmlPaths = Collections.singletonList(xmlPath);
-
     public static final String htmlIndexFile = "classpath:html-samples/foo/index.html";
     public static List<String> htmlPaths = List.of("classpath:html-samples/foo/index.html", "classpath:html-samples/foo/other.html", "classpath:html-samples/foo/nested/nested.html");
 
@@ -47,57 +39,52 @@ public class TestResultPersistServiceTest {
         this.testResultPersistService = testResultPersistService;
 
         this.xmlJunit = resourceReader.resourceAsString(xmlPath);
-        this.mulipartFiles = getMockJunitMultipartFiles(Collections.singletonList(xmlPath), resourceReader);
+        this.mulipartFile = getMockJunitMultipartFile(resourceReader);
     }
 
-    public static MultipartFile[] getMockJunitMultipartFiles(List<String> classPaths, ResourceReaderComponent resourceReader) {
-        MultipartFile[] files = new MultipartFile[classPaths.size()];
+    //FIXME: remove unused classpath param
+    public static MultipartFile getMockJunitMultipartFile(ResourceReaderComponent resourceReader) {
+        String xmlJunit = resourceReader.resourceAsString("classpath:format-samples/sample-junit-small.xml");
+        return new MockMultipartFile(
+                "file",
+                "junit.xml",
+                MediaType.APPLICATION_XML_VALUE,
+                xmlJunit.getBytes()
+        );
+    }
 
-        for (int i = 0; i < classPaths.size(); i++) {
-            String xmlJunit = resourceReader.resourceAsString("classpath:format-samples/sample-junit-small.xml");
-            MockMultipartFile mockMultipartFile
-                    = new MockMultipartFile(
-                    "file",
-                    "junit-" + i + ".xml",
-                    MediaType.APPLICATION_XML_VALUE,
-                    xmlJunit.getBytes()
-            );
-            files[i] = mockMultipartFile;
-            i++;
-        }
-        return files;
+    public static MultipartFile getMockMultipartFilesFromPathString(String resourceClasspath, ResourceReaderComponent resourceReader) {
+        return getMockMultipartFile(resourceClasspath, resourceReader);
     }
 
     public static MultipartFile[] getMockMultipartFilesFromPathStrings(List<String> resourceClasspaths, ResourceReaderComponent resourceReader) {
-        return getMockMultipartFiles(resourceClasspaths, resourceReader);
+        List<MultipartFile> multipartFiles = new ArrayList<>();
+        for (String resourceClassPath : resourceClasspaths) {
+            multipartFiles.add(getMockMultipartFile(resourceClassPath, resourceReader));
+        }
+        return multipartFiles.toArray(new MultipartFile[0]);
     }
 
 
-    public static MultipartFile[] getMockMultipartFiles(List<String> resourceClasspaths, ResourceReaderComponent resourceReader)  {
-        MultipartFile[] files = new MultipartFile[resourceClasspaths.size()];
+    public static MultipartFile getMockMultipartFile(String resourceClasspath, ResourceReaderComponent resourceReader)  {
 
-        for (int i = 0; i < resourceClasspaths.size(); i++) {
-            String resourceClasspath = resourceClasspaths.get(i);
             String fileName = resourceClasspath.substring(resourceClasspath.lastIndexOf('/') + 1).trim();
             String contents = resourceReader.resourceAsString(resourceClasspath);
 
-            MockMultipartFile mockMultipartFile
-                    = new MockMultipartFile(
+            return new MockMultipartFile(
                     fileName,
                     fileName,
                     MediaType.ALL_VALUE,
                     contents.getBytes()
             );
-            files[i] = mockMultipartFile;
-        }
-        return files;
+
     }
 
     //private final ResourceReaderComponent resourceReader;
     private final TestResultPersistService testResultPersistService;
 
     private final String xmlJunit;
-    private final MultipartFile[] mulipartFiles;
+    private final MultipartFile mulipartFile;
 
     @Test
     public void testStatusTest() {
@@ -111,28 +98,29 @@ public class TestResultPersistServiceTest {
     @Test
     public void insertJunitMultipleStagesTest() throws JsonProcessingException {
 
-        final StageDetails stageDetails = generateRandomReportMetaData();
+        final StageDetails stageDetails1 = generateRandomReportMetaData();
 
         Long runId;
         {
-            Map<StagePath, TestResult> stagePathTestResultMap = testResultPersistService.doPostXmlStrings(stageDetails, Collections.singletonList(xmlJunit));
-            validateInsertTestResult(stageDetails, stagePathTestResultMap);
-            runId = stagePathTestResultMap.keySet().stream().findFirst().orElseThrow().getRun().getRunId();
+            StagePathTestResult stagePathTestResult = testResultPersistService.doPostXmlString(stageDetails1, xmlJunit);
+            validateInsertTestResult(stageDetails1, stagePathTestResult);
+            runId = stagePathTestResult.getStagePath().getRun().getRunId();
         }
 
         {
             final String stageName = "stage2";
-            stageDetails.setStage(stageName);
-            Map<StagePath, TestResult> stagePathTestResultMap = testResultPersistService.doPostXml(runId, stageName, mulipartFiles);
-            validateInsertTestResult(stageDetails, stagePathTestResultMap);
+            StageDetails stageDetails2 = stageDetails1.toBuilder().stage(stageName).build();
+            StagePathTestResult stagePathTestResult = testResultPersistService.doPostXml(runId, stageName, mulipartFile);
+            validateInsertTestResult(stageDetails2, stagePathTestResult);
+            assertEquals(runId, stagePathTestResult.getStagePath().getRun().getRunId());
         }
 
         {
             final String stageName = "stage3";
-            stageDetails.setStage(stageName);
-            Map<StagePath, TestResult> stagePathTestResultMap = testResultPersistService.doPostXmlStrings(stageDetails, Collections.singletonList(xmlJunit));
-            validateInsertTestResult(stageDetails, stagePathTestResultMap);
-            runId = stagePathTestResultMap.keySet().stream().findFirst().orElseThrow().getRun().getRunId();
+            StageDetails stageDetails3 = stageDetails1.toBuilder().stage(stageName).build();
+            StagePathTestResult stagePathTestResult = testResultPersistService.doPostXmlString(stageDetails3, xmlJunit);
+            validateInsertTestResult(stageDetails3, stagePathTestResult);
+            assertEquals(runId, stagePathTestResult.getStagePath().getRun().getRunId());
         }
 
     }
@@ -141,21 +129,18 @@ public class TestResultPersistServiceTest {
     public void insertArrayTest() throws JsonProcessingException {
 
         final StageDetails stageDetails = generateRandomReportMetaData();
-        Map<StagePath, TestResult> stagePathTestResultMap = testResultPersistService.doPostXml(stageDetails, mulipartFiles);
-        validateInsertTestResult(stageDetails, stagePathTestResultMap);
+        StagePathTestResult stagePathTestResult = testResultPersistService.doPostXml(stageDetails, mulipartFile);
+        validateInsertTestResult(stageDetails, stagePathTestResult);
     }
 
-    private void validateInsertTestResult(StageDetails stageDetails, Map<StagePath, TestResult> stagePathTestResultMap) {
-        assertEquals(1, stagePathTestResultMap.size());
+    private void validateInsertTestResult(StageDetails stageDetails, StagePathTestResult stagePathTestResult) {
+        assertNotNull(stagePathTestResult);
 
-        TestResult inserted = null;
-        StagePath stagePath = null;
 
-        for (Map.Entry<StagePath, TestResult> entry : stagePathTestResultMap.entrySet()) {
-            stagePath = entry.getKey();
-            inserted = entry.getValue();
-        }
+        StagePath stagePath = stagePathTestResult.getStagePath();
+        assertNotNull(stagePath);
 
+        TestResult inserted = stagePathTestResult.getTestResult();
         assertNotNull(inserted);
         assertNotNull(inserted.getTestResultId());
 

@@ -243,7 +243,6 @@ public class StagePathPersistService extends AbstractPersistService {
     public StagePath getUpsertedStagePath(StageDetails request, StagePath stagePath) {
 
         LocalDateTime nowUTC = LocalDateTime.now(ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS);
-        request.validateAndSetDefaults();
 
         if (stagePath == null) {
             stagePath = getStagePath(request);

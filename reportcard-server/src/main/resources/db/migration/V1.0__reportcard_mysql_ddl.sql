@@ -192,22 +192,16 @@ CREATE TABLE IF NOT EXISTS `reportcard`.`storage` (
   `stage_fk` bigint unsigned NOT NULL,
   `label` varchar(64) NOT NULL,
   `prefix` varchar(1024) NOT NULL,
-  `indexFile` varchar(1024) DEFAULT NULL,
-  `storage_type` tinyint DEFAULT NOT NULL,
+  `index_file` varchar(1024) DEFAULT NULL,
+  `storage_type` tinyint DEFAULT NULL,
   PRIMARY KEY (`storage_id`),
-  UNIQUE KEY `UQ_STAGE_LABEL` (`stage_fk`,`label`),
+  UNIQUE KEY `UQ_STABLE_LABEL` (`stage_fk`,`label`),
   KEY `stage_fk_idx` (`stage_fk`),
-  CONSTRAINT `stage_fk`
-      FOREIGN KEY (`stage_fk`)
-      REFERENCES `stage` (`stage_id`),
-  CONSTRAINT `storage_type_fk`
-      FOREIGN KEY (`storage_type`)
-      REFERENCES `storage_type` (`storage_type_id`)
-  )
+  KEY `storage_type_fk_idx` (`storage_type`),
+  CONSTRAINT `stage_fk` FOREIGN KEY (`stage_fk`) REFERENCES `stage` (`stage_id`),
+  CONSTRAINT `storage_type_fk` FOREIGN KEY (`storage_type`) REFERENCES `storage_type` (`storage_type_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-ENGINE=InnoDB
-DEFAULT CHARSET=utf8mb4
-COLLATE=utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
