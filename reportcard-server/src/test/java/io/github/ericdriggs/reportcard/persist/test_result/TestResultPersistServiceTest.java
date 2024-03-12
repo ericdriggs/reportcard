@@ -139,21 +139,23 @@ public class TestResultPersistServiceTest {
 
         StagePath stagePath = stagePathTestResult.getStagePath();
         assertNotNull(stagePath);
+        assertEquals(false, stagePath.getRun().getIsSuccess());
 
         TestResult inserted = stagePathTestResult.getTestResult();
         assertNotNull(inserted);
         assertNotNull(inserted.getTestResultId());
 
         assertEquals(1, inserted.getTestSuites().size());
-        Assertions.assertEquals(3, inserted.getTests());
+        Assertions.assertEquals(2, inserted.getTests());
         Assertions.assertEquals(0, inserted.getSkipped());
         Assertions.assertEquals(0, inserted.getError());
-        Assertions.assertEquals(0, inserted.getFailure());
+        Assertions.assertEquals(1, inserted.getFailure());
         assertEquals(false, inserted.getHasSkip());
-        assertEquals(true, inserted.getIsSuccess());
+        assertEquals(false, inserted.getIsSuccess());
+        assertEquals(false, inserted.getIsSuccess());
         assertNotNull(inserted.getTestResultCreated());
         assertTrue(LocalDateTime.now().isAfter(inserted.getTestResultCreated()));
-        Assertions.assertEquals(new BigDecimal("0.256"), inserted.getTime());
+        Assertions.assertEquals(new BigDecimal("50.500"), inserted.getTime());
 
         validateStagePath(stageDetails, stagePath);
     }

@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites duration="50.5">
-    <testsuite failures="0" name="Untitled suite in /Users/niko/Sites/casperjs/tests/suites/casper/agent.js" package="tests/suites/casper/agent" tests="3" time="0.256">
-        <testcase classname="tests/suites/casper/agent" name="Default user agent matches /CasperJS/" time="0.103"/>
+    <testsuite failures="1" name="Untitled suite in /Users/niko/Sites/casperjs/tests/suites/casper/agent.js" package="tests/suites/casper/agent" tests="2" time="50.5">
+        <testcase classname="tests/suites/casper/agent" name="Default user agent matches /CasperJS/" time="0.5"/>
+        <testcase time="50.0" classname="org.apache.maven.surefire.test.FailingTest" name="defaultTestValueIs_Value">
+            <failure message="failure message" type="java.lang.AssertionError">java.lang.AssertionError:
+                Expected: &quot;wrong&quot;
+                got: &quot;value&quot;
+            </failure>
+        </testcase>
     </testsuite>
 </testsuites>

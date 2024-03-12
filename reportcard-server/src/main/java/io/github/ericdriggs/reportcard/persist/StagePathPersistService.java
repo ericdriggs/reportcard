@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
@@ -308,7 +307,8 @@ public class StagePathPersistService extends AbstractPersistService {
                     .setSha(request.getSha())
                     .setJobFk(stagePath.getJob().getJobId())
                     .setJobRunCount(runCount)
-                    .setRunDate(nowUTC);
+                    .setRunDate(nowUTC)
+                    .setIsSuccess(true);
             runDao.insert(run);
             stagePath.setRun(run);
         }
@@ -323,7 +323,7 @@ public class StagePathPersistService extends AbstractPersistService {
         return stagePath;
     }
 
-    public void updateLastRunToNow(StagePath stagePath) {
+    public LocalDateTime updateLastRunToNow(StagePath stagePath) {
         LocalDateTime nowUTC = LocalDateTime.now(ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS);
         if (stagePath.getBranch() != null) {
             Branch branch = stagePath.getBranch();
@@ -336,10 +336,34 @@ public class StagePathPersistService extends AbstractPersistService {
             job.setLastRun(nowUTC);
             // insert since DAO/POJO would incorrectly attempt to insert generated column job_info_str
             dsl.update(JOB)
-                    .set(JOB.LAST_RUN, nowUTC)
-                    .where(JOB.JOB_ID.eq(job.getJobId())).execute();
+               .set(JOB.LAST_RUN, nowUTC)
+               .where(JOB.JOB_ID.eq(job.getJobId()))
+               .execute();
         }
+        return nowUTC;
+    }
 
+    public void setIsRunSuccess(StagePath stagePath) {
+        if (!isRunSuccess(stagePath)) {
+            dsl.update(RUN)
+               .set(RUN.IS_SUCCESS, false)
+               .where(RUN.RUN_ID.eq(stagePath.getRun().getRunId()))
+               .execute();
+            stagePath.getRun().setIsSuccess(false);
+        }
+    }
+
+    public boolean isRunSuccess(StagePath stagePath) {
+        int testResultFailures = dsl.fetchCount(
+                select(TEST_RESULT.TEST_RESULT_ID)
+                        .from(RUN)
+                        .join(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID))
+                        .join(TEST_RESULT).on(TEST_RESULT.STAGE_FK.eq(STAGE.STAGE_ID))
+                        .where(RUN.RUN_ID.eq(stagePath.getRun().getRunId())
+                                         .and(TEST_RESULT.IS_SUCCESS.eq(false))
+                        )
+        );
+        return testResultFailures == 0;
     }
 
     public Map<Byte, String> getTestStatusMap() {

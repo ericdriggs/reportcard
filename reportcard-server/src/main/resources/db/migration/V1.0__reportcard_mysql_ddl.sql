@@ -131,7 +131,7 @@ CREATE TABLE IF NOT EXISTS `reportcard`.`run` (
   `job_run_count` MEDIUMINT NULL DEFAULT NULL,
   `sha` VARCHAR(128) NULL DEFAULT NULL,
   `run_date` DATETIME NOT NULL DEFAULT (utc_timestamp()),
-  `is_success` tinyint(1) DEFAULT NULL,
+  `is_success` tinyint(1) NOT NULL DEFAULT 1,
   PRIMARY KEY (`run_id`),
   UNIQUE INDEX `run_id_unique` (`run_id` ASC) VISIBLE,
   UNIQUE INDEX `uq_run_job_reference` (`job_fk` ASC, `run_reference` ASC) VISIBLE,

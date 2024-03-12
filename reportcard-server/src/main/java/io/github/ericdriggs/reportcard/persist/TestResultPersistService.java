@@ -24,6 +24,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static io.github.ericdriggs.reportcard.gen.db.Tables.*;
@@ -120,7 +121,10 @@ public class TestResultPersistService extends StagePathPersistService {
     public StagePathTestResult insertTestResult(StagePath stagePath, TestResult testResult) {
         testResult.setStageFk(stagePath.getStage().getStageId());
         TestResult inserted = insertTestResult(testResult);
-        updateLastRunToNow(stagePath);
+
+        LocalDateTime lastRun = updateLastRunToNow(stagePath);
+        stagePath.updateLastRun(lastRun);
+        setIsRunSuccess(stagePath);
         return StagePathTestResult.builder().stagePath(stagePath).testResult(inserted).build();
     }
 

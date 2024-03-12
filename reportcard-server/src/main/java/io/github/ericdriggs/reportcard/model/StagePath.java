@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
 
@@ -65,6 +66,22 @@ public class StagePath implements Comparable<StagePath> {
         }
 
         return validationErrors;
+    }
+
+    @JsonIgnore
+    public void updateLastRun(LocalDateTime lastRun) {
+        if (lastRun == null) {
+            throw new NullPointerException("lastRun");
+        }
+
+        if (branch != null) {
+            branch.setLastRun(lastRun);
+        }
+
+        if (job != null) {
+            job.setLastRun(lastRun);
+        }
+
     }
 
     @JsonIgnore
