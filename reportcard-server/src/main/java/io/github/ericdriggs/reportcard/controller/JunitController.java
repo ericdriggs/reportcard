@@ -1,9 +1,8 @@
 package io.github.ericdriggs.reportcard.controller;
 
 import io.github.ericdriggs.reportcard.model.StageDetails;
-import io.github.ericdriggs.reportcard.model.StagePath;
-import io.github.ericdriggs.reportcard.model.TestResult;
 import io.github.ericdriggs.reportcard.persist.TestResultPersistService;
+import io.github.ericdriggs.reportcard.model.StagePathTestResult;
 import io.github.ericdriggs.reportcard.util.StringMapUtil;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -32,7 +31,7 @@ public class JunitController {
     private final TestResultPersistService testResultPersistService;
 
     @PostMapping(path = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = "application/json")
-    public ResponseEntity<Map<StagePath, TestResult>> postJunitXml(
+    public ResponseEntity<StagePathTestResult> postJunitXml(
             @RequestParam("company") String company,
             @RequestParam("org") String org,
             @RequestParam("repo") String repo,
@@ -59,13 +58,13 @@ public class JunitController {
                 .externalLinks(StringMapUtil.stringToMap(externalLinks))
                 .build();
 
-        stageDetails.validateAndSetDefaults();
+
 
         return postJunitXmlStageDetails(stageDetails, file);
     }
 
     @PostMapping(path = "stage-details", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = "application/json")
-    public ResponseEntity<Map<StagePath, TestResult>> postJunitXmlStageDetails(
+    public ResponseEntity<StagePathTestResult> postJunitXmlStageDetails(
             @Parameter(schema = @Schema(type = "string", format = "binary", implementation = StageDetails.class))
             @RequestPart("stageDetails") StageDetails stageDetails,
             @Parameter(content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM_VALUE))
@@ -73,22 +72,22 @@ public class JunitController {
             MultipartFile file
 
     ) {
-        MultipartFile[] files = new MultipartFile[1];
-        files[0] = file;
-        Map<StagePath, TestResult> stagePathTestResultMap = testResultPersistService.doPostXml(stageDetails, files);
+        //ensures defaults set
+        stageDetails = stageDetails.toBuilder().build();
+        StagePathTestResult stagePathTestResult = testResultPersistService.doPostXml(stageDetails, file);
         log.info("post success for postJunitXml -- stageDetails: {}", stageDetails);
-        return new ResponseEntity<>(stagePathTestResultMap, HttpStatus.OK);
+        return new ResponseEntity<>(stagePathTestResult, HttpStatus.OK);
     }
 
     @PostMapping("run/{runId}/stage/{stage}")
-    public ResponseEntity<Map<StagePath, TestResult>> postJunitXmlNewStageForRun(
-            @RequestParam("files") MultipartFile[] files,
+    public ResponseEntity<StagePathTestResult> postJunitXmlNewStageForRun(
+            @RequestParam("files") MultipartFile file,
             @PathVariable("runId") Long runId,
             @PathVariable("stage") String stage
     ) {
-        Map<StagePath, TestResult> stagePathTestResultMap = testResultPersistService.doPostXml(runId, stage, files);
+        StagePathTestResult stagePathTestResult = testResultPersistService.doPostXml(runId, stage, file);
         log.info("post success for postJunitXmlAddStage -- runId: {}. stage: {}: ", runId, stage);
-        return new ResponseEntity<>(stagePathTestResultMap, HttpStatus.OK);
+        return new ResponseEntity<>(stagePathTestResult, HttpStatus.OK);
     }
 
 }

@@ -31,11 +31,9 @@ public class JunitParserUtil {
         throw new IllegalArgumentException("not a junit xml:\n " + xmlTestSuites);
     }
 
-    public static Testsuites parseTestSuiteList(List<String> xmlTestSuiteList) {
+    public static Testsuites parseTestSuite(String xmlTestSuite) {
         List<Testsuite> testsuiteList = new ArrayList<>();
-        for (String xmlString : xmlTestSuiteList) {
-            testsuiteList.add(doParseTestSuite(xmlString));
-        }
+        testsuiteList.add(doParseTestSuite(xmlTestSuite));
         Testsuites testsuites = new Testsuites();
         testsuites.setTestsuite(testsuiteList);
         return testsuites;

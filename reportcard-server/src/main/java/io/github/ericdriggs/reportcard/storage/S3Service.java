@@ -118,7 +118,7 @@ public class S3Service {
         }
     }
 
-        @SneakyThrows(IOException.class)
+    @SneakyThrows(IOException.class)
     public DirectoryUploadResponse uploadDirectory(MultipartFile[] files, String prefix) {
         final Path tempDir = Files.createTempDirectory("s3.");
 

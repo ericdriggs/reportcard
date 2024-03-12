@@ -3,14 +3,12 @@ package io.github.ericdriggs.reportcard.persist;
 import io.github.ericdriggs.reportcard.gen.db.tables.daos.StorageDao;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.Storage;
 import io.github.ericdriggs.reportcard.model.StagePath;
+import io.github.ericdriggs.reportcard.model.StagePathStorage;
 import org.jooq.DSLContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.Collections;
-import java.util.Map;
 
 /**
  * Main db service class.
@@ -32,14 +30,14 @@ public class StoragePersistService extends StagePathPersistService {
         storageDao = new StorageDao(dsl.configuration());
     }
 
-    public Map<StagePath, Storage> persistStoragePath(String indexFile, String label, String prefix, Long stageId, String storagePath, StorageType storageType) {
+    public StagePathStorage persistStoragePath(String indexFile, String label, String prefix, Long stageId, String storagePath, StorageType storageType) {
         return persistStoragePath(indexFile, label, prefix, stageId, storageType);
     }
 
-    public Map<StagePath, Storage> persistStoragePath(String indexFile, String label, String prefix, Long stageFk, StorageType storageType) {
+    public StagePathStorage persistStoragePath(String indexFile, String label, String prefix, Long stageFk, StorageType storageType) {
         final StagePath stagePath = getStagePath(stageFk);
         final Storage storage = insertStorage(indexFile, label, prefix, stageFk, storageType);
-        return Collections.singletonMap(stagePath, storage);
+        return StagePathStorage.builder().stagePath(stagePath).storage(storage).build();
     }
 
     protected Storage insertStorage(String indexFile, String label, String prefix, Long stageFk, StorageType storageType) {

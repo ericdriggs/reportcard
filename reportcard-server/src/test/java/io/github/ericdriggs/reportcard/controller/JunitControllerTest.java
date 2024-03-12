@@ -8,6 +8,7 @@ import io.github.ericdriggs.reportcard.model.StagePath;
 import io.github.ericdriggs.reportcard.model.TestResult;
 import io.github.ericdriggs.reportcard.persist.BrowseService;
 import io.github.ericdriggs.reportcard.persist.test_result.TestResultPersistServiceTest;
+import io.github.ericdriggs.reportcard.model.StagePathTestResult;
 import io.github.ericdriggs.reportcard.storage.S3Service;
 import io.github.ericdriggs.reportcard.xml.ResourceReaderComponent;
 import lombok.extern.slf4j.Slf4j;
@@ -22,8 +23,9 @@ import org.springframework.web.multipart.MultipartFile;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+import java.util.TreeMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -57,39 +59,54 @@ public class JunitControllerTest {
         assertNotNull(testStatuses);
         log.info("testStatuses: {}", testStatuses);
 
-        MultipartFile[] files = TestResultPersistServiceTest.getMockJunitMultipartFiles(TestResultPersistServiceTest.xmlPaths, resourceReader);
+
+        StageDetails stageDetails =
+                StageDetails.builder()
+                        .company("company1")
+                        .org("org1")
+                        .repo("repo1")
+                        .branch("branch1")
+                        .sha("sha1")
+                        .jobInfo(new TreeMap<>(Collections.singletonMap("host", "www.foo.com")))
+                        .runReference("abc123")
+                        .stage("api")
+                        .build();
+
+        System.out.println(mappper.writerWithDefaultPrettyPrinter().writeValueAsString(stageDetails));
+
+        MultipartFile file = TestResultPersistServiceTest.getMockJunitMultipartFile(resourceReader);
         String stageDetailsJson =
                 """
-                        {
-                          "company": "company1",
-                          "org": "org1",
-                          "repo": "repo1",
-                          "branch": "branch1",
-                          "sha": "sha1",
-                          "jobInfo": {
-                            "host": "www.foo.com"
-                          },
-                          "runReference": "abc123",
-                          "stage": "api"
-                        }
-                        """;
+                {
+                  "company" : "company1",
+                  "org" : "org1",
+                  "repo" : "repo1",
+                  "branch" : "branch1",
+                  "sha" : "sha1",
+                  "jobInfo" : {
+                    "host" : "www.foo.com"
+                  },
+                  "runReference" : "abc123",
+                  "stage" : "api",
+                  "externalLinks" : null
+                }""";
 
-        StageDetails stageDetails = mappper.readValue(stageDetailsJson, StageDetails.class);
-        ResponseEntity<Map<StagePath, TestResult>> response = junitController.postJunitXmlStageDetails(stageDetails, files[0]);
-        Map<StagePath, TestResult> result = response.getBody();
+
+        StageDetails stageDetailsParsed = mappper.readValue(stageDetailsJson, StageDetails.class);
+        ResponseEntity<StagePathTestResult> response = junitController.postJunitXmlStageDetails(stageDetails, file);
+        StagePathTestResult result = response.getBody();
         assertNotNull(result);
-        assertEquals(1, result.size());
-        for (Map.Entry<StagePath, TestResult> entry : result.entrySet()) {
-            final StagePath stagePath = entry.getKey();
-            assertEquals("company1", stagePath.getCompany().getCompanyName());
-            assertEquals("org1", stagePath.getOrg().getOrgName());
-            assertEquals("repo1", stagePath.getRepo().getRepoName());
-            assertEquals("branch1", stagePath.getBranch().getBranchName());
-            assertEquals("{\"host\": \"www.foo.com\"}", stagePath.getJob().getJobInfo());
-            assertEquals("abc123", stagePath.getRun().getRunReference());
-            assertEquals("api", stagePath.getStage().getStageName());
-            final TestResult testResult = entry.getValue();
-            assertNotNull(testResult.getTests());
-        }
+
+        final StagePath stagePath = result.getStagePath();
+        assertEquals("company1", stagePath.getCompany().getCompanyName());
+        assertEquals("org1", stagePath.getOrg().getOrgName());
+        assertEquals("repo1", stagePath.getRepo().getRepoName());
+        assertEquals("branch1", stagePath.getBranch().getBranchName());
+        assertEquals("{\"host\": \"www.foo.com\"}", stagePath.getJob().getJobInfo());
+        assertEquals("abc123", stagePath.getRun().getRunReference());
+        assertEquals("api", stagePath.getStage().getStageName());
+        final TestResult testResult = result.getTestResult();
+        assertNotNull(testResult.getTests());
+
     }
 }

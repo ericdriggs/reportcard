@@ -4,6 +4,7 @@ import io.github.ericdriggs.reportcard.ReportcardApplication;
 import io.github.ericdriggs.reportcard.config.LocalStackConfig;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.Storage;
 import io.github.ericdriggs.reportcard.model.StagePath;
+import io.github.ericdriggs.reportcard.model.StagePathStorage;
 import io.github.ericdriggs.reportcard.persist.BrowseService;
 import io.github.ericdriggs.reportcard.persist.test_result.TestResultPersistServiceTest;
 import io.github.ericdriggs.reportcard.storage.DirectoryUploadResponse;
@@ -56,7 +57,9 @@ public class StorageControllerTest {
     void postStorageOnlyTest() throws IOException {
 
         final String prefix = "abcd1234";
-        MultipartFile[] files = TestResultPersistServiceTest.getMockJunitMultipartFiles(TestResultPersistServiceTest.xmlPaths, resourceReader);
+        MultipartFile file = TestResultPersistServiceTest.getMockJunitMultipartFile(resourceReader);
+        MultipartFile[] files = new MultipartFile[1];
+        files[0] = file;
 
         ResponseEntity<DirectoryUploadResponse> responseEntity = storageController.postStorageOnly(prefix, files);
         DirectoryUploadResponse response = responseEntity.getBody();
@@ -76,22 +79,21 @@ public class StorageControllerTest {
         String indexFile = TestResultPersistServiceTest.htmlIndexFile;
         Long stageId = 1L;
         final String label = "htmlSample";
-        ResponseEntity<Map<StagePath, Storage>> responseEntity = storageController.postStageHtml(stageId, label, files, indexFile);
+        ResponseEntity<StagePathStorage> responseEntity = storageController.postStageHtml(stageId, label, files, indexFile);
         assertNotNull(responseEntity);
-        Map<StagePath, Storage> stagePathStorageMap = responseEntity.getBody();
-        assertNotNull(stagePathStorageMap);
-        assertFalse(stagePathStorageMap.isEmpty());
-        assertEquals(1, stagePathStorageMap.size());
-        for (Map.Entry<StagePath, Storage> entry : stagePathStorageMap.entrySet()) {
-            StagePath stagePath = entry.getKey();
-            Storage storage = entry.getValue();
+        StagePathStorage stagePathStorage = responseEntity.getBody();
 
-            assertNotNull(storage.getStorageId());
-            assertNotNull(storage.getLabel());
+        assertNotNull(stagePathStorage);
 
-            System.out.println("stagePath: " + stagePath);
-            System.out.println("storage: " + storage);
-        }
+        StagePath stagePath = stagePathStorage.getStagePath();
+        Storage storage = stagePathStorage.getStorage();
+
+        assertNotNull(storage.getStorageId());
+        assertNotNull(storage.getLabel());
+
+        System.out.println("stagePath: " + stagePath);
+        System.out.println("storage: " + storage);
+
 
         ListObjectsV2Response s3Objects = s3Service.listObjectsForBucket();
         assertNotNull(s3Objects.contents());

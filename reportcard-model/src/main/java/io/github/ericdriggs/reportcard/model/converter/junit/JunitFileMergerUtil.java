@@ -31,9 +31,10 @@ public class JunitFileMergerUtil {
         return merged;
     }
 
-    public static void writeMergedJunitXml(String absoluteFolderPath, String newFilePath) {
+    public static String writeMergedJunitXml(String absoluteFolderPath, String newFilePath) {
         Testsuites testsuites = mergeJunitFiles(absoluteFolderPath);
         marshalJunit(testsuites, newFilePath);
+        return absoluteFolderPath;
     }
 
     @SneakyThrows(JAXBException.class)
