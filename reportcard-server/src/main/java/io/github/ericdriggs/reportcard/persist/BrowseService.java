@@ -74,7 +74,7 @@ public class BrowseService extends AbstractPersistService {
         Map<Org, Set<Repo>> orgRepoMap = new TreeMap<>(PojoComparators.ORG_CASE_INSENSITIVE_ORDER);
         Company company = null;
         for (Record record : recordResult) {
-            if (company == null) {
+            if (company == null || company.getCompanyId() == null) {
                 company = record.into(Company.class);
             }
             Org org = record.into(Org.class);
@@ -148,7 +148,7 @@ public class BrowseService extends AbstractPersistService {
         Map<Repo, Set<Branch>> repoBranchMap = new TreeMap<>(PojoComparators.REPO_CASE_INSENSITIVE_ORDER);
         Org org = null;
         for (Record record : recordResult) {
-            if (org == null) {
+            if (org == null || org.getOrgId() == null) {
                 org = record.into(Org.class);
             }
             Repo repo = record.into(Repo.class);
@@ -197,7 +197,7 @@ public class BrowseService extends AbstractPersistService {
         Map<Branch, Set<Job>> branchesJobsMap = new TreeMap<>(PojoComparators.BRANCH_CASE_INSENSITIVE_ORDER);
         Repo repo = null;
         for (Record record : recordResult) {
-            if (repo == null) {
+            if (repo == null || repo.getRepoId() == null) {
                 repo = record.into(Repo.class);
             }
             Branch branch = record.into(Branch.class);
@@ -252,7 +252,7 @@ public class BrowseService extends AbstractPersistService {
         Map<Job, Set<Run>> jobRunMap = new TreeMap<>(PojoComparators.JOB_CASE_INSENSITIVE_ORDER);
         Branch branch = null;
         for (Record record : recordResult) {
-            if (branch == null) {
+            if (branch == null || branch.getBranchId() == null) {
                 branch = record.into(Branch.class);
             }
             Job job = record.into(Job.class);
@@ -315,7 +315,7 @@ public class BrowseService extends AbstractPersistService {
         Map<Run, Set<Stage>> runStageMap = new ConcurrentSkipListMap<>(PojoComparators.RUN_CASE_INSENSITIVE_ORDER);
         Job job = null;
         for (Record record : recordResult) {
-            if (job == null) {
+            if (job == null || job.getJobId() == null) {
                 job = record.into(Job.class);
             }
             Run run = record.into(Run.class);
@@ -351,7 +351,7 @@ public class BrowseService extends AbstractPersistService {
         Map<Stage, Set<TestResult>> stageTestResultMap = new TreeMap<>(PojoComparators.STAGE_CASE_INSENSITIVE_ORDER);
         Run run = null;
         for (Record record : recordResult) {
-            if (run == null) {
+            if (run == null || run.getRunId() == null) {
                 run = record.into(Run.class);
             }
             Stage stage = record.into(Stage.class);
@@ -457,7 +457,7 @@ public class BrowseService extends AbstractPersistService {
         Map<Stage, Set<Storage>> stageStorageMap = new TreeMap<>(PojoComparators.STAGE_CASE_INSENSITIVE_ORDER);
         Run run = null;
         for (Record record : recordResult) {
-            if (run == null) {
+            if (run == null || run.getRunId() == null) {
                 run = record.into(Run.class);
             }
             Stage stage = record.into(Stage.class);
@@ -515,7 +515,7 @@ public class BrowseService extends AbstractPersistService {
 
         Branch branch = null;
         for (Record record : recordResult) {
-            if (branch == null) {
+            if (branch == null || branch.getBranchId() == null) {
                 branch = record.into(Branch.class);
             }
             Job job = record.into(Job.class);
