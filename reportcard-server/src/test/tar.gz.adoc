@@ -1,0 +1,1 @@
+tar --strip-components 1 --disable-copyfile --exclude='.DS_Store' -cvzf cucumber-html-reports.tar.gz target/cucumber-html-reports/

@@ -41,7 +41,7 @@ public class StageDetails {
         String branch;
         String sha;
         TreeMap<String, String> jobInfo;
-        String runReference = UUID.randomUUID().toString();
+        String runReference;
         String stage;
         Map<String, String> externalLinks;
 
@@ -51,6 +51,9 @@ public class StageDetails {
         }
 
         public void validateAndSetDefaults() {
+            if (runReference == null) {
+                runReference = UUID.randomUUID().toString();
+            }
             Map<String, String> errors = new LinkedHashMap<>();
             addErrorIfMissing(errors, company, "company");
             addErrorIfMissing(errors, org, "org");
@@ -58,6 +61,7 @@ public class StageDetails {
             addErrorIfMissing(errors, branch, "branch");
             addErrorIfMissing(errors, sha, "sha");
             addErrorIfMissing(errors, stage, "stage");
+
             if (!errors.isEmpty()) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                         "errors - " + Arrays.toString(errors.entrySet().toArray()));
