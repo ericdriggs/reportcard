@@ -1,7 +1,6 @@
 package io.github.ericdriggs.reportcard.controller.html;
 
 import io.github.ericdriggs.reportcard.cache.model.*;
-import io.github.ericdriggs.reportcard.model.StageTestResultModel;
 import io.github.ericdriggs.reportcard.persist.BrowseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,14 +33,14 @@ public class BrowseUIController {
     }
 
     @GetMapping(path = {"company/{company}/org/{org}", "org/{org}/repo"}, produces = "text/html")
-    public ResponseEntity<String> getRepoBranches(
+    public ResponseEntity<String> getOrgReposBranches(
             @PathVariable String company,
             @PathVariable String org) {
         return new ResponseEntity<>(BrowseHtmlHelper.getOrgHtml(company, org), HttpStatus.OK);
     }
 
     @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}", "org/{org}/repo/{repo}/branch"}, produces = "text/html")
-    public ResponseEntity<String> getBranchJobs(
+    public ResponseEntity<String> getRepoBranchesJobs(
             @PathVariable String company,
             @PathVariable String org,
             @PathVariable String repo) {
@@ -50,7 +49,7 @@ public class BrowseUIController {
 
     @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}/branch/{branch}",
             "company/{company}/org/{org}/repo/{repo}/branch/{branch}/job"}, produces = "text/html")
-    public ResponseEntity<String> getJobRuns(
+    public ResponseEntity<String> getBranchJobsRuns(
             @PathVariable String company,
             @PathVariable String org,
             @PathVariable String repo,
@@ -62,7 +61,7 @@ public class BrowseUIController {
 
     @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}",
             "company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run"}, produces = "text/html")
-    public ResponseEntity<String> getRunStages(
+    public ResponseEntity<String> getJobRunsStages(
             @PathVariable String company,
             @PathVariable String org,
             @PathVariable String repo,
@@ -74,7 +73,7 @@ public class BrowseUIController {
 
     @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/{runId}",
             "company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/{runId}/stage"}, produces = "text/html")
-    public ResponseEntity<String> getStageTestResults(
+    public ResponseEntity<String> getStagesByIds(
             @PathVariable String company,
             @PathVariable String org,
             @PathVariable String repo,
@@ -83,22 +82,6 @@ public class BrowseUIController {
             @PathVariable Long runId) {
         return new ResponseEntity<>(BrowseHtmlHelper.getRunHtml(company, org, repo, branch, jobId, runId), HttpStatus.OK);
     }
-
-
-    @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/{runId}/stage/{stage}",
-            "company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/{runId}/stage/{stage}"}, produces = "text/html")
-    public ResponseEntity<String> getTestResult(
-            @PathVariable String company,
-            @PathVariable String org,
-            @PathVariable String repo,
-            @PathVariable String branch,
-            @PathVariable Long jobId,
-            @PathVariable Long runId,
-            @PathVariable String stage) {
-        StageTestResultModel stageTestResultModel = browseService.getStageTestResultMap(company, org, repo, branch , jobId, runId, stage);
-        return new ResponseEntity<>(TestResultHtmlHelper.getTestResult(stageTestResultModel.getTestResult()), HttpStatus.OK);
-    }
-
 //
 //    @GetMapping(path = "company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/{runId}/stage/{stage}", produces = "text/html")
 //    public ResponseEntity<Map<Stage, Map<TestResult, Set<TestSuite>>>> getStageTestResultsTestSuites(
