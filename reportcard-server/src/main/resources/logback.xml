@@ -23,6 +23,7 @@
 
     <!-- Other jOOQ related debug log output -->
     <logger name="org.jooq" level="DEBUG"/>
+    <logger name="software.amazon.awssdk.profiles.internal" level="ERROR"/>
 
 
 </configuration>

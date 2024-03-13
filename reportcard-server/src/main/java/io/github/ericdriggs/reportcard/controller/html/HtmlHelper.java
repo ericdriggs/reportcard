@@ -310,7 +310,7 @@ public class HtmlHelper {
             }
 
             final CompanyOrgRepoBranchJobRunStageDTO jobPath = branchPath.toBuilder().jobId(job.getJobId()).build();
-            final CompanyOrgRepoBranchJobRunStageDTO runPath = branchPath.toBuilder().runId(run.getRunId()).build();
+            final CompanyOrgRepoBranchJobRunStageDTO runPath = jobPath.toBuilder().runId(run.getRunId()).build();
 
             StringBuilder stagesHtml = new StringBuilder();
             for (Map.Entry<StageTestResult, Set<Storage>> stageTestResultEntry : stageTestResult_StorageMap.entrySet()) {
@@ -334,7 +334,7 @@ public class HtmlHelper {
                     .replace("{runCount}", NumberStringUtil.toString(run.getJobRunCount()))
                     .replace("{runDate}", run.getRunDate().toString())
                     .replace("{runId}", Long.toString(run.getRunId()))
-                    .replace("{runLink}", getUrl(runPath))
+                    .replace("{runUrl}", getUrl(runPath))
                     .replace("<!--stages-->", stagesHtml);
 
             runRowsHtml.append(runRowHtml);
@@ -360,7 +360,7 @@ public class HtmlHelper {
             """
             <div id="stage-view">
               <fieldset>
-                <legend>Stage View</legend>
+                <legend>Run stages view</legend>
                 <table class="sortable" id="stage-table">
                   <tbody>
                     <!--runRows-->
@@ -376,8 +376,8 @@ public class HtmlHelper {
               <td>
                 <fieldset class="stage">
                   <legend id="run-{runId}-job-{jobId}">
-                    <a href="{runLink}<span class="dot {dotClass}"></span>#{runCount}</a>
-                    &nbsp;<a class="info" title='{jobInfo}' href="{jobUrl}">{jobId}</a>
+                    <a href="{runUrl}"><span class="dot {dotClass}"></span>run #{runCount}</a>
+                    &nbsp;<a class="info" title='{jobInfo}' href="{jobUrl}">jobId: {jobId}</a>
                     &nbsp;<span class="info">{runDate}</span>
                   </legend>
                   <div class="flex-row" style="text-align:left">
@@ -625,7 +625,7 @@ public class HtmlHelper {
             <footer>
               <span>Reportcard</span>&nbsp;
               <span>version: 0.0.1</span>&nbsp;&nbsp;&nbsp;
-              <a href="swagger-ui/index.html">swagger</a>&nbsp;&nbsp;&nbsp;
+              <a href="/swagger-ui/index.html">swagger</a>&nbsp;&nbsp;&nbsp;
               <a href="https://github.com/ericdriggs/reportcard">source</a>&nbsp;&nbsp;&nbsp;
             </footer>
             </body>
