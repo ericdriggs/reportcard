@@ -221,7 +221,7 @@ public class HtmlHelper {
     }
     //******************** job ********************//
 
-    public static String getJobHtml(String company, String org, String repo, String branch, Long jobId) {
+    public static String getJobHtml(String company, String org, String repo, String branch, Long jobId, BranchStageViewResponse branchStageViewResponse) {
 
         final CompanyOrgRepoBranchJobRunStageDTO path = CompanyOrgRepoBranchJobRunStageDTO
                 .builder()
@@ -246,7 +246,9 @@ public class HtmlHelper {
                                     .replace(TABLE_HEADERS, jobHeaders)
                                     .replace(TABLE_ROWS, getRunStages(path, runStageMap));
 
-        return getPage(main, getBreadCrumb(path));
+        final String stagesMain = getBranchStageView(branchStageViewResponse);
+
+        return getPage(main + stagesMain, getBreadCrumb(path));
     }
 
     protected static String getRunStages(CompanyOrgRepoBranchJobRunStageDTO path, Map<Run, Set<Stage>> runStageMap) {

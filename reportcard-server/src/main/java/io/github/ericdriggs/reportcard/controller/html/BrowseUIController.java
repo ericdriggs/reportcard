@@ -70,7 +70,8 @@ public class BrowseUIController {
             @PathVariable String repo,
             @PathVariable String branch,
             @PathVariable Long jobId) {
-        return new ResponseEntity<>(HtmlHelper.getJobHtml(company, org, repo, branch, jobId), HttpStatus.OK);
+        BranchStageViewResponse branchStageViewResponse  = browseService.getStageViewForJob(company, org, repo, branch, jobId);
+        return new ResponseEntity<>(HtmlHelper.getJobHtml(company, org, repo, branch, jobId, branchStageViewResponse), HttpStatus.OK);
     }
 
     @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/{runId}",

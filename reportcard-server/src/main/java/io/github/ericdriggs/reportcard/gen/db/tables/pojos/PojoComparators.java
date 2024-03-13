@@ -34,8 +34,14 @@ public class PojoComparators {
     public static final Comparator<Run> RUN_CASE_INSENSITIVE_ORDER
             = new PojoComparators.RunCaseInsensitiveComparator();
 
+    public static final Comparator<Run> RUN_DESCENDING
+            = new PojoComparators.RunDescendingComparator();
+
     public static final Comparator<Stage> STAGE_CASE_INSENSITIVE_ORDER
             = new PojoComparators.StageCaseInsensitiveComparator();
+
+    public static final Comparator<Stage> STAGE_ASCENDING
+            = new PojoComparators.StageAscendingComparator();
     public static final Comparator<StageTestResult> STAGE_TEST_RESULT_COMPARATOR_CASE_INSENSITIVE_ORDER
             = new StageTestResultCaseInsensitiveComparator();
 
@@ -127,6 +133,16 @@ public class PojoComparators {
         }
     }
 
+    private static class RunDescendingComparator
+            implements Comparator<Run>, java.io.Serializable {
+        @Serial
+        private static final long serialVersionUID = 8191789853614000953L;
+
+        public int compare(Run val1, Run val2) {
+            return compareRunDescending(val1, val2);
+        }
+    }
+
     private static class StageCaseInsensitiveComparator
             implements Comparator<Stage>, java.io.Serializable {
         @Serial
@@ -134,6 +150,16 @@ public class PojoComparators {
 
         public int compare(Stage val1, Stage val2) {
             return compareStage(val1, val2);
+        }
+    }
+
+    private static class StageAscendingComparator
+            implements Comparator<Stage>, java.io.Serializable {
+        @Serial
+        private static final long serialVersionUID = 5908227731873983860L;
+
+        public int compare(Stage val1, Stage val2) {
+            return compareStageAscending(val1, val2);
         }
     }
 
@@ -271,6 +297,15 @@ public class PojoComparators {
         );
     }
 
+    public static int compareRunDescending(Run val1, Run val2) {
+        if (val1 == null || val2 == null) {
+            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+        }
+
+        //val2 then val 1 since descending
+        return compareLong(val2.getRunId(), val1.getRunId());
+    }
+
     public static int compareRunDateDescending(Run val1, Run val2) {
         if (val1 == null || val2 == null) {
             return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
@@ -287,9 +322,17 @@ public class PojoComparators {
         }
         return chainCompare(
                 compareLong(val1.getRunFk(), val2.getRunFk()),
-                ObjectUtils.compare(val1.getStageId(), val2.getStageId()),
+                Long.compare(val1.getStageId(), val2.getStageId()),
                 ObjectUtils.compare(val1.getStageName(), val2.getStageName()) //redundant
         );
+    }
+
+    public static int compareStageAscending(Stage val1, Stage val2) {
+        if (val1 == null || val2 == null) {
+            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+        }
+        return Long.compare(val1.getStageId(), val2.getStageId());
+
     }
 
     public static int compareStorage(Storage val1, Storage val2) {
