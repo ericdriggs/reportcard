@@ -8,6 +8,7 @@ import io.github.ericdriggs.reportcard.gen.db.tables.pojos.Run;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.Stage;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestResult;
 
+import java.time.Duration;
 import java.util.Map;
 import java.util.Set;
 
@@ -19,7 +20,11 @@ public class RunStagesTestResultsCache extends AbstractAsyncCache<CompanyOrgRepo
 
     @Override
     protected SyncAsyncDuration getSyncAsyncDuration() {
-        return CacheDuration.MINUTES(5);
+        return SyncAsyncDuration
+                .builder()
+                .expireDuration(Duration.ofMinutes(30))
+                .refreshDuration(Duration.ofMinutes(2))
+                .build();
     }
 
     @Override

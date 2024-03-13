@@ -8,6 +8,7 @@ import io.github.ericdriggs.reportcard.gen.db.tables.pojos.Branch;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.Run;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job;
 
+import java.time.Duration;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -19,7 +20,11 @@ public class BranchJobsRunsCache extends AbstractAsyncCache<CompanyOrgRepoBranch
 
     @Override
     protected SyncAsyncDuration getSyncAsyncDuration() {
-        return CacheDuration.MINUTES(5);
+        return SyncAsyncDuration
+                .builder()
+                .expireDuration(Duration.ofMinutes(30))
+                .refreshDuration(Duration.ofMinutes(2))
+                .build();
     }
 
     @Override

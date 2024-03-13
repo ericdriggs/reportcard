@@ -6,6 +6,7 @@ import io.github.ericdriggs.reportcard.cache.SyncAsyncDuration;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.Company;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.Org;
 
+import java.time.Duration;
 import java.util.Map;
 import java.util.Set;
 
@@ -19,7 +20,11 @@ public class CompanyOrgsCache extends AbstractAsyncCache<String, Map<Company,Set
 
     @Override
     protected SyncAsyncDuration getSyncAsyncDuration() {
-        return CacheDuration.MINUTES(5);
+        return SyncAsyncDuration
+                .builder()
+                .expireDuration(Duration.ofHours(4))
+                .refreshDuration(Duration.ofMinutes(2))
+                .build();
     }
 
     @Override

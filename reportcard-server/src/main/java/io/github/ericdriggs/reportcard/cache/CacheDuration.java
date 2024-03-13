@@ -2,41 +2,39 @@ package io.github.ericdriggs.reportcard.cache;
 
 import java.time.Duration;
 
-public enum CacheDuration implements SyncAsyncDuration {
+public enum CacheDuration implements HasSyncAsyncDuration {
 
     DAY(Duration.ofHours(24)),
+    HOURS_4(Duration.ofMinutes(60)),
     HOUR(Duration.ofMinutes(60)),
-    MINUTE(Duration.ofSeconds(60));
+
+    MINUTES_30(Duration.ofMinutes(30)),
+    MINUTES_15(Duration.ofMinutes(15)),
+    MINUTES_5(Duration.ofMinutes(5));
+
+    private final static int syncAsyncRatio = 20;
 
     CacheDuration(Duration expireDuration) {
-        this.expireDuration = expireDuration;
-        this.refreshDuration = expireDuration.dividedBy(10);
+        this.syncAsyncDuration = fromExpireDuration(expireDuration);
     }
 
-    private Duration expireDuration;
-    private Duration refreshDuration;
+    private final SyncAsyncDuration syncAsyncDuration;
 
     public Duration getExpireDuration() {
-        return expireDuration;
+        return syncAsyncDuration.getExpireDuration();
     }
 
     public Duration getRefreshDuration() {
-        return refreshDuration;
+        return syncAsyncDuration.getRefreshDuration();
     }
 
-    public static SyncAsyncDuration MINUTES(int minutes) {
-        return new SyncAsyncDuration() {
-            @Override
-            public Duration getExpireDuration() {
-                return Duration.ofMinutes(minutes);
-            }
+    public static SyncAsyncDuration fromExpireDuration(Duration expireDuration) {
+        return SyncAsyncDuration
+                .builder()
+                .expireDuration(expireDuration)
+                .refreshDuration(expireDuration.dividedBy(syncAsyncRatio))
+                .build();
 
-            @Override
-            public Duration getRefreshDuration() {
-                return Duration.ofMinutes(minutes).dividedBy(10);
-            }
-        };
     }
-
 
 }

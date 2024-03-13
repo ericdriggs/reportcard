@@ -8,6 +8,7 @@ import io.github.ericdriggs.reportcard.gen.db.tables.pojos.Branch;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.Org;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.Repo;
 
+import java.time.Duration;
 import java.util.Map;
 import java.util.Set;
 
@@ -18,7 +19,11 @@ public class OrgReposBranchesCache extends AbstractAsyncCache<CompanyOrgDTO, Map
 
     @Override
     protected SyncAsyncDuration getSyncAsyncDuration() {
-        return CacheDuration.MINUTES(5);
+        return SyncAsyncDuration
+                .builder()
+                .expireDuration(Duration.ofHours(4))
+                .refreshDuration(Duration.ofMinutes(2))
+                .build();
     }
 
     @Override
