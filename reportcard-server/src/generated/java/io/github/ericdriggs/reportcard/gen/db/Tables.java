@@ -6,6 +6,7 @@ package io.github.ericdriggs.reportcard.gen.db;
 
 import io.github.ericdriggs.reportcard.gen.db.tables.Branch;
 import io.github.ericdriggs.reportcard.gen.db.tables.Company;
+import io.github.ericdriggs.reportcard.gen.db.tables.FaultContext;
 import io.github.ericdriggs.reportcard.gen.db.tables.Job;
 import io.github.ericdriggs.reportcard.gen.db.tables.Org;
 import io.github.ericdriggs.reportcard.gen.db.tables.Repo;
@@ -14,9 +15,11 @@ import io.github.ericdriggs.reportcard.gen.db.tables.Stage;
 import io.github.ericdriggs.reportcard.gen.db.tables.Storage;
 import io.github.ericdriggs.reportcard.gen.db.tables.StorageType;
 import io.github.ericdriggs.reportcard.gen.db.tables.TestCase;
+import io.github.ericdriggs.reportcard.gen.db.tables.TestCaseFault;
 import io.github.ericdriggs.reportcard.gen.db.tables.TestResult;
 import io.github.ericdriggs.reportcard.gen.db.tables.TestStatus;
 import io.github.ericdriggs.reportcard.gen.db.tables.TestSuite;
+import io.github.ericdriggs.reportcard.gen.db.tables.TestSuiteFault;
 
 import lombok.Generated;
 
@@ -37,6 +40,11 @@ public class Tables {
      * The table <code>reportcard.company</code>.
      */
     public static final Company COMPANY = Company.COMPANY;
+
+    /**
+     * The table <code>reportcard.fault_context</code>.
+     */
+    public static final FaultContext FAULT_CONTEXT = FaultContext.FAULT_CONTEXT;
 
     /**
      * The table <code>reportcard.job</code>.
@@ -79,6 +87,11 @@ public class Tables {
     public static final TestCase TEST_CASE = TestCase.TEST_CASE;
 
     /**
+     * The table <code>reportcard.test_case_fault</code>.
+     */
+    public static final TestCaseFault TEST_CASE_FAULT = TestCaseFault.TEST_CASE_FAULT;
+
+    /**
      * The table <code>reportcard.test_result</code>.
      */
     public static final TestResult TEST_RESULT = TestResult.TEST_RESULT;
@@ -92,4 +105,9 @@ public class Tables {
      * The table <code>reportcard.test_suite</code>.
      */
     public static final TestSuite TEST_SUITE = TestSuite.TEST_SUITE;
+
+    /**
+     * The table <code>reportcard.test_suite_fault</code>.
+     */
+    public static final TestSuiteFault TEST_SUITE_FAULT = TestSuiteFault.TEST_SUITE_FAULT;
 }

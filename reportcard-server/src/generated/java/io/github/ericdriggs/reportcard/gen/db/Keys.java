@@ -6,6 +6,7 @@ package io.github.ericdriggs.reportcard.gen.db;
 
 import io.github.ericdriggs.reportcard.gen.db.tables.Branch;
 import io.github.ericdriggs.reportcard.gen.db.tables.Company;
+import io.github.ericdriggs.reportcard.gen.db.tables.FaultContext;
 import io.github.ericdriggs.reportcard.gen.db.tables.Job;
 import io.github.ericdriggs.reportcard.gen.db.tables.Org;
 import io.github.ericdriggs.reportcard.gen.db.tables.Repo;
@@ -14,11 +15,14 @@ import io.github.ericdriggs.reportcard.gen.db.tables.Stage;
 import io.github.ericdriggs.reportcard.gen.db.tables.Storage;
 import io.github.ericdriggs.reportcard.gen.db.tables.StorageType;
 import io.github.ericdriggs.reportcard.gen.db.tables.TestCase;
+import io.github.ericdriggs.reportcard.gen.db.tables.TestCaseFault;
 import io.github.ericdriggs.reportcard.gen.db.tables.TestResult;
 import io.github.ericdriggs.reportcard.gen.db.tables.TestStatus;
 import io.github.ericdriggs.reportcard.gen.db.tables.TestSuite;
+import io.github.ericdriggs.reportcard.gen.db.tables.TestSuiteFault;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.BranchRecord;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.CompanyRecord;
+import io.github.ericdriggs.reportcard.gen.db.tables.records.FaultContextRecord;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.JobRecord;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.OrgRecord;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.RepoRecord;
@@ -26,9 +30,11 @@ import io.github.ericdriggs.reportcard.gen.db.tables.records.RunRecord;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.StageRecord;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.StorageRecord;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.StorageTypeRecord;
+import io.github.ericdriggs.reportcard.gen.db.tables.records.TestCaseFaultRecord;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.TestCaseRecord;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.TestResultRecord;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.TestStatusRecord;
+import io.github.ericdriggs.reportcard.gen.db.tables.records.TestSuiteFaultRecord;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.TestSuiteRecord;
 
 import lombok.Generated;
@@ -55,6 +61,7 @@ public class Keys {
     public static final UniqueKey<BranchRecord> KEY_BRANCH_PRIMARY = Internal.createUniqueKey(Branch.BRANCH, DSL.name("KEY_branch_PRIMARY"), new TableField[] { Branch.BRANCH.BRANCH_ID }, true);
     public static final UniqueKey<CompanyRecord> KEY_COMPANY_COMPANY_NAME_IDX = Internal.createUniqueKey(Company.COMPANY, DSL.name("KEY_company_company_name_idx"), new TableField[] { Company.COMPANY.COMPANY_NAME }, true);
     public static final UniqueKey<CompanyRecord> KEY_COMPANY_PRIMARY = Internal.createUniqueKey(Company.COMPANY, DSL.name("KEY_company_PRIMARY"), new TableField[] { Company.COMPANY.COMPANY_ID }, true);
+    public static final UniqueKey<FaultContextRecord> KEY_FAULT_CONTEXT_PRIMARY = Internal.createUniqueKey(FaultContext.FAULT_CONTEXT, DSL.name("KEY_fault_context_PRIMARY"), new TableField[] { FaultContext.FAULT_CONTEXT.FAULT_CONTEXT_ID }, true);
     public static final UniqueKey<JobRecord> KEY_JOB_PRIMARY = Internal.createUniqueKey(Job.JOB, DSL.name("KEY_job_PRIMARY"), new TableField[] { Job.JOB.JOB_ID }, true);
     public static final UniqueKey<JobRecord> KEY_JOB_UQ_BRANCH_FK_JOB_INFO_STR = Internal.createUniqueKey(Job.JOB, DSL.name("KEY_job_UQ_BRANCH_FK_JOB_INFO_STR"), new TableField[] { Job.JOB.JOB_INFO_STR, Job.JOB.BRANCH_FK }, true);
     public static final UniqueKey<OrgRecord> KEY_ORG_ORG_NAME_IDX = Internal.createUniqueKey(Org.ORG, DSL.name("KEY_org_org_name_idx"), new TableField[] { Org.ORG.ORG_NAME }, true);
@@ -71,9 +78,11 @@ public class Keys {
     public static final UniqueKey<StorageRecord> KEY_STORAGE_UQ_STABLE_LABEL = Internal.createUniqueKey(Storage.STORAGE, DSL.name("KEY_storage_UQ_STABLE_LABEL"), new TableField[] { Storage.STORAGE.STAGE_FK, Storage.STORAGE.LABEL }, true);
     public static final UniqueKey<StorageTypeRecord> KEY_STORAGE_TYPE_PRIMARY = Internal.createUniqueKey(StorageType.STORAGE_TYPE, DSL.name("KEY_storage_type_PRIMARY"), new TableField[] { StorageType.STORAGE_TYPE.STORAGE_TYPE_ID }, true);
     public static final UniqueKey<TestCaseRecord> KEY_TEST_CASE_PRIMARY = Internal.createUniqueKey(TestCase.TEST_CASE, DSL.name("KEY_test_case_PRIMARY"), new TableField[] { TestCase.TEST_CASE.TEST_CASE_ID }, true);
+    public static final UniqueKey<TestCaseFaultRecord> KEY_TEST_CASE_FAULT_PRIMARY = Internal.createUniqueKey(TestCaseFault.TEST_CASE_FAULT, DSL.name("KEY_test_case_fault_PRIMARY"), new TableField[] { TestCaseFault.TEST_CASE_FAULT.TEST_CASE_FAULT_ID }, true);
     public static final UniqueKey<TestResultRecord> KEY_TEST_RESULT_PRIMARY = Internal.createUniqueKey(TestResult.TEST_RESULT, DSL.name("KEY_test_result_PRIMARY"), new TableField[] { TestResult.TEST_RESULT.TEST_RESULT_ID }, true);
     public static final UniqueKey<TestStatusRecord> KEY_TEST_STATUS_PRIMARY = Internal.createUniqueKey(TestStatus.TEST_STATUS, DSL.name("KEY_test_status_PRIMARY"), new TableField[] { TestStatus.TEST_STATUS.TEST_STATUS_ID }, true);
     public static final UniqueKey<TestSuiteRecord> KEY_TEST_SUITE_PRIMARY = Internal.createUniqueKey(TestSuite.TEST_SUITE, DSL.name("KEY_test_suite_PRIMARY"), new TableField[] { TestSuite.TEST_SUITE.TEST_SUITE_ID }, true);
+    public static final UniqueKey<TestSuiteFaultRecord> KEY_TEST_SUITE_FAULT_PRIMARY = Internal.createUniqueKey(TestSuiteFault.TEST_SUITE_FAULT, DSL.name("KEY_test_suite_fault_PRIMARY"), new TableField[] { TestSuiteFault.TEST_SUITE_FAULT.TEST_SUITE_FAULT_ID }, true);
 
     // -------------------------------------------------------------------------
     // FOREIGN KEY definitions
@@ -89,6 +98,10 @@ public class Keys {
     public static final ForeignKey<StorageRecord, StorageTypeRecord> STORAGE_TYPE_FK = Internal.createForeignKey(Storage.STORAGE, DSL.name("storage_type_fk"), new TableField[] { Storage.STORAGE.STORAGE_TYPE }, Keys.KEY_STORAGE_TYPE_PRIMARY, new TableField[] { StorageType.STORAGE_TYPE.STORAGE_TYPE_ID }, true);
     public static final ForeignKey<TestCaseRecord, TestStatusRecord> FK_TEST_CASE_TEST_STATUS = Internal.createForeignKey(TestCase.TEST_CASE, DSL.name("fk_test_case_test_status"), new TableField[] { TestCase.TEST_CASE.TEST_STATUS_FK }, Keys.KEY_TEST_STATUS_PRIMARY, new TableField[] { TestStatus.TEST_STATUS.TEST_STATUS_ID }, true);
     public static final ForeignKey<TestCaseRecord, TestSuiteRecord> FK_TEST_CASE_TEST_SUITE = Internal.createForeignKey(TestCase.TEST_CASE, DSL.name("fk_test_case_test_suite"), new TableField[] { TestCase.TEST_CASE.TEST_SUITE_FK }, Keys.KEY_TEST_SUITE_PRIMARY, new TableField[] { TestSuite.TEST_SUITE.TEST_SUITE_ID }, true);
+    public static final ForeignKey<TestCaseFaultRecord, FaultContextRecord> FK_FAULT_CONTEXT = Internal.createForeignKey(TestCaseFault.TEST_CASE_FAULT, DSL.name("fk_fault_context"), new TableField[] { TestCaseFault.TEST_CASE_FAULT.FAULT_CONTEXT_FK }, Keys.KEY_FAULT_CONTEXT_PRIMARY, new TableField[] { FaultContext.FAULT_CONTEXT.FAULT_CONTEXT_ID }, true);
+    public static final ForeignKey<TestCaseFaultRecord, TestCaseRecord> FK_TEST_CASE = Internal.createForeignKey(TestCaseFault.TEST_CASE_FAULT, DSL.name("fk_test_case"), new TableField[] { TestCaseFault.TEST_CASE_FAULT.TEST_CASE_FK }, Keys.KEY_TEST_CASE_PRIMARY, new TableField[] { TestCase.TEST_CASE.TEST_CASE_ID }, true);
     public static final ForeignKey<TestResultRecord, StageRecord> TEST_RESULT_STAGE_FK = Internal.createForeignKey(TestResult.TEST_RESULT, DSL.name("test_result_stage_fk"), new TableField[] { TestResult.TEST_RESULT.STAGE_FK }, Keys.KEY_STAGE_PRIMARY, new TableField[] { Stage.STAGE.STAGE_ID }, true);
     public static final ForeignKey<TestSuiteRecord, TestResultRecord> TEST_RESULT_FK = Internal.createForeignKey(TestSuite.TEST_SUITE, DSL.name("test_result_fk"), new TableField[] { TestSuite.TEST_SUITE.TEST_RESULT_FK }, Keys.KEY_TEST_RESULT_PRIMARY, new TableField[] { TestResult.TEST_RESULT.TEST_RESULT_ID }, true);
+    public static final ForeignKey<TestSuiteFaultRecord, FaultContextRecord> FK_SUITE_FAULT_CONTEXT = Internal.createForeignKey(TestSuiteFault.TEST_SUITE_FAULT, DSL.name("fk_suite_fault_context"), new TableField[] { TestSuiteFault.TEST_SUITE_FAULT.FAULT_CONTEXT_FK }, Keys.KEY_FAULT_CONTEXT_PRIMARY, new TableField[] { FaultContext.FAULT_CONTEXT.FAULT_CONTEXT_ID }, true);
+    public static final ForeignKey<TestSuiteFaultRecord, TestSuiteRecord> FK_TEST_SUITE = Internal.createForeignKey(TestSuiteFault.TEST_SUITE_FAULT, DSL.name("fk_test_suite"), new TableField[] { TestSuiteFault.TEST_SUITE_FAULT.TEST_SUITE_FK }, Keys.KEY_TEST_SUITE_PRIMARY, new TableField[] { TestSuite.TEST_SUITE.TEST_SUITE_ID }, true);
 }

@@ -39,7 +39,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Run extends TableImpl<RunRecord> {
 
-    private static final long serialVersionUID = -85603148;
+    private static final long serialVersionUID = -944689238;
 
     /**
      * The reference instance of <code>reportcard.run</code>
@@ -87,7 +87,7 @@ public class Run extends TableImpl<RunRecord> {
     /**
      * The column <code>reportcard.run.is_success</code>.
      */
-    public final TableField<RunRecord, Boolean> IS_SUCCESS = createField(DSL.name("is_success"), SQLDataType.BOOLEAN, this, "");
+    public final TableField<RunRecord, Boolean> IS_SUCCESS = createField(DSL.name("is_success"), SQLDataType.BOOLEAN.nullable(false).defaultValue(DSL.inline("1", SQLDataType.BOOLEAN)), this, "");
 
     private Run(Name alias, Table<RunRecord> aliased) {
         this(alias, aliased, null);
