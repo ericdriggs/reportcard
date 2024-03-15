@@ -16,6 +16,9 @@ repositories {
 }
 
 dependencies {
+
+    api "ch.qos.logback:logback-classic:${logbackVersion}"
+
     //Lombok
     implementation "org.projectlombok:lombok:${lombokVersion}"
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"

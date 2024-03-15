@@ -19,3 +19,13 @@ VALUES (1, 'HTML'),
        (3, 'LOG'),
        (4, 'OTHER'),
        (5, 'XML');
+
+
+INSERT `reportcard`.`fault_context`
+(`fault_context_id`, `fault_context_name`)
+VALUES (1, 'ERROR'),
+       (2, 'FAILURE'),
+       (3, 'FLAKY_ERROR'),
+       (4, 'FLAKY_FAILURE'),
+       (5, 'RERUN_ERROR'),
+       (6, 'RERUN_FAILURE');

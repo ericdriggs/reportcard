@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -122,14 +121,15 @@ public class TestResultTest {
 
         List<TestSuite> testSuites = new ArrayList<>();
         {
-            ResultCount resultCount = new ResultCount()
-                    .setErrors(ERROR_COUNT)
-                    .setFailures(FAILURE_COUT)
-                    .setSuccesses(SUCCESS_COUNT)
-                    .setSkipped(SKIPPED_COUNT)
-                    .setTests(TEST_COUNT)
-                    .setTime(TEST_TIME)
-                    .setTime(new BigDecimal(TEST_COUNT - SKIPPED_COUNT));
+            ResultCount resultCount = ResultCount
+                    .builder()
+                    .errors(ERROR_COUNT)
+                    .failures(FAILURE_COUT)
+                    .successes(SUCCESS_COUNT)
+                    .skipped(SKIPPED_COUNT)
+                    .tests(TEST_COUNT)
+                    .time(TEST_TIME)
+                    .build();
 
             TestSuite testSuite = generateTestSuite(resultCount);
 

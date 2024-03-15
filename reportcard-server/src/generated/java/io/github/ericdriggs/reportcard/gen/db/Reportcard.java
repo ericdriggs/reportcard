@@ -19,7 +19,6 @@ import io.github.ericdriggs.reportcard.gen.db.tables.TestCaseFault;
 import io.github.ericdriggs.reportcard.gen.db.tables.TestResult;
 import io.github.ericdriggs.reportcard.gen.db.tables.TestStatus;
 import io.github.ericdriggs.reportcard.gen.db.tables.TestSuite;
-import io.github.ericdriggs.reportcard.gen.db.tables.TestSuiteFault;
 
 import java.util.Arrays;
 import java.util.List;
@@ -38,7 +37,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Reportcard extends SchemaImpl {
 
-    private static final long serialVersionUID = -1258354965;
+    private static final long serialVersionUID = 707194193;
 
     /**
      * The reference instance of <code>reportcard</code>
@@ -121,11 +120,6 @@ public class Reportcard extends SchemaImpl {
     public final TestSuite TEST_SUITE = TestSuite.TEST_SUITE;
 
     /**
-     * The table <code>reportcard.test_suite_fault</code>.
-     */
-    public final TestSuiteFault TEST_SUITE_FAULT = TestSuiteFault.TEST_SUITE_FAULT;
-
-    /**
      * No further instances allowed
      */
     private Reportcard() {
@@ -155,8 +149,7 @@ public class Reportcard extends SchemaImpl {
             TestCaseFault.TEST_CASE_FAULT,
             TestResult.TEST_RESULT,
             TestStatus.TEST_STATUS,
-            TestSuite.TEST_SUITE,
-            TestSuiteFault.TEST_SUITE_FAULT
+            TestSuite.TEST_SUITE
         );
     }
 }

@@ -1,12 +1,11 @@
 package io.github.ericdriggs.reportcard.model.converter.junit;
 
-import io.github.ericdriggs.reportcard.model.TestCase;
-import io.github.ericdriggs.reportcard.model.TestResult;
-import io.github.ericdriggs.reportcard.model.TestStatus;
-import io.github.ericdriggs.reportcard.model.TestSuite;
+import io.github.ericdriggs.reportcard.model.*;
+import io.github.ericdriggs.reportcard.xml.IsEmptyUtil;
 import io.github.ericdriggs.reportcard.xml.junit.Testcase;
 import io.github.ericdriggs.reportcard.xml.junit.Testsuite;
 import io.github.ericdriggs.reportcard.xml.junit.Testsuites;
+import io.github.ericdriggs.reportcard.xml.surefire.HasValueMessageTypeSurefire;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
@@ -58,6 +57,35 @@ public class JunitConvertersUtil {
             modelTestCase.setTestStatus(TestStatus.SUCCESS);
         }
         return modelTestCase;
+    }
+
+    public static List<TestCaseFault> getTestCaseFaults(Testcase source) {
+        List<TestCaseFault> testCaseFaults = new ArrayList<>();
+        testCaseFaults.addAll(getTestCaseFaults(List.of(source.getError()), FaultContext.ERROR));
+        testCaseFaults.addAll(getTestCaseFaults(List.of(source.getFailure()), FaultContext.FAILURE));
+        return testCaseFaults;
+    }
+
+    public static List<TestCaseFault> getTestCaseFaults(List<?> faults, FaultContext faultContext) {
+        List<TestCaseFault> testCaseFaults = new ArrayList<>();
+        if (!IsEmptyUtil.isCollectionEmpty(faults)) {
+            for (Object o : faults) {
+                if (o instanceof HasValueMessageTypeSurefire hasValueMessageType) {
+                    testCaseFaults.add(getTestCaseFault(hasValueMessageType, faultContext));
+                }
+            }
+        }
+        return testCaseFaults;
+    }
+
+    public static TestCaseFault getTestCaseFault(HasValueMessageTypeSurefire fault, FaultContext faultContext) {
+
+        TestCaseFault testCaseFault = new TestCaseFault();
+        testCaseFault.setFaultContextFk(faultContext.getFaultContextId())
+                     .setMessage(fault.getMessage())
+                     .setType(fault.getType())
+                     .setValue(fault.getValue());
+        return testCaseFault;
     }
 
     public static List<TestCase> doFromJunitToModelTestCases(List<io.github.ericdriggs.reportcard.xml.junit.Testcase> source) {

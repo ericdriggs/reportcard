@@ -96,10 +96,10 @@ public class TestResult extends io.github.ericdriggs.reportcard.pojos.TestResult
     }
 
     public ResultCount getResultCount() {
-        ResultCount resultCount = new ResultCount();
+        ResultCount resultCount = ResultCount.builder().build();
         for (TestSuite testSuite : testSuites) {
             ResultCount testSuiteResultCount = testSuite.getResultCount();
-            resultCount = resultCount.add(testSuiteResultCount);
+            resultCount = ResultCount.add(resultCount, testSuiteResultCount);
         }
         return resultCount;
     }

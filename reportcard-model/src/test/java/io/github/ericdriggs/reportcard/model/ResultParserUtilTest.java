@@ -6,7 +6,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.file.NoSuchFileException;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -46,7 +48,7 @@ public class ResultParserUtilTest {
         assertNull(testResult.getExternalLinks());
         assertNull(testResult.getTestResultCreated());
 
-        Assertions.assertEquals(TIME_TOTAL, testResult.getTime().setScale(1));
+        Assertions.assertEquals(TIME_TOTAL, testResult.getTime().setScale(1, RoundingMode.HALF_UP));
 
         ResultCount resultCount = testResult.getResultCount();
         assertEquals(ERROR_COUNT, resultCount.getErrors());
@@ -56,6 +58,23 @@ public class ResultParserUtilTest {
         assertEquals(SUCCESS_COUNT, resultCount.getSuccesses());
         assertEquals(TEST_COUNT, resultCount.getTests());
         assertEquals(TIME_TOTAL, resultCount.getTime());
+
+        boolean assertedFailureError = false;
+        for (TestSuite testSuite : testResult.getTestSuites()) {
+            for (TestCase testCase : testSuite.getTestCases()) {
+                if ("setTestAndRetrieveValue".equals(testCase.getName())){
+                    assertedFailureError = true;
+                    List<TestCaseFault> testCaseFaults = testCase.getTestCaseFaults();
+                    assertEquals(1, testCaseFaults.size());
+                    for (TestCaseFault testCaseFault : testCaseFaults) {
+                        assertEquals(FaultContext.ERROR.getFaultContextId(), testCaseFault.getFaultContextFk());
+                        assertEquals("fake error message", testCaseFault.getMessage());
+                        assertEquals("FakeError", testCaseFault.getType());
+                    }
+
+                }
+            }
+        }
     }
 
     @Test

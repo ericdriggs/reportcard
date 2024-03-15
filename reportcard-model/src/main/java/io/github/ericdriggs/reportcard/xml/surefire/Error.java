@@ -15,7 +15,7 @@ import javax.xml.bind.annotation.*;
 @AllArgsConstructor
 @Builder(builderMethodName = "builderForError")
 @Data
-public class Error {
+public class Error implements HasValueMessageTypeSurefire {
 
     @XmlValue
     protected String value;

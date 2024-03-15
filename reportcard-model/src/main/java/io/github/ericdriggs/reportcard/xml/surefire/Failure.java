@@ -15,7 +15,7 @@ import javax.xml.bind.annotation.*;
 @AllArgsConstructor
 @Builder(builderMethodName = "builderForFailure")
 @Data
-public class Failure {
+public class Failure implements HasValueMessageTypeSurefire {
 
     @XmlValue
     protected String value;

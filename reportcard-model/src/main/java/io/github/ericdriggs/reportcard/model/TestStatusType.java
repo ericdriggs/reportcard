@@ -5,10 +5,10 @@ import io.github.ericdriggs.reportcard.xml.ResultCount;
 import java.math.BigDecimal;
 
 public enum TestStatusType {
-    SUCCESS(new ResultCount().setTests(1).setSuccesses(1)),
-    SKIPPED(new ResultCount().setTests(1).setSkipped(1)),
-    FAILURE(new ResultCount().setTests(1).setFailures(1)),
-    ERROR(new ResultCount().setTests(1).setErrors(1));
+    SUCCESS(ResultCount.builder().tests(1).successes(1).build()),
+    SKIPPED(ResultCount.builder().tests(1).skipped(1).build()),
+    FAILURE(ResultCount.builder().tests(1).failures(1).build()),
+    ERROR(ResultCount.builder().tests(1).errors(1).build());
 
     private ResultCount resultCount;
 
@@ -17,6 +17,6 @@ public enum TestStatusType {
     }
 
     public ResultCount getResultCount(BigDecimal time) {
-        return resultCount.setTime(time);
+        return resultCount.toBuilder().time(time).build();
     }
 }

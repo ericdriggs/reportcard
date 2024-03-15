@@ -24,7 +24,9 @@ import java.math.BigDecimal;
 public class Testcase {
 
     protected Skipped skipped;
+    //potential bug: can be multiple error according to xsd -- have only seen single in the wild.
     protected Error error;
+    //potential bug: can be multiple failure according to xsd -- have only seen single in the wild.
     protected Failure failure;
 
     @XmlElement(name = "system-out")

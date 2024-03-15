@@ -6,12 +6,14 @@ package io.github.ericdriggs.reportcard.pojos;
 
 import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
 @Data
 public class TestCase implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = -3938894842199056311L;
 
     protected Long testCaseId;

@@ -1,75 +1,75 @@
 package io.github.ericdriggs.reportcard.xml;
 
-import lombok.Data;
+import io.github.ericdriggs.reportcard.model.TestStatus;
+import lombok.Builder;
+import lombok.Value;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 
-@Data
+@Value
+@Builder(toBuilder = true)
 public class ResultCount {
-    /**
-     * tests="3" skipped="1" failures="0" errors="0"
-     */
 
-    private Integer errors = 0;
-    private Integer failures = 0;
-    private Integer skipped = 0;
-    private Integer successes = 0;
-    private Integer tests = 0;
-    private BigDecimal time = BigDecimal.ZERO;
+    @Builder.Default
+    Integer errors = 0;
+    @Builder.Default
+    Integer failures = 0;
+    @Builder.Default
+    Integer skipped = 0;
+    @Builder.Default
+    Integer successes = 0;
+    @Builder.Default
+    Integer tests = 0;
+    @Builder.Default
+    BigDecimal time = BigDecimal.ZERO;
 
-    public ResultCount setErrors(Integer val) {
-        errors = zeroIfNull(val);
-        return this;
+
+    public TestStatus getTestStatus() {
+        if (errors > 0) {
+            return TestStatus.ERROR;
+        } else if (failures > 0) {
+            return TestStatus.FAILURE;
+        } else if (skipped > 0) {
+            return TestStatus.SKIPPED;
+        }
+        return TestStatus.SUCCESS;
     }
 
-    public ResultCount setFailures(Integer val) {
-        failures = zeroIfNull(val);
-        return this;
+    public Integer getErrorsAndFailures() {
+        return errors + failures;
     }
 
-    public ResultCount setSkipped(Integer val) {
-        this.skipped = zeroIfNull(val);
-        return this;
-    }
-
-    public ResultCount setSuccesses(Integer val) {
-        this.successes = zeroIfNull(val);
-        return this;
-    }
-
-    public ResultCount setTests(Integer val) {
-        this.tests = zeroIfNull(val);
-        return this;
-    }
-
-    public ResultCount setTime(BigDecimal val) {
-        this.time = zeroIfNull(val);
-        return this;
-    }
 
     /**
      * Sums the fields of a resultCount
      *
-     * @param that a ResultCount
+     * @param r1 a ResultCount
+     * @param r2 a ResultCount
      * @return a new ResultCount sum of this and that
      */
-    public ResultCount add(ResultCount that) {
-        ResultCount resultCount = new ResultCount();
-        resultCount.setErrors(addIntegers(this.getErrors(), that.getErrors()));
-        resultCount.setFailures(addIntegers(this.getFailures(), that.getFailures()));
-        resultCount.setSkipped(addIntegers(this.getSkipped(), that.getSkipped()));
-        resultCount.setSuccesses(addIntegers(this.getSuccesses(), that.getSuccesses()));
-        resultCount.setTests(addIntegers(this.getTests(), that.getTests()));
-        resultCount.setTime(addBigDecimal(this.getTime(), that.getTime()));
-        return resultCount;
+    public static ResultCount add(ResultCount r1, ResultCount r2) {
+        if (r1 == null) {
+            return r2;
+        }
+
+        ResultCount result = ResultCount
+                .builder()
+                .errors(addIntegers(r1.getErrors(), r2.getErrors()))
+                .failures(addIntegers(r1.getFailures(), r2.getFailures()))
+                .skipped(addIntegers(r1.getSkipped(), r2.getSkipped()))
+                .successes(addIntegers(r1.getSuccesses(), r2.getSuccesses()))
+                .tests(addIntegers(r1.getTests(), r2.getTests()))
+                .time(addBigDecimal(r1.getTime(), r2.getTime()))
+                .build();
+        return result;
     }
 
     public static ResultCount aggregate(List<ResultCount> resultCounts) {
-        ResultCount resultCount = new ResultCount();
+        ResultCount resultCount = ResultCount.builder().build();
         for (ResultCount r : resultCounts) {
-            resultCount = resultCount.add(r);
+            resultCount = add(resultCount, r);
         }
         return resultCount;
     }

@@ -5,11 +5,13 @@ package io.github.ericdriggs.reportcard.pojos;
 
 import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 @Data
 public class TestStatus implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = -5636574208624624202L;
 
     private Byte testStatusId;

@@ -2,13 +2,9 @@ package io.github.ericdriggs.reportcard.model.converter.surefire;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.ericdriggs.reportcard.model.TestCase;
-import io.github.ericdriggs.reportcard.model.TestResult;
-import io.github.ericdriggs.reportcard.model.TestStatus;
-import io.github.ericdriggs.reportcard.model.TestSuite;
-import io.github.ericdriggs.reportcard.xml.surefire.Property;
-import io.github.ericdriggs.reportcard.xml.surefire.Testcase;
-import io.github.ericdriggs.reportcard.xml.surefire.Testsuite;
+import io.github.ericdriggs.reportcard.model.*;
+import io.github.ericdriggs.reportcard.xml.IsEmptyUtil;
+import io.github.ericdriggs.reportcard.xml.surefire.*;
 import lombok.SneakyThrows;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.Converter;
@@ -65,7 +61,44 @@ public class SurefireConvertersUtil {
         } else {
             modelTestCase.setTestStatus(TestStatus.SUCCESS);
         }
+        modelTestCase.addTestCaseFaults(getTestCaseFaults(source));
         return modelTestCase;
+    }
+
+    public static List<TestCaseFault> getTestCaseFaults(Testcase source) {
+        List<TestCaseFault> testCaseFaults = new ArrayList<>();
+        if (source.getError() != null) {
+            testCaseFaults.addAll(getTestCaseFaults(List.of(source.getError().getValue()), FaultContext.ERROR));
+        }
+        testCaseFaults.addAll(getTestCaseFaults(source.getFailure(), FaultContext.FAILURE));
+        testCaseFaults.addAll(getTestCaseFaults(source.getFlakyError(), FaultContext.ERROR));
+        testCaseFaults.addAll(getTestCaseFaults(source.getFlakyFailure(), FaultContext.FAILURE));
+        testCaseFaults.addAll(getTestCaseFaults(source.getRerunError(), FaultContext.ERROR));
+        testCaseFaults.addAll(getTestCaseFaults(source.getRerunFailure(), FaultContext.FAILURE));
+        return testCaseFaults;
+    }
+
+    public static List<TestCaseFault> getTestCaseFaults(List<? extends HasValueMessageTypeSurefire> faults, FaultContext faultContext) {
+        List<TestCaseFault> testCaseFaults = new ArrayList<>();
+        if (!IsEmptyUtil.isCollectionEmpty(faults)) {
+            for (Object o : faults) {
+                if (o instanceof HasValueMessageTypeSurefire hasValueMessageType) {
+                    testCaseFaults.add(getTestCaseFault(hasValueMessageType, faultContext));
+                }
+            }
+        }
+        return testCaseFaults;
+    }
+
+
+    public static TestCaseFault getTestCaseFault(HasValueMessageTypeSurefire fault, FaultContext faultContext) {
+
+        TestCaseFault testCaseFault = new TestCaseFault();
+        testCaseFault.setFaultContextFk(faultContext.getFaultContextId())
+                     .setMessage(fault.getMessage())
+                     .setType(fault.getType())
+                     .setValue(fault.getValue());
+        return testCaseFault;
     }
 
     public static List<TestSuite> doFromSurefireToModelTestSuites(Collection<Testsuite> source) {

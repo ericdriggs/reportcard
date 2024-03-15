@@ -19,7 +19,6 @@ import io.github.ericdriggs.reportcard.gen.db.tables.TestCaseFault;
 import io.github.ericdriggs.reportcard.gen.db.tables.TestResult;
 import io.github.ericdriggs.reportcard.gen.db.tables.TestStatus;
 import io.github.ericdriggs.reportcard.gen.db.tables.TestSuite;
-import io.github.ericdriggs.reportcard.gen.db.tables.TestSuiteFault;
 
 import lombok.Generated;
 
@@ -105,9 +104,4 @@ public class Tables {
      * The table <code>reportcard.test_suite</code>.
      */
     public static final TestSuite TEST_SUITE = TestSuite.TEST_SUITE;
-
-    /**
-     * The table <code>reportcard.test_suite_fault</code>.
-     */
-    public static final TestSuiteFault TEST_SUITE_FAULT = TestSuiteFault.TEST_SUITE_FAULT;
 }

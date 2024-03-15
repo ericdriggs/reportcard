@@ -8,16 +8,17 @@ import lombok.NoArgsConstructor;
 import javax.xml.bind.annotation.*;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "error", propOrder = {"type", "message"})
+@XmlType(name = "error", propOrder = {"type", "message", "value"})
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(builderMethodName = "builderForError")
 @Data
-public class Error {
+public class Error implements HasValueMessageTypeJunit {
 
     @XmlAttribute(name = "type", required = true)
     protected String type;
     @XmlAttribute(name = "message")
     protected String message;
-
+    @XmlValue
+    protected String value;
 }

@@ -6,6 +6,7 @@ package io.github.ericdriggs.reportcard.pojos;
 
 import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 @Data
 public class TestResult implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = -4496620756225217991L;
 
     private Long testResultId;

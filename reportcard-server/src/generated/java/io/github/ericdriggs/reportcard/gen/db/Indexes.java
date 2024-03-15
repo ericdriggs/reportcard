@@ -14,7 +14,6 @@ import io.github.ericdriggs.reportcard.gen.db.tables.TestCase;
 import io.github.ericdriggs.reportcard.gen.db.tables.TestCaseFault;
 import io.github.ericdriggs.reportcard.gen.db.tables.TestResult;
 import io.github.ericdriggs.reportcard.gen.db.tables.TestSuite;
-import io.github.ericdriggs.reportcard.gen.db.tables.TestSuiteFault;
 
 import lombok.Generated;
 
@@ -37,7 +36,6 @@ public class Indexes {
 
     public static final Index BRANCH_BRANCH_REPO_IDX = Internal.createIndex(DSL.name("branch_repo_idx"), Branch.BRANCH, new OrderField[] { Branch.BRANCH.REPO_FK }, false);
     public static final Index TEST_CASE_FAULT_FAULT_CONTEXT_FK_IDX = Internal.createIndex(DSL.name("fault_context_fk_idx"), TestCaseFault.TEST_CASE_FAULT, new OrderField[] { TestCaseFault.TEST_CASE_FAULT.FAULT_CONTEXT_FK }, false);
-    public static final Index TEST_SUITE_FAULT_FAULT_CONTEXT_FK_IDX = Internal.createIndex(DSL.name("fault_context_fk_idx"), TestSuiteFault.TEST_SUITE_FAULT, new OrderField[] { TestSuiteFault.TEST_SUITE_FAULT.FAULT_CONTEXT_FK }, false);
     public static final Index ORG_FK_COMPANY_ORG_IDX = Internal.createIndex(DSL.name("FK_COMPANY_ORG_idx"), Org.ORG, new OrderField[] { Org.ORG.COMPANY_FK }, false);
     public static final Index TEST_CASE_FK_TEST_CASE_STATUS_IDX = Internal.createIndex(DSL.name("fk_test_case_status_idx"), TestCase.TEST_CASE, new OrderField[] { TestCase.TEST_CASE.TEST_STATUS_FK }, false);
     public static final Index TEST_CASE_FK_TEST_CASE_TEST_SUITE_IDX = Internal.createIndex(DSL.name("fk_test_case_test_suite_idx"), TestCase.TEST_CASE, new OrderField[] { TestCase.TEST_CASE.TEST_SUITE_FK }, false);
@@ -50,5 +48,4 @@ public class Indexes {
     public static final Index TEST_CASE_FAULT_TEST_CASE_FK_IDX = Internal.createIndex(DSL.name("test_case_fk_idx"), TestCaseFault.TEST_CASE_FAULT, new OrderField[] { TestCaseFault.TEST_CASE_FAULT.TEST_CASE_FK }, false);
     public static final Index TEST_SUITE_TEST_RESULT_FK_IDX = Internal.createIndex(DSL.name("test_result_fk_idx"), TestSuite.TEST_SUITE, new OrderField[] { TestSuite.TEST_SUITE.TEST_RESULT_FK }, false);
     public static final Index TEST_RESULT_TEST_RESULT_STAGE_FK_IDX = Internal.createIndex(DSL.name("test_result_stage_fk_idx"), TestResult.TEST_RESULT, new OrderField[] { TestResult.TEST_RESULT.STAGE_FK }, false);
-    public static final Index TEST_SUITE_FAULT_TEST_SUITE_FK_IDX = Internal.createIndex(DSL.name("test_suite_fk_idx"), TestSuiteFault.TEST_SUITE_FAULT, new OrderField[] { TestSuiteFault.TEST_SUITE_FAULT.TEST_SUITE_FK }, false);
 }
