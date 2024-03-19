@@ -8,7 +8,20 @@ import java.util.Comparator;
 
 public class ModelComparators {
 
-    public static int compareTestResultModel(TestResult val1, TestResult val2) {
+    public static final Comparator<TestResult> TEST_RESULT_MODEL_CASE_INSENSITIVE_ORDER
+            = new ModelComparators.TestResultModelCaseInsensitiveComparator();
+
+    public static final Comparator<TestSuite> TEST_SUITE_CASE_INSENSITIVE_ORDER
+            = new ModelComparators.TestSuiteCaseInsensitiveComparator();
+
+
+    public static final Comparator<TestCase> TEST_CASE_INSENSITIVE_ORDER
+            = new ModelComparators.TestCaseModelCaseInsensitiveComparator();
+
+    public static final Comparator<TestCaseFault> TEST_CASE_FAULT_BY_ID
+            = new ModelComparators.TestCaseFaultIdComparator();
+
+    public static int compareTestResult(TestResult val1, TestResult val2) {
         if (val1 == null || val2 == null) {
             return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
         }
@@ -18,17 +31,19 @@ public class ModelComparators {
         );
     }
 
-    public static final Comparator<TestResult> TEST_RESULT_MODEL_CASE_INSENSITIVE_ORDER
-            = new ModelComparators.TestResultModelCaseInsensitiveComparator();
+    public static int compareTestSuiteModelByName(TestSuite val1, TestSuite val2) {
+        if (val1 == null || val2 == null) {
+            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+        }
+        return CompareUtil.chainCompare(
+                CompareUtil.compareLowerNullSafe(val1.getName(), val2.getName()),
+                CompareUtil.compareLong(val1.getTestSuiteId(), val2.getTestSuiteId()),
+                CompareUtil.compareLowerNullSafe(val1.getPackage(), val2.getPackage()),
+                val1.getResultCount().compareTo(val2.getResultCount())
+        );
+    }
 
-    public static final Comparator<TestCase> TEST_CASE_INSENSITIVE_ORDER
-            = new ModelComparators.TestCaseModelCaseInsensitiveComparator();
-
-    public static final Comparator<TestCaseFault> TEST_CASE_FAULT_BY_ID
-            = new ModelComparators.TestCaseFaultIdComparator();
-
-
-    public static int compareTestResult(TestResult val1, TestResult val2) {
+    public static int compareTestResultModel(TestResult val1, TestResult val2) {
         if (val1 == null || val2 == null) {
             return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
         }
@@ -76,6 +91,18 @@ public class ModelComparators {
             return compareTestResultModel(val1, val2);
         }
     }
+
+    private static class TestSuiteCaseInsensitiveComparator
+            implements Comparator<TestSuite>, java.io.Serializable {
+        @Serial
+        private static final long serialVersionUID = -4834022062900145966L;
+
+        public int compare(TestSuite val1, TestSuite val2) {
+            return compareTestSuiteModelByName(val1, val2);
+        }
+    }
+
+
 
     private static class TestCaseModelCaseInsensitiveComparator
             implements Comparator<TestCase>, java.io.Serializable {

@@ -1,15 +1,13 @@
-package io.github.ericdriggs.reportcard.cache.model;
+package io.github.ericdriggs.reportcard.gen.db.tables.pojos;
 
-import io.github.ericdriggs.reportcard.gen.db.tables.pojos.Stage;
-import io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestResult;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Value;
 
 import java.time.Duration;
 
-@Data
+@Value
 @Builder
-public class StageTestResult {
+public class StageTestResult implements HasTestResult {
 
     Stage stage;
     TestResult testResult;

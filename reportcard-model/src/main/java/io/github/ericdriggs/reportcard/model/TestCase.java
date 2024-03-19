@@ -1,5 +1,6 @@
 package io.github.ericdriggs.reportcard.model;
 
+import io.github.ericdriggs.reportcard.xml.IsEmptyUtil;
 import io.github.ericdriggs.reportcard.xml.ResultCount;
 
 import java.time.Duration;
@@ -51,5 +52,9 @@ public class TestCase extends io.github.ericdriggs.reportcard.pojos.TestCase {
     }
     public ResultCount getResultCount() {
         return testStatus.getResultCount(getTime());
+    }
+
+    public boolean hasTestFault() {
+        return !IsEmptyUtil.isCollectionEmpty(testCaseFaults);
     }
 }

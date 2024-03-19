@@ -1,13 +1,12 @@
 package io.github.ericdriggs.reportcard.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.github.ericdriggs.reportcard.xml.IsEmptyUtil;
 import io.github.ericdriggs.reportcard.xml.ResultCount;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class TestResult extends io.github.ericdriggs.reportcard.pojos.TestResult {
     private List<TestSuite> testSuites = new ArrayList<>();
@@ -118,4 +117,47 @@ public class TestResult extends io.github.ericdriggs.reportcard.pojos.TestResult
 
         return new TestResult(combined);
     }
+    @JsonIgnore
+    public Map<TestSuite, List<TestCase>> getTestCasesSkipped() {
+        Map<TestSuite, List<TestCase>> matched = new TreeMap<>(ModelComparators.TEST_SUITE_CASE_INSENSITIVE_ORDER);
+        for(TestSuite testSuite : testSuites) {
+            for (TestCase testCase : testSuite.getTestCases()) {
+                if (testCase.getTestStatus().isSkipped()) {
+                    matched.computeIfAbsent(testSuite, k -> new ArrayList<>());
+                    matched.get(testSuite).add(testCase);
+                }
+            }
+        }
+        return matched;
+    }
+
+    @JsonIgnore
+    public Map<TestSuite, List<TestCase>> getTestCasesErrorOrFailure() {
+        Map<TestSuite, List<TestCase>> matched = new TreeMap<>(ModelComparators.TEST_SUITE_CASE_INSENSITIVE_ORDER);
+        for(TestSuite testSuite : testSuites) {
+            for (TestCase testCase : testSuite.getTestCases()) {
+                if (testCase.getTestStatus().isErrorOrFailure()) {
+                    matched.computeIfAbsent(testSuite, k -> new ArrayList<>());
+                    matched.get(testSuite).add(testCase);
+                }
+            }
+        }
+        return matched;
+    }
+
+
+    @JsonIgnore
+    public Map<TestSuite, List<TestCase>> getTestCasesWithFaults() {
+        Map<TestSuite, List<TestCase>> matched = new TreeMap<>(ModelComparators.TEST_SUITE_CASE_INSENSITIVE_ORDER);
+        for(TestSuite testSuite : testSuites) {
+            for (TestCase testCase : testSuite.getTestCases()) {
+                if (IsEmptyUtil.isCollectionEmpty(testCase.getTestCaseFaults())) {
+                    matched.computeIfAbsent(testSuite, k -> new ArrayList<>());
+                    matched.get(testSuite).add(testCase);
+                }
+            }
+        }
+        return matched;
+    }
+
 }

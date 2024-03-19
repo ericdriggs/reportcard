@@ -8,9 +8,11 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 
+import static io.github.ericdriggs.reportcard.util.CompareUtil.chainCompare;
+
 @Value
 @Builder(toBuilder = true)
-public class ResultCount {
+public class ResultCount implements Comparable<ResultCount> {
 
     @Builder.Default
     Integer errors = 0;
@@ -24,7 +26,6 @@ public class ResultCount {
     Integer tests = 0;
     @Builder.Default
     BigDecimal time = BigDecimal.ZERO;
-
 
     public TestStatus getTestStatus() {
         if (errors > 0) {
@@ -40,7 +41,6 @@ public class ResultCount {
     public Integer getErrorsAndFailures() {
         return errors + failures;
     }
-
 
     /**
      * Sums the fields of a resultCount
@@ -82,9 +82,9 @@ public class ResultCount {
         final Integer passedCount = getSuccesses();
         final Integer failureErrorsTotal = getFailures() + getErrors();
         return BigDecimal.valueOf(
-                        (100 * passedCount.doubleValue()) /
-                                (passedCount.doubleValue() + failureErrorsTotal.doubleValue())
-                ).setScale(2, RoundingMode.HALF_UP);
+                (100 * passedCount.doubleValue()) /
+                (passedCount.doubleValue() + failureErrorsTotal.doubleValue())
+        ).setScale(2, RoundingMode.HALF_UP);
     }
 
     protected Integer zeroIfNull(Integer val) {
@@ -111,10 +111,11 @@ public class ResultCount {
     private static Integer addIntegers(Integer thiz, Integer that) {
         if (thiz == null) {
             thiz = 0;
-        }if (that == null) {
+        }
+        if (that == null) {
             that = 0;
         }
-         return thiz + that;
+        return thiz + that;
     }
 
     /**
@@ -134,5 +135,18 @@ public class ResultCount {
         return thiz.add(that);
     }
 
-
+    @Override
+    public int compareTo(ResultCount that) {
+        if (that == null) {
+            return 1;
+        }
+        return chainCompare(
+                errors.compareTo(that.errors),
+                failures.compareTo(that.failures),
+                skipped.compareTo(that.skipped),
+                successes.compareTo(that.successes),
+                tests.compareTo(that.tests),
+                time.compareTo(that.time)
+        );
+    }
 }

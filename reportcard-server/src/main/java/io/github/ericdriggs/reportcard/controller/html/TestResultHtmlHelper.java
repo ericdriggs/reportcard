@@ -22,38 +22,63 @@ public enum TestResultHtmlHelper {
 
     public static String getTestResult(TestResult testResult) {
 
-        Map<String, TestSuite> classTestSuiteMap = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        final String baseTestResultHtml =
+                """
+                <html>
+                <head>
+                    <link rel="stylesheet" href="/css/sortable.min.css"/>
+                    <script src="/js/sortable.min.js"></script>
+                    
+                    <link rel="stylesheet" href="/css/shared.css">
+                    
+                    <link rel="stylesheet" href="/css/test-result.css"/>
+                    <link rel="stylesheet" href="/js/test-result.js"/>
+                </head>
+                <div id="content">
+                    <div id="overview" class="section">
+                        <h2 class="toggle" dataref="#" onclick="toggleSiblings(this)">Overview</h2>
+                        <table class="classes show">
+                            <thead>
+                            <tr>
+                                <th>Class</th>
+                                <th>Tests</th>
+                                <th>Failure</th>
+                                <th>skipped</th>
+                                <th>Duration</th>
+                                <th>Success rate</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <!--overviewClassRows-->
+                            
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="failures" class="failures section">
+                        <h2 class="toggle" dataref="#" onclick="toggleSiblings(this)">Failed</h2>
+                        <ul class="show">
+                            <!--failureItems-->
+                        </ul>
+                    </div>
+                    <div id="skipped" class="skipped section">
+                        <h2 class="toggle" dataref="#" onclick="toggleSiblings(this)">Skipped</h2>
+                        <ul class="show">
+                            <!--skippedItems-->
+                        </ul>
+                    </div>
+                    <div id="classes" class="section">
+                        <h2 class="toggle" dataref="#" onclick="toggleSiblings(this)">Classes</h2>
+                        <!--classRows-->
+                    </div>
+                </html>
+                """;
 
+        Map<TestSuite, List<TestCase>> failed = testResult.getTestCasesErrorOrFailure();
+        Map<TestSuite, List<TestCase>> skipped = testResult.getTestCasesSkipped();
 
-
-        Set<TestCase> failed = new TreeSet<>(ModelComparators.TEST_CASE_INSENSITIVE_ORDER);
-        Set<TestCase> skipped = new TreeSet<>(ModelComparators.TEST_CASE_INSENSITIVE_ORDER);
-
-
-        for (TestSuite testSuite : testResult.getTestSuites()) {
-            for (TestCase testCase : testSuite.getTestCases()) {
-                final String testClassName = testCase.getClassName();
-                if (classTestSuiteMap.get(testClassName) == null) {
-                    classTestSuiteMap.put(testClassName, new TestSuite());
-                }
-                classTestSuiteMap.computeIfAbsent(testClassName, k -> new TestSuite());
-                classTestSuiteMap.get(testClassName).getTestCases().add(testCase);
-
-                if (TestStatus.SKIPPED == testCase.getTestStatus()) {
-                    skipped.add(testCase);
-                }
-
-                if (testCase.getTestStatus().isErrorOrFailure()) {
-                    failed.add(testCase);
-                }
-
-            }
-
-        }
-
-        final String overviewClassRows = getOverviewClassRows(classTestSuiteMap);
+        final String overviewClassRows = getOverviewClassRows(testResult);
         final String failedItems = getFailures(failed);
-        final String skippedItems = getSkipped(failed);
+        final String skippedItems = getSkipped(skipped);
 
         final String classRows = getClassRows(testResult);
 
@@ -64,27 +89,37 @@ public enum TestResultHtmlHelper {
                 .replace("<!--classRows-->", classRows);
     }
 
-    public static String getOverviewClassRows(Map<String, TestSuite> classNameTestSuiteMap) {
+    public static String getOverviewClassRows(TestResult testResult) {
 
         StringBuilder sb = new StringBuilder();
         ResultCount totalResultCount = ResultCount.builder().build();
-        for (Map.Entry<String, TestSuite> classNameSuiteEntry : classNameTestSuiteMap.entrySet()) {
-            final String testClassName = classNameSuiteEntry.getKey();
-            final TestSuite testSuite = classNameSuiteEntry.getValue();
-
+        for (TestSuite testSuite : testResult.getTestSuites()) {
             ResultCount resultCount = testSuite.getResultCount();
-            sb.append(getOverviewClassRow(testClassName, resultCount)).append(ls);
+            sb.append(getOverviewClassRow(testSuite.getName(), resultCount)).append(ls);
             totalResultCount = ResultCount.add(totalResultCount, resultCount);
         }
         sb.append(getOverviewTotalRow(totalResultCount));
         return sb.toString();
     }
 
-    public static String getOverviewClassRow(String testClassName, ResultCount resultCount) {
+    public static String getOverviewClassRow(String testSuiteName, ResultCount resultCount) {
+
+        final String baseTestClassHtml =
+                """
+                <tr class="{statusClass}">
+                    <td><a onclick="showChildrenById('{testSuiteName}')" href="#{testSuiteName}">{testSuiteName}</a></td>
+                    <td>{tests}</td>
+                    <td>{failure}</td>
+                    <td>{skipped}</td>
+                    <td>{duration}</td>
+                    <td>{successRate}</td>
+                </tr>
+                """;
+
         final String statusClass = getStatusClass(resultCount.getTestStatus());
         return baseTestClassHtml
                 .replace("{statusClass}", statusClass)
-                .replace("{testClassName}", testClassName)
+                .replace("{testSuiteName}", testSuiteName)
                 .replace("{tests}", Integer.toString(resultCount.getTests()))
                 .replace("{failure}", Integer.toString(resultCount.getErrorsAndFailures()))
                 .replace("{skipped}", Integer.toString(resultCount.getSkipped()))
@@ -93,6 +128,18 @@ public enum TestResultHtmlHelper {
     }
 
     public static String getOverviewTotalRow(ResultCount resultCount) {
+        final String baseTestClassTotalHtml =
+                """
+                <tr>
+                    <td>Total</td>
+                    <td>{tests}</td>
+                    <td>{failure}</td>
+                    <td>{skipped}</td>
+                    <td>{duration}</td>
+                    <td>{successRate}</td>
+                </tr>
+                """;
+
         final String statusClass = getStatusClass(resultCount.getTestStatus());
         return baseTestClassTotalHtml
                 .replace("{tests}", Integer.toString(resultCount.getTests()))
@@ -112,67 +159,74 @@ public enum TestResultHtmlHelper {
         }
     }
 
-    public static String getFailures(Collection<TestCase> testCases) {
+    @SuppressWarnings("DuplicatedCode")
+    public static String getFailures(Map<TestSuite, List<TestCase>> testSuiteCasesMap) {
+        final String baseFailureItem =
+                """
+                <li>
+                  <a onclick="showChildrenById('{testSuiteName}')" href="#{testSuiteName}">{testName}</a>
+                </li>
+                """;
+
         StringBuilder sb = new StringBuilder();
-        for (TestCase testCase : testCases) {
-            sb.append(baseFailureItem
-                    .replace("{testClassName}", testCase.getClassName())
-                    .replace("{testName}", testCase.getName())
-            ).append(ls);
+        for (Map.Entry<TestSuite, List<TestCase>> entry : testSuiteCasesMap.entrySet()) {
+            final TestSuite testSuite = entry.getKey();
+            final List<TestCase> testCases = entry.getValue();
+            for (TestCase testCase : testCases) {
+                sb.append(baseFailureItem
+                        .replace("{testSuiteName}", testSuite.getName())
+                        .replace("{testName}", testCase.getName())
+                ).append(ls);
+            }
         }
         return sb.toString();
     }
 
-    public static String getSkipped(Collection<TestCase> testCases) {
+    @SuppressWarnings("DuplicatedCode")
+    public static String getSkipped(Map<TestSuite, List<TestCase>> testSuiteCasesMap) {
+        final String baseSkippedItem = "<li>{testSuiteName}.{testName}</li>";
+
         StringBuilder sb = new StringBuilder();
-        for (TestCase testCase : testCases) {
-            sb.append(baseSkippedItem.replace("{testName}", testCase.getName())).append(ls);
+        for (Map.Entry<TestSuite, List<TestCase>> entry : testSuiteCasesMap.entrySet()) {
+            final TestSuite testSuite = entry.getKey();
+            final List<TestCase> testCases = entry.getValue();
+            for (TestCase testCase : testCases) {
+                sb.append(baseSkippedItem
+                        .replace("{testSuiteName}", testSuite.getName())
+                        .replace("{testName}", testCase.getName())
+                ).append(ls);
+            }
         }
         return sb.toString();
     }
-
-
-
-    public static final String baseFailureItem =
-            """
-            <li><a onclick="showChildrenById('{testClassName}')" href="#{testClassName}">{testName}</a></li>
-            """;
-
-    public static final String baseSkippedItem = "<li>{testName}}</li>";
-
-
-    public static final String baseTestClassHtml =
-            """
-            <tr class="{statusClass}">
-                <td><a onclick="showChildrenById('{testClassName}')" href="#{testClassName}">{testClassName}</a></td>
-                <td>{tests}</td>
-                <td>{failure}</td>
-                <td>{skipped}</td>
-                <td>{duration}</td>
-                <td>{successRate}</td>
-            </tr>
-            """;
-
-    public static String baseTestClassTotalHtml =
-            """
-            <tr>
-                <td>Total</td>
-                <td>{tests}</td>
-                <td>{failure}</td>
-                <td>{skipped}</td>
-                <td>{duration}</td>
-                <td>{successRate}</td>
-            </tr>
-            """;
-
 
     public static String getClassRows(TestResult testResult) {
+
+        final String baseClassRow =
+                """
+                <div class="show" id="{testSuiteName}" class="{statusClass}">
+                    <a href="#" class="testclass {statusClass}" onclick="toggleSiblings(this)">{testSuiteName}</a>
+                    <table class="testcases hide">
+                        <thead>
+                        <tr>
+                            <th>Test</th>
+                            <th>Duration</th>
+                            <th>Result</th>
+                        </tr>
+                        </thead>
+                        <!--testCaseRows-->
+                    </table>
+                    <!--failureMessages-->
+                    <!--stdErr-->
+                    <!--stdOut-->
+                </div>
+                """;
+
         StringBuilder sb = new StringBuilder();
         for (TestSuite testSuite : testResult.getTestSuites()) {
-            final String testClassName = testSuite.getClassname();
             final List<TestCase> testCases = testSuite.getTestCases();
             sb.append(baseClassRow
-                    .replace("<!--testCaseRows-->", getTestCaseRows(testCases))
+                    .replace("<!--testCaseRows-->", getTestCaseRows(testSuite, testCases))
                     .replace("<!--failureMessages-->", getFailureMessages(testSuite))
                     .replace("<!--stdErr-->", getStdErr(testSuite))
                     .replace("<!--stdOut-->", getStdOut(testSuite))
@@ -181,11 +235,21 @@ public enum TestResultHtmlHelper {
         return sb.toString();
     }
 
-    public static String getTestCaseRows(List<TestCase> testCases) {
+    public static String getTestCaseRows(TestSuite testSuite, List<TestCase> testCases) {
+
+        final String baseTestCaseRow =
+                """
+                <tr class="{statusClass}" class="{testSuiteName}">
+                    <td>{testName}</td>
+                    <td>{duration}</td>
+                    <td>{statusClass}</td>
+                </tr>
+                """;
+
         StringBuilder sb = new StringBuilder();
         for (TestCase testCase : testCases) {
             sb.append(baseTestCaseRow
-                    .replace("{testClassname}", testCase.getClassName())
+                    .replace("{testSuiteName}", testSuite.getName())
                     .replace("{testName}", testCase.getName())
                     .replace("{statusClass", getStatusClass(testCase.getTestStatus()))
             );
@@ -193,84 +257,78 @@ public enum TestResultHtmlHelper {
         return sb.toString();
     }
 
-    public static String baseTestCaseRow =
-            """
-            <tr class="{statusClass}" class="{testClassName}">
-                <td>{testName}</td>
-                <td>{duration}</td>
-                <td>{statusClass}</td>
-            </tr>
-            """;
-
     public static String getFailureMessages(TestSuite testSuite) {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder failureMessages = new StringBuilder();
+
+        final String baseFailureMessages =
+                """
+                <div class="{statusClass} button-wrapper hide">
+                        <button class="togglebutton" onclick="toggleSiblings(this)">Failure messages</button>
+                        <ul class="hide">
+                            <!--failureMessages-->
+                        </ul>
+                    </div>
+                """;
+
+        final String baseFailureMessage =
+                """
+                <li class="failures">
+                    <a href="#" onclick="toggleSiblings(this)"><!--testSuiteName--></a>
+                    <!--faultMessage-->
+                    <!--faultType-->
+                    <pre class="failure-message show">
+                        <!--faultValue-->
+                    </pre>
+                </li>
+                """;
 
         for (TestCase testCase : testSuite.getTestCases()) {
-            throw new IllegalStateException("not yet supported");
-//            if (testCase.f)
-//            sb.append(baseFailureMessage.replace("<!--failureText-->"), testCase. )
+            if (testCase.hasTestFault()) {
+                for (TestCaseFault testCaseFault : testCase.getTestCaseFaults()) {
+                    failureMessages.append(
+                            baseFailureMessage
+                                    .replace("<!--faultMessage-->", "message: " + testCaseFault.getMessage() + "<br/>")
+                                    .replace("<!--faultType-->", "type: " + testCaseFault.getType() + "<br/>")
+                                    .replace("<!--faultValue-->", testCaseFault.getValue())
+                    );
+                }
+
+            }
         }
-        return sb.toString();
+        return baseFailureMessages.replace("<!--failureMessages-->", failureMessages.toString());
     }
 
     public static String getStdErr(TestSuite testSuite) {
         StringBuilder sb = new StringBuilder();
 
-        for (TestCase testCase : testSuite.getTestCases()) {
-            throw new IllegalStateException("not yet supported");
-//            if (testCase.f)
-//            sb.append(baseFailureMessage.replace("<!--failureText-->"), testCase. )
+        if (testSuite.getSystemErr() != null) {
+            sb.append(testSuite.getName() + ": <br/>" + testSuite.getSystemErr());
         }
-        return sb.toString();
+
+        for (TestCase testCase : testSuite.getTestCases()) {
+            if (testCase.getSystemErr() != null) {
+                sb.append(testSuite.getName() + "." + testCase.getName() + ": <br/>" + testSuite.getSystemErr());
+            }
+        }
+        return baseStdErr.replace("<!--stdErrText-->",sb.toString());
     }
+
     public static String getStdOut(TestSuite testSuite) {
         StringBuilder sb = new StringBuilder();
 
-        for (TestCase testCase : testSuite.getTestCases()) {
-            throw new IllegalStateException("not yet supported");
-//            if (testCase.f)
-//            sb.append(baseFailureMessage.replace("<!--failureText-->"), testCase. )
+        if (testSuite.getSystemOut() != null) {
+            sb.append(testSuite.getName() + ": <br/>" + testSuite.getSystemOut());
         }
-        return sb.toString();
+
+        for (TestCase testCase : testSuite.getTestCases()) {
+            if (testCase.getSystemOut() != null) {
+                sb.append(testSuite.getName() + "." + testCase.getName() + ": <br/>" + testSuite.getSystemOut());
+            }
+        }
+        return baseStdOut.replace("<!--stdOutText-->",sb.toString());
     }
 
-    public static String baseFailureMessage =
-            """
-            <li class="failures">
-                <a href="#" onclick="toggleSiblings(this)"><!--testClassName-->></a>
-                <pre class="failure-message show">
-                    <!--failureText-->
-                </pre>
-            </li>
-            """;
-    public static String baseFailureMessages =
-            """
-            <div class="{statusClass} button-wrapper hide">
-                    <button class="togglebutton" onclick="toggleSiblings(this)">Failure messages</button>
-                    <ul class="hide">
-                        <!--failureMessages-->
-                    </ul>
-                </div>
-            """;
-    public static String baseClassRow =
-            """
-            <div class="show" id="{testClassName}" class="{statusClass}">
-                <a href="#" class="testclass {statusClass}" onclick="toggleSiblings(this)">{testClassName}</a>
-                <table class="testcases hide">
-                    <thead>
-                    <tr>
-                        <th>Test</th>
-                        <th>Duration</th>
-                        <th>Result</th>
-                    </tr>
-                    </thead>
-                    <!--testCaseRows-->
-                </table>
-                <!--failureMessages-->
-                <!--stdErr-->
-                <!--stdOut-->
-            </div>
-            """;
+
 
     public static final String baseStdErr =
             """
@@ -408,54 +466,4 @@ public enum TestResultHtmlHelper {
                     </div>
      */
 
-    public static String baseTestResultHtml =
-            """
-            <html>
-            <head>
-                <link rel="stylesheet" href="/css/sortable.min.css"/>
-                <script src="/js/sortable.min.js"></script>
-                
-                <link rel="stylesheet" href="/css/shared.css">
-                
-                <link rel="stylesheet" href="/css/test-result.css"/>
-                <link rel="stylesheet" href="/js/test-result.js"/>
-            </head>
-            <div id="content">
-                <div id="overview" class="section">
-                    <h2 class="toggle" dataref="#" onclick="toggleSiblings(this)">Overview</h2>
-                    <table class="classes show">
-                        <thead>
-                        <tr>
-                            <th>Class</th>
-                            <th>Tests</th>
-                            <th>Failure</th>
-                            <th>skipped</th>
-                            <th>Duration</th>
-                            <th>Success rate</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <!--overviewClassRows-->
-                        
-                        </tbody>
-                    </table>
-                </div>
-                <div id="failures" class="failures section">
-                    <h2 class="toggle" dataref="#" onclick="toggleSiblings(this)">Failed</h2>
-                    <ul class="show">
-                        <!--failureItems-->
-                    </ul>
-                </div>
-                <div id="skipped" class="skipped section">
-                    <h2 class="toggle" dataref="#" onclick="toggleSiblings(this)">Skipped</h2>
-                    <ul class="show">
-                        <!--skippedItems-->
-                    </ul>
-                </div>
-                <div id="classes" class="section">
-                    <h2 class="toggle" dataref="#" onclick="toggleSiblings(this)">Classes</h2>
-                    <!--classRows-->
-                </div>
-            </html>
-            """;
 }
