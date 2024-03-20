@@ -1,5 +1,6 @@
 package io.github.ericdriggs.reportcard.controller;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -86,17 +87,6 @@ public class BrowseJsonController {
         return new ResponseEntity<>(RunStagesTestResultsCacheMap.INSTANCE.getValue(new CompanyOrgRepoBranchJobRunDTO(company, org, repo, branch, jobId, runId)), HttpStatus.OK);
     }
 
-    @GetMapping(path = "company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/{runId}/stage/{stage}", produces = "application/json")
-    public ResponseEntity<Map<Stage, Map<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestResult, Set<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestSuite>>>> getStageTestResultsTestSuites(
-            @PathVariable String company,
-            @PathVariable String org,
-            @PathVariable String repo,
-            @PathVariable String branch,
-            @PathVariable Long jobId,
-            @PathVariable Long runId,
-            @PathVariable String stage) {
-        return new ResponseEntity<>(browseService.getStageTestResultsTestSuites(company, org, repo, branch, jobId, runId, stage), HttpStatus.OK);
-    }
 
     @GetMapping(path = "company/{company}/{org}/repo/{repo}/branch/{branch}/sha/{sha}/run", produces = "application/json")
     public ResponseEntity<Map<Branch, Map<Job, Set<Run>>>> getRuns(
@@ -122,17 +112,16 @@ public class BrowseJsonController {
         return new ResponseEntity<>(browseService.getRunFromReference(company, org, repo, branch, sha, runReference), HttpStatus.OK);
     }
 
-    @GetMapping(path = "company/{company}/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/{runId}/stages/{stage}", produces = "application/json")
-    public ResponseEntity<Map<Stage, Map<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestResult, Set<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestSuite>>>> getStage(
+    @GetMapping(path = "company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/{runId}/stage/{stage}", produces = "application/json")
+    public ResponseEntity<Map<StageTestResult, Map<TestSuite, Map<TestCase, List<TestCaseFault>>>>> getStageTestResultsTestSuites(
             @PathVariable String company,
             @PathVariable String org,
             @PathVariable String repo,
             @PathVariable String branch,
             @PathVariable Long jobId,
             @PathVariable Long runId,
-            @PathVariable String stage,
-            @RequestParam(required = false) Map<String, String> metadataFilters) {
-        return new ResponseEntity<>(browseService.getStageTestResultsTestSuites(company, org, repo, branch, jobId, runId, stage), HttpStatus.OK);
+            @PathVariable String stage) {
+        return new ResponseEntity<>(browseService.getStageTestResultMap(company, org, repo, branch, jobId, runId, stage), HttpStatus.OK);
     }
 
 //    @GetMapping(path = "{org}/repo/{repo}/branch/{branch}/sha/{sha}/run/{runReference}/stages", produces = "application/json")

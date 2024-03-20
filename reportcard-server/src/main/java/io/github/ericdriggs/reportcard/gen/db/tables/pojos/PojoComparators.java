@@ -1,7 +1,7 @@
 package io.github.ericdriggs.reportcard.gen.db.tables.pojos;
 
 import io.github.ericdriggs.reportcard.cache.model.JobRun;
-import io.github.ericdriggs.reportcard.cache.model.StageTestResult;
+
 import io.github.ericdriggs.reportcard.util.JsonCompare;
 import org.apache.commons.lang3.ObjectUtils;
 

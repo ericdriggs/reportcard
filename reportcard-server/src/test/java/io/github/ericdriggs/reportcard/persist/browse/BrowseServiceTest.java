@@ -8,10 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -208,14 +205,35 @@ public class BrowseServiceTest extends AbstractBrowseServiceTest {
 
     @Test
     void getStageTestResultsTestSuitesTest() {
-        Map<Stage, Map<TestResult, Set<TestSuite>>> stageResultSuites = browseService.getStageTestResultsTestSuites(TestData.company, TestData.org, TestData.repo, TestData.branch, 1l, 1l, TestData.stage);
-        final Stage stage = getTestStage(stageResultSuites.keySet(), TestData.stage);
-        final Map<TestResult, Set<TestSuite>> resultSuites = stageResultSuites.get(stage);
-        final TestResult testResult = getTestResult(resultSuites.keySet(), TestData.testResultId);
-        final TestSuite testSuite = getTestSuite(nestedSet(resultSuites.values()), TestData.testSuiteId);
+        //Map<Stage, Map<TestResult, Set<TestSuite>>> stageResultSuites =
+        Map<StageTestResult, Map<TestSuite, Map<TestCase, List<TestCaseFault>>>> stageTestResultMap = browseService.getStageTestResultMap(TestData.company, TestData.org, TestData.repo, TestData.branch, 1l, 1l, TestData.stage);
+        StageTestResult stageTestResult = null;
+        for (Map.Entry<StageTestResult, Map<TestSuite, Map<TestCase, List<TestCaseFault>>>> stageEntry : stageTestResultMap.entrySet()) {
+            stageTestResult = stageEntry.getKey();
+
+            break;
+        }
+
+        final Stage stage = stageTestResult.getStage();
+        final TestResult testResult = stageTestResult.getTestResult();
+
+        final Map<TestSuite, Map<TestCase, List<TestCaseFault>>> resultSuites = stageTestResultMap.get(stageTestResult);
+//        final TestResult testResult = getTestResult(resultSuites.keySet(), TestData.testResultId);
+        TestSuite testSuite = null;
+
+        for (Map.Entry<TestSuite, Map<TestCase, List<TestCaseFault>>> testSuiteMapEntry : resultSuites.entrySet()) {
+            final TestSuite ts = testSuiteMapEntry.getKey();
+            if (ts.getTestSuiteId().equals(TestData.testResultId)) {
+                testSuite = ts;
+                break;
+            }
+        }
+
         validateTestStage(stage);
         validateTestResult(testResult);
         validateTestSuite(testSuite);
+        //TODO: validate test cases
+        //TODO: validate faults
     }
 
     static Org getTestOrg(Collection<Org> orgs, final String expectedOrg) {

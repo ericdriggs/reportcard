@@ -9,8 +9,8 @@ import java.time.Duration;
 @Builder
 public class StageTestResult implements HasTestResult {
 
-    Stage stage;
-    TestResult testResult;
+    io.github.ericdriggs.reportcard.gen.db.tables.pojos.Stage stage;
+    io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestResult testResult;
 
     public boolean isSuccess() {
         if (testResult == null || testResult.getIsSuccess() == null) {
