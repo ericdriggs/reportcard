@@ -7,7 +7,7 @@ import io.github.ericdriggs.reportcard.gen.db.tables.pojos.*;
 import java.util.Map;
 import java.util.Set;
 
-public class RunStagesTestResultsCacheMap extends AbstractAsyncCacheMap<CompanyOrgRepoBranchJobRunDTO, Map<Run,Map<Stage, Set<TestResult>>>, RunStagesTestResultsCache> {
+public class RunStagesTestResultsCacheMap extends AbstractAsyncCacheMap<CompanyOrgRepoBranchJobRunDTO, Map<RunPojo,Map<StagePojo, Set<TestResultPojo>>>, RunStagesTestResultsCache> {
 
     public static RunStagesTestResultsCacheMap INSTANCE = new RunStagesTestResultsCacheMap();
 

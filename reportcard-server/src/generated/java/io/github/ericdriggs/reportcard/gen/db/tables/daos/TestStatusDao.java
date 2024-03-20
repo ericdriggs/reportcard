@@ -4,7 +4,8 @@
 package io.github.ericdriggs.reportcard.gen.db.tables.daos;
 
 
-import io.github.ericdriggs.reportcard.gen.db.tables.TestStatus;
+import io.github.ericdriggs.reportcard.gen.db.tables.TestStatusTable;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestStatusPojo;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.TestStatusRecord;
 
 import java.util.List;
@@ -21,24 +22,24 @@ import org.jooq.impl.DAOImpl;
  */
 @Generated
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class TestStatusDao extends DAOImpl<TestStatusRecord, io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestStatus, Byte> {
+public class TestStatusDao extends DAOImpl<TestStatusRecord, TestStatusPojo, Byte> {
 
     /**
      * Create a new TestStatusDao without any configuration
      */
     public TestStatusDao() {
-        super(TestStatus.TEST_STATUS, io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestStatus.class);
+        super(TestStatusTable.TEST_STATUS, TestStatusPojo.class);
     }
 
     /**
      * Create a new TestStatusDao with an attached configuration
      */
     public TestStatusDao(Configuration configuration) {
-        super(TestStatus.TEST_STATUS, io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestStatus.class, configuration);
+        super(TestStatusTable.TEST_STATUS, TestStatusPojo.class, configuration);
     }
 
     @Override
-    public Byte getId(io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestStatus object) {
+    public Byte getId(TestStatusPojo object) {
         return object.getTestStatusId();
     }
 
@@ -46,43 +47,43 @@ public class TestStatusDao extends DAOImpl<TestStatusRecord, io.github.ericdrigg
      * Fetch records that have <code>test_status_id BETWEEN lowerInclusive AND
      * upperInclusive</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestStatus> fetchRangeOfTestStatusId(Byte lowerInclusive, Byte upperInclusive) {
-        return fetchRange(TestStatus.TEST_STATUS.TEST_STATUS_ID, lowerInclusive, upperInclusive);
+    public List<TestStatusPojo> fetchRangeOfTestStatusIdTable(Byte lowerInclusive, Byte upperInclusive) {
+        return fetchRange(TestStatusTable.TEST_STATUS.TEST_STATUS_ID, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>test_status_id IN (values)</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestStatus> fetchByTestStatusId(Byte... values) {
-        return fetch(TestStatus.TEST_STATUS.TEST_STATUS_ID, values);
+    public List<TestStatusPojo> fetchByTestStatusIdTable(Byte... values) {
+        return fetch(TestStatusTable.TEST_STATUS.TEST_STATUS_ID, values);
     }
 
     /**
      * Fetch a unique record that has <code>test_status_id = value</code>
      */
-    public io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestStatus fetchOneByTestStatusId(Byte value) {
-        return fetchOne(TestStatus.TEST_STATUS.TEST_STATUS_ID, value);
+    public TestStatusPojo fetchOneByTestStatusIdTable(Byte value) {
+        return fetchOne(TestStatusTable.TEST_STATUS.TEST_STATUS_ID, value);
     }
 
     /**
      * Fetch a unique record that has <code>test_status_id = value</code>
      */
-    public Optional<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestStatus> fetchOptionalByTestStatusId(Byte value) {
-        return fetchOptional(TestStatus.TEST_STATUS.TEST_STATUS_ID, value);
+    public Optional<TestStatusPojo> fetchOptionalByTestStatusIdTable(Byte value) {
+        return fetchOptional(TestStatusTable.TEST_STATUS.TEST_STATUS_ID, value);
     }
 
     /**
      * Fetch records that have <code>test_status_name BETWEEN lowerInclusive AND
      * upperInclusive</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestStatus> fetchRangeOfTestStatusName(String lowerInclusive, String upperInclusive) {
-        return fetchRange(TestStatus.TEST_STATUS.TEST_STATUS_NAME, lowerInclusive, upperInclusive);
+    public List<TestStatusPojo> fetchRangeOfTestStatusNameTable(String lowerInclusive, String upperInclusive) {
+        return fetchRange(TestStatusTable.TEST_STATUS.TEST_STATUS_NAME, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>test_status_name IN (values)</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestStatus> fetchByTestStatusName(String... values) {
-        return fetch(TestStatus.TEST_STATUS.TEST_STATUS_NAME, values);
+    public List<TestStatusPojo> fetchByTestStatusNameTable(String... values) {
+        return fetch(TestStatusTable.TEST_STATUS.TEST_STATUS_NAME, values);
     }
 }

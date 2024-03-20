@@ -4,21 +4,21 @@
 package io.github.ericdriggs.reportcard.gen.db;
 
 
-import io.github.ericdriggs.reportcard.gen.db.tables.Branch;
-import io.github.ericdriggs.reportcard.gen.db.tables.Company;
-import io.github.ericdriggs.reportcard.gen.db.tables.FaultContext;
-import io.github.ericdriggs.reportcard.gen.db.tables.Job;
-import io.github.ericdriggs.reportcard.gen.db.tables.Org;
-import io.github.ericdriggs.reportcard.gen.db.tables.Repo;
-import io.github.ericdriggs.reportcard.gen.db.tables.Run;
-import io.github.ericdriggs.reportcard.gen.db.tables.Stage;
-import io.github.ericdriggs.reportcard.gen.db.tables.Storage;
-import io.github.ericdriggs.reportcard.gen.db.tables.StorageType;
-import io.github.ericdriggs.reportcard.gen.db.tables.TestCase;
-import io.github.ericdriggs.reportcard.gen.db.tables.TestCaseFault;
-import io.github.ericdriggs.reportcard.gen.db.tables.TestResult;
-import io.github.ericdriggs.reportcard.gen.db.tables.TestStatus;
-import io.github.ericdriggs.reportcard.gen.db.tables.TestSuite;
+import io.github.ericdriggs.reportcard.gen.db.tables.BranchTable;
+import io.github.ericdriggs.reportcard.gen.db.tables.CompanyTable;
+import io.github.ericdriggs.reportcard.gen.db.tables.FaultContextTable;
+import io.github.ericdriggs.reportcard.gen.db.tables.JobTable;
+import io.github.ericdriggs.reportcard.gen.db.tables.OrgTable;
+import io.github.ericdriggs.reportcard.gen.db.tables.RepoTable;
+import io.github.ericdriggs.reportcard.gen.db.tables.RunTable;
+import io.github.ericdriggs.reportcard.gen.db.tables.StageTable;
+import io.github.ericdriggs.reportcard.gen.db.tables.StorageTable;
+import io.github.ericdriggs.reportcard.gen.db.tables.StorageTypeTable;
+import io.github.ericdriggs.reportcard.gen.db.tables.TestCaseFaultTable;
+import io.github.ericdriggs.reportcard.gen.db.tables.TestCaseTable;
+import io.github.ericdriggs.reportcard.gen.db.tables.TestResultTable;
+import io.github.ericdriggs.reportcard.gen.db.tables.TestStatusTable;
+import io.github.ericdriggs.reportcard.gen.db.tables.TestSuiteTable;
 
 import lombok.Generated;
 
@@ -33,75 +33,75 @@ public class Tables {
     /**
      * The table <code>reportcard.branch</code>.
      */
-    public static final Branch BRANCH = Branch.BRANCH;
+    public static final BranchTable BRANCH = BranchTable.BRANCH;
 
     /**
      * The table <code>reportcard.company</code>.
      */
-    public static final Company COMPANY = Company.COMPANY;
+    public static final CompanyTable COMPANY = CompanyTable.COMPANY;
 
     /**
      * The table <code>reportcard.fault_context</code>.
      */
-    public static final FaultContext FAULT_CONTEXT = FaultContext.FAULT_CONTEXT;
+    public static final FaultContextTable FAULT_CONTEXT = FaultContextTable.FAULT_CONTEXT;
 
     /**
      * The table <code>reportcard.job</code>.
      */
-    public static final Job JOB = Job.JOB;
+    public static final JobTable JOB = JobTable.JOB;
 
     /**
      * The table <code>reportcard.org</code>.
      */
-    public static final Org ORG = Org.ORG;
+    public static final OrgTable ORG = OrgTable.ORG;
 
     /**
      * The table <code>reportcard.repo</code>.
      */
-    public static final Repo REPO = Repo.REPO;
+    public static final RepoTable REPO = RepoTable.REPO;
 
     /**
      * The table <code>reportcard.run</code>.
      */
-    public static final Run RUN = Run.RUN;
+    public static final RunTable RUN = RunTable.RUN;
 
     /**
      * The table <code>reportcard.stage</code>.
      */
-    public static final Stage STAGE = Stage.STAGE;
+    public static final StageTable STAGE = StageTable.STAGE;
 
     /**
      * The table <code>reportcard.storage</code>.
      */
-    public static final Storage STORAGE = Storage.STORAGE;
+    public static final StorageTable STORAGE = StorageTable.STORAGE;
 
     /**
      * The table <code>reportcard.storage_type</code>.
      */
-    public static final StorageType STORAGE_TYPE = StorageType.STORAGE_TYPE;
+    public static final StorageTypeTable STORAGE_TYPE = StorageTypeTable.STORAGE_TYPE;
 
     /**
      * The table <code>reportcard.test_case</code>.
      */
-    public static final TestCase TEST_CASE = TestCase.TEST_CASE;
+    public static final TestCaseTable TEST_CASE = TestCaseTable.TEST_CASE;
 
     /**
      * The table <code>reportcard.test_case_fault</code>.
      */
-    public static final TestCaseFault TEST_CASE_FAULT = TestCaseFault.TEST_CASE_FAULT;
+    public static final TestCaseFaultTable TEST_CASE_FAULT = TestCaseFaultTable.TEST_CASE_FAULT;
 
     /**
      * The table <code>reportcard.test_result</code>.
      */
-    public static final TestResult TEST_RESULT = TestResult.TEST_RESULT;
+    public static final TestResultTable TEST_RESULT = TestResultTable.TEST_RESULT;
 
     /**
      * The table <code>reportcard.test_status</code>.
      */
-    public static final TestStatus TEST_STATUS = TestStatus.TEST_STATUS;
+    public static final TestStatusTable TEST_STATUS = TestStatusTable.TEST_STATUS;
 
     /**
      * The table <code>reportcard.test_suite</code>.
      */
-    public static final TestSuite TEST_SUITE = TestSuite.TEST_SUITE;
+    public static final TestSuiteTable TEST_SUITE = TestSuiteTable.TEST_SUITE;
 }

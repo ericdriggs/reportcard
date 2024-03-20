@@ -50,11 +50,11 @@ public class BrowseHtmlHelper {
 
     protected static String getCompaniesItems() {
 
-        final Map<Company, Set<Org>> companyOrgs = CompanyOrgsCache.INSTANCE.getCache();
+        final Map<CompanyPojo, Set<OrgPojo>> companyOrgs = CompanyOrgsCache.INSTANCE.getCache();
         StringBuilder sb = new StringBuilder();
-        for (Map.Entry<Company, Set<Org>> entry : companyOrgs.entrySet()) {
-            final Company company = entry.getKey();
-            final Set<Org> orgs = entry.getValue();
+        for (Map.Entry<CompanyPojo, Set<OrgPojo>> entry : companyOrgs.entrySet()) {
+            final CompanyPojo company = entry.getKey();
+            final Set<OrgPojo> orgs = entry.getValue();
 
             CompanyOrgRepoBranchJobRunStageDTO path = CompanyOrgRepoBranchJobRunStageDTO.builder().company(company.getCompanyName()).build();
             sb.append(getItemRow(path, company.getCompanyName(), orgs.size(), null));
@@ -65,7 +65,7 @@ public class BrowseHtmlHelper {
     //******************** company ********************//
     public static String getCompanyHtml(String company) {
         final CompanyOrgRepoBranchJobRunStageDTO path = CompanyOrgRepoBranchJobRunStageDTO.builder().company(company).build();
-        Map<Company, Map<Org, Set<Repo>>> companyOrgReposMap = CompanyOrgsReposCacheMap.INSTANCE.getValue(new CompanyDTO(company));
+        Map<CompanyPojo, Map<OrgPojo, Set<RepoPojo>>> companyOrgReposMap = CompanyOrgsReposCacheMap.INSTANCE.getValue(new CompanyDTO(company));
 
         if (companyOrgReposMap == null || companyOrgReposMap.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Entry not found: " + path.toUrlPath());
@@ -74,7 +74,7 @@ public class BrowseHtmlHelper {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "More than one entry found: " + path.toUrlPath());
         }
 
-        Map<Org, Set<Repo>> orgRepos = companyOrgReposMap.values().stream().findFirst().get();
+        Map<OrgPojo, Set<RepoPojo>> orgRepos = companyOrgReposMap.values().stream().findFirst().get();
 
         final String main = baseMain.replace(LEGEND, "Orgs")
                                     .replace(TABLE_HEADERS, nameCountHeaders)
@@ -82,11 +82,11 @@ public class BrowseHtmlHelper {
         return getPage(main, getBreadCrumb(path));
     }
 
-    protected static String getCompanyOrgs(CompanyOrgRepoBranchJobRunStageDTO path, Map<Org, Set<Repo>> orgRepos) {
+    protected static String getCompanyOrgs(CompanyOrgRepoBranchJobRunStageDTO path, Map<OrgPojo, Set<RepoPojo>> orgRepos) {
         StringBuilder sb = new StringBuilder();
-        for (Map.Entry<Org, Set<Repo>> entry : orgRepos.entrySet()) {
-            final Org org = entry.getKey();
-            final Set<Repo> repos = entry.getValue();
+        for (Map.Entry<OrgPojo, Set<RepoPojo>> entry : orgRepos.entrySet()) {
+            final OrgPojo org = entry.getKey();
+            final Set<RepoPojo> repos = entry.getValue();
             sb.append("                  <tr>").append(ls)
               .append("  <td><a href=\"" + getUrl(path.toBuilder().org(org.getOrgName()).build()) + "\">" + org.getOrgName() + "</a></td>").append(ls)
               .append("  <td class=\"count\">" + repos.size() + "</td>").append(ls)
@@ -100,7 +100,7 @@ public class BrowseHtmlHelper {
     public static String getOrgHtml(String company, String org) {
 
         final CompanyOrgRepoBranchJobRunStageDTO path = CompanyOrgRepoBranchJobRunStageDTO.builder().company(company).org(org).build();
-        Map<Org, Map<Repo, Set<Branch>>> orgRepoBranchMap = OrgReposBranchesCacheMap.INSTANCE.getValue(new CompanyOrgDTO(company, org));
+        Map<OrgPojo, Map<RepoPojo, Set<BranchPojo>>> orgRepoBranchMap = OrgReposBranchesCacheMap.INSTANCE.getValue(new CompanyOrgDTO(company, org));
 
         if (orgRepoBranchMap == null || orgRepoBranchMap.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Entry not found: " + path.toUrlPath());
@@ -109,7 +109,7 @@ public class BrowseHtmlHelper {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "More than one entry found: " + path.toUrlPath());
         }
 
-        Map<Repo, Set<Branch>> repoBranchMap = orgRepoBranchMap.values().stream().findFirst().orElseThrow();
+        Map<RepoPojo, Set<BranchPojo>> repoBranchMap = orgRepoBranchMap.values().stream().findFirst().orElseThrow();
 
         final String main = baseMain.replace(LEGEND, "Repos")
                                     .replace(TABLE_HEADERS, nameCountLastUpdatedHeaders)
@@ -118,14 +118,14 @@ public class BrowseHtmlHelper {
         return getPage(main, getBreadCrumb(path));
     }
 
-    protected static String getOrgRepos(CompanyOrgRepoBranchJobRunStageDTO path, Map<Repo, Set<Branch>> repoBranchMap) {
+    protected static String getOrgRepos(CompanyOrgRepoBranchJobRunStageDTO path, Map<RepoPojo, Set<BranchPojo>> repoBranchMap) {
 
         StringBuilder sb = new StringBuilder();
-        for (Map.Entry<Repo, Set<Branch>> entry : repoBranchMap.entrySet()) {
-            final Repo repo = entry.getKey();
-            final Set<Branch> branches = entry.getValue();
+        for (Map.Entry<RepoPojo, Set<BranchPojo>> entry : repoBranchMap.entrySet()) {
+            final RepoPojo repo = entry.getKey();
+            final Set<BranchPojo> branches = entry.getValue();
             final CompanyOrgRepoBranchJobRunStageDTO itemPath = path.toBuilder().repo(repo.getRepoName()).build();
-            final Instant lastRun = mostRecent(branches.stream().map(Branch::getLastRun).collect(Collectors.toSet()));
+            final Instant lastRun = mostRecent(branches.stream().map(BranchPojo::getLastRun).collect(Collectors.toSet()));
             sb.append(getItemRow(itemPath, repo.getRepoName(), branches.size(), lastRun));
         }
         return sb.toString();
@@ -142,7 +142,7 @@ public class BrowseHtmlHelper {
                 .repo(repo)
                 .build();
 
-        Map<Repo, Map<Branch, Set<Job>>> repoBranchJobMap = RepoBranchesJobsCacheMap.INSTANCE.getValue(new CompanyOrgRepoDTO(company, org, repo));
+        Map<RepoPojo, Map<BranchPojo, Set<JobPojo>>> repoBranchJobMap = RepoBranchesJobsCacheMap.INSTANCE.getValue(new CompanyOrgRepoDTO(company, org, repo));
 
         if (repoBranchJobMap == null || repoBranchJobMap.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Entry not found: " + path.toUrlPath());
@@ -151,7 +151,7 @@ public class BrowseHtmlHelper {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "More than one entry found: " + path.toUrlPath());
         }
 
-        Map<Branch, Set<Job>> branchJobMap = repoBranchJobMap.values().stream().findFirst().orElseThrow();
+        Map<BranchPojo, Set<JobPojo>> branchJobMap = repoBranchJobMap.values().stream().findFirst().orElseThrow();
         final String main = baseMain.replace(LEGEND, "Branches")
                                     .replace(TABLE_HEADERS, nameCountLastUpdatedHeaders)
                                     .replace(TABLE_ROWS, getRepoBranches(path, branchJobMap));
@@ -159,13 +159,13 @@ public class BrowseHtmlHelper {
         return getPage(main, getBreadCrumb(path));
     }
 
-    protected static String getRepoBranches(CompanyOrgRepoBranchJobRunStageDTO path, Map<Branch, Set<Job>> branchJobMap) {
+    protected static String getRepoBranches(CompanyOrgRepoBranchJobRunStageDTO path, Map<BranchPojo, Set<JobPojo>> branchJobMap) {
 
         StringBuilder sb = new StringBuilder();
-        for (Map.Entry<Branch, Set<Job>> entry : branchJobMap.entrySet()) {
-            final Branch branch = entry.getKey();
-            final Set<Job> jobs = entry.getValue();
-            final Instant lastRun = mostRecent(jobs.stream().map(Job::getLastRun).collect(Collectors.toSet()));
+        for (Map.Entry<BranchPojo, Set<JobPojo>> entry : branchJobMap.entrySet()) {
+            final BranchPojo branch = entry.getKey();
+            final Set<JobPojo> jobs = entry.getValue();
+            final Instant lastRun = mostRecent(jobs.stream().map(JobPojo::getLastRun).collect(Collectors.toSet()));
             final CompanyOrgRepoBranchJobRunStageDTO itemPath = path.toBuilder().branch(branch.getBranchName()).build();
             sb.append(getItemRow(itemPath, branch.getBranchName(), jobs.size(), lastRun));
         }
@@ -184,7 +184,7 @@ public class BrowseHtmlHelper {
                 .branch(branch)
                 .build();
 
-        Map<Branch, Map<Job, Set<Run>>> branchJobRunMap = BranchJobsRunsCacheMap.INSTANCE.getValue(new CompanyOrgRepoBranchDTO(company, org, repo, branch));
+        Map<BranchPojo, Map<JobPojo, Set<RunPojo>>> branchJobRunMap = BranchJobsRunsCacheMap.INSTANCE.getValue(new CompanyOrgRepoBranchDTO(company, org, repo, branch));
 
         if (branchJobRunMap == null || branchJobRunMap.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Entry not found: " + path.toUrlPath());
@@ -193,7 +193,7 @@ public class BrowseHtmlHelper {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "More than one entry found: " + path.toUrlPath());
         }
 
-        Map<Job, Set<Run>> jobRunMap = branchJobRunMap.values().stream().findFirst().orElseThrow();
+        Map<JobPojo, Set<RunPojo>> jobRunMap = branchJobRunMap.values().stream().findFirst().orElseThrow();
         final String jobMain = baseMain.replace(LEGEND, "Jobs")
                                     .replace(TABLE_HEADERS, branchHeaders)
                                     .replace(TABLE_ROWS, getJobRuns(path, jobRunMap) );
@@ -205,13 +205,13 @@ public class BrowseHtmlHelper {
         return getPage(jobMain + stagesMain, getBreadCrumb(path));
     }
 
-    protected static String getJobRuns(CompanyOrgRepoBranchJobRunStageDTO path, Map<Job, Set<Run>> jobRunMap) {
+    protected static String getJobRuns(CompanyOrgRepoBranchJobRunStageDTO path, Map<JobPojo, Set<RunPojo>> jobRunMap) {
 
         StringBuilder sb = new StringBuilder();
-        for (Map.Entry<Job, Set<Run>> entry : jobRunMap.entrySet()) {
-            final Job job = entry.getKey();
-            final Set<Run> runs = entry.getValue();
-            final Instant lastRun = mostRecent(runs.stream().map(Run::getRunDate).collect(Collectors.toSet()));
+        for (Map.Entry<JobPojo, Set<RunPojo>> entry : jobRunMap.entrySet()) {
+            final JobPojo job = entry.getKey();
+            final Set<RunPojo> runs = entry.getValue();
+            final Instant lastRun = mostRecent(runs.stream().map(RunPojo::getRunDate).collect(Collectors.toSet()));
             final CompanyOrgRepoBranchJobRunStageDTO itemPath = path.toBuilder().jobId(job.getJobId()).build();
             final String jobInfo = job.getJobInfo();
             sb.append(getItemRow(itemPath, Long.toString(job.getJobId()), runs.size(), jobInfo, lastRun));
@@ -232,7 +232,7 @@ public class BrowseHtmlHelper {
                 .jobId(jobId)
                 .build();
 
-        Map<Job, Map<Run, Set<Stage>>> jobRunStageMap = JobRunsStagesCacheMap.INSTANCE.getValue(new CompanyOrgRepoBranchJobDTO(company, org, repo, branch, jobId));
+        Map<JobPojo, Map<RunPojo, Set<StagePojo>>> jobRunStageMap = JobRunsStagesCacheMap.INSTANCE.getValue(new CompanyOrgRepoBranchJobDTO(company, org, repo, branch, jobId));
 
         if (jobRunStageMap == null || jobRunStageMap.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Entry not found: " + path.toUrlPath());
@@ -241,7 +241,7 @@ public class BrowseHtmlHelper {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "More than one entry found: " + path.toUrlPath());
         }
 
-        Map<Run, Set<Stage>> runStageMap = jobRunStageMap.values().stream().findFirst().orElseThrow();
+        Map<RunPojo, Set<StagePojo>> runStageMap = jobRunStageMap.values().stream().findFirst().orElseThrow();
         final String main = baseMain.replace(LEGEND, "Runs")
                                     .replace(TABLE_HEADERS, jobHeaders)
                                     .replace(TABLE_ROWS, getRunStages(path, runStageMap));
@@ -251,12 +251,12 @@ public class BrowseHtmlHelper {
         return getPage(main + stagesMain, getBreadCrumb(path));
     }
 
-    protected static String getRunStages(CompanyOrgRepoBranchJobRunStageDTO path, Map<Run, Set<Stage>> runStageMap) {
+    protected static String getRunStages(CompanyOrgRepoBranchJobRunStageDTO path, Map<RunPojo, Set<StagePojo>> runStageMap) {
 
         StringBuilder sb = new StringBuilder();
-        for (Map.Entry<Run, Set<Stage>> entry : runStageMap.entrySet()) {
-            final Run run = entry.getKey();
-            final Set<Stage> stages = entry.getValue();
+        for (Map.Entry<RunPojo, Set<StagePojo>> entry : runStageMap.entrySet()) {
+            final RunPojo run = entry.getKey();
+            final Set<StagePojo> stages = entry.getValue();
 
             final Instant lastRun = mostRecent(Set.of(run.getRunDate()));
             final CompanyOrgRepoBranchJobRunStageDTO itemPath = path.toBuilder().runId(run.getRunId()).build();
@@ -269,8 +269,8 @@ public class BrowseHtmlHelper {
             """
             <th>JobId</th>
             <th>Runs</th>
-            <th>Job Info</th>
-            <th>Last Run</th>
+            <th>JobPojo Info</th>
+            <th>Last RunPojo</th>
             """;
 
     protected final static String jobHeaders =
@@ -301,11 +301,11 @@ public class BrowseHtmlHelper {
 
         //JobRun row
         StringBuilder runRowsHtml = new StringBuilder();
-        for (Map.Entry<JobRun, Map<StageTestResult, Set<Storage>>> jobRunEntry : branchStageViewResponse.getJobRun_StageTestResult_StoragesMap().entrySet()) {
+        for (Map.Entry<JobRun, Map<StageTestResult, Set<StoragePojo>>> jobRunEntry : branchStageViewResponse.getJobRun_StageTestResult_StoragesMap().entrySet()) {
             final JobRun jobRun = jobRunEntry.getKey();
-            Map<StageTestResult, Set<Storage>> stageTestResult_StorageMap = jobRunEntry.getValue();
-            final Job job = jobRun.getJob();
-            final Run run = jobRun.getRun();
+            Map<StageTestResult, Set<StoragePojo>> stageTestResult_StorageMap = jobRunEntry.getValue();
+            final JobPojo job = jobRun.getJob();
+            final RunPojo run = jobRun.getRun();
 
             if (job == null || run == null || job.getJobId() == null || run.getRunId() == null) {
                 continue;
@@ -315,10 +315,10 @@ public class BrowseHtmlHelper {
             final CompanyOrgRepoBranchJobRunStageDTO runPath = jobPath.toBuilder().runId(run.getRunId()).build();
 
             StringBuilder stagesHtml = new StringBuilder();
-            for (Map.Entry<StageTestResult, Set<Storage>> stageTestResultEntry : stageTestResult_StorageMap.entrySet()) {
+            for (Map.Entry<StageTestResult, Set<StoragePojo>> stageTestResultEntry : stageTestResult_StorageMap.entrySet()) {
                 final StageTestResult stageTestResult = stageTestResultEntry.getKey();
-                final Stage stage = stageTestResult.getStage();
-                final Set<Storage> storages = stageTestResultEntry.getValue();
+                final StagePojo stage = stageTestResult.getStage();
+                final Set<StoragePojo> storages = stageTestResultEntry.getValue();
                 final boolean stageIsSuccess = stageTestResult.isSuccess();
 
                 final String stageHtml = stageItemHtmlBase
@@ -344,12 +344,12 @@ public class BrowseHtmlHelper {
         return stageViewMain.replace("<!--runRows-->", runRowsHtml.toString());
     }
 
-    protected static String getReportLinks(Set<Storage> storages) {
+    protected static String getReportLinks(Set<StoragePojo> storages) {
         if (storages == null || storages.isEmpty()) {
             return "";
         }
         StringBuilder sb = new StringBuilder();
-        for(Storage storage : storages) {
+        for(StoragePojo storage : storages) {
             final String reportLink = reportLinkBase
                     .replace("{reportName}", storage.getLabel())
                     .replace("{reportUrl}", getStorageKey(storage));
@@ -362,7 +362,7 @@ public class BrowseHtmlHelper {
             """
             <div id="stage-view">
               <fieldset>
-                <legend>Run stages view</legend>
+                <legend>RunPojo stages view</legend>
                 <table class="sortable" id="stage-table">
                   <tbody>
                     <!--runRows-->
@@ -417,7 +417,7 @@ public class BrowseHtmlHelper {
                 .runId(runId)
                 .build();
 
-        Map<Run, Map<Stage, Set<TestResult>>> runStageTestResultMap = RunStagesTestResultsCacheMap.INSTANCE.getValue(new CompanyOrgRepoBranchJobRunDTO(company, org, repo, branch, jobId, runId));
+        Map<RunPojo, Map<StagePojo, Set<TestResultPojo>>> runStageTestResultMap = RunStagesTestResultsCacheMap.INSTANCE.getValue(new CompanyOrgRepoBranchJobRunDTO(company, org, repo, branch, jobId, runId));
 
         if (runStageTestResultMap == null || runStageTestResultMap.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Entry not found: " + path.toUrlPath());
@@ -426,7 +426,7 @@ public class BrowseHtmlHelper {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "More than one entry found: " + path.toUrlPath());
         }
 
-        Map<Stage, Set<TestResult>> stageTestResultMap = runStageTestResultMap.values().stream().findFirst().orElseThrow();
+        Map<StagePojo, Set<TestResultPojo>> stageTestResultMap = runStageTestResultMap.values().stream().findFirst().orElseThrow();
         final String main = baseMain.replace(LEGEND, "Stages")
                                     .replace(TABLE_HEADERS, nameCountLastUpdatedHeaders)
                                     .replace(TABLE_ROWS, getStageTestResult(path, stageTestResultMap));
@@ -434,14 +434,14 @@ public class BrowseHtmlHelper {
         return getPage(main, getBreadCrumb(path));
     }
 
-    protected static String getStageTestResult(CompanyOrgRepoBranchJobRunStageDTO path, Map<Stage, Set<TestResult>> runStageMap) {
+    protected static String getStageTestResult(CompanyOrgRepoBranchJobRunStageDTO path, Map<StagePojo, Set<TestResultPojo>> runStageMap) {
 
         StringBuilder sb = new StringBuilder();
-        for (Map.Entry<Stage, Set<TestResult>> entry : runStageMap.entrySet()) {
-            final Stage stage = entry.getKey();
-            final Set<TestResult> testResults = entry.getValue();
+        for (Map.Entry<StagePojo, Set<TestResultPojo>> entry : runStageMap.entrySet()) {
+            final StagePojo stage = entry.getKey();
+            final Set<TestResultPojo> testResults = entry.getValue();
 
-            final Instant lastRun = mostRecent(testResults.stream().map(TestResult::getTestResultCreated).collect(Collectors.toSet()));
+            final Instant lastRun = mostRecent(testResults.stream().map(TestResultPojo::getTestResultCreated).collect(Collectors.toSet()));
             final CompanyOrgRepoBranchJobRunStageDTO itemPath = path.toBuilder().stageName(stage.getStageName()).build();
             sb.append(getItemRow(itemPath, stage.getStageName(), testResults.size(), lastRun));
         }
@@ -634,7 +634,7 @@ public class BrowseHtmlHelper {
             </html>
             """;
 
-    public static String getStorageKey(Storage storage) {
+    public static String getStorageKey(StoragePojo storage) {
         if (storage == null) {
             return StorageController.storageKeyPath;
         }

@@ -6,7 +6,7 @@ package io.github.ericdriggs.reportcard.gen.db.tables;
 
 import io.github.ericdriggs.reportcard.gen.db.Indexes;
 import io.github.ericdriggs.reportcard.gen.db.Keys;
-import io.github.ericdriggs.reportcard.gen.db.Reportcard;
+import io.github.ericdriggs.reportcard.gen.db.ReportcardTable;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.RepoRecord;
 
 import java.util.Arrays;
@@ -36,14 +36,14 @@ import org.jooq.impl.TableImpl;
  */
 @Generated
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class Repo extends TableImpl<RepoRecord> {
+public class RepoTable extends TableImpl<RepoRecord> {
 
-    private static final long serialVersionUID = 512946524;
+    private static final long serialVersionUID = -123185338;
 
     /**
      * The reference instance of <code>reportcard.repo</code>
      */
-    public static final Repo REPO = new Repo();
+    public static final RepoTable REPO = new RepoTable();
 
     /**
      * The class holding records for this type
@@ -68,42 +68,42 @@ public class Repo extends TableImpl<RepoRecord> {
      */
     public final TableField<RepoRecord, Integer> ORG_FK = createField(DSL.name("org_fk"), SQLDataType.INTEGER.nullable(false), this, "");
 
-    private Repo(Name alias, Table<RepoRecord> aliased) {
+    private RepoTable(Name alias, Table<RepoRecord> aliased) {
         this(alias, aliased, null);
     }
 
-    private Repo(Name alias, Table<RepoRecord> aliased, Field<?>[] parameters) {
+    private RepoTable(Name alias, Table<RepoRecord> aliased, Field<?>[] parameters) {
         super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
     }
 
     /**
      * Create an aliased <code>reportcard.repo</code> table reference
      */
-    public Repo(String alias) {
+    public RepoTable(String alias) {
         this(DSL.name(alias), REPO);
     }
 
     /**
      * Create an aliased <code>reportcard.repo</code> table reference
      */
-    public Repo(Name alias) {
+    public RepoTable(Name alias) {
         this(alias, REPO);
     }
 
     /**
      * Create a <code>reportcard.repo</code> table reference
      */
-    public Repo() {
+    public RepoTable() {
         this(DSL.name("repo"), null);
     }
 
-    public <O extends Record> Repo(Table<O> child, ForeignKey<O, RepoRecord> key) {
+    public <O extends Record> RepoTable(Table<O> child, ForeignKey<O, RepoRecord> key) {
         super(child, key, REPO);
     }
 
     @Override
     public Schema getSchema() {
-        return aliased() ? null : Reportcard.REPORTCARD;
+        return aliased() ? null : ReportcardTable.REPORTCARD;
     }
 
     @Override
@@ -131,42 +131,42 @@ public class Repo extends TableImpl<RepoRecord> {
         return Arrays.asList(Keys.REPO_ORG_FK);
     }
 
-    private transient Org _org;
+    private transient OrgTable _org;
 
     /**
      * Get the implicit join path to the <code>reportcard.org</code> table.
      */
-    public Org org() {
+    public OrgTable org() {
         if (_org == null)
-            _org = new Org(this, Keys.REPO_ORG_FK);
+            _org = new OrgTable(this, Keys.REPO_ORG_FK);
 
         return _org;
     }
 
     @Override
-    public Repo as(String alias) {
-        return new Repo(DSL.name(alias), this);
+    public RepoTable as(String alias) {
+        return new RepoTable(DSL.name(alias), this);
     }
 
     @Override
-    public Repo as(Name alias) {
-        return new Repo(alias, this);
-    }
-
-    /**
-     * Rename this table
-     */
-    @Override
-    public Repo rename(String name) {
-        return new Repo(DSL.name(name), null);
+    public RepoTable as(Name alias) {
+        return new RepoTable(alias, this);
     }
 
     /**
      * Rename this table
      */
     @Override
-    public Repo rename(Name name) {
-        return new Repo(name, null);
+    public RepoTable rename(String name) {
+        return new RepoTable(DSL.name(name), null);
+    }
+
+    /**
+     * Rename this table
+     */
+    @Override
+    public RepoTable rename(Name name) {
+        return new RepoTable(name, null);
     }
 
     // -------------------------------------------------------------------------

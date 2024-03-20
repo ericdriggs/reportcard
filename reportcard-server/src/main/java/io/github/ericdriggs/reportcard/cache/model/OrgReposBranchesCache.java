@@ -4,15 +4,15 @@ import io.github.ericdriggs.reportcard.cache.AbstractAsyncCache;
 import io.github.ericdriggs.reportcard.cache.CacheDuration;
 import io.github.ericdriggs.reportcard.cache.SyncAsyncDuration;
 import io.github.ericdriggs.reportcard.cache.dto.CompanyOrgDTO;
-import io.github.ericdriggs.reportcard.gen.db.tables.pojos.Branch;
-import io.github.ericdriggs.reportcard.gen.db.tables.pojos.Org;
-import io.github.ericdriggs.reportcard.gen.db.tables.pojos.Repo;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.BranchPojo;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.OrgPojo;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.RepoPojo;
 
 import java.time.Duration;
 import java.util.Map;
 import java.util.Set;
 
-public class OrgReposBranchesCache extends AbstractAsyncCache<CompanyOrgDTO, Map<Org,Map<Repo, Set<Branch>>>> {
+public class OrgReposBranchesCache extends AbstractAsyncCache<CompanyOrgDTO, Map<OrgPojo,Map<RepoPojo, Set<BranchPojo>>>> {
     public OrgReposBranchesCache(CompanyOrgDTO key) {
         super(key);
     }
@@ -27,7 +27,7 @@ public class OrgReposBranchesCache extends AbstractAsyncCache<CompanyOrgDTO, Map
     }
 
     @Override
-    protected Map<Org,Map<Repo, Set<Branch>>> getUpdatedCacheValue() {
+    protected Map<OrgPojo,Map<RepoPojo, Set<BranchPojo>>> getUpdatedCacheValue() {
         return StaticBrowseService.getInstance().getOrgReposBranches(key.getCompany(), key.getOrg());
     }
 

@@ -5,7 +5,7 @@ package io.github.ericdriggs.reportcard.gen.db.tables;
 
 
 import io.github.ericdriggs.reportcard.gen.db.Keys;
-import io.github.ericdriggs.reportcard.gen.db.Reportcard;
+import io.github.ericdriggs.reportcard.gen.db.ReportcardTable;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.FaultContextRecord;
 
 import lombok.Generated;
@@ -31,14 +31,14 @@ import org.jooq.impl.TableImpl;
  */
 @Generated
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class FaultContext extends TableImpl<FaultContextRecord> {
+public class FaultContextTable extends TableImpl<FaultContextRecord> {
 
-    private static final long serialVersionUID = -46330864;
+    private static final long serialVersionUID = -557791214;
 
     /**
      * The reference instance of <code>reportcard.fault_context</code>
      */
-    public static final FaultContext FAULT_CONTEXT = new FaultContext();
+    public static final FaultContextTable FAULT_CONTEXT = new FaultContextTable();
 
     /**
      * The class holding records for this type
@@ -58,42 +58,42 @@ public class FaultContext extends TableImpl<FaultContextRecord> {
      */
     public final TableField<FaultContextRecord, String> FAULT_CONTEXT_NAME = createField(DSL.name("fault_context_name"), SQLDataType.VARCHAR(64).nullable(false), this, "");
 
-    private FaultContext(Name alias, Table<FaultContextRecord> aliased) {
+    private FaultContextTable(Name alias, Table<FaultContextRecord> aliased) {
         this(alias, aliased, null);
     }
 
-    private FaultContext(Name alias, Table<FaultContextRecord> aliased, Field<?>[] parameters) {
+    private FaultContextTable(Name alias, Table<FaultContextRecord> aliased, Field<?>[] parameters) {
         super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
     }
 
     /**
      * Create an aliased <code>reportcard.fault_context</code> table reference
      */
-    public FaultContext(String alias) {
+    public FaultContextTable(String alias) {
         this(DSL.name(alias), FAULT_CONTEXT);
     }
 
     /**
      * Create an aliased <code>reportcard.fault_context</code> table reference
      */
-    public FaultContext(Name alias) {
+    public FaultContextTable(Name alias) {
         this(alias, FAULT_CONTEXT);
     }
 
     /**
      * Create a <code>reportcard.fault_context</code> table reference
      */
-    public FaultContext() {
+    public FaultContextTable() {
         this(DSL.name("fault_context"), null);
     }
 
-    public <O extends Record> FaultContext(Table<O> child, ForeignKey<O, FaultContextRecord> key) {
+    public <O extends Record> FaultContextTable(Table<O> child, ForeignKey<O, FaultContextRecord> key) {
         super(child, key, FAULT_CONTEXT);
     }
 
     @Override
     public Schema getSchema() {
-        return aliased() ? null : Reportcard.REPORTCARD;
+        return aliased() ? null : ReportcardTable.REPORTCARD;
     }
 
     @Override
@@ -107,29 +107,29 @@ public class FaultContext extends TableImpl<FaultContextRecord> {
     }
 
     @Override
-    public FaultContext as(String alias) {
-        return new FaultContext(DSL.name(alias), this);
+    public FaultContextTable as(String alias) {
+        return new FaultContextTable(DSL.name(alias), this);
     }
 
     @Override
-    public FaultContext as(Name alias) {
-        return new FaultContext(alias, this);
-    }
-
-    /**
-     * Rename this table
-     */
-    @Override
-    public FaultContext rename(String name) {
-        return new FaultContext(DSL.name(name), null);
+    public FaultContextTable as(Name alias) {
+        return new FaultContextTable(alias, this);
     }
 
     /**
      * Rename this table
      */
     @Override
-    public FaultContext rename(Name name) {
-        return new FaultContext(name, null);
+    public FaultContextTable rename(String name) {
+        return new FaultContextTable(DSL.name(name), null);
+    }
+
+    /**
+     * Rename this table
+     */
+    @Override
+    public FaultContextTable rename(Name name) {
+        return new FaultContextTable(name, null);
     }
 
     // -------------------------------------------------------------------------

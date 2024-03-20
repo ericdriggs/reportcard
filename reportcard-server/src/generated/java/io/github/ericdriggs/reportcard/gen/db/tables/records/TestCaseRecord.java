@@ -4,7 +4,8 @@
 package io.github.ericdriggs.reportcard.gen.db.tables.records;
 
 
-import io.github.ericdriggs.reportcard.gen.db.tables.TestCase;
+import io.github.ericdriggs.reportcard.gen.db.tables.TestCaseTable;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCasePojo;
 
 import java.math.BigDecimal;
 
@@ -24,7 +25,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestCaseRecord extends UpdatableRecordImpl<TestCaseRecord> implements Record9<Long, Long, Byte, String, String, BigDecimal, String, String, String> {
 
-    private static final long serialVersionUID = -877470477;
+    private static final long serialVersionUID = -1338317709;
 
     /**
      * Setter for <code>reportcard.test_case.test_case_id</code>.
@@ -186,47 +187,47 @@ public class TestCaseRecord extends UpdatableRecordImpl<TestCaseRecord> implemen
 
     @Override
     public Field<Long> field1() {
-        return TestCase.TEST_CASE.TEST_CASE_ID;
+        return TestCaseTable.TEST_CASE.TEST_CASE_ID;
     }
 
     @Override
     public Field<Long> field2() {
-        return TestCase.TEST_CASE.TEST_SUITE_FK;
+        return TestCaseTable.TEST_CASE.TEST_SUITE_FK;
     }
 
     @Override
     public Field<Byte> field3() {
-        return TestCase.TEST_CASE.TEST_STATUS_FK;
+        return TestCaseTable.TEST_CASE.TEST_STATUS_FK;
     }
 
     @Override
     public Field<String> field4() {
-        return TestCase.TEST_CASE.NAME;
+        return TestCaseTable.TEST_CASE.NAME;
     }
 
     @Override
     public Field<String> field5() {
-        return TestCase.TEST_CASE.CLASS_NAME;
+        return TestCaseTable.TEST_CASE.CLASS_NAME;
     }
 
     @Override
     public Field<BigDecimal> field6() {
-        return TestCase.TEST_CASE.TIME;
+        return TestCaseTable.TEST_CASE.TIME;
     }
 
     @Override
     public Field<String> field7() {
-        return TestCase.TEST_CASE.SYSTEM_OUT;
+        return TestCaseTable.TEST_CASE.SYSTEM_OUT;
     }
 
     @Override
     public Field<String> field8() {
-        return TestCase.TEST_CASE.SYSTEM_ERR;
+        return TestCaseTable.TEST_CASE.SYSTEM_ERR;
     }
 
     @Override
     public Field<String> field9() {
-        return TestCase.TEST_CASE.ASSERTIONS;
+        return TestCaseTable.TEST_CASE.ASSERTIONS;
     }
 
     @Override
@@ -395,14 +396,14 @@ public class TestCaseRecord extends UpdatableRecordImpl<TestCaseRecord> implemen
      * Create a detached TestCaseRecord
      */
     public TestCaseRecord() {
-        super(TestCase.TEST_CASE);
+        super(TestCaseTable.TEST_CASE);
     }
 
     /**
      * Create a detached, initialised TestCaseRecord
      */
     public TestCaseRecord(Long testCaseId, Long testSuiteFk, Byte testStatusFk, String name, String className, BigDecimal time, String systemOut, String systemErr, String assertions) {
-        super(TestCase.TEST_CASE);
+        super(TestCaseTable.TEST_CASE);
 
         setTestCaseId(testCaseId);
         setTestSuiteFk(testSuiteFk);
@@ -418,8 +419,8 @@ public class TestCaseRecord extends UpdatableRecordImpl<TestCaseRecord> implemen
     /**
      * Create a detached, initialised TestCaseRecord
      */
-    public TestCaseRecord(io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCase value) {
-        super(TestCase.TEST_CASE);
+    public TestCaseRecord(TestCasePojo value) {
+        super(TestCaseTable.TEST_CASE);
 
         if (value != null) {
             setTestCaseId(value.getTestCaseId());

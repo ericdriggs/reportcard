@@ -4,15 +4,15 @@ import io.github.ericdriggs.reportcard.cache.AbstractAsyncCache;
 import io.github.ericdriggs.reportcard.cache.CacheDuration;
 import io.github.ericdriggs.reportcard.cache.SyncAsyncDuration;
 import io.github.ericdriggs.reportcard.cache.dto.CompanyOrgRepoBranchJobRunDTO;
-import io.github.ericdriggs.reportcard.gen.db.tables.pojos.Run;
-import io.github.ericdriggs.reportcard.gen.db.tables.pojos.Stage;
-import io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestResult;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.RunPojo;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.StagePojo;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestResultPojo;
 
 import java.time.Duration;
 import java.util.Map;
 import java.util.Set;
 
-public class RunStagesTestResultsCache extends AbstractAsyncCache<CompanyOrgRepoBranchJobRunDTO, Map<Run,Map<Stage, Set<TestResult>>>> {
+public class RunStagesTestResultsCache extends AbstractAsyncCache<CompanyOrgRepoBranchJobRunDTO, Map<RunPojo,Map<StagePojo, Set<TestResultPojo>>>> {
 
     public RunStagesTestResultsCache(CompanyOrgRepoBranchJobRunDTO key) {
         super(key);
@@ -28,7 +28,7 @@ public class RunStagesTestResultsCache extends AbstractAsyncCache<CompanyOrgRepo
     }
 
     @Override
-    protected Map<Run,Map<Stage, Set<TestResult>>> getUpdatedCacheValue() {
+    protected Map<RunPojo,Map<StagePojo, Set<TestResultPojo>>> getUpdatedCacheValue() {
         return StaticBrowseService.getInstance().getRunStagesTestResults(key.getCompany(), key.getOrg(), key.getRepo(), key.getBranch(), key.getJobId(), key.getRunId());
     }
 }

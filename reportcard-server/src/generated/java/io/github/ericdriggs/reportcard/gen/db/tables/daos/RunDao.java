@@ -4,7 +4,8 @@
 package io.github.ericdriggs.reportcard.gen.db.tables.daos;
 
 
-import io.github.ericdriggs.reportcard.gen.db.tables.Run;
+import io.github.ericdriggs.reportcard.gen.db.tables.RunTable;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.RunPojo;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.RunRecord;
 
 import java.time.LocalDateTime;
@@ -22,24 +23,24 @@ import org.jooq.impl.DAOImpl;
  */
 @Generated
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class RunDao extends DAOImpl<RunRecord, io.github.ericdriggs.reportcard.gen.db.tables.pojos.Run, Long> {
+public class RunDao extends DAOImpl<RunRecord, RunPojo, Long> {
 
     /**
      * Create a new RunDao without any configuration
      */
     public RunDao() {
-        super(Run.RUN, io.github.ericdriggs.reportcard.gen.db.tables.pojos.Run.class);
+        super(RunTable.RUN, RunPojo.class);
     }
 
     /**
      * Create a new RunDao with an attached configuration
      */
     public RunDao(Configuration configuration) {
-        super(Run.RUN, io.github.ericdriggs.reportcard.gen.db.tables.pojos.Run.class, configuration);
+        super(RunTable.RUN, RunPojo.class, configuration);
     }
 
     @Override
-    public Long getId(io.github.ericdriggs.reportcard.gen.db.tables.pojos.Run object) {
+    public Long getId(RunPojo object) {
         return object.getRunId();
     }
 
@@ -47,118 +48,118 @@ public class RunDao extends DAOImpl<RunRecord, io.github.ericdriggs.reportcard.g
      * Fetch records that have <code>run_id BETWEEN lowerInclusive AND
      * upperInclusive</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Run> fetchRangeOfRunId(Long lowerInclusive, Long upperInclusive) {
-        return fetchRange(Run.RUN.RUN_ID, lowerInclusive, upperInclusive);
+    public List<RunPojo> fetchRangeOfRunIdTable(Long lowerInclusive, Long upperInclusive) {
+        return fetchRange(RunTable.RUN.RUN_ID, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>run_id IN (values)</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Run> fetchByRunId(Long... values) {
-        return fetch(Run.RUN.RUN_ID, values);
+    public List<RunPojo> fetchByRunIdTable(Long... values) {
+        return fetch(RunTable.RUN.RUN_ID, values);
     }
 
     /**
      * Fetch a unique record that has <code>run_id = value</code>
      */
-    public io.github.ericdriggs.reportcard.gen.db.tables.pojos.Run fetchOneByRunId(Long value) {
-        return fetchOne(Run.RUN.RUN_ID, value);
+    public RunPojo fetchOneByRunIdTable(Long value) {
+        return fetchOne(RunTable.RUN.RUN_ID, value);
     }
 
     /**
      * Fetch a unique record that has <code>run_id = value</code>
      */
-    public Optional<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Run> fetchOptionalByRunId(Long value) {
-        return fetchOptional(Run.RUN.RUN_ID, value);
+    public Optional<RunPojo> fetchOptionalByRunIdTable(Long value) {
+        return fetchOptional(RunTable.RUN.RUN_ID, value);
     }
 
     /**
      * Fetch records that have <code>run_reference BETWEEN lowerInclusive AND
      * upperInclusive</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Run> fetchRangeOfRunReference(String lowerInclusive, String upperInclusive) {
-        return fetchRange(Run.RUN.RUN_REFERENCE, lowerInclusive, upperInclusive);
+    public List<RunPojo> fetchRangeOfRunReferenceTable(String lowerInclusive, String upperInclusive) {
+        return fetchRange(RunTable.RUN.RUN_REFERENCE, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>run_reference IN (values)</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Run> fetchByRunReference(String... values) {
-        return fetch(Run.RUN.RUN_REFERENCE, values);
+    public List<RunPojo> fetchByRunReferenceTable(String... values) {
+        return fetch(RunTable.RUN.RUN_REFERENCE, values);
     }
 
     /**
      * Fetch records that have <code>job_fk BETWEEN lowerInclusive AND
      * upperInclusive</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Run> fetchRangeOfJobFk(Long lowerInclusive, Long upperInclusive) {
-        return fetchRange(Run.RUN.JOB_FK, lowerInclusive, upperInclusive);
+    public List<RunPojo> fetchRangeOfJobFkTable(Long lowerInclusive, Long upperInclusive) {
+        return fetchRange(RunTable.RUN.JOB_FK, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>job_fk IN (values)</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Run> fetchByJobFk(Long... values) {
-        return fetch(Run.RUN.JOB_FK, values);
+    public List<RunPojo> fetchByJobFkTable(Long... values) {
+        return fetch(RunTable.RUN.JOB_FK, values);
     }
 
     /**
      * Fetch records that have <code>job_run_count BETWEEN lowerInclusive AND
      * upperInclusive</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Run> fetchRangeOfJobRunCount(Integer lowerInclusive, Integer upperInclusive) {
-        return fetchRange(Run.RUN.JOB_RUN_COUNT, lowerInclusive, upperInclusive);
+    public List<RunPojo> fetchRangeOfJobRunCountTable(Integer lowerInclusive, Integer upperInclusive) {
+        return fetchRange(RunTable.RUN.JOB_RUN_COUNT, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>job_run_count IN (values)</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Run> fetchByJobRunCount(Integer... values) {
-        return fetch(Run.RUN.JOB_RUN_COUNT, values);
+    public List<RunPojo> fetchByJobRunCountTable(Integer... values) {
+        return fetch(RunTable.RUN.JOB_RUN_COUNT, values);
     }
 
     /**
      * Fetch records that have <code>sha BETWEEN lowerInclusive AND
      * upperInclusive</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Run> fetchRangeOfSha(String lowerInclusive, String upperInclusive) {
-        return fetchRange(Run.RUN.SHA, lowerInclusive, upperInclusive);
+    public List<RunPojo> fetchRangeOfShaTable(String lowerInclusive, String upperInclusive) {
+        return fetchRange(RunTable.RUN.SHA, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>sha IN (values)</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Run> fetchBySha(String... values) {
-        return fetch(Run.RUN.SHA, values);
+    public List<RunPojo> fetchByShaTable(String... values) {
+        return fetch(RunTable.RUN.SHA, values);
     }
 
     /**
      * Fetch records that have <code>run_date BETWEEN lowerInclusive AND
      * upperInclusive</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Run> fetchRangeOfRunDate(LocalDateTime lowerInclusive, LocalDateTime upperInclusive) {
-        return fetchRange(Run.RUN.RUN_DATE, lowerInclusive, upperInclusive);
+    public List<RunPojo> fetchRangeOfRunDateTable(LocalDateTime lowerInclusive, LocalDateTime upperInclusive) {
+        return fetchRange(RunTable.RUN.RUN_DATE, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>run_date IN (values)</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Run> fetchByRunDate(LocalDateTime... values) {
-        return fetch(Run.RUN.RUN_DATE, values);
+    public List<RunPojo> fetchByRunDateTable(LocalDateTime... values) {
+        return fetch(RunTable.RUN.RUN_DATE, values);
     }
 
     /**
      * Fetch records that have <code>is_success BETWEEN lowerInclusive AND
      * upperInclusive</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Run> fetchRangeOfIsSuccess(Boolean lowerInclusive, Boolean upperInclusive) {
-        return fetchRange(Run.RUN.IS_SUCCESS, lowerInclusive, upperInclusive);
+    public List<RunPojo> fetchRangeOfIsSuccessTable(Boolean lowerInclusive, Boolean upperInclusive) {
+        return fetchRange(RunTable.RUN.IS_SUCCESS, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>is_success IN (values)</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Run> fetchByIsSuccess(Boolean... values) {
-        return fetch(Run.RUN.IS_SUCCESS, values);
+    public List<RunPojo> fetchByIsSuccessTable(Boolean... values) {
+        return fetch(RunTable.RUN.IS_SUCCESS, values);
     }
 }

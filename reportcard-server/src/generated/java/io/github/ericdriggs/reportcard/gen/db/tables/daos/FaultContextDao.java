@@ -4,7 +4,8 @@
 package io.github.ericdriggs.reportcard.gen.db.tables.daos;
 
 
-import io.github.ericdriggs.reportcard.gen.db.tables.FaultContext;
+import io.github.ericdriggs.reportcard.gen.db.tables.FaultContextTable;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.FaultContextPojo;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.FaultContextRecord;
 
 import java.util.List;
@@ -21,24 +22,24 @@ import org.jooq.impl.DAOImpl;
  */
 @Generated
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class FaultContextDao extends DAOImpl<FaultContextRecord, io.github.ericdriggs.reportcard.gen.db.tables.pojos.FaultContext, Byte> {
+public class FaultContextDao extends DAOImpl<FaultContextRecord, FaultContextPojo, Byte> {
 
     /**
      * Create a new FaultContextDao without any configuration
      */
     public FaultContextDao() {
-        super(FaultContext.FAULT_CONTEXT, io.github.ericdriggs.reportcard.gen.db.tables.pojos.FaultContext.class);
+        super(FaultContextTable.FAULT_CONTEXT, FaultContextPojo.class);
     }
 
     /**
      * Create a new FaultContextDao with an attached configuration
      */
     public FaultContextDao(Configuration configuration) {
-        super(FaultContext.FAULT_CONTEXT, io.github.ericdriggs.reportcard.gen.db.tables.pojos.FaultContext.class, configuration);
+        super(FaultContextTable.FAULT_CONTEXT, FaultContextPojo.class, configuration);
     }
 
     @Override
-    public Byte getId(io.github.ericdriggs.reportcard.gen.db.tables.pojos.FaultContext object) {
+    public Byte getId(FaultContextPojo object) {
         return object.getFaultContextId();
     }
 
@@ -46,43 +47,43 @@ public class FaultContextDao extends DAOImpl<FaultContextRecord, io.github.ericd
      * Fetch records that have <code>fault_context_id BETWEEN lowerInclusive AND
      * upperInclusive</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.FaultContext> fetchRangeOfFaultContextId(Byte lowerInclusive, Byte upperInclusive) {
-        return fetchRange(FaultContext.FAULT_CONTEXT.FAULT_CONTEXT_ID, lowerInclusive, upperInclusive);
+    public List<FaultContextPojo> fetchRangeOfFaultContextIdTable(Byte lowerInclusive, Byte upperInclusive) {
+        return fetchRange(FaultContextTable.FAULT_CONTEXT.FAULT_CONTEXT_ID, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>fault_context_id IN (values)</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.FaultContext> fetchByFaultContextId(Byte... values) {
-        return fetch(FaultContext.FAULT_CONTEXT.FAULT_CONTEXT_ID, values);
+    public List<FaultContextPojo> fetchByFaultContextIdTable(Byte... values) {
+        return fetch(FaultContextTable.FAULT_CONTEXT.FAULT_CONTEXT_ID, values);
     }
 
     /**
      * Fetch a unique record that has <code>fault_context_id = value</code>
      */
-    public io.github.ericdriggs.reportcard.gen.db.tables.pojos.FaultContext fetchOneByFaultContextId(Byte value) {
-        return fetchOne(FaultContext.FAULT_CONTEXT.FAULT_CONTEXT_ID, value);
+    public FaultContextPojo fetchOneByFaultContextIdTable(Byte value) {
+        return fetchOne(FaultContextTable.FAULT_CONTEXT.FAULT_CONTEXT_ID, value);
     }
 
     /**
      * Fetch a unique record that has <code>fault_context_id = value</code>
      */
-    public Optional<io.github.ericdriggs.reportcard.gen.db.tables.pojos.FaultContext> fetchOptionalByFaultContextId(Byte value) {
-        return fetchOptional(FaultContext.FAULT_CONTEXT.FAULT_CONTEXT_ID, value);
+    public Optional<FaultContextPojo> fetchOptionalByFaultContextIdTable(Byte value) {
+        return fetchOptional(FaultContextTable.FAULT_CONTEXT.FAULT_CONTEXT_ID, value);
     }
 
     /**
      * Fetch records that have <code>fault_context_name BETWEEN lowerInclusive
      * AND upperInclusive</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.FaultContext> fetchRangeOfFaultContextName(String lowerInclusive, String upperInclusive) {
-        return fetchRange(FaultContext.FAULT_CONTEXT.FAULT_CONTEXT_NAME, lowerInclusive, upperInclusive);
+    public List<FaultContextPojo> fetchRangeOfFaultContextNameTable(String lowerInclusive, String upperInclusive) {
+        return fetchRange(FaultContextTable.FAULT_CONTEXT.FAULT_CONTEXT_NAME, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>fault_context_name IN (values)</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.FaultContext> fetchByFaultContextName(String... values) {
-        return fetch(FaultContext.FAULT_CONTEXT.FAULT_CONTEXT_NAME, values);
+    public List<FaultContextPojo> fetchByFaultContextNameTable(String... values) {
+        return fetch(FaultContextTable.FAULT_CONTEXT.FAULT_CONTEXT_NAME, values);
     }
 }

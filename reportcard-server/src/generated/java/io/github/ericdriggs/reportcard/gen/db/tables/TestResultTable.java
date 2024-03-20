@@ -6,7 +6,7 @@ package io.github.ericdriggs.reportcard.gen.db.tables;
 
 import io.github.ericdriggs.reportcard.gen.db.Indexes;
 import io.github.ericdriggs.reportcard.gen.db.Keys;
-import io.github.ericdriggs.reportcard.gen.db.Reportcard;
+import io.github.ericdriggs.reportcard.gen.db.ReportcardTable;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.TestResultRecord;
 
 import java.math.BigDecimal;
@@ -38,14 +38,14 @@ import org.jooq.impl.TableImpl;
  */
 @Generated
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class TestResult extends TableImpl<TestResultRecord> {
+public class TestResultTable extends TableImpl<TestResultRecord> {
 
-    private static final long serialVersionUID = -388708994;
+    private static final long serialVersionUID = -1669822456;
 
     /**
      * The reference instance of <code>reportcard.test_result</code>
      */
-    public static final TestResult TEST_RESULT = new TestResult();
+    public static final TestResultTable TEST_RESULT = new TestResultTable();
 
     /**
      * The class holding records for this type
@@ -110,42 +110,42 @@ public class TestResult extends TableImpl<TestResultRecord> {
      */
     public final TableField<TestResultRecord, Boolean> HAS_SKIP = createField(DSL.name("has_skip"), SQLDataType.BOOLEAN, this, "");
 
-    private TestResult(Name alias, Table<TestResultRecord> aliased) {
+    private TestResultTable(Name alias, Table<TestResultRecord> aliased) {
         this(alias, aliased, null);
     }
 
-    private TestResult(Name alias, Table<TestResultRecord> aliased, Field<?>[] parameters) {
+    private TestResultTable(Name alias, Table<TestResultRecord> aliased, Field<?>[] parameters) {
         super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
     }
 
     /**
      * Create an aliased <code>reportcard.test_result</code> table reference
      */
-    public TestResult(String alias) {
+    public TestResultTable(String alias) {
         this(DSL.name(alias), TEST_RESULT);
     }
 
     /**
      * Create an aliased <code>reportcard.test_result</code> table reference
      */
-    public TestResult(Name alias) {
+    public TestResultTable(Name alias) {
         this(alias, TEST_RESULT);
     }
 
     /**
      * Create a <code>reportcard.test_result</code> table reference
      */
-    public TestResult() {
+    public TestResultTable() {
         this(DSL.name("test_result"), null);
     }
 
-    public <O extends Record> TestResult(Table<O> child, ForeignKey<O, TestResultRecord> key) {
+    public <O extends Record> TestResultTable(Table<O> child, ForeignKey<O, TestResultRecord> key) {
         super(child, key, TEST_RESULT);
     }
 
     @Override
     public Schema getSchema() {
-        return aliased() ? null : Reportcard.REPORTCARD;
+        return aliased() ? null : ReportcardTable.REPORTCARD;
     }
 
     @Override
@@ -168,42 +168,42 @@ public class TestResult extends TableImpl<TestResultRecord> {
         return Arrays.asList(Keys.TEST_RESULT_STAGE_FK);
     }
 
-    private transient Stage _stage;
+    private transient StageTable _stage;
 
     /**
      * Get the implicit join path to the <code>reportcard.stage</code> table.
      */
-    public Stage stage() {
+    public StageTable stage() {
         if (_stage == null)
-            _stage = new Stage(this, Keys.TEST_RESULT_STAGE_FK);
+            _stage = new StageTable(this, Keys.TEST_RESULT_STAGE_FK);
 
         return _stage;
     }
 
     @Override
-    public TestResult as(String alias) {
-        return new TestResult(DSL.name(alias), this);
+    public TestResultTable as(String alias) {
+        return new TestResultTable(DSL.name(alias), this);
     }
 
     @Override
-    public TestResult as(Name alias) {
-        return new TestResult(alias, this);
-    }
-
-    /**
-     * Rename this table
-     */
-    @Override
-    public TestResult rename(String name) {
-        return new TestResult(DSL.name(name), null);
+    public TestResultTable as(Name alias) {
+        return new TestResultTable(alias, this);
     }
 
     /**
      * Rename this table
      */
     @Override
-    public TestResult rename(Name name) {
-        return new TestResult(name, null);
+    public TestResultTable rename(String name) {
+        return new TestResultTable(DSL.name(name), null);
+    }
+
+    /**
+     * Rename this table
+     */
+    @Override
+    public TestResultTable rename(Name name) {
+        return new TestResultTable(name, null);
     }
 
     // -------------------------------------------------------------------------

@@ -10,17 +10,17 @@ public enum TestResultConverterUtil {
 
     public static TestResult fromHasTestResultMap(
             Map<io.github.ericdriggs.reportcard.gen.db.tables.pojos.HasTestResult,
-                    Map<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestSuite,
-                            Map<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCase,
-                                    List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCaseFault>>>> hasTestResultMapMap) {
+                    Map<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestSuitePojo,
+                            Map<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCasePojo,
+                                    List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCaseFaultPojo>>>> hasTestResultMapMap) {
         throw new UnsupportedOperationException("not yet implemented -- blocked on https://github.com/ericdriggs/reportcard/issues/86");
     }
 
     public static TestResult fromStageTestResultMap(
             Map<io.github.ericdriggs.reportcard.gen.db.tables.pojos.StageTestResult,
-                    Map<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestSuite,
-                            Map<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCase,
-                                    List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCaseFault>>>> testResultMap) {
+                    Map<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestSuitePojo,
+                            Map<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCasePojo,
+                                    List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCaseFaultPojo>>>> testResultMap) {
 
         throw new UnsupportedOperationException("not yet implemented -- blocked on https://github.com/ericdriggs/reportcard/issues/86");
 //        if (testResultMap == null || testResultMap.isEmpty()) {

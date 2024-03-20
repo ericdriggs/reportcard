@@ -4,7 +4,8 @@
 package io.github.ericdriggs.reportcard.gen.db.tables.records;
 
 
-import io.github.ericdriggs.reportcard.gen.db.tables.TestStatus;
+import io.github.ericdriggs.reportcard.gen.db.tables.TestStatusTable;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestStatusPojo;
 
 import lombok.Generated;
 
@@ -22,7 +23,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestStatusRecord extends UpdatableRecordImpl<TestStatusRecord> implements Record2<Byte, String> {
 
-    private static final long serialVersionUID = -208075324;
+    private static final long serialVersionUID = -1983137876;
 
     /**
      * Setter for <code>reportcard.test_status.test_status_id</code>.
@@ -79,12 +80,12 @@ public class TestStatusRecord extends UpdatableRecordImpl<TestStatusRecord> impl
 
     @Override
     public Field<Byte> field1() {
-        return TestStatus.TEST_STATUS.TEST_STATUS_ID;
+        return TestStatusTable.TEST_STATUS.TEST_STATUS_ID;
     }
 
     @Override
     public Field<String> field2() {
-        return TestStatus.TEST_STATUS.TEST_STATUS_NAME;
+        return TestStatusTable.TEST_STATUS.TEST_STATUS_NAME;
     }
 
     @Override
@@ -134,14 +135,14 @@ public class TestStatusRecord extends UpdatableRecordImpl<TestStatusRecord> impl
      * Create a detached TestStatusRecord
      */
     public TestStatusRecord() {
-        super(TestStatus.TEST_STATUS);
+        super(TestStatusTable.TEST_STATUS);
     }
 
     /**
      * Create a detached, initialised TestStatusRecord
      */
     public TestStatusRecord(Byte testStatusId, String testStatusName) {
-        super(TestStatus.TEST_STATUS);
+        super(TestStatusTable.TEST_STATUS);
 
         setTestStatusId(testStatusId);
         setTestStatusName(testStatusName);
@@ -150,8 +151,8 @@ public class TestStatusRecord extends UpdatableRecordImpl<TestStatusRecord> impl
     /**
      * Create a detached, initialised TestStatusRecord
      */
-    public TestStatusRecord(io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestStatus value) {
-        super(TestStatus.TEST_STATUS);
+    public TestStatusRecord(TestStatusPojo value) {
+        super(TestStatusTable.TEST_STATUS);
 
         if (value != null) {
             setTestStatusId(value.getTestStatusId());

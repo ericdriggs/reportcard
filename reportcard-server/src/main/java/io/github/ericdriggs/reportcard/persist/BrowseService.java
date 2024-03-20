@@ -40,19 +40,19 @@ public class BrowseService extends AbstractPersistService {
 
     }
 
-    public Set<Company> getCompanies() {
-        Set<Company> companies = new TreeSet<>(PojoComparators.COMPANY_CASE_INSENSITIVE_ORDER);
-        companies.addAll(dsl.select().from(COMPANY).fetch().into(Company.class));
+    public Set<CompanyPojo> getCompanies() {
+        Set<CompanyPojo> companies = new TreeSet<>(PojoComparators.COMPANY_CASE_INSENSITIVE_ORDER);
+        companies.addAll(dsl.select().from(COMPANY).fetch().into(CompanyPojo.class));
         return companies;
     }
 
-    public Map<Company, Set<Org>> getCompanyOrgs() {
+    public Map<CompanyPojo, Set<OrgPojo>> getCompanyOrgs() {
         Result<Record> recordResult = dsl.select().from(COMPANY).leftJoin(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID)).fetch();
 
-        Map<Company, Set<Org>> companyOrgMap = new TreeMap<>(PojoComparators.COMPANY_CASE_INSENSITIVE_ORDER);
+        Map<CompanyPojo, Set<OrgPojo>> companyOrgMap = new TreeMap<>(PojoComparators.COMPANY_CASE_INSENSITIVE_ORDER);
         for (Record record : recordResult) {
-            Company company = record.into(Company.class);
-            Org org = record.into(Org.class);
+            CompanyPojo company = record.into(CompanyPojo.class);
+            OrgPojo org = record.into(OrgPojo.class);
 
             if (!companyOrgMap.containsKey(company)) {
                 companyOrgMap.put(company, new TreeSet<>(PojoComparators.ORG_CASE_INSENSITIVE_ORDER));
@@ -62,7 +62,7 @@ public class BrowseService extends AbstractPersistService {
         return companyOrgMap;
     }
 
-    public Map<Company, Map<Org, Set<Repo>>> getCompanyOrgsRepos(String companyName) {
+    public Map<CompanyPojo, Map<OrgPojo, Set<RepoPojo>>> getCompanyOrgsRepos(String companyName) {
         Result<Record> recordResult = dsl.select()
                 .from(COMPANY)
                 .leftJoin(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID))
@@ -70,14 +70,14 @@ public class BrowseService extends AbstractPersistService {
                 .where(COMPANY.COMPANY_NAME.eq(companyName))
                 .fetch();
 
-        Map<Org, Set<Repo>> orgRepoMap = new TreeMap<>(PojoComparators.ORG_CASE_INSENSITIVE_ORDER);
-        Company company = null;
+        Map<OrgPojo, Set<RepoPojo>> orgRepoMap = new TreeMap<>(PojoComparators.ORG_CASE_INSENSITIVE_ORDER);
+        CompanyPojo company = null;
         for (Record record : recordResult) {
             if (company == null || company.getCompanyId() == null) {
-                company = record.into(Company.class);
+                company = record.into(CompanyPojo.class);
             }
-            Org org = record.into(Org.class);
-            Repo repo = record.into(Repo.class);
+            OrgPojo org = record.into(OrgPojo.class);
+            RepoPojo repo = record.into(RepoPojo.class);
 
             if (!orgRepoMap.containsKey(org)) {
                 orgRepoMap.put(org, new TreeSet<>(PojoComparators.REPO_CASE_INSENSITIVE_ORDER));
@@ -87,7 +87,7 @@ public class BrowseService extends AbstractPersistService {
         return Collections.singletonMap(company, orgRepoMap);
     }
 
-    public Map<Org, Set<Repo>> getOrgsRepos(String companyName) {
+    public Map<OrgPojo, Set<RepoPojo>> getOrgsRepos(String companyName) {
 
         Result<Record> recordResult = dsl.select()
                 .from(COMPANY)
@@ -96,10 +96,10 @@ public class BrowseService extends AbstractPersistService {
                 .where(COMPANY.COMPANY_NAME.eq(companyName))
                 .fetch();
 
-        Map<Org, Set<Repo>> orgRepoMap = new TreeMap<>(PojoComparators.ORG_CASE_INSENSITIVE_ORDER);
+        Map<OrgPojo, Set<RepoPojo>> orgRepoMap = new TreeMap<>(PojoComparators.ORG_CASE_INSENSITIVE_ORDER);
         for (Record record : recordResult) {
-            Org org = record.into(Org.class);
-            Repo repo = record.into(Repo.class);
+            OrgPojo org = record.into(OrgPojo.class);
+            RepoPojo repo = record.into(RepoPojo.class);
 
             if (!orgRepoMap.containsKey(org)) {
                 orgRepoMap.put(org, new TreeSet<>(PojoComparators.REPO_CASE_INSENSITIVE_ORDER));
@@ -109,15 +109,15 @@ public class BrowseService extends AbstractPersistService {
         return orgRepoMap;
     }
 
-    public Company getCompany(String companyName) {
+    public CompanyPojo getCompany(String companyName) {
         Record record = dsl.select(COMPANY.fields()).from(COMPANY).where(COMPANY.COMPANY_NAME.eq(companyName)).fetchOne();
         if (record == null) {
             throwNotFound("companyName:" + companyName);
         }
-        return record.into(Company.class);
+        return record.into(CompanyPojo.class);
     }
 
-    public Org getOrg(String companyName, String orgName) {
+    public OrgPojo getOrg(String companyName, String orgName) {
         try {
             return dsl.
                     select(ORG.fields())
@@ -126,14 +126,14 @@ public class BrowseService extends AbstractPersistService {
                                                 .and(ORG.ORG_NAME.eq(orgName)))
                     .where(COMPANY.COMPANY_NAME.eq(companyName))
                     .fetchSingle()
-                    .into(Org.class);
+                    .into(OrgPojo.class);
         } catch (NoDataFoundException ex) {
             throwNotFound("company: " + companyName, "org: " + orgName);
         }
         throw new IllegalStateException("unreachable code");
     }
 
-    public Map<Org, Map<Repo, Set<Branch>>> getOrgReposBranches(String companyName, String orgName) {
+    public Map<OrgPojo, Map<RepoPojo, Set<BranchPojo>>> getOrgReposBranches(String companyName, String orgName) {
 
         Result<Record> recordResult = dsl.select()
                 .from(COMPANY)
@@ -144,14 +144,14 @@ public class BrowseService extends AbstractPersistService {
                 .where(COMPANY.COMPANY_NAME.eq(companyName))
                 .fetch();
 
-        Map<Repo, Set<Branch>> repoBranchMap = new TreeMap<>(PojoComparators.REPO_CASE_INSENSITIVE_ORDER);
-        Org org = null;
+        Map<RepoPojo, Set<BranchPojo>> repoBranchMap = new TreeMap<>(PojoComparators.REPO_CASE_INSENSITIVE_ORDER);
+        OrgPojo org = null;
         for (Record record : recordResult) {
             if (org == null || org.getOrgId() == null) {
-                org = record.into(Org.class);
+                org = record.into(OrgPojo.class);
             }
-            Repo repo = record.into(Repo.class);
-            Branch branch = record.into(Branch.class);
+            RepoPojo repo = record.into(RepoPojo.class);
+            BranchPojo branch = record.into(BranchPojo.class);
 
             if (!repoBranchMap.containsKey(repo)) {
                 repoBranchMap.put(repo, new TreeSet<>(PojoComparators.BRANCH_CASE_INSENSITIVE_ORDER));
@@ -161,7 +161,7 @@ public class BrowseService extends AbstractPersistService {
         return Collections.singletonMap(org, repoBranchMap);
     }
 
-    public Repo getRepo(String companyName, String orgName, String repoName) {
+    public RepoPojo getRepo(String companyName, String orgName, String repoName) {
 
         try {
             return dsl.
@@ -173,14 +173,14 @@ public class BrowseService extends AbstractPersistService {
                             .and(REPO.REPO_NAME.eq(repoName)))
                     .where(COMPANY.COMPANY_NAME.eq(companyName))
                     .fetchSingle()
-                    .into(Repo.class);
+                    .into(RepoPojo.class);
         } catch (NoDataFoundException ex) {
             throwNotFound("company: " + companyName + ", org: " + orgName, "repo: " + repoName);
         }
         throw new IllegalStateException("unreachable code");
     }
 
-    public Map<Repo, Map<Branch, Set<Job>>> getRepoBranchesJobs(String companyName, String orgName, String repoName) {
+    public Map<RepoPojo, Map<BranchPojo, Set<JobPojo>>> getRepoBranchesJobs(String companyName, String orgName, String repoName) {
 
         Result<Record> recordResult = dsl.select()
                 .from(COMPANY)
@@ -193,14 +193,14 @@ public class BrowseService extends AbstractPersistService {
                 .where(COMPANY.COMPANY_NAME.eq(companyName))
                 .fetch();
 
-        Map<Branch, Set<Job>> branchesJobsMap = new TreeMap<>(PojoComparators.BRANCH_CASE_INSENSITIVE_ORDER);
-        Repo repo = null;
+        Map<BranchPojo, Set<JobPojo>> branchesJobsMap = new TreeMap<>(PojoComparators.BRANCH_CASE_INSENSITIVE_ORDER);
+        RepoPojo repo = null;
         for (Record record : recordResult) {
             if (repo == null || repo.getRepoId() == null) {
-                repo = record.into(Repo.class);
+                repo = record.into(RepoPojo.class);
             }
-            Branch branch = record.into(Branch.class);
-            Job job = record.into(Job.class);
+            BranchPojo branch = record.into(BranchPojo.class);
+            JobPojo job = record.into(JobPojo.class);
 
             if (!branchesJobsMap.containsKey(branch)) {
                 branchesJobsMap.put(branch, new TreeSet<>(PojoComparators.JOB_CASE_INSENSITIVE_ORDER));
@@ -210,8 +210,8 @@ public class BrowseService extends AbstractPersistService {
         return Collections.singletonMap(repo, branchesJobsMap);
     }
 
-    public Branch getBranch(String companyName, String orgName, String repoName, String branchName) {
-        Branch ret = dsl.select(BRANCH.fields())
+    public BranchPojo getBranch(String companyName, String orgName, String repoName, String branchName) {
+        BranchPojo ret = dsl.select(BRANCH.fields())
                 .from(COMPANY)
                 .leftJoin(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID)
                         .and(ORG.ORG_NAME.eq(orgName)))
@@ -221,14 +221,14 @@ public class BrowseService extends AbstractPersistService {
                         .and(BRANCH.BRANCH_NAME.eq(branchName)))
                 .where(COMPANY.COMPANY_NAME.eq( companyName))
                 .fetchOne()
-                .into(Branch.class);
+                .into(BranchPojo.class);
         if (ret == null) {
             throwNotFound("company: " + companyName + ", org: " + orgName, "repo: " + repoName, "branch: " + branchName);
         }
         return ret;
     }
 
-    public Map<Branch, Map<Job, Set<Run>>> getBranchJobsRuns(String companyName, String orgName, String repoName, String branchName, Map<String, String> expectedJobFilters) {
+    public Map<BranchPojo, Map<JobPojo, Set<RunPojo>>> getBranchJobsRuns(String companyName, String orgName, String repoName, String branchName, Map<String, String> expectedJobFilters) {
 
         if (expectedJobFilters == null) {
             expectedJobFilters = Collections.emptyMap();
@@ -248,17 +248,17 @@ public class BrowseService extends AbstractPersistService {
                 .fetch();
 
         //TODO: filter jobs
-        Map<Job, Set<Run>> jobRunMap = new TreeMap<>(PojoComparators.JOB_CASE_INSENSITIVE_ORDER);
-        Branch branch = null;
+        Map<JobPojo, Set<RunPojo>> jobRunMap = new TreeMap<>(PojoComparators.JOB_CASE_INSENSITIVE_ORDER);
+        BranchPojo branch = null;
         for (Record record : recordResult) {
             if (branch == null || branch.getBranchId() == null) {
-                branch = record.into(Branch.class);
+                branch = record.into(BranchPojo.class);
             }
-            Job job = record.into(Job.class);
+            JobPojo job = record.into(JobPojo.class);
             if (!JsonCompare.containsMap(expectedJobFilters, job.getJobInfo())) {
                 continue;
             }
-            Run run = record.into(Run.class);
+            RunPojo run = record.into(RunPojo.class);
 
             if (!jobRunMap.containsKey(job)) {
                 jobRunMap.put(job, new TreeSet<>(PojoComparators.RUN_CASE_INSENSITIVE_ORDER));
@@ -268,8 +268,8 @@ public class BrowseService extends AbstractPersistService {
         return Collections.singletonMap(branch, jobRunMap);
     }
 
-    public Job getJob(String companyName, String orgName, String repoName, String branchName, Map<String, String> jobInfo) {
-        Set<Job> jobs = new TreeSet<>(PojoComparators.JOB_CASE_INSENSITIVE_ORDER);
+    public JobPojo getJob(String companyName, String orgName, String repoName, String branchName, Map<String, String> jobInfo) {
+        Set<JobPojo> jobs = new TreeSet<>(PojoComparators.JOB_CASE_INSENSITIVE_ORDER);
 
         Result<Record> jobsResult = dsl.select(JOB.fields())
                 .from(COMPANY)
@@ -284,7 +284,7 @@ public class BrowseService extends AbstractPersistService {
                 .fetch();
 
         for (Record record : jobsResult) {
-            Job job = record.into(Job.class);
+            JobPojo job = record.into(JobPojo.class);
             if (JsonCompare.equalsMap(job.getJobInfo(), jobInfo)) {
                 return job;
             }
@@ -293,7 +293,7 @@ public class BrowseService extends AbstractPersistService {
         throw new IllegalStateException("unreachable code");
     }
 
-    public Map<Job, Map<Run, Set<Stage>>> getJobRunsStages(String companyName, String orgName, String repoName, String branchName, Long jobId) {
+    public Map<JobPojo, Map<RunPojo, Set<StagePojo>>> getJobRunsStages(String companyName, String orgName, String repoName, String branchName, Long jobId) {
 
         Result<Record> recordResult = dsl.select()
                 .from(COMPANY)
@@ -311,14 +311,14 @@ public class BrowseService extends AbstractPersistService {
                 .where(COMPANY.COMPANY_NAME.eq(companyName))
                 .fetch();
 
-        Map<Run, Set<Stage>> runStageMap = new ConcurrentSkipListMap<>(PojoComparators.RUN_DESCENDING);
-        Job job = null;
+        Map<RunPojo, Set<StagePojo>> runStageMap = new ConcurrentSkipListMap<>(PojoComparators.RUN_DESCENDING);
+        JobPojo job = null;
         for (Record record : recordResult) {
             if (job == null || job.getJobId() == null) {
-                job = record.into(Job.class);
+                job = record.into(JobPojo.class);
             }
-            Run run = record.into(Run.class);
-            Stage stage = record.into(Stage.class);
+            RunPojo run = record.into(RunPojo.class);
+            StagePojo stage = record.into(StagePojo.class);
 
             if (!runStageMap.containsKey(run)) {
                 runStageMap.put(run, new TreeSet<>(PojoComparators.STAGE_CASE_INSENSITIVE_ORDER));
@@ -328,7 +328,7 @@ public class BrowseService extends AbstractPersistService {
         return Collections.singletonMap(job, runStageMap);
     }
 
-    public Map<Run, Map<Stage, Set<TestResult>>> getRunStagesTestResults(String companyName, String orgName, String repoName, String branchName, Long jobId, Long runId) {
+    public Map<RunPojo, Map<StagePojo, Set<TestResultPojo>>> getRunStagesTestResults(String companyName, String orgName, String repoName, String branchName, Long jobId, Long runId) {
 
         Result<Record> recordResult = dsl.select()
                 .from(COMPANY)
@@ -347,14 +347,14 @@ public class BrowseService extends AbstractPersistService {
                 .where(COMPANY.COMPANY_NAME.eq(companyName))
                 .fetch();
 
-        Map<Stage, Set<TestResult>> stageTestResultMap = new TreeMap<>(PojoComparators.STAGE_CASE_INSENSITIVE_ORDER);
-        Run run = null;
+        Map<StagePojo, Set<TestResultPojo>> stageTestResultMap = new TreeMap<>(PojoComparators.STAGE_CASE_INSENSITIVE_ORDER);
+        RunPojo run = null;
         for (Record record : recordResult) {
             if (run == null || run.getRunId() == null) {
-                run = record.into(Run.class);
+                run = record.into(RunPojo.class);
             }
-            Stage stage = record.into(Stage.class);
-            io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestResult testResult = record.into(io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestResult.class);
+            StagePojo stage = record.into(StagePojo.class);
+            io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestResultPojo testResult = record.into(io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestResultPojo.class);
 
             if (!stageTestResultMap.containsKey(stage)) {
                 stageTestResultMap.put(stage, new TreeSet<>(PojoComparators.TEST_RESULT_CASE_INSENSITIVE_ORDER));
@@ -412,42 +412,42 @@ public class BrowseService extends AbstractPersistService {
         BranchStageViewResponse.BranchStageViewResponseBuilder rBuilder = BranchStageViewResponse.builder();
 
         CompanyOrgRepoBranch companyOrgRepoBranch = null;
-        Map<JobRun, Map<StageTestResult, Set<Storage>>> jobRunStagesMap = new TreeMap<>(PojoComparators.JOB_RUN_DATE_DESCENDING_ORDER);
+        Map<JobRun, Map<StageTestResult, Set<StoragePojo>>> jobRunStagesMap = new TreeMap<>(PojoComparators.JOB_RUN_DATE_DESCENDING_ORDER);
 
         for (Record record : recordResult) {
             if (companyOrgRepoBranch == null) {
                 CompanyOrgRepoBranch.CompanyOrgRepoBranchBuilder cBuilder = CompanyOrgRepoBranch.builder();
-                cBuilder.company(record.into(io.github.ericdriggs.reportcard.gen.db.tables.pojos.Company.class));
+                cBuilder.company(record.into(io.github.ericdriggs.reportcard.gen.db.tables.pojos.CompanyPojo.class));
 
-                cBuilder.org(record.into(Org.class));
-                cBuilder.repo(record.into(Repo.class));
-                cBuilder.branch(record.into(Branch.class));
+                cBuilder.org(record.into(OrgPojo.class));
+                cBuilder.repo(record.into(RepoPojo.class));
+                cBuilder.branch(record.into(BranchPojo.class));
                 companyOrgRepoBranch = cBuilder.build();
             }
 
-            Job job = record.into(Job.class);
-            Run run = record.into(Run.class);
+            JobPojo job = record.into(JobPojo.class);
+            RunPojo run = record.into(RunPojo.class);
 
             if (job.getJobId() != null || run.getRunId() != null) {
                 JobRun jobRun = JobRun.builder().job(job).run(run).build();
 
                 jobRunStagesMap.computeIfAbsent(jobRun, k -> new TreeMap<>(PojoComparators.STAGE_TEST_RESULT_DATE_DESCENDING));
 
-                Map<StageTestResult, Set<Storage>> stageTestResult_StorageMap = jobRunStagesMap.get(jobRun);
+                Map<StageTestResult, Set<StoragePojo>> stageTestResult_StorageMap = jobRunStagesMap.get(jobRun);
 
-                Stage stage = record.into(Stage.class);
-                TestResult testResult = null;
+                StagePojo stage = record.into(StagePojo.class);
+                TestResultPojo testResult = null;
                 try {
-                    testResult = record.into(TestResult.class);
+                    testResult = record.into(TestResultPojo.class);
                 } catch (Exception ex) {
                     //NO-OP. allowed to be null. Would prefer more elegant handling of null
                 }
                 StageTestResult stageTestResult = StageTestResult.builder().stage(stage).testResult(testResult).build();
                 stageTestResult_StorageMap.putIfAbsent(stageTestResult, new TreeSet<>(PojoComparators.STORAGE_CASE_INSENSITIVE_ORDER));
 
-                Storage storage = null;
+                StoragePojo storage = null;
                 try {
-                    storage = record.into(Storage.class);
+                    storage = record.into(StoragePojo.class);
                     if (storage.getStorageId() != null) {
                         stageTestResult_StorageMap.get(stageTestResult).add(storage);
                     }
@@ -459,7 +459,7 @@ public class BrowseService extends AbstractPersistService {
         return BranchStageViewResponse.builder().companyOrgRepoBranch(companyOrgRepoBranch).jobRun_StageTestResult_StoragesMap(jobRunStagesMap).build();
     }
 
-    public Map<Run, Map<Stage, Set<Storage>>> getRunStagesStorages(String companyName, String orgName, String repoName, String branchName, Long jobId, Long runId) {
+    public Map<RunPojo, Map<StagePojo, Set<StoragePojo>>> getRunStagesStorages(String companyName, String orgName, String repoName, String branchName, Long jobId, Long runId) {
 
         Result<Record> recordResult = dsl.select()
                                          .from(COMPANY)
@@ -478,14 +478,14 @@ public class BrowseService extends AbstractPersistService {
                                          .where(COMPANY.COMPANY_NAME.eq(companyName))
                                          .fetch();
 
-        Map<Stage, Set<Storage>> stageStorageMap = new TreeMap<>(PojoComparators.STAGE_CASE_INSENSITIVE_ORDER);
-        Run run = null;
+        Map<StagePojo, Set<StoragePojo>> stageStorageMap = new TreeMap<>(PojoComparators.STAGE_CASE_INSENSITIVE_ORDER);
+        RunPojo run = null;
         for (Record record : recordResult) {
             if (run == null || run.getRunId() == null) {
-                run = record.into(Run.class);
+                run = record.into(RunPojo.class);
             }
-            Stage stage = record.into(Stage.class);
-            io.github.ericdriggs.reportcard.gen.db.tables.pojos.Storage testResult = record.into(io.github.ericdriggs.reportcard.gen.db.tables.pojos.Storage.class);
+            StagePojo stage = record.into(StagePojo.class);
+            io.github.ericdriggs.reportcard.gen.db.tables.pojos.StoragePojo testResult = record.into(io.github.ericdriggs.reportcard.gen.db.tables.pojos.StoragePojo.class);
 
             if (!stageStorageMap.containsKey(stage)) {
                 stageStorageMap.put(stage, new TreeSet<>(PojoComparators.STORAGE_CASE_INSENSITIVE_ORDER));
@@ -495,9 +495,9 @@ public class BrowseService extends AbstractPersistService {
         return Collections.singletonMap(run, stageStorageMap);
     }
 
-    public Run getRun(String companyName, String orgName, String repoName, String branchName, Long jobId, Long runId) {
+    public RunPojo getRun(String companyName, String orgName, String repoName, String branchName, Long jobId, Long runId) {
 
-        Run ret = dsl.select(RUN.fields())
+        RunPojo ret = dsl.select(RUN.fields())
                 .from(COMPANY)
                 .join(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID)
                         .and(ORG.ORG_NAME.eq(orgName)))
@@ -511,7 +511,7 @@ public class BrowseService extends AbstractPersistService {
                         .and(RUN.RUN_ID.eq(runId)))
                 .where(COMPANY.COMPANY_NAME.eq(companyName))
                 .fetchOne()
-                .into(Run.class);
+                .into(RunPojo.class);
 
         if (ret == null) {
             throwNotFound("company: " + companyName + ", org: " + orgName, "repo: " + repoName, "branch: " + branchName, "jobId: " + Long.toString(jobId), "runId: " + Long.toString(runId));
@@ -519,7 +519,7 @@ public class BrowseService extends AbstractPersistService {
         return ret;
     }
 
-    public Map<Branch, Map<Job, Set<Run>>> getBranchJobsRunsForSha(String companyName, String orgName, String repoName, String branchName, String sha) {
+    public Map<BranchPojo, Map<JobPojo, Set<RunPojo>>> getBranchJobsRunsForSha(String companyName, String orgName, String repoName, String branchName, String sha) {
 
         Result<Record> recordResult = dsl.select()
                 .from(COMPANY)
@@ -535,15 +535,15 @@ public class BrowseService extends AbstractPersistService {
                 .where(COMPANY.COMPANY_NAME.eq(companyName))
                 .fetch();
 
-        Map<Job, Set<Run>> jobRunMap = new TreeMap<>(PojoComparators.JOB_CASE_INSENSITIVE_ORDER);
+        Map<JobPojo, Set<RunPojo>> jobRunMap = new TreeMap<>(PojoComparators.JOB_CASE_INSENSITIVE_ORDER);
 
-        Branch branch = null;
+        BranchPojo branch = null;
         for (Record record : recordResult) {
             if (branch == null || branch.getBranchId() == null) {
-                branch = record.into(Branch.class);
+                branch = record.into(BranchPojo.class);
             }
-            Job job = record.into(Job.class);
-            Run run = record.into(Run.class);
+            JobPojo job = record.into(JobPojo.class);
+            RunPojo run = record.into(RunPojo.class);
 
             if (!jobRunMap.containsKey(job)) {
                 synchronized (job.getJobInfoStr() + ":" + run.getRunId()) {
@@ -557,9 +557,9 @@ public class BrowseService extends AbstractPersistService {
         return Collections.singletonMap(branch, jobRunMap);
     }
 
-    public Run getRunFromReference(String companyName, String orgName, String repoName, String branchName, String sha, String runReference) {
+    public RunPojo getRunFromReference(String companyName, String orgName, String repoName, String branchName, String sha, String runReference) {
 
-        Run ret = dsl.select(RUN.fields())
+        RunPojo ret = dsl.select(RUN.fields())
                 .from(COMPANY)
                 .join(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID)
                         .and(ORG.ORG_NAME.eq(orgName)))
@@ -573,7 +573,7 @@ public class BrowseService extends AbstractPersistService {
                         .and(RUN.RUN_REFERENCE.eq(runReference)))
                 .where(COMPANY.COMPANY_NAME.eq(companyName))
                 .fetchOne()
-                .into(Run.class);
+                .into(RunPojo.class);
 
         if (ret == null) {
             throwNotFound("company: " + companyName + ", org: " + orgName, "repo: " + repoName, "branch: " + branchName, "sha:" + sha, "runReference: " + runReference);
@@ -581,7 +581,7 @@ public class BrowseService extends AbstractPersistService {
         return ret;
     }
 
-    public Map<StageTestResult, Map<TestSuite, Map<TestCase, List<TestCaseFault>>>> getStageTestResultMap(String companyName, String orgName, String repoName, String branchName, Long jobId, Long runId, String stageName) {
+    public Map<StageTestResult, Map<TestSuitePojo, Map<TestCasePojo, List<TestCaseFaultPojo>>>> getStageTestResultMap(String companyName, String orgName, String repoName, String branchName, Long jobId, Long runId, String stageName) {
 
         Result<Record> recordResult =
                 dsl.select()
@@ -607,29 +607,29 @@ public class BrowseService extends AbstractPersistService {
 
         //
 
-        Stage stage = null;
-        TestResult testResult = null;
+        StagePojo stage = null;
+        TestResultPojo testResult = null;
 
-        Map<TestSuite, Map<TestCase, List<TestCaseFault>>> testSuiteTestCaseMap = new LinkedHashMap<>();
+        Map<TestSuitePojo, Map<TestCasePojo, List<TestCaseFaultPojo>>> testSuiteTestCaseMap = new LinkedHashMap<>();
         for (Record record : recordResult) {
             if (stage == null) {
-                stage = record.into(Stage.class);
+                stage = record.into(StagePojo.class);
             }
 
             if (testResult == null) {
                 testResult = getTestResultFromRecord(record);
             }
 
-            TestSuite testSuite = getTestSuiteFromRecord(record);
+            TestSuitePojo testSuite = getTestSuiteFromRecord(record);
             if (testSuite.getTestSuiteId() != null) {
                 testSuiteTestCaseMap.computeIfAbsent(testSuite, k -> new LinkedHashMap<>());
             }
 
-            TestCase testCase = getTestCaseFromRecord(record);
+            TestCasePojo testCase = getTestCaseFromRecord(record);
             if (testCase.getTestCaseId() != null) {
                 testSuiteTestCaseMap.get(testSuite).computeIfAbsent(testCase, k -> new ArrayList<>());
             }
-            TestCaseFault testCaseFault = getTestCaseFaultFromRecord(record);
+            TestCaseFaultPojo testCaseFault = getTestCaseFaultFromRecord(record);
             if (testCase.getTestCaseId() != null) {
                 testSuiteTestCaseMap.get(testSuite).get(testCase).add(testCaseFault);
             }
@@ -637,26 +637,26 @@ public class BrowseService extends AbstractPersistService {
 
         StageTestResult stageTestResult = StageTestResult.builder().stage(stage).testResult(testResult).build();
 
-        //Map<StageTestResult,Map<TestSuite,List<TestCase>>> testResultMapMap = new TreeMap<>();
+        //Map<StageTestResult,Map<TestSuitePojo,List<TestCasePojo>>> testResultMapMap = new TreeMap<>();
         return Collections.singletonMap(stageTestResult, testSuiteTestCaseMap);
     }
 
 
 
 
-//    import io.github.ericdriggs.reportcard.model.TestSuite;
-//import io.github.ericdriggs.reportcard.model.TestResult;
-//import io.github.ericdriggs.reportcard.model.TestCase;
+//    import io.github.ericdriggs.reportcard.model.TestSuitePojo;
+//import io.github.ericdriggs.reportcard.model.TestResultPojo;
+//import io.github.ericdriggs.reportcard.model.TestCasePojo;
 
 
     /**
      * Needed since ambiguous column names can be overwritten by another table if using record into
      *
-     * @param record a record containing TestResult fields
-     * @return TestResult
+     * @param record a record containing TestResultPojo fields
+     * @return TestResultPojo
      */
-    protected static TestResult getTestResultFromRecord(Record record) {
-        TestResult testResult = record.into(TestResult.class);
+    protected static TestResultPojo getTestResultFromRecord(Record record) {
+        TestResultPojo testResult = record.into(TestResultPojo.class);
         testResult.setTests(record.get(TEST_RESULT.TESTS));
         testResult.setSkipped(record.get(TEST_RESULT.SKIPPED));
         testResult.setError(record.get(TEST_RESULT.ERROR));
@@ -670,11 +670,11 @@ public class BrowseService extends AbstractPersistService {
     /**
      * Needed since ambiguous column names can be overwritten by another table if using record into
      *
-     * @param record a record containing TestResult fields
-     * @return TestResult
+     * @param record a record containing TestResultPojo fields
+     * @return TestResultPojo
      */
-    protected static TestSuite getTestSuiteFromRecord(Record record) {
-        TestSuite testSuite = record.into(TestSuite.class);
+    protected static TestSuitePojo getTestSuiteFromRecord(Record record) {
+        TestSuitePojo testSuite = record.into(TestSuitePojo.class);
         testSuite.setTests(record.get(TEST_SUITE.TESTS));
         testSuite.setSkipped(record.get(TEST_SUITE.SKIPPED));
         testSuite.setError(record.get(TEST_SUITE.ERROR));
@@ -688,11 +688,11 @@ public class BrowseService extends AbstractPersistService {
     /**
      * Needed since ambiguous column names can be overwritten by another table if using record into
      *
-     * @param record a record containing TestResult fields
-     * @return TestResult
+     * @param record a record containing TestResultPojo fields
+     * @return TestResultPojo
      */
-    protected static TestCase getTestCaseFromRecord(Record record) {
-        TestCase testCase = record.into(TestCase.class);
+    protected static TestCasePojo getTestCaseFromRecord(Record record) {
+        TestCasePojo testCase = record.into(TestCasePojo.class);
         testCase.setName(record.get(TEST_CASE.NAME));
         testCase.setTime(record.get(TEST_CASE.TIME));
         testCase.setSystemErr(record.get(TEST_CASE.SYSTEM_ERR));
@@ -700,16 +700,16 @@ public class BrowseService extends AbstractPersistService {
         return testCase;
     }
 
-    protected static TestCaseFault getTestCaseFaultFromRecord(Record record) {
-        TestCaseFault testCaseFault = record.into(TestCaseFault.class);
+    protected static TestCaseFaultPojo getTestCaseFaultFromRecord(Record record) {
+        TestCaseFaultPojo testCaseFault = record.into(TestCaseFaultPojo.class);
         testCaseFault.setType(record.get(TEST_CASE_FAULT.TYPE));
         testCaseFault.setMessage(record.get(TEST_CASE_FAULT.MESSAGE));
         testCaseFault.setValue(record.get(TEST_CASE_FAULT.VALUE));
         return testCaseFault;
     }
 
-    public Stage getStage(String companyName, String orgName, String repoName, String branchName, String sha, String runReference, String stageName) {
-        Stage ret = dsl.select(STAGE.fields())
+    public StagePojo getStage(String companyName, String orgName, String repoName, String branchName, String sha, String runReference, String stageName) {
+        StagePojo ret = dsl.select(STAGE.fields())
                 .from(ORG)
                 .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
                         .and(ORG.ORG_NAME.eq(orgName))
@@ -723,18 +723,18 @@ public class BrowseService extends AbstractPersistService {
                 .join(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID)
                         .and(STAGE.STAGE_NAME.eq(stageName)))
                 .fetchOne()
-                .into(Stage.class);
+                .into(StagePojo.class);
         if (ret == null) {
             throwNotFound("company: " + companyName + ", org: " + orgName, "repo: " + repoName, "branch: " + branchName, "sha: " + sha, "runReference: " + runReference, "stage: " + stageName);
         }
         return ret;
     }
 
-    public List<TestStatus> getAllTestStatuses() {
-        List<TestStatus> ret = dsl.select(TEST_STATUS.fields())
+    public List<TestStatusPojo> getAllTestStatuses() {
+        List<TestStatusPojo> ret = dsl.select(TEST_STATUS.fields())
                 .from(TEST_STATUS)
                 .fetch()
-                .into(TestStatus.class);
+                .into(TestStatusPojo.class);
         return ret;
     }
 

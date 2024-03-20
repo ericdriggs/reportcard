@@ -6,7 +6,7 @@ package io.github.ericdriggs.reportcard.gen.db.tables;
 
 import io.github.ericdriggs.reportcard.gen.db.Indexes;
 import io.github.ericdriggs.reportcard.gen.db.Keys;
-import io.github.ericdriggs.reportcard.gen.db.Reportcard;
+import io.github.ericdriggs.reportcard.gen.db.ReportcardTable;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.RunRecord;
 
 import java.time.LocalDateTime;
@@ -37,14 +37,14 @@ import org.jooq.impl.TableImpl;
  */
 @Generated
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class Run extends TableImpl<RunRecord> {
+public class RunTable extends TableImpl<RunRecord> {
 
-    private static final long serialVersionUID = -944689238;
+    private static final long serialVersionUID = 53816994;
 
     /**
      * The reference instance of <code>reportcard.run</code>
      */
-    public static final Run RUN = new Run();
+    public static final RunTable RUN = new RunTable();
 
     /**
      * The class holding records for this type
@@ -89,42 +89,42 @@ public class Run extends TableImpl<RunRecord> {
      */
     public final TableField<RunRecord, Boolean> IS_SUCCESS = createField(DSL.name("is_success"), SQLDataType.BOOLEAN.nullable(false).defaultValue(DSL.inline("1", SQLDataType.BOOLEAN)), this, "");
 
-    private Run(Name alias, Table<RunRecord> aliased) {
+    private RunTable(Name alias, Table<RunRecord> aliased) {
         this(alias, aliased, null);
     }
 
-    private Run(Name alias, Table<RunRecord> aliased, Field<?>[] parameters) {
+    private RunTable(Name alias, Table<RunRecord> aliased, Field<?>[] parameters) {
         super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
     }
 
     /**
      * Create an aliased <code>reportcard.run</code> table reference
      */
-    public Run(String alias) {
+    public RunTable(String alias) {
         this(DSL.name(alias), RUN);
     }
 
     /**
      * Create an aliased <code>reportcard.run</code> table reference
      */
-    public Run(Name alias) {
+    public RunTable(Name alias) {
         this(alias, RUN);
     }
 
     /**
      * Create a <code>reportcard.run</code> table reference
      */
-    public Run() {
+    public RunTable() {
         this(DSL.name("run"), null);
     }
 
-    public <O extends Record> Run(Table<O> child, ForeignKey<O, RunRecord> key) {
+    public <O extends Record> RunTable(Table<O> child, ForeignKey<O, RunRecord> key) {
         super(child, key, RUN);
     }
 
     @Override
     public Schema getSchema() {
-        return aliased() ? null : Reportcard.REPORTCARD;
+        return aliased() ? null : ReportcardTable.REPORTCARD;
     }
 
     @Override
@@ -152,42 +152,42 @@ public class Run extends TableImpl<RunRecord> {
         return Arrays.asList(Keys.RUN_JOB_FK);
     }
 
-    private transient Job _job;
+    private transient JobTable _job;
 
     /**
      * Get the implicit join path to the <code>reportcard.job</code> table.
      */
-    public Job job() {
+    public JobTable job() {
         if (_job == null)
-            _job = new Job(this, Keys.RUN_JOB_FK);
+            _job = new JobTable(this, Keys.RUN_JOB_FK);
 
         return _job;
     }
 
     @Override
-    public Run as(String alias) {
-        return new Run(DSL.name(alias), this);
+    public RunTable as(String alias) {
+        return new RunTable(DSL.name(alias), this);
     }
 
     @Override
-    public Run as(Name alias) {
-        return new Run(alias, this);
-    }
-
-    /**
-     * Rename this table
-     */
-    @Override
-    public Run rename(String name) {
-        return new Run(DSL.name(name), null);
+    public RunTable as(Name alias) {
+        return new RunTable(alias, this);
     }
 
     /**
      * Rename this table
      */
     @Override
-    public Run rename(Name name) {
-        return new Run(name, null);
+    public RunTable rename(String name) {
+        return new RunTable(DSL.name(name), null);
+    }
+
+    /**
+     * Rename this table
+     */
+    @Override
+    public RunTable rename(Name name) {
+        return new RunTable(name, null);
     }
 
     // -------------------------------------------------------------------------

@@ -5,7 +5,7 @@ package io.github.ericdriggs.reportcard.gen.db.tables;
 
 
 import io.github.ericdriggs.reportcard.gen.db.Keys;
-import io.github.ericdriggs.reportcard.gen.db.Reportcard;
+import io.github.ericdriggs.reportcard.gen.db.ReportcardTable;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.StorageTypeRecord;
 
 import lombok.Generated;
@@ -31,14 +31,14 @@ import org.jooq.impl.TableImpl;
  */
 @Generated
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class StorageType extends TableImpl<StorageTypeRecord> {
+public class StorageTypeTable extends TableImpl<StorageTypeRecord> {
 
-    private static final long serialVersionUID = 780576870;
+    private static final long serialVersionUID = 508777236;
 
     /**
      * The reference instance of <code>reportcard.storage_type</code>
      */
-    public static final StorageType STORAGE_TYPE = new StorageType();
+    public static final StorageTypeTable STORAGE_TYPE = new StorageTypeTable();
 
     /**
      * The class holding records for this type
@@ -58,42 +58,42 @@ public class StorageType extends TableImpl<StorageTypeRecord> {
      */
     public final TableField<StorageTypeRecord, String> STORAGE_TYPE_NAME = createField(DSL.name("storage_type_name"), SQLDataType.VARCHAR(64).nullable(false), this, "");
 
-    private StorageType(Name alias, Table<StorageTypeRecord> aliased) {
+    private StorageTypeTable(Name alias, Table<StorageTypeRecord> aliased) {
         this(alias, aliased, null);
     }
 
-    private StorageType(Name alias, Table<StorageTypeRecord> aliased, Field<?>[] parameters) {
+    private StorageTypeTable(Name alias, Table<StorageTypeRecord> aliased, Field<?>[] parameters) {
         super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
     }
 
     /**
      * Create an aliased <code>reportcard.storage_type</code> table reference
      */
-    public StorageType(String alias) {
+    public StorageTypeTable(String alias) {
         this(DSL.name(alias), STORAGE_TYPE);
     }
 
     /**
      * Create an aliased <code>reportcard.storage_type</code> table reference
      */
-    public StorageType(Name alias) {
+    public StorageTypeTable(Name alias) {
         this(alias, STORAGE_TYPE);
     }
 
     /**
      * Create a <code>reportcard.storage_type</code> table reference
      */
-    public StorageType() {
+    public StorageTypeTable() {
         this(DSL.name("storage_type"), null);
     }
 
-    public <O extends Record> StorageType(Table<O> child, ForeignKey<O, StorageTypeRecord> key) {
+    public <O extends Record> StorageTypeTable(Table<O> child, ForeignKey<O, StorageTypeRecord> key) {
         super(child, key, STORAGE_TYPE);
     }
 
     @Override
     public Schema getSchema() {
-        return aliased() ? null : Reportcard.REPORTCARD;
+        return aliased() ? null : ReportcardTable.REPORTCARD;
     }
 
     @Override
@@ -107,29 +107,29 @@ public class StorageType extends TableImpl<StorageTypeRecord> {
     }
 
     @Override
-    public StorageType as(String alias) {
-        return new StorageType(DSL.name(alias), this);
+    public StorageTypeTable as(String alias) {
+        return new StorageTypeTable(DSL.name(alias), this);
     }
 
     @Override
-    public StorageType as(Name alias) {
-        return new StorageType(alias, this);
-    }
-
-    /**
-     * Rename this table
-     */
-    @Override
-    public StorageType rename(String name) {
-        return new StorageType(DSL.name(name), null);
+    public StorageTypeTable as(Name alias) {
+        return new StorageTypeTable(alias, this);
     }
 
     /**
      * Rename this table
      */
     @Override
-    public StorageType rename(Name name) {
-        return new StorageType(name, null);
+    public StorageTypeTable rename(String name) {
+        return new StorageTypeTable(DSL.name(name), null);
+    }
+
+    /**
+     * Rename this table
+     */
+    @Override
+    public StorageTypeTable rename(Name name) {
+        return new StorageTypeTable(name, null);
     }
 
     // -------------------------------------------------------------------------

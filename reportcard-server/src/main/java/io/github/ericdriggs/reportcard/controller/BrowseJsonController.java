@@ -28,24 +28,24 @@ public class BrowseJsonController {
     }
 
     @GetMapping(path = "", produces = "application/json")
-    public ResponseEntity<Map<Company, Set<Org>>> getCompanyOrgs() {
+    public ResponseEntity<Map<CompanyPojo, Set<OrgPojo>>> getCompanyOrgs() {
         return new ResponseEntity<>(CompanyOrgsCache.INSTANCE.getCache(), HttpStatus.OK);
     }
 
     @GetMapping(path = {"company/{company}", "company/{company}/org"}, produces = "application/json")
-    public ResponseEntity<Map<Company, Map<Org, Set<Repo>>>> getCompanyOrgsRepos(@PathVariable String company) {
+    public ResponseEntity<Map<CompanyPojo, Map<OrgPojo, Set<RepoPojo>>>> getCompanyOrgsRepos(@PathVariable String company) {
         return new ResponseEntity<>(CompanyOrgsReposCacheMap.INSTANCE.getValue(new CompanyDTO(company)), HttpStatus.OK);
     }
 
     @GetMapping(path = {"company/{company}/org/{org}", "org/{org}/repo"}, produces = "application/json")
-    public ResponseEntity<Map<Org, Map<Repo, Set<Branch>>>> getOrgReposBranches(
+    public ResponseEntity<Map<OrgPojo, Map<RepoPojo, Set<BranchPojo>>>> getOrgReposBranches(
             @PathVariable String company,
             @PathVariable String org) {
         return new ResponseEntity<>(OrgReposBranchesCacheMap.INSTANCE.getValue(CompanyOrgDTO.builder().company(company).org(org).build()), HttpStatus.OK);
     }
 
     @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}", "org/{org}/repo/{repo}/branch"}, produces = "application/json")
-    public ResponseEntity<Map<Repo, Map<Branch, Set<Job>>>> getRepoBranchesJobs(
+    public ResponseEntity<Map<RepoPojo, Map<BranchPojo, Set<JobPojo>>>> getRepoBranchesJobs(
             @PathVariable String company,
             @PathVariable String org,
             @PathVariable String repo) {
@@ -54,7 +54,7 @@ public class BrowseJsonController {
 
     @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}/branch/{branch}",
             "company/{company}/org/{org}/repo/{repo}/branch/{branch}/job"}, produces = "application/json")
-    public ResponseEntity<Map<Branch, Map<Job, Set<Run>>>> getBranchJobsRuns(
+    public ResponseEntity<Map<BranchPojo, Map<JobPojo, Set<RunPojo>>>> getBranchJobsRuns(
             @PathVariable String company,
             @PathVariable String org,
             @PathVariable String repo,
@@ -66,7 +66,7 @@ public class BrowseJsonController {
 
     @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}",
             "company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run"}, produces = "application/json")
-    public ResponseEntity<Map<Job, Map<Run, Set<Stage>>>> getJobRunsStages(
+    public ResponseEntity<Map<JobPojo, Map<RunPojo, Set<StagePojo>>>> getJobRunsStages(
             @PathVariable String company,
             @PathVariable String org,
             @PathVariable String repo,
@@ -77,7 +77,7 @@ public class BrowseJsonController {
 
     @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/{runId}",
             "company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/{runId}/stage"}, produces = "application/json")
-    public ResponseEntity<Map<Run, Map<Stage, Set<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestResult>>>> getStagesByIds(
+    public ResponseEntity<Map<RunPojo, Map<StagePojo, Set<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestResultPojo>>>> getStagesByIds(
             @PathVariable String company,
             @PathVariable String org,
             @PathVariable String repo,
@@ -89,7 +89,7 @@ public class BrowseJsonController {
 
 
     @GetMapping(path = "company/{company}/{org}/repo/{repo}/branch/{branch}/sha/{sha}/run", produces = "application/json")
-    public ResponseEntity<Map<Branch, Map<Job, Set<Run>>>> getRuns(
+    public ResponseEntity<Map<BranchPojo, Map<JobPojo, Set<RunPojo>>>> getRuns(
             @PathVariable String company,
             @PathVariable String org,
             @PathVariable String repo,
@@ -101,7 +101,7 @@ public class BrowseJsonController {
     }
 
     @GetMapping(path = "company/{company}/{org}/repo/{repo}/branch/{branch}/sha/{sha}/run/{runReference}", produces = "application/json")
-    public ResponseEntity<Run> getRunForReference(
+    public ResponseEntity<RunPojo> getRunForReference(
             @PathVariable String company,
             @PathVariable String org,
             @PathVariable String repo,
@@ -113,7 +113,7 @@ public class BrowseJsonController {
     }
 
     @GetMapping(path = "company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/{runId}/stage/{stage}", produces = "application/json")
-    public ResponseEntity<Map<StageTestResult, Map<TestSuite, Map<TestCase, List<TestCaseFault>>>>> getStageTestResultsTestSuites(
+    public ResponseEntity<Map<StageTestResult, Map<TestSuitePojo, Map<TestCasePojo, List<TestCaseFaultPojo>>>>> getStageTestResultsTestSuites(
             @PathVariable String company,
             @PathVariable String org,
             @PathVariable String repo,
@@ -125,7 +125,7 @@ public class BrowseJsonController {
     }
 
 //    @GetMapping(path = "{org}/repo/{repo}/branch/{branch}/sha/{sha}/run/{runReference}/stages", produces = "application/json")
-//    public ResponseEntity<Map<Stage,Set<TestResult>>> getStages (
+//    public ResponseEntity<Map<StagePojo,Set<TestResultPojo>>> getStages (
 //            @PathVariable String org,
 //            @PathVariable String repo,
 //            @PathVariable String branch,

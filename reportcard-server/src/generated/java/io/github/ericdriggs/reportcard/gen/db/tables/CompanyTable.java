@@ -5,7 +5,7 @@ package io.github.ericdriggs.reportcard.gen.db.tables;
 
 
 import io.github.ericdriggs.reportcard.gen.db.Keys;
-import io.github.ericdriggs.reportcard.gen.db.Reportcard;
+import io.github.ericdriggs.reportcard.gen.db.ReportcardTable;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.CompanyRecord;
 
 import java.util.Arrays;
@@ -34,14 +34,14 @@ import org.jooq.impl.TableImpl;
  */
 @Generated
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class Company extends TableImpl<CompanyRecord> {
+public class CompanyTable extends TableImpl<CompanyRecord> {
 
-    private static final long serialVersionUID = -1102197771;
+    private static final long serialVersionUID = -2121893261;
 
     /**
      * The reference instance of <code>reportcard.company</code>
      */
-    public static final Company COMPANY = new Company();
+    public static final CompanyTable COMPANY = new CompanyTable();
 
     /**
      * The class holding records for this type
@@ -61,42 +61,42 @@ public class Company extends TableImpl<CompanyRecord> {
      */
     public final TableField<CompanyRecord, String> COMPANY_NAME = createField(DSL.name("company_name"), SQLDataType.VARCHAR(255).nullable(false).defaultValue(DSL.inline("'", SQLDataType.VARCHAR)), this, "");
 
-    private Company(Name alias, Table<CompanyRecord> aliased) {
+    private CompanyTable(Name alias, Table<CompanyRecord> aliased) {
         this(alias, aliased, null);
     }
 
-    private Company(Name alias, Table<CompanyRecord> aliased, Field<?>[] parameters) {
+    private CompanyTable(Name alias, Table<CompanyRecord> aliased, Field<?>[] parameters) {
         super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
     }
 
     /**
      * Create an aliased <code>reportcard.company</code> table reference
      */
-    public Company(String alias) {
+    public CompanyTable(String alias) {
         this(DSL.name(alias), COMPANY);
     }
 
     /**
      * Create an aliased <code>reportcard.company</code> table reference
      */
-    public Company(Name alias) {
+    public CompanyTable(Name alias) {
         this(alias, COMPANY);
     }
 
     /**
      * Create a <code>reportcard.company</code> table reference
      */
-    public Company() {
+    public CompanyTable() {
         this(DSL.name("company"), null);
     }
 
-    public <O extends Record> Company(Table<O> child, ForeignKey<O, CompanyRecord> key) {
+    public <O extends Record> CompanyTable(Table<O> child, ForeignKey<O, CompanyRecord> key) {
         super(child, key, COMPANY);
     }
 
     @Override
     public Schema getSchema() {
-        return aliased() ? null : Reportcard.REPORTCARD;
+        return aliased() ? null : ReportcardTable.REPORTCARD;
     }
 
     @Override
@@ -115,29 +115,29 @@ public class Company extends TableImpl<CompanyRecord> {
     }
 
     @Override
-    public Company as(String alias) {
-        return new Company(DSL.name(alias), this);
+    public CompanyTable as(String alias) {
+        return new CompanyTable(DSL.name(alias), this);
     }
 
     @Override
-    public Company as(Name alias) {
-        return new Company(alias, this);
-    }
-
-    /**
-     * Rename this table
-     */
-    @Override
-    public Company rename(String name) {
-        return new Company(DSL.name(name), null);
+    public CompanyTable as(Name alias) {
+        return new CompanyTable(alias, this);
     }
 
     /**
      * Rename this table
      */
     @Override
-    public Company rename(Name name) {
-        return new Company(name, null);
+    public CompanyTable rename(String name) {
+        return new CompanyTable(DSL.name(name), null);
+    }
+
+    /**
+     * Rename this table
+     */
+    @Override
+    public CompanyTable rename(Name name) {
+        return new CompanyTable(name, null);
     }
 
     // -------------------------------------------------------------------------

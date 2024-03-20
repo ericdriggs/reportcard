@@ -6,7 +6,7 @@ package io.github.ericdriggs.reportcard.gen.db.tables;
 
 import io.github.ericdriggs.reportcard.gen.db.Indexes;
 import io.github.ericdriggs.reportcard.gen.db.Keys;
-import io.github.ericdriggs.reportcard.gen.db.Reportcard;
+import io.github.ericdriggs.reportcard.gen.db.ReportcardTable;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.TestCaseRecord;
 
 import java.math.BigDecimal;
@@ -37,14 +37,14 @@ import org.jooq.impl.TableImpl;
  */
 @Generated
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class TestCase extends TableImpl<TestCaseRecord> {
+public class TestCaseTable extends TableImpl<TestCaseRecord> {
 
-    private static final long serialVersionUID = -1830193229;
+    private static final long serialVersionUID = -366645431;
 
     /**
      * The reference instance of <code>reportcard.test_case</code>
      */
-    public static final TestCase TEST_CASE = new TestCase();
+    public static final TestCaseTable TEST_CASE = new TestCaseTable();
 
     /**
      * The class holding records for this type
@@ -99,42 +99,42 @@ public class TestCase extends TableImpl<TestCaseRecord> {
      */
     public final TableField<TestCaseRecord, String> ASSERTIONS = createField(DSL.name("assertions"), SQLDataType.CLOB, this, "");
 
-    private TestCase(Name alias, Table<TestCaseRecord> aliased) {
+    private TestCaseTable(Name alias, Table<TestCaseRecord> aliased) {
         this(alias, aliased, null);
     }
 
-    private TestCase(Name alias, Table<TestCaseRecord> aliased, Field<?>[] parameters) {
+    private TestCaseTable(Name alias, Table<TestCaseRecord> aliased, Field<?>[] parameters) {
         super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
     }
 
     /**
      * Create an aliased <code>reportcard.test_case</code> table reference
      */
-    public TestCase(String alias) {
+    public TestCaseTable(String alias) {
         this(DSL.name(alias), TEST_CASE);
     }
 
     /**
      * Create an aliased <code>reportcard.test_case</code> table reference
      */
-    public TestCase(Name alias) {
+    public TestCaseTable(Name alias) {
         this(alias, TEST_CASE);
     }
 
     /**
      * Create a <code>reportcard.test_case</code> table reference
      */
-    public TestCase() {
+    public TestCaseTable() {
         this(DSL.name("test_case"), null);
     }
 
-    public <O extends Record> TestCase(Table<O> child, ForeignKey<O, TestCaseRecord> key) {
+    public <O extends Record> TestCaseTable(Table<O> child, ForeignKey<O, TestCaseRecord> key) {
         super(child, key, TEST_CASE);
     }
 
     @Override
     public Schema getSchema() {
-        return aliased() ? null : Reportcard.REPORTCARD;
+        return aliased() ? null : ReportcardTable.REPORTCARD;
     }
 
     @Override
@@ -157,16 +157,16 @@ public class TestCase extends TableImpl<TestCaseRecord> {
         return Arrays.asList(Keys.FK_TEST_CASE_TEST_SUITE, Keys.FK_TEST_CASE_TEST_STATUS);
     }
 
-    private transient TestSuite _testSuite;
-    private transient TestStatus _testStatus;
+    private transient TestSuiteTable _testSuite;
+    private transient TestStatusTable _testStatus;
 
     /**
      * Get the implicit join path to the <code>reportcard.test_suite</code>
      * table.
      */
-    public TestSuite testSuite() {
+    public TestSuiteTable testSuite() {
         if (_testSuite == null)
-            _testSuite = new TestSuite(this, Keys.FK_TEST_CASE_TEST_SUITE);
+            _testSuite = new TestSuiteTable(this, Keys.FK_TEST_CASE_TEST_SUITE);
 
         return _testSuite;
     }
@@ -175,37 +175,37 @@ public class TestCase extends TableImpl<TestCaseRecord> {
      * Get the implicit join path to the <code>reportcard.test_status</code>
      * table.
      */
-    public TestStatus testStatus() {
+    public TestStatusTable testStatus() {
         if (_testStatus == null)
-            _testStatus = new TestStatus(this, Keys.FK_TEST_CASE_TEST_STATUS);
+            _testStatus = new TestStatusTable(this, Keys.FK_TEST_CASE_TEST_STATUS);
 
         return _testStatus;
     }
 
     @Override
-    public TestCase as(String alias) {
-        return new TestCase(DSL.name(alias), this);
+    public TestCaseTable as(String alias) {
+        return new TestCaseTable(DSL.name(alias), this);
     }
 
     @Override
-    public TestCase as(Name alias) {
-        return new TestCase(alias, this);
-    }
-
-    /**
-     * Rename this table
-     */
-    @Override
-    public TestCase rename(String name) {
-        return new TestCase(DSL.name(name), null);
+    public TestCaseTable as(Name alias) {
+        return new TestCaseTable(alias, this);
     }
 
     /**
      * Rename this table
      */
     @Override
-    public TestCase rename(Name name) {
-        return new TestCase(name, null);
+    public TestCaseTable rename(String name) {
+        return new TestCaseTable(DSL.name(name), null);
+    }
+
+    /**
+     * Rename this table
+     */
+    @Override
+    public TestCaseTable rename(Name name) {
+        return new TestCaseTable(name, null);
     }
 
     // -------------------------------------------------------------------------

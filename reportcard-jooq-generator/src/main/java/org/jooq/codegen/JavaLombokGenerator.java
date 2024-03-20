@@ -1,6 +1,7 @@
 package org.jooq.codegen;
 
 import org.jooq.meta.Definition;
+import org.jooq.meta.TypedElementDefinition;
 
 /**
  * Uses lombok.Generated as a class annotation instead of a javax.annotation.(processing?.)Generated
@@ -26,7 +27,51 @@ public class JavaLombokGenerator extends JavaGenerator {
             out.println("@%s", out.ref(generated));
         }
 
+        if (mode.equals(GeneratorStrategy.Mode.POJO)) {
+            out.println("@lombok.AllArgsConstructor");
+            out.println("@lombok.Data");
+            out.println("@lombok.experimental.SuperBuilder(toBuilder = true)");
+            out.println("@lombok.NoArgsConstructor");
+        }
+
         //if (!scala) //TODO: uncomment when scala variable is protected instead of private
         out.println("@%s({ \"all\", \"unchecked\", \"rawtypes\" })", out.ref("java.lang.SuppressWarnings"));
+
     }
+
+    @Override
+    protected void generatePojoGetter(TypedElementDefinition<?> column, int index, JavaWriter out) {
+        //No-op. Lombok handles boiler plate
+    }
+
+    @Override
+    protected void generatePojoSetter(TypedElementDefinition<?> column, int index, JavaWriter out) {
+        //No-op. Lombok handles boiler plate
+    }
+
+
+    @Override
+    protected void generatePojoCopyConstructor(Definition tableOrUDT, JavaWriter out) {
+        //No-op. Lombok handles boiler plate
+    }
+
+    @Override
+    protected void generatePojoMultiConstructor(Definition tableOrUDT, JavaWriter out) {
+        //No-op. Lombok handles boiler plate
+    }
+
+    @Override
+    protected void generatePojoDefaultConstructor(Definition tableOrUDT, JavaWriter out) {
+        //No-op. Lombok handles boiler plate
+    }
+
+    @Override
+    protected void generatePojoToString(Definition tableOrUDT, JavaWriter out) {
+        //No-op. Lombok handles boiler plate
+    }
+
+
+
+
+
 }

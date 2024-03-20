@@ -5,7 +5,7 @@ package io.github.ericdriggs.reportcard.gen.db.tables;
 
 
 import io.github.ericdriggs.reportcard.gen.db.Keys;
-import io.github.ericdriggs.reportcard.gen.db.Reportcard;
+import io.github.ericdriggs.reportcard.gen.db.ReportcardTable;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.JobRecord;
 
 import java.time.LocalDateTime;
@@ -35,14 +35,14 @@ import org.jooq.impl.TableImpl;
  */
 @Generated
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class Job extends TableImpl<JobRecord> {
+public class JobTable extends TableImpl<JobRecord> {
 
-    private static final long serialVersionUID = 636271840;
+    private static final long serialVersionUID = -1353517794;
 
     /**
      * The reference instance of <code>reportcard.job</code>
      */
-    public static final Job JOB = new Job();
+    public static final JobTable JOB = new JobTable();
 
     /**
      * The class holding records for this type
@@ -77,42 +77,42 @@ public class Job extends TableImpl<JobRecord> {
      */
     public final TableField<JobRecord, LocalDateTime> LAST_RUN = createField(DSL.name("last_run"), SQLDataType.LOCALDATETIME(0).defaultValue(DSL.inline("utc_timestamp()", SQLDataType.LOCALDATETIME)), this, "");
 
-    private Job(Name alias, Table<JobRecord> aliased) {
+    private JobTable(Name alias, Table<JobRecord> aliased) {
         this(alias, aliased, null);
     }
 
-    private Job(Name alias, Table<JobRecord> aliased, Field<?>[] parameters) {
+    private JobTable(Name alias, Table<JobRecord> aliased, Field<?>[] parameters) {
         super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
     }
 
     /**
      * Create an aliased <code>reportcard.job</code> table reference
      */
-    public Job(String alias) {
+    public JobTable(String alias) {
         this(DSL.name(alias), JOB);
     }
 
     /**
      * Create an aliased <code>reportcard.job</code> table reference
      */
-    public Job(Name alias) {
+    public JobTable(Name alias) {
         this(alias, JOB);
     }
 
     /**
      * Create a <code>reportcard.job</code> table reference
      */
-    public Job() {
+    public JobTable() {
         this(DSL.name("job"), null);
     }
 
-    public <O extends Record> Job(Table<O> child, ForeignKey<O, JobRecord> key) {
+    public <O extends Record> JobTable(Table<O> child, ForeignKey<O, JobRecord> key) {
         super(child, key, JOB);
     }
 
     @Override
     public Schema getSchema() {
-        return aliased() ? null : Reportcard.REPORTCARD;
+        return aliased() ? null : ReportcardTable.REPORTCARD;
     }
 
     @Override
@@ -135,42 +135,42 @@ public class Job extends TableImpl<JobRecord> {
         return Arrays.asList(Keys.FK_JOB_BRANCH);
     }
 
-    private transient Branch _branch;
+    private transient BranchTable _branch;
 
     /**
      * Get the implicit join path to the <code>reportcard.branch</code> table.
      */
-    public Branch branch() {
+    public BranchTable branch() {
         if (_branch == null)
-            _branch = new Branch(this, Keys.FK_JOB_BRANCH);
+            _branch = new BranchTable(this, Keys.FK_JOB_BRANCH);
 
         return _branch;
     }
 
     @Override
-    public Job as(String alias) {
-        return new Job(DSL.name(alias), this);
+    public JobTable as(String alias) {
+        return new JobTable(DSL.name(alias), this);
     }
 
     @Override
-    public Job as(Name alias) {
-        return new Job(alias, this);
-    }
-
-    /**
-     * Rename this table
-     */
-    @Override
-    public Job rename(String name) {
-        return new Job(DSL.name(name), null);
+    public JobTable as(Name alias) {
+        return new JobTable(alias, this);
     }
 
     /**
      * Rename this table
      */
     @Override
-    public Job rename(Name name) {
-        return new Job(name, null);
+    public JobTable rename(String name) {
+        return new JobTable(DSL.name(name), null);
+    }
+
+    /**
+     * Rename this table
+     */
+    @Override
+    public JobTable rename(Name name) {
+        return new JobTable(name, null);
     }
 
     // -------------------------------------------------------------------------

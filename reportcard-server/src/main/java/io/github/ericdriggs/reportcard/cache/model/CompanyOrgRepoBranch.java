@@ -1,9 +1,9 @@
 package io.github.ericdriggs.reportcard.cache.model;
 
-import io.github.ericdriggs.reportcard.gen.db.tables.pojos.Branch;
-import io.github.ericdriggs.reportcard.gen.db.tables.pojos.Company;
-import io.github.ericdriggs.reportcard.gen.db.tables.pojos.Org;
-import io.github.ericdriggs.reportcard.gen.db.tables.pojos.Repo;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.BranchPojo;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.CompanyPojo;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.OrgPojo;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.RepoPojo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
@@ -12,8 +12,8 @@ import lombok.Value;
 @Builder
 @AllArgsConstructor
 public class CompanyOrgRepoBranch {
-    Company company;
-    Org org;
-    Repo repo;
-    Branch branch;
+    CompanyPojo company;
+    OrgPojo org;
+    RepoPojo repo;
+    BranchPojo branch;
 }

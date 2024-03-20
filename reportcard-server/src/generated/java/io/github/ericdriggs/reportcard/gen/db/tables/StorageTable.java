@@ -6,7 +6,7 @@ package io.github.ericdriggs.reportcard.gen.db.tables;
 
 import io.github.ericdriggs.reportcard.gen.db.Indexes;
 import io.github.ericdriggs.reportcard.gen.db.Keys;
-import io.github.ericdriggs.reportcard.gen.db.Reportcard;
+import io.github.ericdriggs.reportcard.gen.db.ReportcardTable;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.StorageRecord;
 
 import java.util.Arrays;
@@ -36,14 +36,14 @@ import org.jooq.impl.TableImpl;
  */
 @Generated
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class Storage extends TableImpl<StorageRecord> {
+public class StorageTable extends TableImpl<StorageRecord> {
 
-    private static final long serialVersionUID = 882692506;
+    private static final long serialVersionUID = -1757715484;
 
     /**
      * The reference instance of <code>reportcard.storage</code>
      */
-    public static final Storage STORAGE = new Storage();
+    public static final StorageTable STORAGE = new StorageTable();
 
     /**
      * The class holding records for this type
@@ -83,42 +83,42 @@ public class Storage extends TableImpl<StorageRecord> {
      */
     public final TableField<StorageRecord, Integer> STORAGE_TYPE = createField(DSL.name("storage_type"), SQLDataType.INTEGER, this, "");
 
-    private Storage(Name alias, Table<StorageRecord> aliased) {
+    private StorageTable(Name alias, Table<StorageRecord> aliased) {
         this(alias, aliased, null);
     }
 
-    private Storage(Name alias, Table<StorageRecord> aliased, Field<?>[] parameters) {
+    private StorageTable(Name alias, Table<StorageRecord> aliased, Field<?>[] parameters) {
         super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
     }
 
     /**
      * Create an aliased <code>reportcard.storage</code> table reference
      */
-    public Storage(String alias) {
+    public StorageTable(String alias) {
         this(DSL.name(alias), STORAGE);
     }
 
     /**
      * Create an aliased <code>reportcard.storage</code> table reference
      */
-    public Storage(Name alias) {
+    public StorageTable(Name alias) {
         this(alias, STORAGE);
     }
 
     /**
      * Create a <code>reportcard.storage</code> table reference
      */
-    public Storage() {
+    public StorageTable() {
         this(DSL.name("storage"), null);
     }
 
-    public <O extends Record> Storage(Table<O> child, ForeignKey<O, StorageRecord> key) {
+    public <O extends Record> StorageTable(Table<O> child, ForeignKey<O, StorageRecord> key) {
         super(child, key, STORAGE);
     }
 
     @Override
     public Schema getSchema() {
-        return aliased() ? null : Reportcard.REPORTCARD;
+        return aliased() ? null : ReportcardTable.REPORTCARD;
     }
 
     @Override
@@ -146,15 +146,15 @@ public class Storage extends TableImpl<StorageRecord> {
         return Arrays.asList(Keys.STAGE_FK, Keys.STORAGE_TYPE_FK);
     }
 
-    private transient Stage _stage;
-    private transient StorageType _storageType;
+    private transient StageTable _stage;
+    private transient StorageTypeTable _storageType;
 
     /**
      * Get the implicit join path to the <code>reportcard.stage</code> table.
      */
-    public Stage stage() {
+    public StageTable stage() {
         if (_stage == null)
-            _stage = new Stage(this, Keys.STAGE_FK);
+            _stage = new StageTable(this, Keys.STAGE_FK);
 
         return _stage;
     }
@@ -163,37 +163,37 @@ public class Storage extends TableImpl<StorageRecord> {
      * Get the implicit join path to the <code>reportcard.storage_type</code>
      * table.
      */
-    public StorageType storageType() {
+    public StorageTypeTable storageType() {
         if (_storageType == null)
-            _storageType = new StorageType(this, Keys.STORAGE_TYPE_FK);
+            _storageType = new StorageTypeTable(this, Keys.STORAGE_TYPE_FK);
 
         return _storageType;
     }
 
     @Override
-    public Storage as(String alias) {
-        return new Storage(DSL.name(alias), this);
+    public StorageTable as(String alias) {
+        return new StorageTable(DSL.name(alias), this);
     }
 
     @Override
-    public Storage as(Name alias) {
-        return new Storage(alias, this);
-    }
-
-    /**
-     * Rename this table
-     */
-    @Override
-    public Storage rename(String name) {
-        return new Storage(DSL.name(name), null);
+    public StorageTable as(Name alias) {
+        return new StorageTable(alias, this);
     }
 
     /**
      * Rename this table
      */
     @Override
-    public Storage rename(Name name) {
-        return new Storage(name, null);
+    public StorageTable rename(String name) {
+        return new StorageTable(DSL.name(name), null);
+    }
+
+    /**
+     * Rename this table
+     */
+    @Override
+    public StorageTable rename(Name name) {
+        return new StorageTable(name, null);
     }
 
     // -------------------------------------------------------------------------

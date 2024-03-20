@@ -3,14 +3,14 @@ package io.github.ericdriggs.reportcard.cache.model;
 import io.github.ericdriggs.reportcard.cache.AbstractAsyncCache;
 import io.github.ericdriggs.reportcard.cache.CacheDuration;
 import io.github.ericdriggs.reportcard.cache.SyncAsyncDuration;
-import io.github.ericdriggs.reportcard.gen.db.tables.pojos.Company;
-import io.github.ericdriggs.reportcard.gen.db.tables.pojos.Org;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.CompanyPojo;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.OrgPojo;
 
 import java.time.Duration;
 import java.util.Map;
 import java.util.Set;
 
-public class CompanyOrgsCache extends AbstractAsyncCache<String, Map<Company,Set<Org>>> {
+public class CompanyOrgsCache extends AbstractAsyncCache<String, Map<CompanyPojo,Set<OrgPojo>>> {
 
     public static CompanyOrgsCache INSTANCE = new CompanyOrgsCache("company");
 
@@ -28,7 +28,7 @@ public class CompanyOrgsCache extends AbstractAsyncCache<String, Map<Company,Set
     }
 
     @Override
-    protected Map<Company,Set<Org>> getUpdatedCacheValue() {
+    protected Map<CompanyPojo,Set<OrgPojo>> getUpdatedCacheValue() {
         return StaticBrowseService.getInstance().getCompanyOrgs();
     }
 }

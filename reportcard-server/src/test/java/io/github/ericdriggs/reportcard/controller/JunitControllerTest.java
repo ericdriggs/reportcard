@@ -2,7 +2,7 @@ package io.github.ericdriggs.reportcard.controller;
 
 import io.github.ericdriggs.reportcard.ReportcardApplication;
 import io.github.ericdriggs.reportcard.config.LocalStackConfig;
-import io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestStatus;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestStatusPojo;
 import io.github.ericdriggs.reportcard.model.StageDetails;
 import io.github.ericdriggs.reportcard.model.StagePath;
 import io.github.ericdriggs.reportcard.model.TestResult;
@@ -55,7 +55,7 @@ public class JunitControllerTest {
     @Test
     void postJunitTest() throws IOException {
 
-        List<TestStatus> testStatuses = browseService.getAllTestStatuses();
+        List<TestStatusPojo> testStatuses = browseService.getAllTestStatuses();
         assertNotNull(testStatuses);
         log.info("testStatuses: {}", testStatuses);
 

@@ -1,3 +1,4 @@
+//TODO: move from model to pojo
 package io.github.ericdriggs.reportcard.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -18,13 +19,13 @@ import java.util.concurrent.ConcurrentSkipListMap;
 @Data
 public class StagePath implements Comparable<StagePath> {
 
-    Company company;
-    Org org;
-    Repo repo;
-    Branch branch;
-    Job job;
-    Run run;
-    Stage stage;
+    CompanyPojo company;
+    OrgPojo org;
+    RepoPojo repo;
+    BranchPojo branch;
+    JobPojo job;
+    RunPojo run;
+    StagePojo stage;
 
     @JsonIgnore
     public boolean isEmpty() {

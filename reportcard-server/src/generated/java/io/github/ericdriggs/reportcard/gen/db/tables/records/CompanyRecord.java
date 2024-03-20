@@ -4,7 +4,8 @@
 package io.github.ericdriggs.reportcard.gen.db.tables.records;
 
 
-import io.github.ericdriggs.reportcard.gen.db.tables.Company;
+import io.github.ericdriggs.reportcard.gen.db.tables.CompanyTable;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.CompanyPojo;
 
 import lombok.Generated;
 
@@ -22,7 +23,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CompanyRecord extends UpdatableRecordImpl<CompanyRecord> implements Record2<Integer, String> {
 
-    private static final long serialVersionUID = -251987140;
+    private static final long serialVersionUID = 955215161;
 
     /**
      * Setter for <code>reportcard.company.company_id</code>.
@@ -79,12 +80,12 @@ public class CompanyRecord extends UpdatableRecordImpl<CompanyRecord> implements
 
     @Override
     public Field<Integer> field1() {
-        return Company.COMPANY.COMPANY_ID;
+        return CompanyTable.COMPANY.COMPANY_ID;
     }
 
     @Override
     public Field<String> field2() {
-        return Company.COMPANY.COMPANY_NAME;
+        return CompanyTable.COMPANY.COMPANY_NAME;
     }
 
     @Override
@@ -134,14 +135,14 @@ public class CompanyRecord extends UpdatableRecordImpl<CompanyRecord> implements
      * Create a detached CompanyRecord
      */
     public CompanyRecord() {
-        super(Company.COMPANY);
+        super(CompanyTable.COMPANY);
     }
 
     /**
      * Create a detached, initialised CompanyRecord
      */
     public CompanyRecord(Integer companyId, String companyName) {
-        super(Company.COMPANY);
+        super(CompanyTable.COMPANY);
 
         setCompanyId(companyId);
         setCompanyName(companyName);
@@ -150,8 +151,8 @@ public class CompanyRecord extends UpdatableRecordImpl<CompanyRecord> implements
     /**
      * Create a detached, initialised CompanyRecord
      */
-    public CompanyRecord(io.github.ericdriggs.reportcard.gen.db.tables.pojos.Company value) {
-        super(Company.COMPANY);
+    public CompanyRecord(CompanyPojo value) {
+        super(CompanyTable.COMPANY);
 
         if (value != null) {
             setCompanyId(value.getCompanyId());

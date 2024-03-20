@@ -4,7 +4,8 @@
 package io.github.ericdriggs.reportcard.gen.db.tables.records;
 
 
-import io.github.ericdriggs.reportcard.gen.db.tables.FaultContext;
+import io.github.ericdriggs.reportcard.gen.db.tables.FaultContextTable;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.FaultContextPojo;
 
 import lombok.Generated;
 
@@ -22,7 +23,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class FaultContextRecord extends UpdatableRecordImpl<FaultContextRecord> implements Record2<Byte, String> {
 
-    private static final long serialVersionUID = -302392123;
+    private static final long serialVersionUID = 341997476;
 
     /**
      * Setter for <code>reportcard.fault_context.fault_context_id</code>.
@@ -79,12 +80,12 @@ public class FaultContextRecord extends UpdatableRecordImpl<FaultContextRecord> 
 
     @Override
     public Field<Byte> field1() {
-        return FaultContext.FAULT_CONTEXT.FAULT_CONTEXT_ID;
+        return FaultContextTable.FAULT_CONTEXT.FAULT_CONTEXT_ID;
     }
 
     @Override
     public Field<String> field2() {
-        return FaultContext.FAULT_CONTEXT.FAULT_CONTEXT_NAME;
+        return FaultContextTable.FAULT_CONTEXT.FAULT_CONTEXT_NAME;
     }
 
     @Override
@@ -134,14 +135,14 @@ public class FaultContextRecord extends UpdatableRecordImpl<FaultContextRecord> 
      * Create a detached FaultContextRecord
      */
     public FaultContextRecord() {
-        super(FaultContext.FAULT_CONTEXT);
+        super(FaultContextTable.FAULT_CONTEXT);
     }
 
     /**
      * Create a detached, initialised FaultContextRecord
      */
     public FaultContextRecord(Byte faultContextId, String faultContextName) {
-        super(FaultContext.FAULT_CONTEXT);
+        super(FaultContextTable.FAULT_CONTEXT);
 
         setFaultContextId(faultContextId);
         setFaultContextName(faultContextName);
@@ -150,8 +151,8 @@ public class FaultContextRecord extends UpdatableRecordImpl<FaultContextRecord> 
     /**
      * Create a detached, initialised FaultContextRecord
      */
-    public FaultContextRecord(io.github.ericdriggs.reportcard.gen.db.tables.pojos.FaultContext value) {
-        super(FaultContext.FAULT_CONTEXT);
+    public FaultContextRecord(FaultContextPojo value) {
+        super(FaultContextTable.FAULT_CONTEXT);
 
         if (value != null) {
             setFaultContextId(value.getFaultContextId());

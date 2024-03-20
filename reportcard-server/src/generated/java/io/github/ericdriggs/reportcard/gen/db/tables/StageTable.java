@@ -6,7 +6,7 @@ package io.github.ericdriggs.reportcard.gen.db.tables;
 
 import io.github.ericdriggs.reportcard.gen.db.Indexes;
 import io.github.ericdriggs.reportcard.gen.db.Keys;
-import io.github.ericdriggs.reportcard.gen.db.Reportcard;
+import io.github.ericdriggs.reportcard.gen.db.ReportcardTable;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.StageRecord;
 
 import java.util.Arrays;
@@ -36,14 +36,14 @@ import org.jooq.impl.TableImpl;
  */
 @Generated
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class Stage extends TableImpl<StageRecord> {
+public class StageTable extends TableImpl<StageRecord> {
 
-    private static final long serialVersionUID = -1238497036;
+    private static final long serialVersionUID = 1939314646;
 
     /**
      * The reference instance of <code>reportcard.stage</code>
      */
-    public static final Stage STAGE = new Stage();
+    public static final StageTable STAGE = new StageTable();
 
     /**
      * The class holding records for this type
@@ -68,42 +68,42 @@ public class Stage extends TableImpl<StageRecord> {
      */
     public final TableField<StageRecord, Long> RUN_FK = createField(DSL.name("run_fk"), SQLDataType.BIGINT.nullable(false), this, "");
 
-    private Stage(Name alias, Table<StageRecord> aliased) {
+    private StageTable(Name alias, Table<StageRecord> aliased) {
         this(alias, aliased, null);
     }
 
-    private Stage(Name alias, Table<StageRecord> aliased, Field<?>[] parameters) {
+    private StageTable(Name alias, Table<StageRecord> aliased, Field<?>[] parameters) {
         super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
     }
 
     /**
      * Create an aliased <code>reportcard.stage</code> table reference
      */
-    public Stage(String alias) {
+    public StageTable(String alias) {
         this(DSL.name(alias), STAGE);
     }
 
     /**
      * Create an aliased <code>reportcard.stage</code> table reference
      */
-    public Stage(Name alias) {
+    public StageTable(Name alias) {
         this(alias, STAGE);
     }
 
     /**
      * Create a <code>reportcard.stage</code> table reference
      */
-    public Stage() {
+    public StageTable() {
         this(DSL.name("stage"), null);
     }
 
-    public <O extends Record> Stage(Table<O> child, ForeignKey<O, StageRecord> key) {
+    public <O extends Record> StageTable(Table<O> child, ForeignKey<O, StageRecord> key) {
         super(child, key, STAGE);
     }
 
     @Override
     public Schema getSchema() {
-        return aliased() ? null : Reportcard.REPORTCARD;
+        return aliased() ? null : ReportcardTable.REPORTCARD;
     }
 
     @Override
@@ -131,42 +131,42 @@ public class Stage extends TableImpl<StageRecord> {
         return Arrays.asList(Keys.STAGE_RUN_FK);
     }
 
-    private transient Run _run;
+    private transient RunTable _run;
 
     /**
      * Get the implicit join path to the <code>reportcard.run</code> table.
      */
-    public Run run() {
+    public RunTable run() {
         if (_run == null)
-            _run = new Run(this, Keys.STAGE_RUN_FK);
+            _run = new RunTable(this, Keys.STAGE_RUN_FK);
 
         return _run;
     }
 
     @Override
-    public Stage as(String alias) {
-        return new Stage(DSL.name(alias), this);
+    public StageTable as(String alias) {
+        return new StageTable(DSL.name(alias), this);
     }
 
     @Override
-    public Stage as(Name alias) {
-        return new Stage(alias, this);
-    }
-
-    /**
-     * Rename this table
-     */
-    @Override
-    public Stage rename(String name) {
-        return new Stage(DSL.name(name), null);
+    public StageTable as(Name alias) {
+        return new StageTable(alias, this);
     }
 
     /**
      * Rename this table
      */
     @Override
-    public Stage rename(Name name) {
-        return new Stage(name, null);
+    public StageTable rename(String name) {
+        return new StageTable(DSL.name(name), null);
+    }
+
+    /**
+     * Rename this table
+     */
+    @Override
+    public StageTable rename(Name name) {
+        return new StageTable(name, null);
     }
 
     // -------------------------------------------------------------------------

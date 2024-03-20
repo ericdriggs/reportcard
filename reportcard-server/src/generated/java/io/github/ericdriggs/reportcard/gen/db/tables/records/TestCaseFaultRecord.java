@@ -4,7 +4,8 @@
 package io.github.ericdriggs.reportcard.gen.db.tables.records;
 
 
-import io.github.ericdriggs.reportcard.gen.db.tables.TestCaseFault;
+import io.github.ericdriggs.reportcard.gen.db.tables.TestCaseFaultTable;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCaseFaultPojo;
 
 import lombok.Generated;
 
@@ -22,7 +23,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestCaseFaultRecord extends UpdatableRecordImpl<TestCaseFaultRecord> implements Record6<Long, Long, Byte, String, String, String> {
 
-    private static final long serialVersionUID = 110606172;
+    private static final long serialVersionUID = 968075530;
 
     /**
      * Setter for <code>reportcard.test_case_fault.test_case_fault_id</code>.
@@ -139,32 +140,32 @@ public class TestCaseFaultRecord extends UpdatableRecordImpl<TestCaseFaultRecord
 
     @Override
     public Field<Long> field1() {
-        return TestCaseFault.TEST_CASE_FAULT.TEST_CASE_FAULT_ID;
+        return TestCaseFaultTable.TEST_CASE_FAULT.TEST_CASE_FAULT_ID;
     }
 
     @Override
     public Field<Long> field2() {
-        return TestCaseFault.TEST_CASE_FAULT.TEST_CASE_FK;
+        return TestCaseFaultTable.TEST_CASE_FAULT.TEST_CASE_FK;
     }
 
     @Override
     public Field<Byte> field3() {
-        return TestCaseFault.TEST_CASE_FAULT.FAULT_CONTEXT_FK;
+        return TestCaseFaultTable.TEST_CASE_FAULT.FAULT_CONTEXT_FK;
     }
 
     @Override
     public Field<String> field4() {
-        return TestCaseFault.TEST_CASE_FAULT.TYPE;
+        return TestCaseFaultTable.TEST_CASE_FAULT.TYPE;
     }
 
     @Override
     public Field<String> field5() {
-        return TestCaseFault.TEST_CASE_FAULT.MESSAGE;
+        return TestCaseFaultTable.TEST_CASE_FAULT.MESSAGE;
     }
 
     @Override
     public Field<String> field6() {
-        return TestCaseFault.TEST_CASE_FAULT.VALUE;
+        return TestCaseFaultTable.TEST_CASE_FAULT.VALUE;
     }
 
     @Override
@@ -282,14 +283,14 @@ public class TestCaseFaultRecord extends UpdatableRecordImpl<TestCaseFaultRecord
      * Create a detached TestCaseFaultRecord
      */
     public TestCaseFaultRecord() {
-        super(TestCaseFault.TEST_CASE_FAULT);
+        super(TestCaseFaultTable.TEST_CASE_FAULT);
     }
 
     /**
      * Create a detached, initialised TestCaseFaultRecord
      */
     public TestCaseFaultRecord(Long testCaseFaultId, Long testCaseFk, Byte faultContextFk, String type, String message, String value) {
-        super(TestCaseFault.TEST_CASE_FAULT);
+        super(TestCaseFaultTable.TEST_CASE_FAULT);
 
         setTestCaseFaultId(testCaseFaultId);
         setTestCaseFk(testCaseFk);
@@ -302,8 +303,8 @@ public class TestCaseFaultRecord extends UpdatableRecordImpl<TestCaseFaultRecord
     /**
      * Create a detached, initialised TestCaseFaultRecord
      */
-    public TestCaseFaultRecord(io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCaseFault value) {
-        super(TestCaseFault.TEST_CASE_FAULT);
+    public TestCaseFaultRecord(TestCaseFaultPojo value) {
+        super(TestCaseFaultTable.TEST_CASE_FAULT);
 
         if (value != null) {
             setTestCaseFaultId(value.getTestCaseFaultId());

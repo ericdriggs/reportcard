@@ -11,5 +11,5 @@ import java.util.Set;
 @Builder(toBuilder = true)
 public class BranchStageViewResponse {
     CompanyOrgRepoBranch companyOrgRepoBranch;
-    Map<JobRun, Map<StageTestResult, Set<Storage>>> jobRun_StageTestResult_StoragesMap;
+    Map<JobRun, Map<StageTestResult, Set<StoragePojo>>> jobRun_StageTestResult_StoragesMap;
 }

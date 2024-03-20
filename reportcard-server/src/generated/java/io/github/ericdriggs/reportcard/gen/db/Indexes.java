@@ -4,16 +4,16 @@
 package io.github.ericdriggs.reportcard.gen.db;
 
 
-import io.github.ericdriggs.reportcard.gen.db.tables.Branch;
-import io.github.ericdriggs.reportcard.gen.db.tables.Org;
-import io.github.ericdriggs.reportcard.gen.db.tables.Repo;
-import io.github.ericdriggs.reportcard.gen.db.tables.Run;
-import io.github.ericdriggs.reportcard.gen.db.tables.Stage;
-import io.github.ericdriggs.reportcard.gen.db.tables.Storage;
-import io.github.ericdriggs.reportcard.gen.db.tables.TestCase;
-import io.github.ericdriggs.reportcard.gen.db.tables.TestCaseFault;
-import io.github.ericdriggs.reportcard.gen.db.tables.TestResult;
-import io.github.ericdriggs.reportcard.gen.db.tables.TestSuite;
+import io.github.ericdriggs.reportcard.gen.db.tables.BranchTable;
+import io.github.ericdriggs.reportcard.gen.db.tables.OrgTable;
+import io.github.ericdriggs.reportcard.gen.db.tables.RepoTable;
+import io.github.ericdriggs.reportcard.gen.db.tables.RunTable;
+import io.github.ericdriggs.reportcard.gen.db.tables.StageTable;
+import io.github.ericdriggs.reportcard.gen.db.tables.StorageTable;
+import io.github.ericdriggs.reportcard.gen.db.tables.TestCaseFaultTable;
+import io.github.ericdriggs.reportcard.gen.db.tables.TestCaseTable;
+import io.github.ericdriggs.reportcard.gen.db.tables.TestResultTable;
+import io.github.ericdriggs.reportcard.gen.db.tables.TestSuiteTable;
 
 import lombok.Generated;
 
@@ -34,18 +34,18 @@ public class Indexes {
     // INDEX definitions
     // -------------------------------------------------------------------------
 
-    public static final Index BRANCH_BRANCH_REPO_IDX = Internal.createIndex(DSL.name("branch_repo_idx"), Branch.BRANCH, new OrderField[] { Branch.BRANCH.REPO_FK }, false);
-    public static final Index TEST_CASE_FAULT_FAULT_CONTEXT_FK_IDX = Internal.createIndex(DSL.name("fault_context_fk_idx"), TestCaseFault.TEST_CASE_FAULT, new OrderField[] { TestCaseFault.TEST_CASE_FAULT.FAULT_CONTEXT_FK }, false);
-    public static final Index ORG_FK_COMPANY_ORG_IDX = Internal.createIndex(DSL.name("FK_COMPANY_ORG_idx"), Org.ORG, new OrderField[] { Org.ORG.COMPANY_FK }, false);
-    public static final Index TEST_CASE_FK_TEST_CASE_STATUS_IDX = Internal.createIndex(DSL.name("fk_test_case_status_idx"), TestCase.TEST_CASE, new OrderField[] { TestCase.TEST_CASE.TEST_STATUS_FK }, false);
-    public static final Index TEST_CASE_FK_TEST_CASE_TEST_SUITE_IDX = Internal.createIndex(DSL.name("fk_test_case_test_suite_idx"), TestCase.TEST_CASE, new OrderField[] { TestCase.TEST_CASE.TEST_SUITE_FK }, false);
-    public static final Index REPO_ORG_IDX = Internal.createIndex(DSL.name("org_idx"), Repo.REPO, new OrderField[] { Repo.REPO.ORG_FK }, false);
-    public static final Index RUN_RUN_JOB_FK_IDX = Internal.createIndex(DSL.name("run_job_fk_idx"), Run.RUN, new OrderField[] { Run.RUN.JOB_FK }, false);
-    public static final Index RUN_RUN_JOB_SHA = Internal.createIndex(DSL.name("run_job_sha"), Run.RUN, new OrderField[] { Run.RUN.JOB_FK, Run.RUN.SHA }, false);
-    public static final Index STORAGE_STAGE_FK_IDX = Internal.createIndex(DSL.name("stage_fk_idx"), Storage.STORAGE, new OrderField[] { Storage.STORAGE.STAGE_FK }, false);
-    public static final Index STAGE_STAGE_RUN_FK_IDX = Internal.createIndex(DSL.name("stage_run_fk_idx"), Stage.STAGE, new OrderField[] { Stage.STAGE.RUN_FK }, false);
-    public static final Index STORAGE_STORAGE_TYPE_FK_IDX = Internal.createIndex(DSL.name("storage_type_fk_idx"), Storage.STORAGE, new OrderField[] { Storage.STORAGE.STORAGE_TYPE }, false);
-    public static final Index TEST_CASE_FAULT_TEST_CASE_FK_IDX = Internal.createIndex(DSL.name("test_case_fk_idx"), TestCaseFault.TEST_CASE_FAULT, new OrderField[] { TestCaseFault.TEST_CASE_FAULT.TEST_CASE_FK }, false);
-    public static final Index TEST_SUITE_TEST_RESULT_FK_IDX = Internal.createIndex(DSL.name("test_result_fk_idx"), TestSuite.TEST_SUITE, new OrderField[] { TestSuite.TEST_SUITE.TEST_RESULT_FK }, false);
-    public static final Index TEST_RESULT_TEST_RESULT_STAGE_FK_IDX = Internal.createIndex(DSL.name("test_result_stage_fk_idx"), TestResult.TEST_RESULT, new OrderField[] { TestResult.TEST_RESULT.STAGE_FK }, false);
+    public static final Index BRANCH_BRANCH_REPO_IDX = Internal.createIndex(DSL.name("branch_repo_idx"), BranchTable.BRANCH, new OrderField[] { BranchTable.BRANCH.REPO_FK }, false);
+    public static final Index TEST_CASE_FAULT_FAULT_CONTEXT_FK_IDX = Internal.createIndex(DSL.name("fault_context_fk_idx"), TestCaseFaultTable.TEST_CASE_FAULT, new OrderField[] { TestCaseFaultTable.TEST_CASE_FAULT.FAULT_CONTEXT_FK }, false);
+    public static final Index ORG_FK_COMPANY_ORG_IDX = Internal.createIndex(DSL.name("FK_COMPANY_ORG_idx"), OrgTable.ORG, new OrderField[] { OrgTable.ORG.COMPANY_FK }, false);
+    public static final Index TEST_CASE_FK_TEST_CASE_STATUS_IDX = Internal.createIndex(DSL.name("fk_test_case_status_idx"), TestCaseTable.TEST_CASE, new OrderField[] { TestCaseTable.TEST_CASE.TEST_STATUS_FK }, false);
+    public static final Index TEST_CASE_FK_TEST_CASE_TEST_SUITE_IDX = Internal.createIndex(DSL.name("fk_test_case_test_suite_idx"), TestCaseTable.TEST_CASE, new OrderField[] { TestCaseTable.TEST_CASE.TEST_SUITE_FK }, false);
+    public static final Index REPO_ORG_IDX = Internal.createIndex(DSL.name("org_idx"), RepoTable.REPO, new OrderField[] { RepoTable.REPO.ORG_FK }, false);
+    public static final Index RUN_RUN_JOB_FK_IDX = Internal.createIndex(DSL.name("run_job_fk_idx"), RunTable.RUN, new OrderField[] { RunTable.RUN.JOB_FK }, false);
+    public static final Index RUN_RUN_JOB_SHA = Internal.createIndex(DSL.name("run_job_sha"), RunTable.RUN, new OrderField[] { RunTable.RUN.JOB_FK, RunTable.RUN.SHA }, false);
+    public static final Index STORAGE_STAGE_FK_IDX = Internal.createIndex(DSL.name("stage_fk_idx"), StorageTable.STORAGE, new OrderField[] { StorageTable.STORAGE.STAGE_FK }, false);
+    public static final Index STAGE_STAGE_RUN_FK_IDX = Internal.createIndex(DSL.name("stage_run_fk_idx"), StageTable.STAGE, new OrderField[] { StageTable.STAGE.RUN_FK }, false);
+    public static final Index STORAGE_STORAGE_TYPE_FK_IDX = Internal.createIndex(DSL.name("storage_type_fk_idx"), StorageTable.STORAGE, new OrderField[] { StorageTable.STORAGE.STORAGE_TYPE }, false);
+    public static final Index TEST_CASE_FAULT_TEST_CASE_FK_IDX = Internal.createIndex(DSL.name("test_case_fk_idx"), TestCaseFaultTable.TEST_CASE_FAULT, new OrderField[] { TestCaseFaultTable.TEST_CASE_FAULT.TEST_CASE_FK }, false);
+    public static final Index TEST_SUITE_TEST_RESULT_FK_IDX = Internal.createIndex(DSL.name("test_result_fk_idx"), TestSuiteTable.TEST_SUITE, new OrderField[] { TestSuiteTable.TEST_SUITE.TEST_RESULT_FK }, false);
+    public static final Index TEST_RESULT_TEST_RESULT_STAGE_FK_IDX = Internal.createIndex(DSL.name("test_result_stage_fk_idx"), TestResultTable.TEST_RESULT, new OrderField[] { TestResultTable.TEST_RESULT.STAGE_FK }, false);
 }

@@ -3,9 +3,9 @@ package io.github.ericdriggs.reportcard.controller.html;
 import io.github.ericdriggs.reportcard.cache.model.*;
 import io.github.ericdriggs.reportcard.cache.model.util.TestResultConverterUtil;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.StageTestResult;
-import io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCase;
-import io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCaseFault;
-import io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestSuite;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCasePojo;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCaseFaultPojo;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestSuitePojo;
 import io.github.ericdriggs.reportcard.model.TestResult;
 import io.github.ericdriggs.reportcard.persist.BrowseService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,7 +101,7 @@ public class BrowseUIController {
             @PathVariable Long jobId,
             @PathVariable Long runId,
             @PathVariable String stage) {
-        Map<StageTestResult, Map<TestSuite, Map<TestCase, List<TestCaseFault>>>> stageTestResultMap = browseService.getStageTestResultMap(company, org, repo, branch , jobId, runId, stage);
+        Map<StageTestResult, Map<TestSuitePojo, Map<TestCasePojo, List<TestCaseFaultPojo>>>> stageTestResultMap = browseService.getStageTestResultMap(company, org, repo, branch , jobId, runId, stage);
         TestResult testResult = TestResultConverterUtil.fromStageTestResultMap(stageTestResultMap);
         return new ResponseEntity<>(TestResultHtmlHelper.getTestResult(testResult), HttpStatus.OK);
     }

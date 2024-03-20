@@ -6,7 +6,7 @@ package io.github.ericdriggs.reportcard.gen.db.tables;
 
 import io.github.ericdriggs.reportcard.gen.db.Indexes;
 import io.github.ericdriggs.reportcard.gen.db.Keys;
-import io.github.ericdriggs.reportcard.gen.db.Reportcard;
+import io.github.ericdriggs.reportcard.gen.db.ReportcardTable;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.OrgRecord;
 
 import java.util.Arrays;
@@ -36,14 +36,14 @@ import org.jooq.impl.TableImpl;
  */
 @Generated
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class Org extends TableImpl<OrgRecord> {
+public class OrgTable extends TableImpl<OrgRecord> {
 
-    private static final long serialVersionUID = -1697042096;
+    private static final long serialVersionUID = 784080422;
 
     /**
      * The reference instance of <code>reportcard.org</code>
      */
-    public static final Org ORG = new Org();
+    public static final OrgTable ORG = new OrgTable();
 
     /**
      * The class holding records for this type
@@ -68,42 +68,42 @@ public class Org extends TableImpl<OrgRecord> {
      */
     public final TableField<OrgRecord, Integer> COMPANY_FK = createField(DSL.name("company_fk"), SQLDataType.INTEGER.nullable(false), this, "");
 
-    private Org(Name alias, Table<OrgRecord> aliased) {
+    private OrgTable(Name alias, Table<OrgRecord> aliased) {
         this(alias, aliased, null);
     }
 
-    private Org(Name alias, Table<OrgRecord> aliased, Field<?>[] parameters) {
+    private OrgTable(Name alias, Table<OrgRecord> aliased, Field<?>[] parameters) {
         super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
     }
 
     /**
      * Create an aliased <code>reportcard.org</code> table reference
      */
-    public Org(String alias) {
+    public OrgTable(String alias) {
         this(DSL.name(alias), ORG);
     }
 
     /**
      * Create an aliased <code>reportcard.org</code> table reference
      */
-    public Org(Name alias) {
+    public OrgTable(Name alias) {
         this(alias, ORG);
     }
 
     /**
      * Create a <code>reportcard.org</code> table reference
      */
-    public Org() {
+    public OrgTable() {
         this(DSL.name("org"), null);
     }
 
-    public <O extends Record> Org(Table<O> child, ForeignKey<O, OrgRecord> key) {
+    public <O extends Record> OrgTable(Table<O> child, ForeignKey<O, OrgRecord> key) {
         super(child, key, ORG);
     }
 
     @Override
     public Schema getSchema() {
-        return aliased() ? null : Reportcard.REPORTCARD;
+        return aliased() ? null : ReportcardTable.REPORTCARD;
     }
 
     @Override
@@ -131,42 +131,42 @@ public class Org extends TableImpl<OrgRecord> {
         return Arrays.asList(Keys.FK_COMPANY_ORG);
     }
 
-    private transient Company _company;
+    private transient CompanyTable _company;
 
     /**
      * Get the implicit join path to the <code>reportcard.company</code> table.
      */
-    public Company company() {
+    public CompanyTable company() {
         if (_company == null)
-            _company = new Company(this, Keys.FK_COMPANY_ORG);
+            _company = new CompanyTable(this, Keys.FK_COMPANY_ORG);
 
         return _company;
     }
 
     @Override
-    public Org as(String alias) {
-        return new Org(DSL.name(alias), this);
+    public OrgTable as(String alias) {
+        return new OrgTable(DSL.name(alias), this);
     }
 
     @Override
-    public Org as(Name alias) {
-        return new Org(alias, this);
-    }
-
-    /**
-     * Rename this table
-     */
-    @Override
-    public Org rename(String name) {
-        return new Org(DSL.name(name), null);
+    public OrgTable as(Name alias) {
+        return new OrgTable(alias, this);
     }
 
     /**
      * Rename this table
      */
     @Override
-    public Org rename(Name name) {
-        return new Org(name, null);
+    public OrgTable rename(String name) {
+        return new OrgTable(DSL.name(name), null);
+    }
+
+    /**
+     * Rename this table
+     */
+    @Override
+    public OrgTable rename(Name name) {
+        return new OrgTable(name, null);
     }
 
     // -------------------------------------------------------------------------

@@ -4,7 +4,8 @@
 package io.github.ericdriggs.reportcard.gen.db.tables.daos;
 
 
-import io.github.ericdriggs.reportcard.gen.db.tables.Org;
+import io.github.ericdriggs.reportcard.gen.db.tables.OrgTable;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.OrgPojo;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.OrgRecord;
 
 import java.util.List;
@@ -21,24 +22,24 @@ import org.jooq.impl.DAOImpl;
  */
 @Generated
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class OrgDao extends DAOImpl<OrgRecord, io.github.ericdriggs.reportcard.gen.db.tables.pojos.Org, Integer> {
+public class OrgDao extends DAOImpl<OrgRecord, OrgPojo, Integer> {
 
     /**
      * Create a new OrgDao without any configuration
      */
     public OrgDao() {
-        super(Org.ORG, io.github.ericdriggs.reportcard.gen.db.tables.pojos.Org.class);
+        super(OrgTable.ORG, OrgPojo.class);
     }
 
     /**
      * Create a new OrgDao with an attached configuration
      */
     public OrgDao(Configuration configuration) {
-        super(Org.ORG, io.github.ericdriggs.reportcard.gen.db.tables.pojos.Org.class, configuration);
+        super(OrgTable.ORG, OrgPojo.class, configuration);
     }
 
     @Override
-    public Integer getId(io.github.ericdriggs.reportcard.gen.db.tables.pojos.Org object) {
+    public Integer getId(OrgPojo object) {
         return object.getOrgId();
     }
 
@@ -46,72 +47,72 @@ public class OrgDao extends DAOImpl<OrgRecord, io.github.ericdriggs.reportcard.g
      * Fetch records that have <code>org_id BETWEEN lowerInclusive AND
      * upperInclusive</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Org> fetchRangeOfOrgId(Integer lowerInclusive, Integer upperInclusive) {
-        return fetchRange(Org.ORG.ORG_ID, lowerInclusive, upperInclusive);
+    public List<OrgPojo> fetchRangeOfOrgIdTable(Integer lowerInclusive, Integer upperInclusive) {
+        return fetchRange(OrgTable.ORG.ORG_ID, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>org_id IN (values)</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Org> fetchByOrgId(Integer... values) {
-        return fetch(Org.ORG.ORG_ID, values);
+    public List<OrgPojo> fetchByOrgIdTable(Integer... values) {
+        return fetch(OrgTable.ORG.ORG_ID, values);
     }
 
     /**
      * Fetch a unique record that has <code>org_id = value</code>
      */
-    public io.github.ericdriggs.reportcard.gen.db.tables.pojos.Org fetchOneByOrgId(Integer value) {
-        return fetchOne(Org.ORG.ORG_ID, value);
+    public OrgPojo fetchOneByOrgIdTable(Integer value) {
+        return fetchOne(OrgTable.ORG.ORG_ID, value);
     }
 
     /**
      * Fetch a unique record that has <code>org_id = value</code>
      */
-    public Optional<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Org> fetchOptionalByOrgId(Integer value) {
-        return fetchOptional(Org.ORG.ORG_ID, value);
+    public Optional<OrgPojo> fetchOptionalByOrgIdTable(Integer value) {
+        return fetchOptional(OrgTable.ORG.ORG_ID, value);
     }
 
     /**
      * Fetch records that have <code>org_name BETWEEN lowerInclusive AND
      * upperInclusive</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Org> fetchRangeOfOrgName(String lowerInclusive, String upperInclusive) {
-        return fetchRange(Org.ORG.ORG_NAME, lowerInclusive, upperInclusive);
+    public List<OrgPojo> fetchRangeOfOrgNameTable(String lowerInclusive, String upperInclusive) {
+        return fetchRange(OrgTable.ORG.ORG_NAME, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>org_name IN (values)</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Org> fetchByOrgName(String... values) {
-        return fetch(Org.ORG.ORG_NAME, values);
+    public List<OrgPojo> fetchByOrgNameTable(String... values) {
+        return fetch(OrgTable.ORG.ORG_NAME, values);
     }
 
     /**
      * Fetch a unique record that has <code>org_name = value</code>
      */
-    public io.github.ericdriggs.reportcard.gen.db.tables.pojos.Org fetchOneByOrgName(String value) {
-        return fetchOne(Org.ORG.ORG_NAME, value);
+    public OrgPojo fetchOneByOrgNameTable(String value) {
+        return fetchOne(OrgTable.ORG.ORG_NAME, value);
     }
 
     /**
      * Fetch a unique record that has <code>org_name = value</code>
      */
-    public Optional<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Org> fetchOptionalByOrgName(String value) {
-        return fetchOptional(Org.ORG.ORG_NAME, value);
+    public Optional<OrgPojo> fetchOptionalByOrgNameTable(String value) {
+        return fetchOptional(OrgTable.ORG.ORG_NAME, value);
     }
 
     /**
      * Fetch records that have <code>company_fk BETWEEN lowerInclusive AND
      * upperInclusive</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Org> fetchRangeOfCompanyFk(Integer lowerInclusive, Integer upperInclusive) {
-        return fetchRange(Org.ORG.COMPANY_FK, lowerInclusive, upperInclusive);
+    public List<OrgPojo> fetchRangeOfCompanyFkTable(Integer lowerInclusive, Integer upperInclusive) {
+        return fetchRange(OrgTable.ORG.COMPANY_FK, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>company_fk IN (values)</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Org> fetchByCompanyFk(Integer... values) {
-        return fetch(Org.ORG.COMPANY_FK, values);
+    public List<OrgPojo> fetchByCompanyFkTable(Integer... values) {
+        return fetch(OrgTable.ORG.COMPANY_FK, values);
     }
 }

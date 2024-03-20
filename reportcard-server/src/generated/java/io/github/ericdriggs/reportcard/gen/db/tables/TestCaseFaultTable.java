@@ -6,7 +6,7 @@ package io.github.ericdriggs.reportcard.gen.db.tables;
 
 import io.github.ericdriggs.reportcard.gen.db.Indexes;
 import io.github.ericdriggs.reportcard.gen.db.Keys;
-import io.github.ericdriggs.reportcard.gen.db.Reportcard;
+import io.github.ericdriggs.reportcard.gen.db.ReportcardTable;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.TestCaseFaultRecord;
 
 import java.util.Arrays;
@@ -36,14 +36,14 @@ import org.jooq.impl.TableImpl;
  */
 @Generated
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class TestCaseFault extends TableImpl<TestCaseFaultRecord> {
+public class TestCaseFaultTable extends TableImpl<TestCaseFaultRecord> {
 
-    private static final long serialVersionUID = 1650216654;
+    private static final long serialVersionUID = -759882840;
 
     /**
      * The reference instance of <code>reportcard.test_case_fault</code>
      */
-    public static final TestCaseFault TEST_CASE_FAULT = new TestCaseFault();
+    public static final TestCaseFaultTable TEST_CASE_FAULT = new TestCaseFaultTable();
 
     /**
      * The class holding records for this type
@@ -83,42 +83,42 @@ public class TestCaseFault extends TableImpl<TestCaseFaultRecord> {
      */
     public final TableField<TestCaseFaultRecord, String> VALUE = createField(DSL.name("value"), SQLDataType.CLOB, this, "");
 
-    private TestCaseFault(Name alias, Table<TestCaseFaultRecord> aliased) {
+    private TestCaseFaultTable(Name alias, Table<TestCaseFaultRecord> aliased) {
         this(alias, aliased, null);
     }
 
-    private TestCaseFault(Name alias, Table<TestCaseFaultRecord> aliased, Field<?>[] parameters) {
+    private TestCaseFaultTable(Name alias, Table<TestCaseFaultRecord> aliased, Field<?>[] parameters) {
         super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
     }
 
     /**
      * Create an aliased <code>reportcard.test_case_fault</code> table reference
      */
-    public TestCaseFault(String alias) {
+    public TestCaseFaultTable(String alias) {
         this(DSL.name(alias), TEST_CASE_FAULT);
     }
 
     /**
      * Create an aliased <code>reportcard.test_case_fault</code> table reference
      */
-    public TestCaseFault(Name alias) {
+    public TestCaseFaultTable(Name alias) {
         this(alias, TEST_CASE_FAULT);
     }
 
     /**
      * Create a <code>reportcard.test_case_fault</code> table reference
      */
-    public TestCaseFault() {
+    public TestCaseFaultTable() {
         this(DSL.name("test_case_fault"), null);
     }
 
-    public <O extends Record> TestCaseFault(Table<O> child, ForeignKey<O, TestCaseFaultRecord> key) {
+    public <O extends Record> TestCaseFaultTable(Table<O> child, ForeignKey<O, TestCaseFaultRecord> key) {
         super(child, key, TEST_CASE_FAULT);
     }
 
     @Override
     public Schema getSchema() {
-        return aliased() ? null : Reportcard.REPORTCARD;
+        return aliased() ? null : ReportcardTable.REPORTCARD;
     }
 
     @Override
@@ -141,16 +141,16 @@ public class TestCaseFault extends TableImpl<TestCaseFaultRecord> {
         return Arrays.asList(Keys.FK_TEST_CASE, Keys.FK_FAULT_CONTEXT);
     }
 
-    private transient TestCase _testCase;
-    private transient FaultContext _faultContext;
+    private transient TestCaseTable _testCase;
+    private transient FaultContextTable _faultContext;
 
     /**
      * Get the implicit join path to the <code>reportcard.test_case</code>
      * table.
      */
-    public TestCase testCase() {
+    public TestCaseTable testCase() {
         if (_testCase == null)
-            _testCase = new TestCase(this, Keys.FK_TEST_CASE);
+            _testCase = new TestCaseTable(this, Keys.FK_TEST_CASE);
 
         return _testCase;
     }
@@ -159,37 +159,37 @@ public class TestCaseFault extends TableImpl<TestCaseFaultRecord> {
      * Get the implicit join path to the <code>reportcard.fault_context</code>
      * table.
      */
-    public FaultContext faultContext() {
+    public FaultContextTable faultContext() {
         if (_faultContext == null)
-            _faultContext = new FaultContext(this, Keys.FK_FAULT_CONTEXT);
+            _faultContext = new FaultContextTable(this, Keys.FK_FAULT_CONTEXT);
 
         return _faultContext;
     }
 
     @Override
-    public TestCaseFault as(String alias) {
-        return new TestCaseFault(DSL.name(alias), this);
+    public TestCaseFaultTable as(String alias) {
+        return new TestCaseFaultTable(DSL.name(alias), this);
     }
 
     @Override
-    public TestCaseFault as(Name alias) {
-        return new TestCaseFault(alias, this);
-    }
-
-    /**
-     * Rename this table
-     */
-    @Override
-    public TestCaseFault rename(String name) {
-        return new TestCaseFault(DSL.name(name), null);
+    public TestCaseFaultTable as(Name alias) {
+        return new TestCaseFaultTable(alias, this);
     }
 
     /**
      * Rename this table
      */
     @Override
-    public TestCaseFault rename(Name name) {
-        return new TestCaseFault(name, null);
+    public TestCaseFaultTable rename(String name) {
+        return new TestCaseFaultTable(DSL.name(name), null);
+    }
+
+    /**
+     * Rename this table
+     */
+    @Override
+    public TestCaseFaultTable rename(Name name) {
+        return new TestCaseFaultTable(name, null);
     }
 
     // -------------------------------------------------------------------------

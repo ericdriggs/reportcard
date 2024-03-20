@@ -4,7 +4,8 @@
 package io.github.ericdriggs.reportcard.gen.db.tables.daos;
 
 
-import io.github.ericdriggs.reportcard.gen.db.tables.TestCaseFault;
+import io.github.ericdriggs.reportcard.gen.db.tables.TestCaseFaultTable;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCaseFaultPojo;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.TestCaseFaultRecord;
 
 import java.util.List;
@@ -21,24 +22,24 @@ import org.jooq.impl.DAOImpl;
  */
 @Generated
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class TestCaseFaultDao extends DAOImpl<TestCaseFaultRecord, io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCaseFault, Long> {
+public class TestCaseFaultDao extends DAOImpl<TestCaseFaultRecord, TestCaseFaultPojo, Long> {
 
     /**
      * Create a new TestCaseFaultDao without any configuration
      */
     public TestCaseFaultDao() {
-        super(TestCaseFault.TEST_CASE_FAULT, io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCaseFault.class);
+        super(TestCaseFaultTable.TEST_CASE_FAULT, TestCaseFaultPojo.class);
     }
 
     /**
      * Create a new TestCaseFaultDao with an attached configuration
      */
     public TestCaseFaultDao(Configuration configuration) {
-        super(TestCaseFault.TEST_CASE_FAULT, io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCaseFault.class, configuration);
+        super(TestCaseFaultTable.TEST_CASE_FAULT, TestCaseFaultPojo.class, configuration);
     }
 
     @Override
-    public Long getId(io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCaseFault object) {
+    public Long getId(TestCaseFaultPojo object) {
         return object.getTestCaseFaultId();
     }
 
@@ -46,103 +47,103 @@ public class TestCaseFaultDao extends DAOImpl<TestCaseFaultRecord, io.github.eri
      * Fetch records that have <code>test_case_fault_id BETWEEN lowerInclusive
      * AND upperInclusive</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCaseFault> fetchRangeOfTestCaseFaultId(Long lowerInclusive, Long upperInclusive) {
-        return fetchRange(TestCaseFault.TEST_CASE_FAULT.TEST_CASE_FAULT_ID, lowerInclusive, upperInclusive);
+    public List<TestCaseFaultPojo> fetchRangeOfTestCaseFaultIdTable(Long lowerInclusive, Long upperInclusive) {
+        return fetchRange(TestCaseFaultTable.TEST_CASE_FAULT.TEST_CASE_FAULT_ID, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>test_case_fault_id IN (values)</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCaseFault> fetchByTestCaseFaultId(Long... values) {
-        return fetch(TestCaseFault.TEST_CASE_FAULT.TEST_CASE_FAULT_ID, values);
+    public List<TestCaseFaultPojo> fetchByTestCaseFaultIdTable(Long... values) {
+        return fetch(TestCaseFaultTable.TEST_CASE_FAULT.TEST_CASE_FAULT_ID, values);
     }
 
     /**
      * Fetch a unique record that has <code>test_case_fault_id = value</code>
      */
-    public io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCaseFault fetchOneByTestCaseFaultId(Long value) {
-        return fetchOne(TestCaseFault.TEST_CASE_FAULT.TEST_CASE_FAULT_ID, value);
+    public TestCaseFaultPojo fetchOneByTestCaseFaultIdTable(Long value) {
+        return fetchOne(TestCaseFaultTable.TEST_CASE_FAULT.TEST_CASE_FAULT_ID, value);
     }
 
     /**
      * Fetch a unique record that has <code>test_case_fault_id = value</code>
      */
-    public Optional<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCaseFault> fetchOptionalByTestCaseFaultId(Long value) {
-        return fetchOptional(TestCaseFault.TEST_CASE_FAULT.TEST_CASE_FAULT_ID, value);
+    public Optional<TestCaseFaultPojo> fetchOptionalByTestCaseFaultIdTable(Long value) {
+        return fetchOptional(TestCaseFaultTable.TEST_CASE_FAULT.TEST_CASE_FAULT_ID, value);
     }
 
     /**
      * Fetch records that have <code>test_case_fk BETWEEN lowerInclusive AND
      * upperInclusive</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCaseFault> fetchRangeOfTestCaseFk(Long lowerInclusive, Long upperInclusive) {
-        return fetchRange(TestCaseFault.TEST_CASE_FAULT.TEST_CASE_FK, lowerInclusive, upperInclusive);
+    public List<TestCaseFaultPojo> fetchRangeOfTestCaseFkTable(Long lowerInclusive, Long upperInclusive) {
+        return fetchRange(TestCaseFaultTable.TEST_CASE_FAULT.TEST_CASE_FK, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>test_case_fk IN (values)</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCaseFault> fetchByTestCaseFk(Long... values) {
-        return fetch(TestCaseFault.TEST_CASE_FAULT.TEST_CASE_FK, values);
+    public List<TestCaseFaultPojo> fetchByTestCaseFkTable(Long... values) {
+        return fetch(TestCaseFaultTable.TEST_CASE_FAULT.TEST_CASE_FK, values);
     }
 
     /**
      * Fetch records that have <code>fault_context_fk BETWEEN lowerInclusive AND
      * upperInclusive</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCaseFault> fetchRangeOfFaultContextFk(Byte lowerInclusive, Byte upperInclusive) {
-        return fetchRange(TestCaseFault.TEST_CASE_FAULT.FAULT_CONTEXT_FK, lowerInclusive, upperInclusive);
+    public List<TestCaseFaultPojo> fetchRangeOfFaultContextFkTable(Byte lowerInclusive, Byte upperInclusive) {
+        return fetchRange(TestCaseFaultTable.TEST_CASE_FAULT.FAULT_CONTEXT_FK, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>fault_context_fk IN (values)</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCaseFault> fetchByFaultContextFk(Byte... values) {
-        return fetch(TestCaseFault.TEST_CASE_FAULT.FAULT_CONTEXT_FK, values);
+    public List<TestCaseFaultPojo> fetchByFaultContextFkTable(Byte... values) {
+        return fetch(TestCaseFaultTable.TEST_CASE_FAULT.FAULT_CONTEXT_FK, values);
     }
 
     /**
      * Fetch records that have <code>type BETWEEN lowerInclusive AND
      * upperInclusive</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCaseFault> fetchRangeOfType(String lowerInclusive, String upperInclusive) {
-        return fetchRange(TestCaseFault.TEST_CASE_FAULT.TYPE, lowerInclusive, upperInclusive);
+    public List<TestCaseFaultPojo> fetchRangeOfTypeTable(String lowerInclusive, String upperInclusive) {
+        return fetchRange(TestCaseFaultTable.TEST_CASE_FAULT.TYPE, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>type IN (values)</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCaseFault> fetchByType(String... values) {
-        return fetch(TestCaseFault.TEST_CASE_FAULT.TYPE, values);
+    public List<TestCaseFaultPojo> fetchByTypeTable(String... values) {
+        return fetch(TestCaseFaultTable.TEST_CASE_FAULT.TYPE, values);
     }
 
     /**
      * Fetch records that have <code>message BETWEEN lowerInclusive AND
      * upperInclusive</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCaseFault> fetchRangeOfMessage(String lowerInclusive, String upperInclusive) {
-        return fetchRange(TestCaseFault.TEST_CASE_FAULT.MESSAGE, lowerInclusive, upperInclusive);
+    public List<TestCaseFaultPojo> fetchRangeOfMessageTable(String lowerInclusive, String upperInclusive) {
+        return fetchRange(TestCaseFaultTable.TEST_CASE_FAULT.MESSAGE, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>message IN (values)</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCaseFault> fetchByMessage(String... values) {
-        return fetch(TestCaseFault.TEST_CASE_FAULT.MESSAGE, values);
+    public List<TestCaseFaultPojo> fetchByMessageTable(String... values) {
+        return fetch(TestCaseFaultTable.TEST_CASE_FAULT.MESSAGE, values);
     }
 
     /**
      * Fetch records that have <code>value BETWEEN lowerInclusive AND
      * upperInclusive</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCaseFault> fetchRangeOfValue(String lowerInclusive, String upperInclusive) {
-        return fetchRange(TestCaseFault.TEST_CASE_FAULT.VALUE, lowerInclusive, upperInclusive);
+    public List<TestCaseFaultPojo> fetchRangeOfValueTable(String lowerInclusive, String upperInclusive) {
+        return fetchRange(TestCaseFaultTable.TEST_CASE_FAULT.VALUE, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>value IN (values)</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCaseFault> fetchByValue(String... values) {
-        return fetch(TestCaseFault.TEST_CASE_FAULT.VALUE, values);
+    public List<TestCaseFaultPojo> fetchByValueTable(String... values) {
+        return fetch(TestCaseFaultTable.TEST_CASE_FAULT.VALUE, values);
     }
 }

@@ -5,7 +5,7 @@ package io.github.ericdriggs.reportcard.gen.db.tables;
 
 
 import io.github.ericdriggs.reportcard.gen.db.Keys;
-import io.github.ericdriggs.reportcard.gen.db.Reportcard;
+import io.github.ericdriggs.reportcard.gen.db.ReportcardTable;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.TestStatusRecord;
 
 import lombok.Generated;
@@ -31,14 +31,14 @@ import org.jooq.impl.TableImpl;
  */
 @Generated
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class TestStatus extends TableImpl<TestStatusRecord> {
+public class TestStatusTable extends TableImpl<TestStatusRecord> {
 
-    private static final long serialVersionUID = 844379551;
+    private static final long serialVersionUID = 256842153;
 
     /**
      * The reference instance of <code>reportcard.test_status</code>
      */
-    public static final TestStatus TEST_STATUS = new TestStatus();
+    public static final TestStatusTable TEST_STATUS = new TestStatusTable();
 
     /**
      * The class holding records for this type
@@ -58,42 +58,42 @@ public class TestStatus extends TableImpl<TestStatusRecord> {
      */
     public final TableField<TestStatusRecord, String> TEST_STATUS_NAME = createField(DSL.name("test_status_name"), SQLDataType.VARCHAR(64).nullable(false), this, "");
 
-    private TestStatus(Name alias, Table<TestStatusRecord> aliased) {
+    private TestStatusTable(Name alias, Table<TestStatusRecord> aliased) {
         this(alias, aliased, null);
     }
 
-    private TestStatus(Name alias, Table<TestStatusRecord> aliased, Field<?>[] parameters) {
+    private TestStatusTable(Name alias, Table<TestStatusRecord> aliased, Field<?>[] parameters) {
         super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
     }
 
     /**
      * Create an aliased <code>reportcard.test_status</code> table reference
      */
-    public TestStatus(String alias) {
+    public TestStatusTable(String alias) {
         this(DSL.name(alias), TEST_STATUS);
     }
 
     /**
      * Create an aliased <code>reportcard.test_status</code> table reference
      */
-    public TestStatus(Name alias) {
+    public TestStatusTable(Name alias) {
         this(alias, TEST_STATUS);
     }
 
     /**
      * Create a <code>reportcard.test_status</code> table reference
      */
-    public TestStatus() {
+    public TestStatusTable() {
         this(DSL.name("test_status"), null);
     }
 
-    public <O extends Record> TestStatus(Table<O> child, ForeignKey<O, TestStatusRecord> key) {
+    public <O extends Record> TestStatusTable(Table<O> child, ForeignKey<O, TestStatusRecord> key) {
         super(child, key, TEST_STATUS);
     }
 
     @Override
     public Schema getSchema() {
-        return aliased() ? null : Reportcard.REPORTCARD;
+        return aliased() ? null : ReportcardTable.REPORTCARD;
     }
 
     @Override
@@ -107,29 +107,29 @@ public class TestStatus extends TableImpl<TestStatusRecord> {
     }
 
     @Override
-    public TestStatus as(String alias) {
-        return new TestStatus(DSL.name(alias), this);
+    public TestStatusTable as(String alias) {
+        return new TestStatusTable(DSL.name(alias), this);
     }
 
     @Override
-    public TestStatus as(Name alias) {
-        return new TestStatus(alias, this);
-    }
-
-    /**
-     * Rename this table
-     */
-    @Override
-    public TestStatus rename(String name) {
-        return new TestStatus(DSL.name(name), null);
+    public TestStatusTable as(Name alias) {
+        return new TestStatusTable(alias, this);
     }
 
     /**
      * Rename this table
      */
     @Override
-    public TestStatus rename(Name name) {
-        return new TestStatus(name, null);
+    public TestStatusTable rename(String name) {
+        return new TestStatusTable(DSL.name(name), null);
+    }
+
+    /**
+     * Rename this table
+     */
+    @Override
+    public TestStatusTable rename(Name name) {
+        return new TestStatusTable(name, null);
     }
 
     // -------------------------------------------------------------------------
