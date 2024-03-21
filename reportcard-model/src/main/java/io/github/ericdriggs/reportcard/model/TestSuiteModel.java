@@ -3,42 +3,43 @@ package io.github.ericdriggs.reportcard.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.github.ericdriggs.reportcard.xml.IsEmptyUtil;
 import io.github.ericdriggs.reportcard.xml.ResultCount;
+import lombok.Builder;
 
 import java.util.*;
 
-public class TestSuite extends io.github.ericdriggs.reportcard.pojos.TestSuite {
+public class TestSuiteModel extends io.github.ericdriggs.reportcard.dto.TestSuite {
 
-    private List<TestCase> testCases = new ArrayList<>();
+    private List<TestCaseModel> testCases = new ArrayList<>();
 
-    public List<TestCase> getTestCases() {
+    public List<TestCaseModel> getTestCases() {
         return testCases;
     }
 
-    public TestSuite setTestCases(List<TestCase> testCases) {
+    public TestSuiteModel setTestCases(List<TestCaseModel> testCases) {
         this.testCases = testCases;
         return this;
     }
 
     public ResultCount getResultCount() {
         ResultCount resultCount = ResultCount.builder().build();
-        for (TestCase testCase : testCases) {
+        for (TestCaseModel testCase : testCases) {
             resultCount = ResultCount.add(resultCount, testCase.getResultCount());
         }
         return resultCount;
     }
 
-    public static ResultCount getResultCount(List<TestSuite> testSuites) {
+    public static ResultCount getResultCount(List<TestSuiteModel> testSuites) {
         ResultCount resultCount = ResultCount.builder().build();
-        for (TestSuite testSuite : testSuites) {
+        for (TestSuiteModel testSuite : testSuites) {
             resultCount = ResultCount.add(resultCount, testSuite.getResultCount());
         }
         return resultCount;
     }
 
     @JsonIgnore
-    public List<TestCase> getTestCasesSkipped() {
-        List<TestCase> matched = new ArrayList<>();
-        for (TestCase testCase : testCases) {
+    public List<TestCaseModel> getTestCasesSkipped() {
+        List<TestCaseModel> matched = new ArrayList<>();
+        for (TestCaseModel testCase : testCases) {
             if (testCase.getTestStatus().isSkipped()) {
                 matched.add(testCase);
             }
@@ -47,9 +48,9 @@ public class TestSuite extends io.github.ericdriggs.reportcard.pojos.TestSuite {
     }
 
     @JsonIgnore
-    public List<TestCase> getTestCasesErrorOrFailure() {
-        List<TestCase> matched = new ArrayList<>();
-        for (TestCase testCase : testCases) {
+    public List<TestCaseModel> getTestCasesErrorOrFailure() {
+        List<TestCaseModel> matched = new ArrayList<>();
+        for (TestCaseModel testCase : testCases) {
             if (testCase.getTestStatus().isErrorOrFailure()) {
                 matched.add(testCase);
             }
@@ -59,9 +60,9 @@ public class TestSuite extends io.github.ericdriggs.reportcard.pojos.TestSuite {
 
 
     @JsonIgnore
-    public List<TestCase> getTestCasesWithFaults() {
-        List<TestCase> matched = new ArrayList<>();
-        for (TestCase testCase : testCases) {
+    public List<TestCaseModel> getTestCasesWithFaults() {
+        List<TestCaseModel> matched = new ArrayList<>();
+        for (TestCaseModel testCase : testCases) {
             if (IsEmptyUtil.isCollectionEmpty(testCase.getTestCaseFaults())) {
                 matched.add(testCase);
             }

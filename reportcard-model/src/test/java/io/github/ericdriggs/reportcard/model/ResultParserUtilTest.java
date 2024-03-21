@@ -31,7 +31,7 @@ public class ResultParserUtilTest {
         final String relativePath = "src/test/resources/format-samples/surefire-reports";
         final String absolutePath = FileUtils.absolutePathFromRelativePath(relativePath);
 
-        TestResult testResult = ResultParserUtil.fromSurefirePath(absolutePath);
+        TestResultModel testResult = ResultParserUtil.fromSurefirePath(absolutePath);
         assertEquals(3, testResult.getTestSuites().size());
 
         Assertions.assertEquals(ERROR_COUNT, testResult.getError());
@@ -60,13 +60,13 @@ public class ResultParserUtilTest {
         assertEquals(TIME_TOTAL, resultCount.getTime());
 
         boolean assertedFailureError = false;
-        for (TestSuite testSuite : testResult.getTestSuites()) {
-            for (TestCase testCase : testSuite.getTestCases()) {
+        for (TestSuiteModel testSuite : testResult.getTestSuites()) {
+            for (TestCaseModel testCase : testSuite.getTestCases()) {
                 if ("setTestAndRetrieveValue".equals(testCase.getName())){
                     assertedFailureError = true;
-                    List<TestCaseFault> testCaseFaults = testCase.getTestCaseFaults();
+                    List<TestCaseFaultModel> testCaseFaults = testCase.getTestCaseFaults();
                     assertEquals(1, testCaseFaults.size());
-                    for (TestCaseFault testCaseFault : testCaseFaults) {
+                    for (TestCaseFaultModel testCaseFault : testCaseFaults) {
                         assertEquals(FaultContext.ERROR.getFaultContextId(), testCaseFault.getFaultContextFk());
                         assertEquals("fake error message", testCaseFault.getMessage());
                         assertEquals("FakeError", testCaseFault.getType());

@@ -1,6 +1,9 @@
 package io.github.ericdriggs.reportcard.model;
 
-public class TestCaseFault extends io.github.ericdriggs.reportcard.pojos.TestCaseFault {
+import lombok.Data;
+
+@Data
+public class TestCaseFaultModel extends io.github.ericdriggs.reportcard.dto.TestCaseFault {
 
     private FaultContext faultContext;
 
@@ -11,7 +14,7 @@ public class TestCaseFault extends io.github.ericdriggs.reportcard.pojos.TestCas
         return faultContext;
     }
 
-    public TestCaseFault setFaultContextFk(Byte faultContextFk) {
+    public TestCaseFaultModel setFaultContextFk(Byte faultContextFk) {
         this.faultContext = FaultContext.fromFaultContextId(faultContextFk);
         this.faultContextFk = faultContextFk;
         return this;

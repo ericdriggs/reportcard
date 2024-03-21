@@ -18,8 +18,8 @@ public class TestResultTest {
     private static final int TEST_COUNT = 10;
     private static final BigDecimal TEST_TIME = new BigDecimal(TEST_COUNT - SKIPPED_COUNT);
 
-    public static TestSuite generateTestSuite(ResultCount resultCount) {
-        TestSuite testSuite = new TestSuite();
+    public static TestSuiteModel generateTestSuite(ResultCount resultCount) {
+        TestSuiteModel testSuite = new TestSuiteModel();
         testSuite.setError(resultCount.getErrors());
         testSuite.setFailure(resultCount.getFailures());
         testSuite.setSkipped(resultCount.getSkipped());
@@ -29,24 +29,24 @@ public class TestResultTest {
         testSuite.setHasSkip(resultCount.getSkipped() > 0);
         testSuite.setIsSuccess(resultCount.getFailures() > 0 || resultCount.getErrors() > 0);
 
-        List<TestCase> testCases = new ArrayList<>();
+        List<TestCaseModel> testCases = new ArrayList<>();
         for (int i = 0; i < resultCount.getErrors(); i++) {
-            TestCase testCase = new TestCase();
+            TestCaseModel testCase = new TestCaseModel();
             testCase.setTestStatus(TestStatus.ERROR).setTime(BigDecimal.ONE);
             testCases.add(testCase);
         }
         for (int i = 0; i < resultCount.getFailures(); i++) {
-            TestCase testCase = new TestCase();
+            TestCaseModel testCase = new TestCaseModel();
             testCase.setTestStatus(TestStatus.FAILURE).setTime(BigDecimal.ONE);
             testCases.add(testCase);
         }
         for (int i = 0; i < resultCount.getSkipped(); i++) {
-            TestCase testCase = new TestCase();
+            TestCaseModel testCase = new TestCaseModel();
             testCase.setTestStatus(TestStatus.SKIPPED).setTime(BigDecimal.ZERO);
             testCases.add(testCase);
         }
         for (int i = 0; i < resultCount.getTests() - resultCount.getErrors() - resultCount.getFailures() - resultCount.getSkipped(); i++) {
-            TestCase testCase = new TestCase();
+            TestCaseModel testCase = new TestCaseModel();
             testCase.setTestStatus(TestStatus.SUCCESS).setTime(BigDecimal.ONE);
             testCases.add(testCase);
         }
@@ -58,15 +58,15 @@ public class TestResultTest {
     public void addTest() {
 
         final Integer suiteCopies = 2;
-        List<TestSuite> testSuites = getTestSuites(suiteCopies);
+        List<TestSuiteModel> testSuites = getTestSuites(suiteCopies);
 
 
         final Integer totalCopies = 2*suiteCopies;
 
-        TestResult testResult1 = new TestResult().setTestSuites(testSuites);
-        TestResult testResult2 = new TestResult().setTestSuites(testSuites);
+        TestResultModel testResult1 = new TestResultModel().setTestSuites(testSuites);
+        TestResultModel testResult2 = new TestResultModel().setTestSuites(testSuites);
 
-        TestResult testResult = testResult1.add(testResult2);
+        TestResultModel testResult = testResult1.add(testResult2);
 
         { //assert testResult
             assertEquals(totalCopies * ERROR_COUNT, testResult.getError());
@@ -92,10 +92,10 @@ public class TestResultTest {
     public void getResultCountTest() {
 
         final Integer suiteCopies = 2;
-        List<TestSuite> testSuites = getTestSuites(suiteCopies);
+        List<TestSuiteModel> testSuites = getTestSuites(suiteCopies);
 
 
-        TestResult testResult = new TestResult().setTestSuites(testSuites);
+        TestResultModel testResult = new TestResultModel().setTestSuites(testSuites);
         testResult.updateTotalsFromTestSuites();
         { //assert testResult
             assertEquals(suiteCopies * ERROR_COUNT, testResult.getError());
@@ -117,9 +117,9 @@ public class TestResultTest {
         }
     }
 
-    protected List<TestSuite> getTestSuites(int suiteCopies) {
+    protected List<TestSuiteModel> getTestSuites(int suiteCopies) {
 
-        List<TestSuite> testSuites = new ArrayList<>();
+        List<TestSuiteModel> testSuites = new ArrayList<>();
         {
             ResultCount resultCount = ResultCount
                     .builder()
@@ -131,7 +131,7 @@ public class TestResultTest {
                     .time(TEST_TIME)
                     .build();
 
-            TestSuite testSuite = generateTestSuite(resultCount);
+            TestSuiteModel testSuite = generateTestSuite(resultCount);
 
             for (int i = 0; i < suiteCopies; i++) {
                 testSuites.add(testSuite);

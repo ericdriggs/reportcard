@@ -5,6 +5,7 @@ import io.github.ericdriggs.reportcard.cache.model.CompanyOrgRepoBranch;
 import io.github.ericdriggs.reportcard.cache.model.JobRun;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.*;
 
+import io.github.ericdriggs.reportcard.model.TestResultModel;
 import io.github.ericdriggs.reportcard.util.JsonCompare;
 import org.jooq.DSLContext;
 import org.jooq.Record;
@@ -630,7 +631,7 @@ public class BrowseService extends AbstractPersistService {
                 testSuiteTestCaseMap.get(testSuite).computeIfAbsent(testCase, k -> new ArrayList<>());
             }
             TestCaseFaultPojo testCaseFault = getTestCaseFaultFromRecord(record);
-            if (testCase.getTestCaseId() != null) {
+            if (testCaseFault.getTestCaseFaultId() != null) {
                 testSuiteTestCaseMap.get(testSuite).get(testCase).add(testCaseFault);
             }
         }

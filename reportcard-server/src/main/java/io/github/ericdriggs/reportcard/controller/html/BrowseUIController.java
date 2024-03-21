@@ -6,7 +6,7 @@ import io.github.ericdriggs.reportcard.gen.db.tables.pojos.StageTestResult;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCasePojo;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCaseFaultPojo;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestSuitePojo;
-import io.github.ericdriggs.reportcard.model.TestResult;
+import io.github.ericdriggs.reportcard.model.TestResultModel;
 import io.github.ericdriggs.reportcard.persist.BrowseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -102,7 +102,7 @@ public class BrowseUIController {
             @PathVariable Long runId,
             @PathVariable String stage) {
         Map<StageTestResult, Map<TestSuitePojo, Map<TestCasePojo, List<TestCaseFaultPojo>>>> stageTestResultMap = browseService.getStageTestResultMap(company, org, repo, branch , jobId, runId, stage);
-        TestResult testResult = TestResultConverterUtil.fromStageTestResultMap(stageTestResultMap);
+        TestResultModel testResult = TestResultConverterUtil.fromStageTestResultMap(stageTestResultMap);
         return new ResponseEntity<>(TestResultHtmlHelper.getTestResult(testResult), HttpStatus.OK);
     }
 

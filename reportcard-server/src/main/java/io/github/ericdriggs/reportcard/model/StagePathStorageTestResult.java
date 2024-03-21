@@ -12,7 +12,7 @@ import lombok.Value;
 public class StagePathStorageTestResult {
     StagePath stagePath;
     StoragePojo storage;
-    TestResult testResult;
+    TestResultModel testResult;
 
     public StagePathStorageTestResult(StagePathStorage stagePathStorage, StagePathTestResult stagePathTestResult) {
         if (stagePathStorage == null) {

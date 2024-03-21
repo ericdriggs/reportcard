@@ -141,7 +141,7 @@ public class TestResultPersistServiceTest {
         assertNotNull(stagePath);
         assertEquals(false, stagePath.getRun().getIsSuccess());
 
-        TestResult inserted = stagePathTestResult.getTestResult();
+        TestResultModel inserted = stagePathTestResult.getTestResult();
         assertNotNull(inserted);
         assertNotNull(inserted.getTestResultId());
 

@@ -57,16 +57,28 @@ public class ResultCountTest {
     }
 
     @Test
+    public void passedPercentZeroTests() {
+        final ResultCount resultCount= ResultCount.builder().build();
+        assertEquals(BigDecimal.ZERO, resultCount.getPassedPercent());
+        assertEquals(BigDecimal.ZERO, resultCount.getTime());
+        assertEquals(0, resultCount.getErrors());
+        assertEquals(0, resultCount.getFailures());
+        assertEquals(0, resultCount.getSkipped());
+        assertEquals(0, resultCount.getTests());
+        assertEquals(TestStatus.SUCCESS, resultCount.getTestStatus());
+    }
+
+    @Test
     public void addSuitesTest() {
 
 
-        TestResult testResult = new TestResult();
+        TestResultModel testResult = new TestResultModel();
         {
 
-            List<TestCase> testCases = new ArrayList<>();
+            List<TestCaseModel> testCases = new ArrayList<>();
             testCases.add(getTestCase(TestStatus.FAILURE));
             testCases.add(getTestCase(TestStatus.FAILURE));
-            TestSuite testSuite = new TestSuite().setTestCases(testCases);
+            TestSuiteModel testSuite = new TestSuiteModel().setTestCases(testCases);
             testResult.getTestSuites().add(testSuite);
 
             ResultCount testSuite_resultCount = testSuite.getResultCount();
@@ -74,9 +86,9 @@ public class ResultCountTest {
         }
 
         {
-            List<TestCase> testCases = new ArrayList<>();
+            List<TestCaseModel> testCases = new ArrayList<>();
             testCases.add(getTestCase(TestStatus.FAILURE));
-            TestSuite testSuite = new TestSuite().setTestCases(testCases);
+            TestSuiteModel testSuite = new TestSuiteModel().setTestCases(testCases);
             testResult.getTestSuites().add(testSuite);
 
             ResultCount testSuite_resultCount = testSuite.getResultCount();
@@ -90,10 +102,10 @@ public class ResultCountTest {
 
     private final static Random random = new Random();
 
-    static TestCase getTestCase(TestStatus testStatus) {
+    static TestCaseModel getTestCase(TestStatus testStatus) {
 
         int randomInt = random.nextInt();
-        TestCase testCase = new TestCase();
+        TestCaseModel testCase = new TestCaseModel();
 
         testCase.setTestStatusFk(testStatus.getStatusId());
         testCase.setName("name-"+randomInt);
@@ -106,7 +118,7 @@ public class ResultCountTest {
             } else {
                 throw new IllegalStateException("not yet supported: " + testStatus);
             }
-            TestCaseFault testCaseFault = new TestCaseFault();
+            TestCaseFaultModel testCaseFault = new TestCaseFaultModel();
             testCaseFault
                     .setFaultContextFk(faultContext.getFaultContextId())
                     .setMessage("message-" + randomInt)

@@ -179,18 +179,18 @@ public class TestSuiteDao extends DAOImpl<TestSuiteRecord, TestSuitePojo, Long> 
     }
 
     /**
-     * Fetch records that have <code>package BETWEEN lowerInclusive AND
+     * Fetch records that have <code>package_name BETWEEN lowerInclusive AND
      * upperInclusive</code>
      */
-    public List<TestSuitePojo> fetchRangeOfPackageTable(String lowerInclusive, String upperInclusive) {
-        return fetchRange(TestSuiteTable.TEST_SUITE.PACKAGE, lowerInclusive, upperInclusive);
+    public List<TestSuitePojo> fetchRangeOfPackageNameTable(String lowerInclusive, String upperInclusive) {
+        return fetchRange(TestSuiteTable.TEST_SUITE.PACKAGE_NAME, lowerInclusive, upperInclusive);
     }
 
     /**
-     * Fetch records that have <code>package IN (values)</code>
+     * Fetch records that have <code>package_name IN (values)</code>
      */
-    public List<TestSuitePojo> fetchByPackageTable(String... values) {
-        return fetch(TestSuiteTable.TEST_SUITE.PACKAGE, values);
+    public List<TestSuitePojo> fetchByPackageNameTable(String... values) {
+        return fetch(TestSuiteTable.TEST_SUITE.PACKAGE_NAME, values);
     }
 
     /**

@@ -259,7 +259,7 @@ CREATE TABLE IF NOT EXISTS `reportcard`.`test_suite` (
   `error` INT NOT NULL,
   `failure` INT NOT NULL,
   `time` DECIMAL(9,3) NOT NULL,
-  `package` VARCHAR(1024) NULL DEFAULT NULL,
+  `package_name` VARCHAR(1024) NULL DEFAULT NULL,
   `group` VARCHAR(1024) NULL DEFAULT NULL,
   `properties` JSON NULL DEFAULT NULL,
   `is_success` TINYINT(1) GENERATED ALWAYS AS (((`failure` + `error`) = 0)) VIRTUAL,

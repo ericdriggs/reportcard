@@ -25,7 +25,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestSuiteRecord extends UpdatableRecordImpl<TestSuiteRecord> implements Record13<Long, Long, String, Integer, Integer, Integer, Integer, BigDecimal, String, String, String, Boolean, Boolean> {
 
-    private static final long serialVersionUID = -1116678144;
+    private static final long serialVersionUID = -973533780;
 
     /**
      * Setter for <code>reportcard.test_suite.test_suite_id</code>.
@@ -148,17 +148,17 @@ public class TestSuiteRecord extends UpdatableRecordImpl<TestSuiteRecord> implem
     }
 
     /**
-     * Setter for <code>reportcard.test_suite.package</code>.
+     * Setter for <code>reportcard.test_suite.package_name</code>.
      */
-    public TestSuiteRecord setPackage(String value) {
+    public TestSuiteRecord setPackageName(String value) {
         set(8, value);
         return this;
     }
 
     /**
-     * Getter for <code>reportcard.test_suite.package</code>.
+     * Getter for <code>reportcard.test_suite.package_name</code>.
      */
-    public String getPackage() {
+    public String getPackageName() {
         return (String) get(8);
     }
 
@@ -287,7 +287,7 @@ public class TestSuiteRecord extends UpdatableRecordImpl<TestSuiteRecord> implem
 
     @Override
     public Field<String> field9() {
-        return TestSuiteTable.TEST_SUITE.PACKAGE;
+        return TestSuiteTable.TEST_SUITE.PACKAGE_NAME;
     }
 
     @Override
@@ -352,7 +352,7 @@ public class TestSuiteRecord extends UpdatableRecordImpl<TestSuiteRecord> implem
 
     @Override
     public String component9() {
-        return getPackage();
+        return getPackageName();
     }
 
     @Override
@@ -417,7 +417,7 @@ public class TestSuiteRecord extends UpdatableRecordImpl<TestSuiteRecord> implem
 
     @Override
     public String value9() {
-        return getPackage();
+        return getPackageName();
     }
 
     @Override
@@ -490,7 +490,7 @@ public class TestSuiteRecord extends UpdatableRecordImpl<TestSuiteRecord> implem
 
     @Override
     public TestSuiteRecord value9(String value) {
-        setPackage(value);
+        setPackageName(value);
         return this;
     }
 
@@ -550,7 +550,7 @@ public class TestSuiteRecord extends UpdatableRecordImpl<TestSuiteRecord> implem
     /**
      * Create a detached, initialised TestSuiteRecord
      */
-    public TestSuiteRecord(Long testSuiteId, Long testResultFk, String name, Integer tests, Integer skipped, Integer error, Integer failure, BigDecimal time, String package_, String group, String properties, Boolean isSuccess, Boolean hasSkip) {
+    public TestSuiteRecord(Long testSuiteId, Long testResultFk, String name, Integer tests, Integer skipped, Integer error, Integer failure, BigDecimal time, String packageName, String group, String properties, Boolean isSuccess, Boolean hasSkip) {
         super(TestSuiteTable.TEST_SUITE);
 
         setTestSuiteId(testSuiteId);
@@ -561,7 +561,7 @@ public class TestSuiteRecord extends UpdatableRecordImpl<TestSuiteRecord> implem
         setError(error);
         setFailure(failure);
         setTime(time);
-        setPackage(package_);
+        setPackageName(packageName);
         setGroup(group);
         setProperties(properties);
         setIsSuccess(isSuccess);
@@ -583,7 +583,7 @@ public class TestSuiteRecord extends UpdatableRecordImpl<TestSuiteRecord> implem
             setError(value.getError());
             setFailure(value.getFailure());
             setTime(value.getTime());
-            setPackage(value.getPackage_());
+            setPackageName(value.getPackageName());
             setGroup(value.getGroup());
             setProperties(value.getProperties());
             setIsSuccess(value.getIsSuccess());

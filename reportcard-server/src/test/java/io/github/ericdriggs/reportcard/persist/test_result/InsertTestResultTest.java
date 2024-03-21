@@ -64,25 +64,25 @@ public class InsertTestResultTest extends AbstractTestResultPersistTest {
     @Test
     public void insertTestResultTest() {
 
-        final TestResult testResultBefore = getInsertableTestResult();
+        final TestResultModel testResultBefore = getInsertableTestResult();
         assertValues(testResultBefore);
 
-        final TestResult testResultInsert = testResultPersistService.insertTestResult(testResultBefore);
+        final TestResultModel testResultInsert = testResultPersistService.insertTestResult(testResultBefore);
         assertValues(testResultInsert);
         assertIdsandFks(testResultInsert);
         assertExternalLinks(testResultInsert);
 
         {
-            final Set<TestResult> testResultsGet = testResultPersistService.getTestResults(testResultBefore.getStageFk());
+            final Set<TestResultModel> testResultsGet = testResultPersistService.getTestResults(testResultBefore.getStageFk());
             assertEquals(1, testResultsGet.size());
-            final TestResult testResultGet = testResultsGet.iterator().next();
+            final TestResultModel testResultGet = testResultsGet.iterator().next();
             assertValues(testResultGet);
             assertIdsandFks(testResultGet);
             assertExternalLinks(testResultGet);
         }
 
         {
-            TestResult testResultGet = testResultPersistService.getTestResult(testResultInsert.getTestResultId());
+            TestResultModel testResultGet = testResultPersistService.getTestResult(testResultInsert.getTestResultId());
             assertValues(testResultGet);
             assertIdsandFks(testResultGet);
             assertExternalLinks(testResultGet);
@@ -90,17 +90,17 @@ public class InsertTestResultTest extends AbstractTestResultPersistTest {
     }
 
 
-    private void assertValues(TestResult testResult) {
+    private void assertValues(TestResultModel testResult) {
 
-        List<TestSuite> testSuites = testResult.getTestSuites();
+        List<TestSuiteModel> testSuites = testResult.getTestSuites();
         assertFalse(CollectionUtils.isEmpty(testSuites));
         assertEquals(1, testSuites.size());
-        final TestSuite testSuite = testResult.getTestSuites().get(0);
+        final TestSuiteModel testSuite = testResult.getTestSuites().get(0);
 
-        List<TestCase> testCases = testSuite.getTestCases();
+        List<TestCaseModel> testCases = testSuite.getTestCases();
         assertFalse(CollectionUtils.isEmpty(testCases));
         assertEquals(1, testCases.size());
-        final TestCase testCase = testSuite.getTestCases().get(0);
+        final TestCaseModel testCase = testSuite.getTestCases().get(0);
 
         Assertions.assertEquals(testResultErrorCount, testResult.getError());
         Assertions.assertEquals(testResultFailureCount, testResult.getFailure());
@@ -114,7 +114,7 @@ public class InsertTestResultTest extends AbstractTestResultPersistTest {
         Assertions.assertEquals(testSuiteName, testSuite.getName());
         Assertions.assertEquals(testSuiteTestCount, testSuite.getTests());
         Assertions.assertEquals(testSuiteTime, testSuite.getTime());
-        Assertions.assertEquals(testSuitePackage, testSuite.getPackage());
+        Assertions.assertEquals(testSuitePackage, testSuite.getPackageName());
 
         Assertions.assertEquals(testCaseClassName, testCase.getClassName());
         Assertions.assertEquals(testCaseName, testCase.getName());
@@ -123,10 +123,10 @@ public class InsertTestResultTest extends AbstractTestResultPersistTest {
         Assertions.assertEquals(testCaseTime, testCase.getTime());
     }
 
-    private void assertIdsandFks(TestResult testResult) {
+    private void assertIdsandFks(TestResultModel testResult) {
 
-        final TestSuite testSuite = testResult.getTestSuites().get(0);
-        final TestCase testCase = testSuite.getTestCases().get(0);
+        final TestSuiteModel testSuite = testResult.getTestSuites().get(0);
+        final TestCaseModel testCase = testSuite.getTestCases().get(0);
 
         assertNotNull(testResult.getTestResultId());
         assertNotNull(testSuite.getTestSuiteId());
@@ -138,7 +138,7 @@ public class InsertTestResultTest extends AbstractTestResultPersistTest {
 
     final static ObjectMapper objectMapper = new ObjectMapper();
 
-    private void assertExternalLinks(TestResult testResult) {
+    private void assertExternalLinks(TestResultModel testResult) {
         String jsonString = testResult.getExternalLinks();
         TypeReference<HashMap<String, String>> typeRef = new TypeReference<>() {
         };
@@ -166,7 +166,7 @@ public class InsertTestResultTest extends AbstractTestResultPersistTest {
 
     }
 
-    private TestResult getInsertableTestResult() {
+    private TestResultModel getInsertableTestResult() {
 
         StagePath stagePath;
         {
@@ -175,7 +175,7 @@ public class InsertTestResultTest extends AbstractTestResultPersistTest {
             assertTrue(stagePath.isComplete());
         }
 
-        TestResult testResult = new TestResult();
+        TestResultModel testResult = new TestResultModel();
         testResult.setStageFk(stagePath.getStage().getStageId());
         testResult.setError(testResultErrorCount);
         testResult.setFailure(testResultFailureCount);
@@ -184,22 +184,22 @@ public class InsertTestResultTest extends AbstractTestResultPersistTest {
         testResult.setTime(testResultTime);
         testResult.setExternalLinksMap(externalLinksMap);
 
-        List<TestSuite> testSuites = new ArrayList<>();
+        List<TestSuiteModel> testSuites = new ArrayList<>();
         {//TestSuite
 
-            TestSuite testSuite = new TestSuite();
+            TestSuiteModel testSuite = new TestSuiteModel();
             testSuite.setName(testSuiteName);
             testSuite.setError(testSuiteErrorCount);
             testSuite.setFailure(testSuiteFailureCount);
-            testSuite.setPackage(testSuitePackage);
+            testSuite.setPackageName(testSuitePackage);
             testSuite.setSkipped(testSuiteSkippedCount);
             testSuite.setTests(testSuiteTestCount);
             testSuite.setTime(testSuiteTime);
 
-            List<TestCase> testCases = new ArrayList<>();
+            List<TestCaseModel> testCases = new ArrayList<>();
             {//TestCase
 
-                TestCase testCase = new TestCase();
+                TestCaseModel testCase = new TestCaseModel();
                 testCase.setClassName(testCaseClassName);
                 testCase.setTestStatusFk(testCaseStatus.getStatusId());
                 testCase.setName(testCaseName);

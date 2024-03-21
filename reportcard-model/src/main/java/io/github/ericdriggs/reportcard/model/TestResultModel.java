@@ -5,31 +5,33 @@ import io.github.ericdriggs.reportcard.xml.IsEmptyUtil;
 import io.github.ericdriggs.reportcard.xml.ResultCount;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Builder;
 
 import java.util.*;
 
-public class TestResult extends io.github.ericdriggs.reportcard.pojos.TestResult {
-    private List<TestSuite> testSuites = new ArrayList<>();
+public class TestResultModel extends io.github.ericdriggs.reportcard.dto.TestResult {
 
-    public List<TestSuite> getTestSuites() {
+    private List<TestSuiteModel> testSuites = new ArrayList<>();
+
+    public List<TestSuiteModel> getTestSuites() {
         return testSuites;
     }
 
-    public TestResult setTestSuites( List<TestSuite> testSuites) {
+    public TestResultModel setTestSuites(List<TestSuiteModel> testSuites) {
         this.testSuites = testSuites;
         return this;
     }
 
-    public TestResult() {
+    public TestResultModel() {
     }
 
-    public TestResult (List<TestSuite> from) {
+    public TestResultModel(List<TestSuiteModel> from) {
         this.testSuites = new ArrayList<>(from);
         this.updateTotalsFromTestSuites();
     }
 
-    public TestResult copy() {
-        return new TestResult(this.getTestSuites());
+    public TestResultModel copy() {
+        return new TestResultModel(this.getTestSuites());
     }
 
     public void updateTotalsFromTestSuites() {
@@ -43,7 +45,7 @@ public class TestResult extends io.github.ericdriggs.reportcard.pojos.TestResult
         this.setIsSuccess(resultCount.getErrors() == 0 && resultCount.getFailures() == 0 );
     }
 
-    public TestResult setExternalLinksMap(Map<String,String> externalLinksMap) {
+    public TestResultModel setExternalLinksMap(Map<String,String> externalLinksMap) {
         this.setExternalLinks(getExternalLinksJson(externalLinksMap));
         return this;
     }
@@ -96,14 +98,14 @@ public class TestResult extends io.github.ericdriggs.reportcard.pojos.TestResult
 
     public ResultCount getResultCount() {
         ResultCount resultCount = ResultCount.builder().build();
-        for (TestSuite testSuite : testSuites) {
+        for (TestSuiteModel testSuite : testSuites) {
             ResultCount testSuiteResultCount = testSuite.getResultCount();
             resultCount = ResultCount.add(resultCount, testSuiteResultCount);
         }
         return resultCount;
     }
 
-    public TestResult add( TestResult that) {
+    public TestResultModel add(TestResultModel that) {
         if (that == null ) {
             throw new NullPointerException("that");
         }
@@ -112,16 +114,16 @@ public class TestResult extends io.github.ericdriggs.reportcard.pojos.TestResult
             throw new NullPointerException("that.getTestSuites()");
         }
 
-        List<TestSuite> combined = new ArrayList<>(this.getTestSuites());
+        List<TestSuiteModel> combined = new ArrayList<>(this.getTestSuites());
         combined.addAll(that.getTestSuites());
 
-        return new TestResult(combined);
+        return new TestResultModel(combined);
     }
     @JsonIgnore
-    public Map<TestSuite, List<TestCase>> getTestCasesSkipped() {
-        Map<TestSuite, List<TestCase>> matched = new TreeMap<>(ModelComparators.TEST_SUITE_CASE_INSENSITIVE_ORDER);
-        for(TestSuite testSuite : testSuites) {
-            for (TestCase testCase : testSuite.getTestCases()) {
+    public Map<TestSuiteModel, List<TestCaseModel>> getTestCasesSkipped() {
+        Map<TestSuiteModel, List<TestCaseModel>> matched = new TreeMap<>(ModelComparators.TEST_SUITE_CASE_INSENSITIVE_ORDER);
+        for(TestSuiteModel testSuite : testSuites) {
+            for (TestCaseModel testCase : testSuite.getTestCases()) {
                 if (testCase.getTestStatus().isSkipped()) {
                     matched.computeIfAbsent(testSuite, k -> new ArrayList<>());
                     matched.get(testSuite).add(testCase);
@@ -132,10 +134,10 @@ public class TestResult extends io.github.ericdriggs.reportcard.pojos.TestResult
     }
 
     @JsonIgnore
-    public Map<TestSuite, List<TestCase>> getTestCasesErrorOrFailure() {
-        Map<TestSuite, List<TestCase>> matched = new TreeMap<>(ModelComparators.TEST_SUITE_CASE_INSENSITIVE_ORDER);
-        for(TestSuite testSuite : testSuites) {
-            for (TestCase testCase : testSuite.getTestCases()) {
+    public Map<TestSuiteModel, List<TestCaseModel>> getTestCasesErrorOrFailure() {
+        Map<TestSuiteModel, List<TestCaseModel>> matched = new TreeMap<>(ModelComparators.TEST_SUITE_CASE_INSENSITIVE_ORDER);
+        for(TestSuiteModel testSuite : testSuites) {
+            for (TestCaseModel testCase : testSuite.getTestCases()) {
                 if (testCase.getTestStatus().isErrorOrFailure()) {
                     matched.computeIfAbsent(testSuite, k -> new ArrayList<>());
                     matched.get(testSuite).add(testCase);
@@ -147,10 +149,10 @@ public class TestResult extends io.github.ericdriggs.reportcard.pojos.TestResult
 
 
     @JsonIgnore
-    public Map<TestSuite, List<TestCase>> getTestCasesWithFaults() {
-        Map<TestSuite, List<TestCase>> matched = new TreeMap<>(ModelComparators.TEST_SUITE_CASE_INSENSITIVE_ORDER);
-        for(TestSuite testSuite : testSuites) {
-            for (TestCase testCase : testSuite.getTestCases()) {
+    public Map<TestSuiteModel, List<TestCaseModel>> getTestCasesWithFaults() {
+        Map<TestSuiteModel, List<TestCaseModel>> matched = new TreeMap<>(ModelComparators.TEST_SUITE_CASE_INSENSITIVE_ORDER);
+        for(TestSuiteModel testSuite : testSuites) {
+            for (TestCaseModel testCase : testSuite.getTestCases()) {
                 if (IsEmptyUtil.isCollectionEmpty(testCase.getTestCaseFaults())) {
                     matched.computeIfAbsent(testSuite, k -> new ArrayList<>());
                     matched.get(testSuite).add(testCase);

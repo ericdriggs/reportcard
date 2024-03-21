@@ -7,5 +7,5 @@ import lombok.Value;
 @Builder
 public class StagePathTestResult {
     StagePath stagePath;
-    TestResult testResult;
+    TestResultModel testResult;
 }

@@ -39,7 +39,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestSuiteTable extends TableImpl<TestSuiteRecord> {
 
-    private static final long serialVersionUID = 193194111;
+    private static final long serialVersionUID = -1688188615;
 
     /**
      * The reference instance of <code>reportcard.test_suite</code>
@@ -95,9 +95,9 @@ public class TestSuiteTable extends TableImpl<TestSuiteRecord> {
     public final TableField<TestSuiteRecord, BigDecimal> TIME = createField(DSL.name("time"), SQLDataType.DECIMAL(9, 3).nullable(false), this, "");
 
     /**
-     * The column <code>reportcard.test_suite.package</code>.
+     * The column <code>reportcard.test_suite.package_name</code>.
      */
-    public final TableField<TestSuiteRecord, String> PACKAGE = createField(DSL.name("package"), SQLDataType.VARCHAR(1024), this, "");
+    public final TableField<TestSuiteRecord, String> PACKAGE_NAME = createField(DSL.name("package_name"), SQLDataType.VARCHAR(1024), this, "");
 
     /**
      * The column <code>reportcard.test_suite.group</code>.

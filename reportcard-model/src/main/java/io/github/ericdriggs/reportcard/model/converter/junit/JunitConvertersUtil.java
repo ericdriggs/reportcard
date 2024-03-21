@@ -16,26 +16,26 @@ import java.util.List;
 
 public class JunitConvertersUtil {
 
-    public final static Converter<Testcase, TestCase> fromJunitToModelTestCase = new AbstractConverter<Testcase, TestCase>() {
-        protected TestCase convert(io.github.ericdriggs.reportcard.xml.junit.Testcase source) {
+    public final static Converter<Testcase, TestCaseModel> fromJunitToModelTestCase = new AbstractConverter<Testcase, TestCaseModel>() {
+        protected TestCaseModel convert(io.github.ericdriggs.reportcard.xml.junit.Testcase source) {
             return doFromJunitToModelTestCase(source);
         }
     };
     
-    public final static Converter<Testsuite, TestSuite> fromJunitToModelTestSuite = new AbstractConverter<Testsuite, TestSuite>() {
-        protected TestSuite convert(io.github.ericdriggs.reportcard.xml.junit.Testsuite source) {
+    public final static Converter<Testsuite, TestSuiteModel> fromJunitToModelTestSuite = new AbstractConverter<Testsuite, TestSuiteModel>() {
+        protected TestSuiteModel convert(io.github.ericdriggs.reportcard.xml.junit.Testsuite source) {
             return doFromJunitToModelTestSuite(source);
         }
     };
 
-    public final static Converter<Testsuites, TestResult> fromJunitToModelTestResult = new AbstractConverter<Testsuites, TestResult>() {
-        protected TestResult convert(io.github.ericdriggs.reportcard.xml.junit.Testsuites source) {
+    public final static Converter<Testsuites, TestResultModel> fromJunitToModelTestResult = new AbstractConverter<Testsuites, TestResultModel>() {
+        protected TestResultModel convert(io.github.ericdriggs.reportcard.xml.junit.Testsuites source) {
             return doFromJunitToModelTestResult(source);
         }
     };
 
-    public static TestCase doFromJunitToModelTestCase(Testcase source) {
-        TestCase modelTestCase = new TestCase();
+    public static TestCaseModel doFromJunitToModelTestCase(Testcase source) {
+        TestCaseModel modelTestCase = new TestCaseModel();
         modelTestCase.setName(source.getName());
         modelTestCase.setClassName(source.getClassname());
         modelTestCase.setTime(source.getTime());
@@ -59,15 +59,15 @@ public class JunitConvertersUtil {
         return modelTestCase;
     }
 
-    public static List<TestCaseFault> getTestCaseFaults(Testcase source) {
-        List<TestCaseFault> testCaseFaults = new ArrayList<>();
+    public static List<TestCaseFaultModel> getTestCaseFaults(Testcase source) {
+        List<TestCaseFaultModel> testCaseFaults = new ArrayList<>();
         testCaseFaults.addAll(getTestCaseFaults(List.of(source.getError()), FaultContext.ERROR));
         testCaseFaults.addAll(getTestCaseFaults(List.of(source.getFailure()), FaultContext.FAILURE));
         return testCaseFaults;
     }
 
-    public static List<TestCaseFault> getTestCaseFaults(List<?> faults, FaultContext faultContext) {
-        List<TestCaseFault> testCaseFaults = new ArrayList<>();
+    public static List<TestCaseFaultModel> getTestCaseFaults(List<?> faults, FaultContext faultContext) {
+        List<TestCaseFaultModel> testCaseFaults = new ArrayList<>();
         if (!IsEmptyUtil.isCollectionEmpty(faults)) {
             for (Object o : faults) {
                 if (o instanceof HasValueMessageTypeSurefire hasValueMessageType) {
@@ -78,9 +78,9 @@ public class JunitConvertersUtil {
         return testCaseFaults;
     }
 
-    public static TestCaseFault getTestCaseFault(HasValueMessageTypeSurefire fault, FaultContext faultContext) {
+    public static TestCaseFaultModel getTestCaseFault(HasValueMessageTypeSurefire fault, FaultContext faultContext) {
 
-        TestCaseFault testCaseFault = new TestCaseFault();
+        TestCaseFaultModel testCaseFault = new TestCaseFaultModel();
         testCaseFault.setFaultContextFk(faultContext.getFaultContextId())
                      .setMessage(fault.getMessage())
                      .setType(fault.getType())
@@ -88,8 +88,8 @@ public class JunitConvertersUtil {
         return testCaseFault;
     }
 
-    public static List<TestCase> doFromJunitToModelTestCases(List<io.github.ericdriggs.reportcard.xml.junit.Testcase> source) {
-        List<TestCase> testCases = new ArrayList<>();
+    public static List<TestCaseModel> doFromJunitToModelTestCases(List<io.github.ericdriggs.reportcard.xml.junit.Testcase> source) {
+        List<TestCaseModel> testCases = new ArrayList<>();
         for (io.github.ericdriggs.reportcard.xml.junit.Testcase testcase : source) {
             testCases.add(doFromJunitToModelTestCase(testcase));
         }
@@ -97,16 +97,16 @@ public class JunitConvertersUtil {
     }
 
 
-    public static List<TestSuite> doFromJunitToModelTestSuites(Testsuites source) {
-        List<TestSuite> testSuites = new ArrayList<>();
+    public static List<TestSuiteModel> doFromJunitToModelTestSuites(Testsuites source) {
+        List<TestSuiteModel> testSuites = new ArrayList<>();
         for (Testsuite testsuite : source.getTestsuite()) {
             testSuites.add(doFromJunitToModelTestSuite(testsuite));
         }
         return testSuites;
     }
 
-    public static TestSuite doFromJunitToModelTestSuite(Testsuite source) {
-        TestSuite modelTestSuite = new TestSuite();
+    public static TestSuiteModel doFromJunitToModelTestSuite(Testsuite source) {
+        TestSuiteModel modelTestSuite = new TestSuiteModel();
         modelTestSuite.setSystemErr(source.getSystemErr());
         modelTestSuite.setSystemOut(source.getSystemOut());
         modelTestSuite.setError(source.getErrors());
@@ -130,7 +130,7 @@ public class JunitConvertersUtil {
         if (modelTestSuite.getSkipped() == null) {
             modelTestSuite.setSkipped(0);
         }
-        modelTestSuite.setPackage(source.get_package());
+        modelTestSuite.setPackageName(source.get_package());
         modelTestSuite.setProperties(null);
         modelTestSuite.setTestCases(doFromJunitToModelTestCases(source.getTestcase()));
         modelTestSuite.setTime(source.getTime());
@@ -141,8 +141,8 @@ public class JunitConvertersUtil {
         return modelTestSuite;
     }
 
-    public static TestResult doFromJunitToModelTestResult(Testsuites sources) {
-        TestResult modelTestResult = new TestResult();
+    public static TestResultModel doFromJunitToModelTestResult(Testsuites sources) {
+        TestResultModel modelTestResult = new TestResultModel();
         modelTestResult.setTestSuites(doFromJunitToModelTestSuites(sources));
         modelTestResult.setTests(0);
         modelTestResult.setSkipped(0);
@@ -150,7 +150,7 @@ public class JunitConvertersUtil {
         modelTestResult.setError(0);
         modelTestResult.setTime(BigDecimal.ZERO);
 
-        for (TestSuite testSuite : modelTestResult.getTestSuites()) {
+        for (TestSuiteModel testSuite : modelTestResult.getTestSuites()) {
             modelTestResult.setTime(modelTestResult.getTime().add(testSuite.getTime()));
             modelTestResult.setTests(modelTestResult.getTests() + testSuite.getTests());
             modelTestResult.setSkipped(modelTestResult.getSkipped() + testSuite.getSkipped());

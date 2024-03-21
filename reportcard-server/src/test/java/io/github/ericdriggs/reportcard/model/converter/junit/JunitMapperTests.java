@@ -1,14 +1,14 @@
 package io.github.ericdriggs.reportcard.model.converter.junit;
 
 
-import io.github.ericdriggs.reportcard.model.TestCase;
+import io.github.ericdriggs.reportcard.model.TestCaseModel;
 import io.github.ericdriggs.reportcard.model.TestStatus;
 import io.github.ericdriggs.reportcard.xml.ResourceReader;
 import io.github.ericdriggs.reportcard.xml.junit.JunitParserUtil;
 import io.github.ericdriggs.reportcard.xml.junit.Testsuite;
 import io.github.ericdriggs.reportcard.xml.junit.Testsuites;
-import io.github.ericdriggs.reportcard.model.TestResult;
-import io.github.ericdriggs.reportcard.model.TestSuite;
+import io.github.ericdriggs.reportcard.model.TestResultModel;
+import io.github.ericdriggs.reportcard.model.TestSuiteModel;
 import io.github.ericdriggs.reportcard.xml.junit.Testcase;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
@@ -31,7 +31,7 @@ public class JunitMapperTests {
         assertNull(junitTestCase.getError());
         assertNull(junitTestCase.getSkipped());
 
-        TestCase modelTestCase = modelMapper.map(junitTestCase, TestCase.class);
+        TestCaseModel modelTestCase = modelMapper.map(junitTestCase, TestCaseModel.class);
         assertEquals(junitTestCase.getClassname(), modelTestCase.getClassName());
         assertEquals(junitTestCase.getName(), modelTestCase.getName());
         assertEquals(junitTestCase.getTime(), modelTestCase.getTime());
@@ -68,17 +68,17 @@ public class JunitMapperTests {
             }
         }
 //
-        TestSuite modelTestSuite = modelMapper.map(suite, TestSuite.class);
+        TestSuiteModel modelTestSuite = modelMapper.map(suite, TestSuiteModel.class);
         {
             assertEquals(1, modelTestSuite.getError());
             assertEquals(1, modelTestSuite.getFailure());
             assertEquals(1, modelTestSuite.getSkipped());
-            assertEquals("com.foo.bar", modelTestSuite.getPackage());
+            assertEquals("com.foo.bar", modelTestSuite.getPackageName());
 
             assertEquals(4, modelTestSuite.getTests());
             assertEquals(new BigDecimal("4.92"), modelTestSuite.getTime());
             {
-                List<TestCase> testcases = modelTestSuite.getTestCases();
+                List<TestCaseModel> testcases = modelTestSuite.getTestCases();
                 assertEquals(TestStatus.SUCCESS, testcases.get(0).getTestStatus());
                 //TODO: assert testcases;
             }
@@ -97,7 +97,7 @@ public class JunitMapperTests {
         Testsuites suites = new Testsuites();
         suites.setTestsuite(testsuites);
 
-        TestResult modelTestResult = modelMapper.map(suites, TestResult.class);
+        TestResultModel modelTestResult = modelMapper.map(suites, TestResultModel.class);
 
         assertEquals(8, modelTestResult.getTests());
         assertEquals(2, modelTestResult.getError());
@@ -111,12 +111,12 @@ public class JunitMapperTests {
         Testsuites suites = JunitParserUtil.parseTestSuites(xmlString);
 
 
-        TestResult modelTestResult = modelMapper.map(suites, TestResult.class);
+        TestResultModel modelTestResult = modelMapper.map(suites, TestResultModel.class);
 
         assertEquals(1, modelTestResult.getTestSuites().size());
         assertEquals(2, modelTestResult.getTests());
 
-        TestSuite testSuite = modelTestResult.getTestSuites().get(0);
+        TestSuiteModel testSuite = modelTestResult.getTestSuites().get(0);
 
         assertNotNull(testSuite.getName());
         assertFalse(testSuite.getName().trim().isEmpty());
@@ -125,7 +125,7 @@ public class JunitMapperTests {
         assertTrue(testSuite.getSystemErr().contains(testSuite.getName()));
         assertTrue(testSuite.getSystemErr().contains("system-err"));
 
-        for (TestCase testcase : testSuite.getTestCases()) {
+        for (TestCaseModel testcase : testSuite.getTestCases()) {
             assertNotNull(testcase.getName());
             assertFalse(testcase.getName().trim().isEmpty());
             assertTrue(testcase.getSystemOut().contains(testcase.getName()));

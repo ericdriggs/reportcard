@@ -9,5 +9,5 @@ import lombok.Value;
 @Builder
 public class StageTestResult {
     StagePojo stage;
-    TestResult testResult;
+    TestResultModel testResult;
 }

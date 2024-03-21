@@ -79,8 +79,15 @@ public class ResultCount implements Comparable<ResultCount> {
      */
     public BigDecimal getPassedPercent() {
 
+        if (tests == 0) {
+            return BigDecimal.ZERO;
+        }
+
         final Integer passedCount = getSuccesses();
+
+        @SuppressWarnings("WrapperTypeMayBePrimitive")
         final Integer failureErrorsTotal = getFailures() + getErrors();
+
         return BigDecimal.valueOf(
                 (100 * passedCount.doubleValue()) /
                 (passedCount.doubleValue() + failureErrorsTotal.doubleValue())

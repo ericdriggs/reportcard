@@ -1,9 +1,9 @@
 package io.github.ericdriggs.reportcard.persist;
 
 import io.github.ericdriggs.reportcard.gen.db.tables.records.*;
-import io.github.ericdriggs.reportcard.model.TestCase;
-import io.github.ericdriggs.reportcard.model.TestResult;
-import io.github.ericdriggs.reportcard.model.TestSuite;
+import io.github.ericdriggs.reportcard.model.TestCaseModel;
+import io.github.ericdriggs.reportcard.model.TestResultModel;
+import io.github.ericdriggs.reportcard.model.TestSuiteModel;
 import io.github.ericdriggs.reportcard.model.*;
 import io.github.ericdriggs.reportcard.model.converter.junit.JunitConvertersUtil;
 import io.github.ericdriggs.reportcard.model.StagePathTestResult;
@@ -60,7 +60,7 @@ public class TestResultPersistService extends StagePathPersistService {
     }
 
     public StagePathTestResult doPostXmlString(StageDetails stageDetails, String xmlString) {
-        TestResult testResult = fromXmlString(xmlString);
+        TestResultModel testResult = fromXmlString(xmlString);
         testResult.setExternalLinks(stageDetails.getExternalLinksJson());
         return insertTestResult(stageDetails, testResult);
     }
@@ -68,20 +68,20 @@ public class TestResultPersistService extends StagePathPersistService {
     public StagePathTestResult doPostXmlString(Long runId, String stageName, String xmlString) {
         StagePath stagePath = getOrInsertStage(runId, stageName);
 
-        Map<StagePath, TestResult> stagePathTestResultMap = null;
-        TestResult testResult = fromXmlString(xmlString);
+        Map<StagePath, TestResultModel> stagePathTestResultMap = null;
+        TestResultModel testResult = fromXmlString(xmlString);
         return insertTestResult(stagePath, testResult);
     }
 
     public StagePathTestResult doPostXmlString(Long runId, String stageName, Path xmlPath) {
         StagePath stagePath = getOrInsertStage(runId, stageName);
 
-        Map<StagePath, TestResult> stagePathTestResultMap = null;
-        TestResult testResult = fromXmlPath(xmlPath);
+        Map<StagePath, TestResultModel> stagePathTestResultMap = null;
+        TestResultModel testResult = fromXmlPath(xmlPath);
         return insertTestResult(stagePath, testResult);
     }
 
-    public TestResult fromXmlString(String xmlString) {
+    public TestResultModel fromXmlString(String xmlString) {
 
         if (StringUtils.isEmpty(xmlString)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing file");
@@ -98,29 +98,29 @@ public class TestResultPersistService extends StagePathPersistService {
     }
 
     @SneakyThrows(IOException.class)
-    public TestResult fromXmlPath(Path xmlPath)  {
+    public TestResultModel fromXmlPath(Path xmlPath)  {
 
         return fromXmlString(Files.readString(xmlPath));
     }
 
-    public TestResult fromTestSuites(String xmlString) {
+    public TestResultModel fromTestSuites(String xmlString) {
         Testsuites testsuites = JunitParserUtil.parseTestSuites(xmlString);
-        return JunitConvertersUtil.modelMapper.map(testsuites, TestResult.class);
+        return JunitConvertersUtil.modelMapper.map(testsuites, TestResultModel.class);
     }
 
-    public TestResult fromTestSuiteList(String xmlString) {
+    public TestResultModel fromTestSuiteList(String xmlString) {
         Testsuites testsuites = JunitParserUtil.parseTestSuite(xmlString);
         return JunitConvertersUtil.doFromJunitToModelTestResult(testsuites);
     }
 
-    public StagePathTestResult insertTestResult(StageDetails reportMetatData, TestResult testResult) {
+    public StagePathTestResult insertTestResult(StageDetails reportMetatData, TestResultModel testResult) {
         StagePath stagePath = getUpsertedStagePath(reportMetatData);
         return insertTestResult(stagePath, testResult);
     }
 
-    public StagePathTestResult insertTestResult(StagePath stagePath, TestResult testResult) {
+    public StagePathTestResult insertTestResult(StagePath stagePath, TestResultModel testResult) {
         testResult.setStageFk(stagePath.getStage().getStageId());
-        TestResult inserted = insertTestResult(testResult);
+        TestResultModel inserted = insertTestResult(testResult);
 
         LocalDateTime lastRun = updateLastRunToNow(stagePath);
         stagePath.updateLastRun(lastRun);
@@ -137,65 +137,65 @@ public class TestResultPersistService extends StagePathPersistService {
     }
 
 
-    public TestResult getTestResult(Long testResultId) {
+    public TestResultModel getTestResult(Long testResultId) {
 
-        TestResult testResult = dsl.
+        TestResultModel testResult = dsl.
                 select(TEST_RESULT.fields())
                 .from(TEST_RESULT)
                 .where(TEST_RESULT.TEST_RESULT_ID.eq(testResultId))
-                .fetchOne().into(TestResult.class);
+                .fetchOne().into(TestResultModel.class);
 
-        List<TestSuite> testSuites = dsl.
+        List<TestSuiteModel> testSuites = dsl.
                 select(TEST_SUITE.fields())
                 .from(TEST_RESULT
                         .join(TEST_SUITE).on(TEST_SUITE.TEST_RESULT_FK.eq(TEST_RESULT.TEST_RESULT_ID))
                 ).where(TEST_RESULT.TEST_RESULT_ID.eq(testResult.getTestResultId()))
-                .fetchInto(TestSuite.class);
+                .fetchInto(TestSuiteModel.class);
 
         testResult.setTestSuites(testSuites);
 
-        for (TestSuite testSuite : testResult.getTestSuites()) {
-            List<TestCase> testCases = dsl.
+        for (TestSuiteModel testSuite : testResult.getTestSuites()) {
+            List<TestCaseModel> testCases = dsl.
                     select(TEST_CASE.fields())
                     .from(TEST_CASE
                             .join(TEST_SUITE).on(TEST_CASE.TEST_SUITE_FK.eq(TEST_SUITE.TEST_SUITE_ID))
                     ).where(TEST_SUITE.TEST_SUITE_ID.eq(testSuite.getTestSuiteId()))
-                    .fetchInto(TestCase.class);
+                    .fetchInto(TestCaseModel.class);
 
             testSuite.setTestCases(testCases);
         }
         return testResult;
     }
 
-    public Set<TestResult> getTestResults(Long stageId) {
+    public Set<TestResultModel> getTestResults(Long stageId) {
 
-        Set<TestResult> testResults = new TreeSet<>(ModelComparators.TEST_RESULT_MODEL_CASE_INSENSITIVE_ORDER);
+        Set<TestResultModel> testResults = new TreeSet<>(ModelComparators.TEST_RESULT_MODEL_CASE_INSENSITIVE_ORDER);
         testResults.addAll(
                 dsl.
                         select(TEST_RESULT.fields())
                         .from(STAGE
                                 .join(TEST_RESULT).on(TEST_RESULT.STAGE_FK.eq(STAGE.STAGE_ID))
                         ).where(STAGE.STAGE_ID.eq(stageId))
-                        .fetchInto(TestResult.class));
+                        .fetchInto(TestResultModel.class));
 
-        for (TestResult testResult : testResults) {
+        for (TestResultModel testResult : testResults) {
 
-            List<TestSuite> testSuites = dsl.
+            List<TestSuiteModel> testSuites = dsl.
                     select(TEST_SUITE.fields())
                     .from(TEST_RESULT
                             .join(TEST_SUITE).on(TEST_SUITE.TEST_RESULT_FK.eq(TEST_RESULT.TEST_RESULT_ID))
                     ).where(TEST_RESULT.TEST_RESULT_ID.eq(testResult.getTestResultId()))
-                    .fetchInto(TestSuite.class);
+                    .fetchInto(TestSuiteModel.class);
 
             testResult.setTestSuites(testSuites);
 
-            for (TestSuite testSuite : testResult.getTestSuites()) {
-                List<TestCase> testCases = dsl.
+            for (TestSuiteModel testSuite : testResult.getTestSuites()) {
+                List<TestCaseModel> testCases = dsl.
                         select(TEST_CASE.fields())
                         .from(TEST_CASE
                                 .join(TEST_SUITE).on(TEST_CASE.TEST_SUITE_FK.eq(TEST_SUITE.TEST_SUITE_ID))
                         ).where(TEST_SUITE.TEST_SUITE_ID.eq(testSuite.getTestSuiteId()))
-                        .fetchInto(TestCase.class);
+                        .fetchInto(TestCaseModel.class);
 
                 testSuite.setTestCases(testCases);
             }
@@ -204,14 +204,14 @@ public class TestResultPersistService extends StagePathPersistService {
         return testResults;
     }
 
-    public TestResult insertTestResult(TestResult testResult) {
+    public TestResultModel insertTestResult(TestResultModel testResult) {
 
         if (testResult.getStageFk() == null) {
             throw new NullPointerException("testResult.getStageFk()");
         }
 
         if (testResult.getTestResultId() == null) {
-            List<TestSuite> testSuites = testResult.getTestSuites();
+            List<TestSuiteModel> testSuites = testResult.getTestSuites();
             TestResultRecord testResultRecord = dsl.newRecord(TEST_RESULT);
             testResultRecord.setStageFk(testResult.getStageFk())
                     .setError(testResult.getError())
@@ -222,13 +222,13 @@ public class TestResultPersistService extends StagePathPersistService {
                     .setExternalLinks(testResult.getExternalLinks())
                     .store();
 
-            testResult = testResultRecord.into(TestResult.class);
+            testResult = testResultRecord.into(TestResultModel.class);
 
             //need select for generated values
             testResult = dsl.select().from(TEST_RESULT)
                     .where(TEST_RESULT.TEST_RESULT_ID.eq(testResult.getTestResultId()))
                     .fetchOne()
-                    .into(TestResultRecord.class).into(TestResult.class);
+                    .into(TestResultRecord.class).into(TestResultModel.class);
             testResult.setTestSuites(testSuites);
         }
 
@@ -236,10 +236,10 @@ public class TestResultPersistService extends StagePathPersistService {
             log.warn("testSuites.isEmpty()");
         }
 
-        List<TestSuite> testSuites = new ArrayList<>();
-        for (TestSuite testSuite : testResult.getTestSuites()) {
+        List<TestSuiteModel> testSuites = new ArrayList<>();
+        for (TestSuiteModel testSuite : testResult.getTestSuites()) {
             if (testSuite.getTestSuiteId() == null) {
-                List<TestCase> testCases = testSuite.getTestCases();
+                List<TestCaseModel> testCases = testSuite.getTestCases();
                 TestSuiteRecord testSuiteRecord = dsl.newRecord(TEST_SUITE);
                 testSuiteRecord.setTestResultFk(testResult.getTestResultId())
                         .setName(testSuite.getName())
@@ -248,7 +248,7 @@ public class TestResultPersistService extends StagePathPersistService {
                         .setSkipped(testSuite.getSkipped())
                         .setTests(testSuite.getTests())
                         .setTime(testSuite.getTime())
-                        .setPackage(testSuite.getPackage())
+                        .setPackageName(testSuite.getPackageName())
 
                         .store();
 
@@ -256,7 +256,7 @@ public class TestResultPersistService extends StagePathPersistService {
                 testSuite = dsl.select().from(TEST_SUITE)
                         .where(TEST_SUITE.TEST_SUITE_ID.eq(testSuiteRecord.getTestSuiteId()))
                         .fetchOne()
-                        .into(TestSuiteRecord.class).into(TestSuite.class);
+                        .into(TestSuiteRecord.class).into(TestSuiteModel.class);
 
                 testSuite.setTestCases(testCases);
                 testSuites.add(testSuite);
@@ -266,8 +266,8 @@ public class TestResultPersistService extends StagePathPersistService {
                 log.warn("testCases.isEmpty()");
             }
 
-            final List<TestCase> testCases = new ArrayList<>();
-            for (TestCase testCase : testSuite.getTestCases()) {
+            final List<TestCaseModel> testCases = new ArrayList<>();
+            for (TestCaseModel testCase : testSuite.getTestCases()) {
                 if (testCase.getTestCaseId() == null) {
                     TestCaseRecord testCaseRecord = dsl.newRecord(TEST_CASE);
                     testCaseRecord.setTestSuiteFk(testSuite.getTestSuiteId())
@@ -278,7 +278,7 @@ public class TestResultPersistService extends StagePathPersistService {
                             .setTestCaseId(testCase.getTestCaseId())
                             .store();
 
-                    testCase = testCaseRecord.into(TestCase.class);
+                    testCase = testCaseRecord.into(TestCaseModel.class);
                     testCases.add(testCase);
                 }
             }

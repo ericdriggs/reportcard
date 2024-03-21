@@ -1,9 +1,8 @@
 
-package io.github.ericdriggs.reportcard.pojos;
+package io.github.ericdriggs.reportcard.dto;
 
 import lombok.Data;
 
-import java.io.Serial;
 import java.io.Serializable;
 
 @Data

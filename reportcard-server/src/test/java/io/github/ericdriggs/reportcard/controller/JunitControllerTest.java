@@ -5,7 +5,7 @@ import io.github.ericdriggs.reportcard.config.LocalStackConfig;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestStatusPojo;
 import io.github.ericdriggs.reportcard.model.StageDetails;
 import io.github.ericdriggs.reportcard.model.StagePath;
-import io.github.ericdriggs.reportcard.model.TestResult;
+import io.github.ericdriggs.reportcard.model.TestResultModel;
 import io.github.ericdriggs.reportcard.persist.BrowseService;
 import io.github.ericdriggs.reportcard.persist.test_result.TestResultPersistServiceTest;
 import io.github.ericdriggs.reportcard.model.StagePathTestResult;
@@ -105,7 +105,7 @@ public class JunitControllerTest {
         assertEquals("{\"host\": \"www.foo.com\"}", stagePath.getJob().getJobInfo());
         assertEquals("abc123", stagePath.getRun().getRunReference());
         assertEquals("api", stagePath.getStage().getStageName());
-        final TestResult testResult = result.getTestResult();
+        final TestResultModel testResult = result.getTestResult();
         assertNotNull(testResult.getTests());
 
     }

@@ -2,33 +2,35 @@ package io.github.ericdriggs.reportcard.model;
 
 import io.github.ericdriggs.reportcard.xml.IsEmptyUtil;
 import io.github.ericdriggs.reportcard.xml.ResultCount;
+import lombok.Data;
 
 import java.time.Duration;
 import java.util.*;
 
-public class TestCase extends io.github.ericdriggs.reportcard.pojos.TestCase {
+@Data
+public class TestCaseModel extends io.github.ericdriggs.reportcard.dto.TestCase {
     private TestStatus testStatus;
 
-    private final List<TestCaseFault> testCaseFaults = new ArrayList<>();
+    private List<TestCaseFaultModel> testCaseFaults = new ArrayList<>();
 
-    public TestCase setTestStatus(TestStatus testStatus) {
+    public TestCaseModel setTestStatus(TestStatus testStatus) {
         this.testStatus = testStatus;
         this.testStatusFk = testStatus.getStatusId();
         return this;
     }
 
-    public TestCase setTestStatusFk(Byte testStatusFk) {
+    public TestCaseModel setTestStatusFk(Byte testStatusFk) {
         this.testStatus = TestStatus.fromStatusId(testStatusFk);
         this.testStatusFk = testStatusFk;
         return this;
     }
 
-    public TestCase addTestCaseFault(TestCaseFault testCaseFault) {
+    public TestCaseModel addTestCaseFault(TestCaseFaultModel testCaseFault) {
         this.testCaseFaults.add(testCaseFault);
         return this;
     }
 
-    public TestCase addTestCaseFaults(Collection<TestCaseFault> testCaseFaults) {
+    public TestCaseModel addTestCaseFaults(Collection<TestCaseFaultModel> testCaseFaults) {
         this.testCaseFaults.addAll(testCaseFaults);
         return this;
     }
@@ -40,7 +42,7 @@ public class TestCase extends io.github.ericdriggs.reportcard.pojos.TestCase {
         return testStatus;
     }
 
-    public List<TestCaseFault> getTestCaseFaults() {
+    public List<TestCaseFaultModel> getTestCaseFaults() {
         return testCaseFaults;
     }
 

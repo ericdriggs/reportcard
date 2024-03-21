@@ -1,8 +1,8 @@
 package io.github.ericdriggs.reportcard.persist;
 
-import io.github.ericdriggs.reportcard.model.TestCase;
-import io.github.ericdriggs.reportcard.model.TestResult;
-import io.github.ericdriggs.reportcard.model.TestSuite;
+import io.github.ericdriggs.reportcard.model.TestCaseModel;
+import io.github.ericdriggs.reportcard.model.TestResultModel;
+import io.github.ericdriggs.reportcard.model.TestSuiteModel;
 import io.github.ericdriggs.reportcard.model.*;
 import org.jooq.DSLContext;
 import org.modelmapper.ModelMapper;
@@ -51,30 +51,30 @@ public class ModelService extends AbstractPersistService {
     }
 
     //TODO: Map<Stage,Map<TestResult,Set<TestSuite>>>
-    public TestResult getTestResult(Long testResultId) {
+    public TestResultModel getTestResult(Long testResultId) {
 
-        TestResult testResult = dsl.
+        TestResultModel testResult = dsl.
                 select(TEST_RESULT.fields())
                 .from(TEST_RESULT)
                 .where(TEST_RESULT.TEST_RESULT_ID.eq(testResultId))
-                .fetchOne().into(TestResult.class);
+                .fetchOne().into(TestResultModel.class);
 
-        List<TestSuite> testSuites = dsl.
+        List<TestSuiteModel> testSuites = dsl.
                 select(TEST_SUITE.fields())
                 .from(TEST_RESULT
                         .join(TEST_SUITE).on(TEST_SUITE.TEST_RESULT_FK.eq(TEST_RESULT.TEST_RESULT_ID))
                 ).where(TEST_RESULT.TEST_RESULT_ID.eq(testResult.getTestResultId()))
-                .fetchInto(TestSuite.class);
+                .fetchInto(TestSuiteModel.class);
 
         testResult.setTestSuites(testSuites);
 
-        for (TestSuite testSuite : testResult.getTestSuites()) {
-            List<TestCase> testCases = dsl.
+        for (TestSuiteModel testSuite : testResult.getTestSuites()) {
+            List<TestCaseModel> testCases = dsl.
                     select(TEST_CASE.fields())
                     .from(TEST_CASE
                             .join(TEST_SUITE).on(TEST_CASE.TEST_SUITE_FK.eq(TEST_SUITE.TEST_SUITE_ID))
                     ).where(TEST_SUITE.TEST_SUITE_ID.eq(testSuite.getTestSuiteId()))
-                    .fetchInto(TestCase.class);
+                    .fetchInto(TestCaseModel.class);
 
             testSuite.setTestCases(testCases);
         }
@@ -82,35 +82,35 @@ public class ModelService extends AbstractPersistService {
     }
 
     //TODO: Map<Stage,Map<TestResult,Set<TestSuite>>>
-    public Set<TestResult> getTestResults(Long stageId) {
+    public Set<TestResultModel> getTestResults(Long stageId) {
 
-        Set<TestResult> testResults = new TreeSet<>(ModelComparators.TEST_RESULT_MODEL_CASE_INSENSITIVE_ORDER);
+        Set<TestResultModel> testResults = new TreeSet<>(ModelComparators.TEST_RESULT_MODEL_CASE_INSENSITIVE_ORDER);
         testResults.addAll(
                 dsl.
                         select(TEST_RESULT.fields())
                         .from(STAGE
                                 .join(TEST_RESULT).on(TEST_RESULT.STAGE_FK.eq(STAGE.STAGE_ID))
                         ).where(STAGE.STAGE_ID.eq(stageId))
-                        .fetchInto(TestResult.class));
+                        .fetchInto(TestResultModel.class));
 
-        for (TestResult testResult : testResults) {
+        for (TestResultModel testResult : testResults) {
 
-            List<TestSuite> testSuites = dsl.
+            List<TestSuiteModel> testSuites = dsl.
                     select(TEST_SUITE.fields())
                     .from(TEST_RESULT
                             .join(TEST_SUITE).on(TEST_SUITE.TEST_RESULT_FK.eq(TEST_RESULT.TEST_RESULT_ID))
                     ).where(TEST_RESULT.TEST_RESULT_ID.eq(testResult.getTestResultId()))
-                    .fetchInto(TestSuite.class);
+                    .fetchInto(TestSuiteModel.class);
 
             testResult.setTestSuites(testSuites);
 
-            for (TestSuite testSuite : testResult.getTestSuites()) {
-                List<TestCase> testCases = dsl.
+            for (TestSuiteModel testSuite : testResult.getTestSuites()) {
+                List<TestCaseModel> testCases = dsl.
                         select(TEST_CASE.fields())
                         .from(TEST_CASE
                                 .join(TEST_SUITE).on(TEST_CASE.TEST_SUITE_FK.eq(TEST_SUITE.TEST_SUITE_ID))
                         ).where(TEST_SUITE.TEST_SUITE_ID.eq(testSuite.getTestSuiteId()))
-                        .fetchInto(TestCase.class);
+                        .fetchInto(TestCaseModel.class);
 
                 testSuite.setTestCases(testCases);
             }

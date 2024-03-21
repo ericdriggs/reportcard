@@ -1,4 +1,4 @@
-package io.github.ericdriggs.reportcard.pojos;
+package io.github.ericdriggs.reportcard.dto;
 
 import java.io.Serial;
 import java.io.Serializable;

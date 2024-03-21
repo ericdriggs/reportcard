@@ -1,10 +1,14 @@
 package io.github.ericdriggs.reportcard.controller.html;
 
 import io.github.ericdriggs.reportcard.model.*;
+import io.github.ericdriggs.reportcard.util.NumberStringUtil;
 import io.github.ericdriggs.reportcard.xml.ResultCount;
 
 import java.time.Duration;
 import java.util.*;
+
+import static io.github.ericdriggs.reportcard.util.NumberStringUtil.bigDecimalToIntString;
+import static io.github.ericdriggs.reportcard.util.NumberStringUtil.bigDecimalToSecondDurationString;
 
 public enum TestResultHtmlHelper {
 
@@ -20,7 +24,7 @@ public enum TestResultHtmlHelper {
 //<!-- TODO: failed and skipped similar space vertically to overview -->
 //<!-- TODO: testcase failure detail should default to just message (summary) and not full contents.-->
 
-    public static String getTestResult(TestResult testResult) {
+    public static String getTestResult(TestResultModel testResult) {
 
         final String baseTestResultHtml =
                 """
@@ -73,8 +77,8 @@ public enum TestResultHtmlHelper {
                 </html>
                 """;
 
-        Map<TestSuite, List<TestCase>> failed = testResult.getTestCasesErrorOrFailure();
-        Map<TestSuite, List<TestCase>> skipped = testResult.getTestCasesSkipped();
+        Map<TestSuiteModel, List<TestCaseModel>> failed = testResult.getTestCasesErrorOrFailure();
+        Map<TestSuiteModel, List<TestCaseModel>> skipped = testResult.getTestCasesSkipped();
 
         final String overviewClassRows = getOverviewClassRows(testResult);
         final String failedItems = getFailures(failed);
@@ -89,11 +93,11 @@ public enum TestResultHtmlHelper {
                 .replace("<!--classRows-->", classRows);
     }
 
-    public static String getOverviewClassRows(TestResult testResult) {
+    public static String getOverviewClassRows(TestResultModel testResult) {
 
         StringBuilder sb = new StringBuilder();
         ResultCount totalResultCount = ResultCount.builder().build();
-        for (TestSuite testSuite : testResult.getTestSuites()) {
+        for (TestSuiteModel testSuite : testResult.getTestSuites()) {
             ResultCount resultCount = testSuite.getResultCount();
             sb.append(getOverviewClassRow(testSuite.getName(), resultCount)).append(ls);
             totalResultCount = ResultCount.add(totalResultCount, resultCount);
@@ -142,11 +146,11 @@ public enum TestResultHtmlHelper {
 
         final String statusClass = getStatusClass(resultCount.getTestStatus());
         return baseTestClassTotalHtml
-                .replace("{tests}", Integer.toString(resultCount.getTests()))
-                .replace("{failure}", Integer.toString(resultCount.getErrorsAndFailures()))
-                .replace("{skipped}", Integer.toString(resultCount.getSkipped()))
-                .replace("{duration}", Duration.ofSeconds(resultCount.getTime().toBigInteger().longValue()).toString())
-                .replace("{successRate}", Integer.toString(resultCount.getPassedPercent().toBigInteger().intValue()));
+                .replace("{tests}", NumberStringUtil.toString(resultCount.getTests()))
+                .replace("{failure}", NumberStringUtil.toString(resultCount.getErrorsAndFailures()))
+                .replace("{skipped}", NumberStringUtil.toString(resultCount.getSkipped()))
+                .replace("{duration}", NumberStringUtil.bigDecimalToSecondDurationString(resultCount.getTime())
+                .replace("{successRate}", NumberStringUtil.bigDecimalToIntString(resultCount.getPassedPercent())));
     }
 
     static String getStatusClass(TestStatus testStatus) {
@@ -160,7 +164,7 @@ public enum TestResultHtmlHelper {
     }
 
     @SuppressWarnings("DuplicatedCode")
-    public static String getFailures(Map<TestSuite, List<TestCase>> testSuiteCasesMap) {
+    public static String getFailures(Map<TestSuiteModel, List<TestCaseModel>> testSuiteCasesMap) {
         final String baseFailureItem =
                 """
                 <li>
@@ -169,10 +173,10 @@ public enum TestResultHtmlHelper {
                 """;
 
         StringBuilder sb = new StringBuilder();
-        for (Map.Entry<TestSuite, List<TestCase>> entry : testSuiteCasesMap.entrySet()) {
-            final TestSuite testSuite = entry.getKey();
-            final List<TestCase> testCases = entry.getValue();
-            for (TestCase testCase : testCases) {
+        for (Map.Entry<TestSuiteModel, List<TestCaseModel>> entry : testSuiteCasesMap.entrySet()) {
+            final TestSuiteModel testSuite = entry.getKey();
+            final List<TestCaseModel> testCases = entry.getValue();
+            for (TestCaseModel testCase : testCases) {
                 sb.append(baseFailureItem
                         .replace("{testSuiteName}", testSuite.getName())
                         .replace("{testName}", testCase.getName())
@@ -183,14 +187,14 @@ public enum TestResultHtmlHelper {
     }
 
     @SuppressWarnings("DuplicatedCode")
-    public static String getSkipped(Map<TestSuite, List<TestCase>> testSuiteCasesMap) {
+    public static String getSkipped(Map<TestSuiteModel, List<TestCaseModel>> testSuiteCasesMap) {
         final String baseSkippedItem = "<li>{testSuiteName}.{testName}</li>";
 
         StringBuilder sb = new StringBuilder();
-        for (Map.Entry<TestSuite, List<TestCase>> entry : testSuiteCasesMap.entrySet()) {
-            final TestSuite testSuite = entry.getKey();
-            final List<TestCase> testCases = entry.getValue();
-            for (TestCase testCase : testCases) {
+        for (Map.Entry<TestSuiteModel, List<TestCaseModel>> entry : testSuiteCasesMap.entrySet()) {
+            final TestSuiteModel testSuite = entry.getKey();
+            final List<TestCaseModel> testCases = entry.getValue();
+            for (TestCaseModel testCase : testCases) {
                 sb.append(baseSkippedItem
                         .replace("{testSuiteName}", testSuite.getName())
                         .replace("{testName}", testCase.getName())
@@ -200,7 +204,7 @@ public enum TestResultHtmlHelper {
         return sb.toString();
     }
 
-    public static String getClassRows(TestResult testResult) {
+    public static String getClassRows(TestResultModel testResult) {
 
         final String baseClassRow =
                 """
@@ -223,8 +227,8 @@ public enum TestResultHtmlHelper {
                 """;
 
         StringBuilder sb = new StringBuilder();
-        for (TestSuite testSuite : testResult.getTestSuites()) {
-            final List<TestCase> testCases = testSuite.getTestCases();
+        for (TestSuiteModel testSuite : testResult.getTestSuites()) {
+            final List<TestCaseModel> testCases = testSuite.getTestCases();
             sb.append(baseClassRow
                     .replace("<!--testCaseRows-->", getTestCaseRows(testSuite, testCases))
                     .replace("<!--failureMessages-->", getFailureMessages(testSuite))
@@ -235,7 +239,7 @@ public enum TestResultHtmlHelper {
         return sb.toString();
     }
 
-    public static String getTestCaseRows(TestSuite testSuite, List<TestCase> testCases) {
+    public static String getTestCaseRows(TestSuiteModel testSuite, List<TestCaseModel> testCases) {
 
         final String baseTestCaseRow =
                 """
@@ -247,7 +251,7 @@ public enum TestResultHtmlHelper {
                 """;
 
         StringBuilder sb = new StringBuilder();
-        for (TestCase testCase : testCases) {
+        for (TestCaseModel testCase : testCases) {
             sb.append(baseTestCaseRow
                     .replace("{testSuiteName}", testSuite.getName())
                     .replace("{testName}", testCase.getName())
@@ -257,7 +261,7 @@ public enum TestResultHtmlHelper {
         return sb.toString();
     }
 
-    public static String getFailureMessages(TestSuite testSuite) {
+    public static String getFailureMessages(TestSuiteModel testSuite) {
         StringBuilder failureMessages = new StringBuilder();
 
         final String baseFailureMessages =
@@ -282,9 +286,9 @@ public enum TestResultHtmlHelper {
                 </li>
                 """;
 
-        for (TestCase testCase : testSuite.getTestCases()) {
+        for (TestCaseModel testCase : testSuite.getTestCases()) {
             if (testCase.hasTestFault()) {
-                for (TestCaseFault testCaseFault : testCase.getTestCaseFaults()) {
+                for (TestCaseFaultModel testCaseFault : testCase.getTestCaseFaults()) {
                     failureMessages.append(
                             baseFailureMessage
                                     .replace("<!--faultMessage-->", "message: " + testCaseFault.getMessage() + "<br/>")
@@ -298,14 +302,14 @@ public enum TestResultHtmlHelper {
         return baseFailureMessages.replace("<!--failureMessages-->", failureMessages.toString());
     }
 
-    public static String getStdErr(TestSuite testSuite) {
+    public static String getStdErr(TestSuiteModel testSuite) {
         StringBuilder sb = new StringBuilder();
 
         if (testSuite.getSystemErr() != null) {
             sb.append(testSuite.getName() + ": <br/>" + testSuite.getSystemErr());
         }
 
-        for (TestCase testCase : testSuite.getTestCases()) {
+        for (TestCaseModel testCase : testSuite.getTestCases()) {
             if (testCase.getSystemErr() != null) {
                 sb.append(testSuite.getName() + "." + testCase.getName() + ": <br/>" + testSuite.getSystemErr());
             }
@@ -313,14 +317,14 @@ public enum TestResultHtmlHelper {
         return baseStdErr.replace("<!--stdErrText-->",sb.toString());
     }
 
-    public static String getStdOut(TestSuite testSuite) {
+    public static String getStdOut(TestSuiteModel testSuite) {
         StringBuilder sb = new StringBuilder();
 
         if (testSuite.getSystemOut() != null) {
             sb.append(testSuite.getName() + ": <br/>" + testSuite.getSystemOut());
         }
 
-        for (TestCase testCase : testSuite.getTestCases()) {
+        for (TestCaseModel testCase : testSuite.getTestCases()) {
             if (testCase.getSystemOut() != null) {
                 sb.append(testSuite.getName() + "." + testCase.getName() + ": <br/>" + testSuite.getSystemOut());
             }
