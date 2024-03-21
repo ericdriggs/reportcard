@@ -100,6 +100,12 @@ public class SurefireMapperTests {
             {
                 List<TestCaseModel> testcases = modelTestSuite.getTestCases();
                 assertEquals(TestStatus.SUCCESS, testcases.get(0).getTestStatus());
+
+                for (TestCaseModel testCaseModel : testcases) {
+                    if (testCaseModel.hasTestFault()) {
+                        assertTrue(testCaseModel.getTestCaseFaults().size() > 0);
+                    }
+                }
                 //TODO: assert testcases;
             }
         }

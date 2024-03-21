@@ -2,6 +2,7 @@ package io.github.ericdriggs.reportcard.model.converter.junit;
 
 import io.github.ericdriggs.reportcard.model.*;
 import io.github.ericdriggs.reportcard.xml.IsEmptyUtil;
+import io.github.ericdriggs.reportcard.xml.junit.JunitParserUtil;
 import io.github.ericdriggs.reportcard.xml.junit.Testcase;
 import io.github.ericdriggs.reportcard.xml.junit.Testsuite;
 import io.github.ericdriggs.reportcard.xml.junit.Testsuites;
@@ -33,6 +34,11 @@ public class JunitConvertersUtil {
             return doFromJunitToModelTestResult(source);
         }
     };
+
+    public static List<TestSuiteModel> fromXmlContents(String testXmlContent) {
+        Testsuites testsuite = JunitParserUtil.parseTestSuites(testXmlContent);
+        return doFromJunitToModelTestSuites(testsuite);
+    }
 
     public static TestCaseModel doFromJunitToModelTestCase(Testcase source) {
         TestCaseModel modelTestCase = new TestCaseModel();

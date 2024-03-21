@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.ericdriggs.reportcard.model.*;
 import io.github.ericdriggs.reportcard.xml.IsEmptyUtil;
+import io.github.ericdriggs.reportcard.xml.junit.JunitParserUtil;
 import io.github.ericdriggs.reportcard.xml.surefire.*;
 import lombok.SneakyThrows;
 import org.modelmapper.AbstractConverter;
@@ -37,6 +38,12 @@ public class SurefireConvertersUtil {
             return doFromSurefireToModelTestResult(source);
         }
     };
+
+
+    public static TestSuiteModel fromTestXmlContent(String testXmlContent ) {
+        Testsuite testsuite = SurefireParserUtil.parseTestSuite(testXmlContent);
+        return doFromSurefireToModelTestSuite(testsuite);
+    }
 
     public static List<TestCaseModel> doFromSurefireToModelTestCases(List<Testcase> source) {
         List<TestCaseModel> testCases = new ArrayList<>();
@@ -154,6 +161,9 @@ public class SurefireConvertersUtil {
         for (io.github.ericdriggs.reportcard.xml.surefire.Properties surefireProperties : surefirePropertiesList) {
 
             Properties properties = new Properties();
+            if (surefireProperties.getProperty() == null) {
+                continue;
+            }
             List<Property> surefirePropertyList = surefireProperties.getProperty();
             for (Property property : surefirePropertyList) {
                 properties.setProperty(property.getName(), property.getValue());

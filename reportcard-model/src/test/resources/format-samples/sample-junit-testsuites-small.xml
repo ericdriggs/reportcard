@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites time="36.8" tests="4" errors="0" skipped="0" failures="0">
+    <testsuite name="io.github.ericdriggs.file.FileUtilsTest2" tests="2" skipped="0" failures="0" errors="0"
+               timestamp="2023-01-27T19:12:54" hostname="MAC-W43G39" time="18.4">
+        <properties/>
+        <testcase name="findFilesTest2()" classname="io.github.ericdriggs.file.FileUtilsTest2" time="15.3"/>
+        <testcase name="readFilesTest2()" classname="io.github.ericdriggs.file.FileUtilsTest2" time="3.1"/>
+        <system-out><![CDATA[]]></system-out>
+        <system-err><![CDATA[]]></system-err>
+    </testsuite>
+    <testsuite name="io.github.ericdriggs.file.FileUtilsTest3" tests="2" skipped="0" failures="0" errors="0"
+               timestamp="2023-01-27T19:12:54" hostname="MAC-W43G39" time="18.4">
+        <properties/>
+        <testcase name="findFilesTest3()" classname="io.github.ericdriggs.file.FileUtilsTest3" time="15.3"/>
+        <testcase name="readFilesTest3()" classname="io.github.ericdriggs.file.FileUtilsTest3" time="3.1"/>
+        <system-out><![CDATA[]]></system-out>
+        <system-err><![CDATA[]]></system-err>
+    </testsuite>
+</testsuites>

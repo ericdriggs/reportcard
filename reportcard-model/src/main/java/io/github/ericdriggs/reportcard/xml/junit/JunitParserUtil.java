@@ -18,29 +18,30 @@ public class JunitParserUtil {
     public static Testsuites parseTestSuites(String xmlTestSuites) {
 
         if (xmlTestSuites.contains("<testsuites")) {
-            return doParseTestSuites(xmlTestSuites);
+            return xmlToTestSuites(xmlTestSuites);
         }
 
         //If only 1 testsuite element, testsuite will be the root element instead of testsuites
         if (xmlTestSuites.contains("<testsuite")) {
             Testsuites testsuites = new Testsuites();
-            testsuites.setTestsuite(Collections.singletonList(doParseTestSuite(xmlTestSuites)));
+            testsuites.setTestsuite(Collections.singletonList(xmlToTestSuite(xmlTestSuites)));
             return testsuites;
         }
 
         throw new IllegalArgumentException("not a junit xml:\n " + xmlTestSuites);
     }
 
-    public static Testsuites parseTestSuite(String xmlTestSuite) {
-        List<Testsuite> testsuiteList = new ArrayList<>();
-        testsuiteList.add(doParseTestSuite(xmlTestSuite));
-        Testsuites testsuites = new Testsuites();
-        testsuites.setTestsuite(testsuiteList);
-        return testsuites;
-    }
+//    public static Testsuites parseTestSuiteAsSuites(String xmlTestSuite) {
+//        List<Testsuite> testsuiteList = new ArrayList<>();
+//        testsuiteList.add(xmlToTestSuite(xmlTestSuite));
+//        Testsuites testsuites = new Testsuites();
+//        testsuites.setTestsuite(testsuiteList);
+//        return testsuites;
+//    }
+
 
     @SneakyThrows(JAXBException.class)
-    protected static Testsuite doParseTestSuite(String xmlString) {
+    protected static Testsuite xmlToTestSuite(String xmlString) {
         if (xmlString.contains("<testsuite")) {
             JAXBContext jaxbContext = JAXBContext.newInstance(Testsuite.class);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
@@ -50,7 +51,7 @@ public class JunitParserUtil {
     }
 
     @SneakyThrows(JAXBException.class)
-    protected static Testsuites doParseTestSuites(String xmlString) {
+    protected static Testsuites xmlToTestSuites(String xmlString) {
 
         if (xmlString.contains("<testsuites")) {
             JAXBContext jaxbContext = JAXBContext.newInstance(Testsuites.class);

@@ -19,6 +19,7 @@ public class TestResultModel extends io.github.ericdriggs.reportcard.dto.TestRes
 
     public TestResultModel setTestSuites(List<TestSuiteModel> testSuites) {
         this.testSuites = testSuites;
+        this.updateTotalsFromTestSuites();
         return this;
     }
 

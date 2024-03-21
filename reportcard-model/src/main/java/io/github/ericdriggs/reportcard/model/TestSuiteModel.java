@@ -20,6 +20,7 @@ public class TestSuiteModel extends io.github.ericdriggs.reportcard.dto.TestSuit
         return this;
     }
 
+    @JsonIgnore
     public ResultCount getResultCount() {
         ResultCount resultCount = ResultCount.builder().build();
         for (TestCaseModel testCase : testCases) {
@@ -28,6 +29,7 @@ public class TestSuiteModel extends io.github.ericdriggs.reportcard.dto.TestSuit
         return resultCount;
     }
 
+    @JsonIgnore
     public static ResultCount getResultCount(List<TestSuiteModel> testSuites) {
         ResultCount resultCount = ResultCount.builder().build();
         for (TestSuiteModel testSuite : testSuites) {

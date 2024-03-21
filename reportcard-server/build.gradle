@@ -75,6 +75,7 @@ dependencies {
     implementation 'org.apache.commons:commons-compress:1.26.0'
 
 
+
     //AWS
     implementation platform("software.amazon.awssdk:bom:${awsSdkVersion}")
     implementation("software.amazon.awssdk:s3-transfer-manager")

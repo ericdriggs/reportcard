@@ -28,6 +28,9 @@ dependencies {
     //JSON
     implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
 
+
+    implementation 'commons-io:commons-io:2.15.1'
+
     //XML
     implementation "jakarta.xml.bind:jakarta.xml.bind-api:${jakartaVersion}"
     implementation "com.sun.xml.bind:jaxb-impl:${jakartaVersion}"

@@ -109,7 +109,7 @@ public class TestResultPersistService extends StagePathPersistService {
     }
 
     public TestResultModel fromTestSuiteList(String xmlString) {
-        Testsuites testsuites = JunitParserUtil.parseTestSuite(xmlString);
+        Testsuites testsuites = JunitParserUtil.parseTestSuites(xmlString);
         return JunitConvertersUtil.doFromJunitToModelTestResult(testsuites);
     }
 
@@ -280,6 +280,14 @@ public class TestResultPersistService extends StagePathPersistService {
 
                     testCase = testCaseRecord.into(TestCaseModel.class);
                     testCases.add(testCase);
+
+                    for (TestCaseFaultModel testCaseFault : testCase.getTestCaseFaults()) {
+                        if (testCaseFault.getTestCaseFaultId() == null) {
+                            TestCaseFaultRecord testCaseFaultRecord = dsl.newRecord(TEST_CASE_FAULT);
+                            testCaseFault.setTestCaseFaultId(testCaseFaultRecord.getTestCaseFaultId());
+                            testCase.getTestCaseFaults().add(testCaseFault);
+                        }
+                    }
                 }
             }
             testSuite.setTestCases(testCases);

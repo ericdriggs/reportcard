@@ -1,6 +1,7 @@
 package io.github.ericdriggs.reportcard.xml;
 
 import io.github.ericdriggs.reportcard.model.TestStatus;
+import io.github.ericdriggs.reportcard.xml.testng.suite.Exclude;
 import lombok.Builder;
 import lombok.Value;
 
@@ -79,19 +80,32 @@ public class ResultCount implements Comparable<ResultCount> {
      */
     public BigDecimal getPassedPercent() {
 
-        if (tests == 0) {
+        if (tests == null || tests == 0) {
             return BigDecimal.ZERO;
         }
 
-        final Integer passedCount = getSuccesses();
+        final int skippedCount = skipped == null ? 0 : skipped;
+        if (tests - skippedCount == 0) {
+            return BigDecimal.ZERO;
+        }
+        final int successCount = successes == null ? 0 : successes;
 
-        @SuppressWarnings("WrapperTypeMayBePrimitive")
-        final Integer failureErrorsTotal = getFailures() + getErrors();
+        final int errorCount = errors == null ? 0 : errors;
+        final int failureCount = failures == null ? 0 : failures;
 
-        return BigDecimal.valueOf(
-                (100 * passedCount.doubleValue()) /
-                (passedCount.doubleValue() + failureErrorsTotal.doubleValue())
-        ).setScale(2, RoundingMode.HALF_UP);
+
+        //@SuppressWarnings("WrapperTypeMayBePrimitive")
+        final int errorFailureCount = errorCount + failureCount;
+
+        try {
+            return BigDecimal.valueOf(
+                    100 * (double) successCount /
+                    (double) (tests - skippedCount)
+            ).setScale(2, RoundingMode.HALF_UP);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw ex;
+        }
     }
 
     protected Integer zeroIfNull(Integer val) {
