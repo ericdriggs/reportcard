@@ -57,7 +57,10 @@ public enum FaultContext {
         }
     }
 
-    public static FaultContext fromFaultContextId(byte faultContextId) {
+    public static FaultContext fromFaultContextId(Byte faultContextId) {
+        if (faultContextId == null) {
+            return null;
+        }
         initMaps();
         FaultContext faultContext = idContextMap.get(faultContextId);
         if (faultContext == null) {
@@ -67,6 +70,9 @@ public enum FaultContext {
     }
 
     public static FaultContext fromXmlFaultContextName(String xmlFaultContextName) {
+        if (xmlFaultContextName == null) {
+            return null;
+        }
         initMaps();
         FaultContext faultContext = xmlNameContextMap.get(xmlFaultContextName);
         if (faultContext == null) {

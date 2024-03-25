@@ -18,5 +18,7 @@ public class JunitSurefireXmlParseUtilTest {
         TestResultModel testResultModel = JunitSurefireXmlParseUtil.parseTestXml(testXmlContents);
         assertEquals(4, testResultModel.getTestSuites().size());
         assertEquals(4, testResultModel.getTestSuites().size());
+
+        //FIXME: extensive testing including test faults in both junit and surefire format
     }
 }

@@ -1,5 +1,6 @@
 package io.github.ericdriggs.reportcard.persist;
 
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestSuitePojo;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.*;
 import io.github.ericdriggs.reportcard.model.TestCaseModel;
 import io.github.ericdriggs.reportcard.model.TestResultModel;
@@ -11,8 +12,11 @@ import io.github.ericdriggs.reportcard.xml.XmlUtil;
 import io.github.ericdriggs.reportcard.xml.junit.JunitParserUtil;
 import io.github.ericdriggs.reportcard.xml.junit.Testsuites;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jooq.DSLContext;
+import org.jooq.Record;
+import org.jooq.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +32,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import static io.github.ericdriggs.reportcard.gen.db.Tables.*;
+import static org.jooq.impl.DSL.select;
 
 /**
  * Main db service class.
@@ -36,10 +41,11 @@ import static io.github.ericdriggs.reportcard.gen.db.Tables.*;
  */
 
 @Service
+@Slf4j
 @SuppressWarnings({"unused", "ConstantConditions"})
 public class TestResultPersistService extends StagePathPersistService {
 
-    protected final Logger log = LoggerFactory.getLogger(this.getClass());
+    //protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     public TestResultPersistService(DSLContext dsl) {
@@ -136,38 +142,104 @@ public class TestResultPersistService extends StagePathPersistService {
         }
     }
 
-
     public TestResultModel getTestResult(Long testResultId) {
 
-        TestResultModel testResult = dsl.
-                select(TEST_RESULT.fields())
-                .from(TEST_RESULT)
-                .where(TEST_RESULT.TEST_RESULT_ID.eq(testResultId))
-                .fetchOne().into(TestResultModel.class);
+        Result<Record> recordResult = dsl.select()
+                                         .from(TEST_RESULT)
+                                         .leftJoin(TEST_SUITE).on(TEST_SUITE.TEST_RESULT_FK.eq(TEST_RESULT.TEST_RESULT_ID))
+                                         .leftJoin(TEST_CASE).on(TEST_CASE.TEST_SUITE_FK.eq(TEST_SUITE.TEST_SUITE_ID))
+                                         .leftJoin(TEST_CASE_FAULT).on(TEST_CASE_FAULT.TEST_CASE_FK.eq(TEST_CASE.TEST_CASE_ID))
+                                         .where(TEST_RESULT.TEST_RESULT_ID.eq(testResultId))
+                                         .orderBy(TEST_RESULT.TEST_RESULT_ID, TEST_SUITE.TEST_SUITE_ID, TEST_CASE.TEST_CASE_ID, TEST_CASE_FAULT.TEST_CASE_FAULT_ID)
+                                         .fetch();
 
-        List<TestSuiteModel> testSuites = dsl.
-                select(TEST_SUITE.fields())
-                .from(TEST_RESULT
-                        .join(TEST_SUITE).on(TEST_SUITE.TEST_RESULT_FK.eq(TEST_RESULT.TEST_RESULT_ID))
-                ).where(TEST_RESULT.TEST_RESULT_ID.eq(testResult.getTestResultId()))
-                .fetchInto(TestSuiteModel.class);
-
-        testResult.setTestSuites(testSuites);
-
-        for (TestSuiteModel testSuite : testResult.getTestSuites()) {
-            List<TestCaseModel> testCases = dsl.
-                    select(TEST_CASE.fields())
-                    .from(TEST_CASE
-                            .join(TEST_SUITE).on(TEST_CASE.TEST_SUITE_FK.eq(TEST_SUITE.TEST_SUITE_ID))
-                    ).where(TEST_SUITE.TEST_SUITE_ID.eq(testSuite.getTestSuiteId()))
-                    .fetchInto(TestCaseModel.class);
-
-            testSuite.setTestCases(testCases);
+        Set<TestResultModel> testResultModels = testResultFromRecords(recordResult);
+        if (testResultModels.size() == 0) {
+            return null;
+        } else if (testResultModels.size() == 1) {
+            return testResultModels.iterator().next();
+        } else {
+            throw new IllegalStateException("expected 0 or 1 testResultModels, actual size: " + testResultModels.size());
         }
-        return testResult;
     }
 
     public Set<TestResultModel> getTestResults(Long stageId) {
+
+        Result<Record> recordResult = dsl.select()
+                                         .from(TEST_RESULT)
+                                         .leftJoin(TEST_SUITE).on(TEST_SUITE.TEST_RESULT_FK.eq(TEST_RESULT.TEST_RESULT_ID))
+                                         .leftJoin(TEST_CASE).on(TEST_CASE.TEST_SUITE_FK.eq(TEST_SUITE.TEST_SUITE_ID))
+                                         .leftJoin(TEST_CASE_FAULT).on(TEST_CASE_FAULT.TEST_CASE_FK.eq(TEST_CASE.TEST_CASE_ID))
+                                         .where(TEST_RESULT.STAGE_FK.eq(stageId))
+                                         .orderBy(TEST_RESULT.TEST_RESULT_ID, TEST_SUITE.TEST_SUITE_ID, TEST_CASE.TEST_CASE_ID, TEST_CASE_FAULT.TEST_CASE_FAULT_ID)
+                                         .fetch();
+
+        return testResultFromRecords(recordResult);
+
+    }
+
+    protected static Set<TestResultModel> testResultFromRecords(Result<Record> recordResult) {
+        Set<TestResultModel> testResults = new LinkedHashSet<>();
+        TestResultModel prevTestResult = null;
+        TestSuiteModel prevTestSuite = null;
+        TestCaseModel prevTestCase = null;
+        TestCaseFaultModel prevTestCaseFault = null;
+
+        for(Record record : recordResult) {
+
+            TestResultModel testResult = record.into(TestResultRecord.class).into(TestResultModel.class);
+            TestSuiteModel testSuite = record.into(TestSuiteRecord.class).into(TestSuiteModel.class);
+            TestCaseModel testCase = record.into(TestCaseRecord.class).into(TestCaseModel.class);
+            TestCaseFaultModel testCaseFault = record.into(TestCaseFaultRecord.class).into(TestCaseFaultModel.class);
+
+            if (testResult.getTestResultId() == null || testSuite.getTestSuiteId() == null || testCase.getTestCaseId() == null) {
+                log.warn("null ids skipping record testResult.getTestResultId(): {}, testCase.getTestCaseId() : {}, testCase.getTestCaseId(): {}",
+                        testResult.getTestResultId(), testCase.getTestCaseId(), testCase.getTestCaseId() );
+                continue;
+            }
+
+            if (prevTestResult == null || !prevTestResult.getTestResultId().equals(testResult.getTestResultId())) {
+                testResults.add(testResult);
+                prevTestResult = testResult;
+            } else {
+                testResult = prevTestResult;
+            }
+
+            if (prevTestSuite == null || !prevTestSuite.getTestSuiteId().equals(testSuite.getTestSuiteId())) {
+                testResult.addTestSuite(testSuite);
+                prevTestSuite = testSuite;
+            } else {
+                testSuite = prevTestSuite;
+            }
+
+            //always add test case to current test suite
+            if (prevTestCase == null || !prevTestCase.getTestCaseId().equals(testCase.getTestCaseId())) {
+                testSuite.addTestCase(testCase);
+                prevTestCase = testCase;
+
+            } else {
+                testCase = prevTestCase;
+            }
+
+            //always add test case to current test suite
+            if (prevTestCaseFault == null || !prevTestCaseFault.getTestCaseFaultId().equals(testCaseFault.getTestCaseFaultId())) {
+                testCase.addTestCaseFault(testCaseFault);
+                prevTestCaseFault = testCaseFault;
+            } else {
+                testCaseFault = prevTestCaseFault;
+            }
+        }
+
+        for (TestResultModel testResult : testResults) {
+            testResult.updateTotalsFromTestSuites();
+        }
+        return testResults;
+    }
+
+
+    public Set<TestResultModel> getTestResultsBad(Long stageId) {
+
+
 
         Set<TestResultModel> testResults = new TreeSet<>(ModelComparators.TEST_RESULT_MODEL_CASE_INSENSITIVE_ORDER);
         testResults.addAll(

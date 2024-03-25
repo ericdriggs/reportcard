@@ -155,7 +155,7 @@ public class TestResultPersistServiceTest {
         assertEquals(false, inserted.getIsSuccess());
         assertNotNull(inserted.getTestResultCreated());
         assertTrue(LocalDateTime.now().isAfter(inserted.getTestResultCreated()));
-        Assertions.assertEquals(new BigDecimal("50.500"), inserted.getTime());
+        Assertions.assertEquals(new BigDecimal("50.5"), inserted.getTime());
 
         validateStagePath(stageDetails, stagePath);
     }

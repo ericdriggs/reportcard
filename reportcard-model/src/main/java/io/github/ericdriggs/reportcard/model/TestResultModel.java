@@ -5,7 +5,6 @@ import io.github.ericdriggs.reportcard.xml.IsEmptyUtil;
 import io.github.ericdriggs.reportcard.xml.ResultCount;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.Builder;
 
 import java.util.*;
 
@@ -20,6 +19,11 @@ public class TestResultModel extends io.github.ericdriggs.reportcard.dto.TestRes
     public TestResultModel setTestSuites(List<TestSuiteModel> testSuites) {
         this.testSuites = testSuites;
         this.updateTotalsFromTestSuites();
+        return this;
+    }
+
+    public TestResultModel addTestSuite(TestSuiteModel testSuite) {
+        this.testSuites.add(testSuite);
         return this;
     }
 

@@ -20,6 +20,11 @@ public class TestSuiteModel extends io.github.ericdriggs.reportcard.dto.TestSuit
         return this;
     }
 
+    public TestSuiteModel addTestCase(TestCaseModel testCase) {
+        this.testCases.add(testCase);
+        return this;
+    }
+
     @JsonIgnore
     public ResultCount getResultCount() {
         ResultCount resultCount = ResultCount.builder().build();

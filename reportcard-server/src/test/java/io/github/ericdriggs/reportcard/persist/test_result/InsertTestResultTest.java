@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.ericdriggs.reportcard.gen.db.TestData;
 import io.github.ericdriggs.reportcard.model.*;
 import io.github.ericdriggs.reportcard.persist.TestResultPersistService;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.util.CollectionUtils;
 import java.math.BigDecimal;
 import java.util.*;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Profile("test")
@@ -29,11 +31,11 @@ public class InsertTestResultTest extends AbstractTestResultPersistTest {
     final static String runReference = "run23";
     final static String stage = "stage10";
 
-    final static int testResultErrorCount = 10;
-    final static int testResultFailureCount = 20;
-    final static int testResultSkippedCount = 30;
-    final static int testResultTestCount = 70;
-    final static BigDecimal testResultTime = new BigDecimal("3.141");
+    final static int testResultErrorCount = 0;
+    final static int testResultFailureCount = 1;
+    final static int testResultSkippedCount = 0;
+    final static int testResultTestCount = 1;
+    final static BigDecimal testResultTime = new BigDecimal("0.5");
 
     final static int testSuiteErrorCount = 5;
     final static int testSuiteFailureCount = 6;
@@ -69,7 +71,7 @@ public class InsertTestResultTest extends AbstractTestResultPersistTest {
 
         final TestResultModel testResultInsert = testResultPersistService.insertTestResult(testResultBefore);
         assertValues(testResultInsert);
-        assertIdsandFks(testResultInsert);
+        assertIdsAndFks(testResultInsert);
         assertExternalLinks(testResultInsert);
 
         {
@@ -77,14 +79,14 @@ public class InsertTestResultTest extends AbstractTestResultPersistTest {
             assertEquals(1, testResultsGet.size());
             final TestResultModel testResultGet = testResultsGet.iterator().next();
             assertValues(testResultGet);
-            assertIdsandFks(testResultGet);
+            assertIdsAndFks(testResultGet);
             assertExternalLinks(testResultGet);
         }
 
         {
             TestResultModel testResultGet = testResultPersistService.getTestResult(testResultInsert.getTestResultId());
             assertValues(testResultGet);
-            assertIdsandFks(testResultGet);
+            assertIdsAndFks(testResultGet);
             assertExternalLinks(testResultGet);
         }
     }
@@ -106,24 +108,24 @@ public class InsertTestResultTest extends AbstractTestResultPersistTest {
         Assertions.assertEquals(testResultFailureCount, testResult.getFailure());
         Assertions.assertEquals(testResultSkippedCount, testResult.getSkipped());
         Assertions.assertEquals(testResultTestCount, testResult.getTests());
-        Assertions.assertEquals(testResultTime, testResult.getTime());
+        assertThat(testResultTime,  Matchers.comparesEqualTo(testResult.getTime()));
 
         Assertions.assertEquals(testSuiteErrorCount, testSuite.getError());
         Assertions.assertEquals(testSuiteFailureCount, testSuite.getFailure());
         Assertions.assertEquals(testSuiteSkippedCount, testSuite.getSkipped());
         Assertions.assertEquals(testSuiteName, testSuite.getName());
         Assertions.assertEquals(testSuiteTestCount, testSuite.getTests());
-        Assertions.assertEquals(testSuiteTime, testSuite.getTime());
+        assertThat(testSuiteTime,  Matchers.comparesEqualTo(testSuite.getTime()));
         Assertions.assertEquals(testSuitePackage, testSuite.getPackageName());
 
         Assertions.assertEquals(testCaseClassName, testCase.getClassName());
         Assertions.assertEquals(testCaseName, testCase.getName());
         assertEquals(testCaseStatus, testCase.getTestStatus());
         Assertions.assertEquals(testCaseStatus.getStatusId(), testCase.getTestStatusFk());
-        Assertions.assertEquals(testCaseTime, testCase.getTime());
+        assertThat(testCaseTime,  Matchers.comparesEqualTo(testCase.getTime()));
     }
 
-    private void assertIdsandFks(TestResultModel testResult) {
+    private void assertIdsAndFks(TestResultModel testResult) {
 
         final TestSuiteModel testSuite = testResult.getTestSuites().get(0);
         final TestCaseModel testCase = testSuite.getTestCases().get(0);
