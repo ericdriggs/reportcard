@@ -2,6 +2,9 @@ package io.github.ericdriggs.reportcard.persist.browse;
 
 import io.github.ericdriggs.reportcard.gen.db.TestData;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.*;
+import io.github.ericdriggs.reportcard.model.StageTestResultModel;
+import io.github.ericdriggs.reportcard.model.TestResultModel;
+import io.github.ericdriggs.reportcard.model.TestSuiteModel;
 import io.github.ericdriggs.reportcard.persist.BrowseService;;
 import io.github.ericdriggs.reportcard.util.JsonCompare;
 import org.junit.jupiter.api.Test;
@@ -200,29 +203,21 @@ public class BrowseServiceTest extends AbstractBrowseServiceTest {
 
         validateTestRun(run);
         validateTestStage(stage);
-        validateTestResult(testResult);
+        validateTestResultPojo(testResult);
     }
 
     @Test
     void getStageTestResultsTestSuitesTest() {
         //Map<StagePojo, Map<TestResultPojo, Set<TestSuitePojo>>> stageResultSuites =
-        Map<StageTestResult, Map<TestSuitePojo, Map<TestCasePojo, List<TestCaseFaultPojo>>>> stageTestResultMap = browseService.getStageTestResultMap(TestData.company, TestData.org, TestData.repo, TestData.branch, 1l, 1l, TestData.stage);
-        StageTestResult stageTestResult = null;
-        for (Map.Entry<StageTestResult, Map<TestSuitePojo, Map<TestCasePojo, List<TestCaseFaultPojo>>>> stageEntry : stageTestResultMap.entrySet()) {
-            stageTestResult = stageEntry.getKey();
+        StageTestResultModel stageTestResultModel = browseService.getStageTestResultMap(TestData.company, TestData.org, TestData.repo, TestData.branch, 1l, 1l, TestData.stage);
 
-            break;
-        }
+        final StagePojo stage = stageTestResultModel.getStage();
+        final TestResultModel testResultModel = stageTestResultModel.getTestResult();
 
-        final StagePojo stage = stageTestResult.getStage();
-        final TestResultPojo testResult = stageTestResult.getTestResult();
+        TestSuiteModel testSuite = null;
 
-        final Map<TestSuitePojo, Map<TestCasePojo, List<TestCaseFaultPojo>>> resultSuites = stageTestResultMap.get(stageTestResult);
-//        final TestResultPojo testResult = getTestResult(resultSuites.keySet(), TestData.testResultId);
-        TestSuitePojo testSuite = null;
+        for (TestSuiteModel ts : testResultModel.getTestSuites()) {
 
-        for (Map.Entry<TestSuitePojo, Map<TestCasePojo, List<TestCaseFaultPojo>>> testSuiteMapEntry : resultSuites.entrySet()) {
-            final TestSuitePojo ts = testSuiteMapEntry.getKey();
             if (ts.getTestSuiteId().equals(TestData.testResultId)) {
                 testSuite = ts;
                 break;
@@ -230,7 +225,7 @@ public class BrowseServiceTest extends AbstractBrowseServiceTest {
         }
 
         validateTestStage(stage);
-        validateTestResult(testResult);
+        validateTestResultModel(testResultModel);
         validateTestSuite(testSuite);
         //TODO: validate test cases
         //TODO: validate faults
@@ -382,13 +377,19 @@ public class BrowseServiceTest extends AbstractBrowseServiceTest {
         assertEquals(1, stage.getRunFk());
     }
 
-    private void validateTestResult(TestResultPojo testResult) {
+    private void validateTestResultModel(TestResultModel testResult) {
         assertEquals(1, testResult.getTestResultId());
         assertEquals(1, testResult.getStageFk());
-        assertEquals(TestData.testResultTestCount, testResult.getTests());
+        assertEquals(TestData.testResultTestModelCount, testResult.getTests());
     }
 
-    private void validateTestSuite(TestSuitePojo testSuite) {
+    private void validateTestResultPojo(TestResultPojo testResult) {
+        assertEquals(1, testResult.getTestResultId());
+        assertEquals(1, testResult.getStageFk());
+        assertEquals(TestData.testResultTestPojoCount, testResult.getTests());
+    }
+
+    private void validateTestSuite(TestSuiteModel testSuite) {
         assertEquals(1, testSuite.getTestSuiteId());
         assertEquals(1, testSuite.getTestResultFk());
         assertEquals(TestData.testSuiteTestCount, testSuite.getTests());

@@ -1,5 +1,7 @@
-package io.github.ericdriggs.reportcard.gen.db.tables.pojos;
+package io.github.ericdriggs.reportcard.model;
 
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.StagePojo;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestResultPojo;
 import lombok.Builder;
 import lombok.Value;
 
@@ -7,24 +9,23 @@ import java.time.Duration;
 
 @Value
 @Builder
-public class StageTestResult implements HasTestResult {
-
-    io.github.ericdriggs.reportcard.gen.db.tables.pojos.StagePojo stage;
-    io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestResultPojo testResult;
+public class StageTestResultPojo {
+    StagePojo stage;
+    TestResultPojo testResultPojo;
 
     public boolean isSuccess() {
-        if (testResult == null || testResult.getIsSuccess() == null) {
+        if (testResultPojo == null || testResultPojo.getIsSuccess() == null) {
             return false;
         }
-        return testResult.getIsSuccess();
+        return testResultPojo.getIsSuccess();
     }
 
     public Duration getDuration() {
-        if (testResult == null || testResult.getTime() == null) {
+        if (testResultPojo == null || testResultPojo.getTime() == null) {
             return null;
         }
 
-        return Duration.ofSeconds(testResult.getTime().longValue());
+        return Duration.ofSeconds(testResultPojo.getTime().longValue());
     }
 
     public String getDurationString() {

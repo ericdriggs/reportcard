@@ -5,6 +5,8 @@ import io.github.ericdriggs.reportcard.cache.model.CompanyOrgRepoBranch;
 import io.github.ericdriggs.reportcard.cache.model.JobRun;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.*;
 
+import io.github.ericdriggs.reportcard.model.StageTestResultModel;
+import io.github.ericdriggs.reportcard.model.StageTestResultPojo;
 import io.github.ericdriggs.reportcard.model.TestResultModel;
 import io.github.ericdriggs.reportcard.util.JsonCompare;
 import org.jooq.DSLContext;
@@ -413,7 +415,7 @@ public class BrowseService extends AbstractPersistService {
         BranchStageViewResponse.BranchStageViewResponseBuilder rBuilder = BranchStageViewResponse.builder();
 
         CompanyOrgRepoBranch companyOrgRepoBranch = null;
-        Map<JobRun, Map<StageTestResult, Set<StoragePojo>>> jobRunStagesMap = new TreeMap<>(PojoComparators.JOB_RUN_DATE_DESCENDING_ORDER);
+        Map<JobRun, Map<StageTestResultPojo, Set<StoragePojo>>> jobRunStagesMap = new TreeMap<>(PojoComparators.JOB_RUN_DATE_DESCENDING_ORDER);
 
         for (Record record : recordResult) {
             if (companyOrgRepoBranch == null) {
@@ -432,9 +434,9 @@ public class BrowseService extends AbstractPersistService {
             if (job.getJobId() != null || run.getRunId() != null) {
                 JobRun jobRun = JobRun.builder().job(job).run(run).build();
 
-                jobRunStagesMap.computeIfAbsent(jobRun, k -> new TreeMap<>(PojoComparators.STAGE_TEST_RESULT_DATE_DESCENDING));
+                jobRunStagesMap.computeIfAbsent(jobRun, k -> new TreeMap<>(PojoComparators.STAGE_TEST_RESULT_POJO_DATE_DESCENDING));
 
-                Map<StageTestResult, Set<StoragePojo>> stageTestResult_StorageMap = jobRunStagesMap.get(jobRun);
+                Map<StageTestResultPojo, Set<StoragePojo>> stageTestResult_StorageMap = jobRunStagesMap.get(jobRun);
 
                 StagePojo stage = record.into(StagePojo.class);
                 TestResultPojo testResult = null;
@@ -443,7 +445,7 @@ public class BrowseService extends AbstractPersistService {
                 } catch (Exception ex) {
                     //NO-OP. allowed to be null. Would prefer more elegant handling of null
                 }
-                StageTestResult stageTestResult = StageTestResult.builder().stage(stage).testResult(testResult).build();
+                StageTestResultPojo stageTestResult = StageTestResultPojo.builder().stage(stage).testResultPojo(testResult).build();
                 stageTestResult_StorageMap.putIfAbsent(stageTestResult, new TreeSet<>(PojoComparators.STORAGE_CASE_INSENSITIVE_ORDER));
 
                 StoragePojo storage = null;
@@ -582,7 +584,7 @@ public class BrowseService extends AbstractPersistService {
         return ret;
     }
 
-    public Map<StageTestResult, Map<TestSuitePojo, Map<TestCasePojo, List<TestCaseFaultPojo>>>> getStageTestResultMap(String companyName, String orgName, String repoName, String branchName, Long jobId, Long runId, String stageName) {
+    public StageTestResultModel getStageTestResultMap(String companyName, String orgName, String repoName, String branchName, Long jobId, Long runId, String stageName) {
 
         Result<Record> recordResult =
                 dsl.select()
@@ -609,37 +611,19 @@ public class BrowseService extends AbstractPersistService {
         //
 
         StagePojo stage = null;
-        TestResultPojo testResult = null;
+        //TestResultPojo testResult = null;
 
-        Map<TestSuitePojo, Map<TestCasePojo, List<TestCaseFaultPojo>>> testSuiteTestCaseMap = new LinkedHashMap<>();
+        TestResultModel testResult = TestResultPersistService.testResultFromRecords(recordResult);
+
+        //Map<TestSuitePojo, Map<TestCasePojo, List<TestCaseFaultPojo>>> testSuiteTestCaseMap = new LinkedHashMap<>();
         for (Record record : recordResult) {
             if (stage == null) {
                 stage = record.into(StagePojo.class);
             }
-
-            if (testResult == null) {
-                testResult = getTestResultFromRecord(record);
-            }
-
-            TestSuitePojo testSuite = getTestSuiteFromRecord(record);
-            if (testSuite.getTestSuiteId() != null) {
-                testSuiteTestCaseMap.computeIfAbsent(testSuite, k -> new LinkedHashMap<>());
-            }
-
-            TestCasePojo testCase = getTestCaseFromRecord(record);
-            if (testCase.getTestCaseId() != null) {
-                testSuiteTestCaseMap.get(testSuite).computeIfAbsent(testCase, k -> new ArrayList<>());
-            }
-            TestCaseFaultPojo testCaseFault = getTestCaseFaultFromRecord(record);
-            if (testCaseFault.getTestCaseFaultId() != null) {
-                testSuiteTestCaseMap.get(testSuite).get(testCase).add(testCaseFault);
-            }
+            break;
         }
 
-        StageTestResult stageTestResult = StageTestResult.builder().stage(stage).testResult(testResult).build();
-
-        //Map<StageTestResult,Map<TestSuitePojo,List<TestCasePojo>>> testResultMapMap = new TreeMap<>();
-        return Collections.singletonMap(stageTestResult, testSuiteTestCaseMap);
+        return StageTestResultModel.builder().stage(stage).testResult(testResult).build();
     }
 
 

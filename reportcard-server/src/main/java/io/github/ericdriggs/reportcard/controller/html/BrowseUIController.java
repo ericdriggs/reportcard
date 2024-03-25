@@ -1,19 +1,13 @@
 package io.github.ericdriggs.reportcard.controller.html;
 
 import io.github.ericdriggs.reportcard.cache.model.*;
-import io.github.ericdriggs.reportcard.cache.model.util.TestResultConverterUtil;
-import io.github.ericdriggs.reportcard.gen.db.tables.pojos.StageTestResult;
-import io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCasePojo;
-import io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCaseFaultPojo;
-import io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestSuitePojo;
-import io.github.ericdriggs.reportcard.model.TestResultModel;
+import io.github.ericdriggs.reportcard.model.StageTestResultModel;
 import io.github.ericdriggs.reportcard.persist.BrowseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 //TODO: add reports endpoint after stages
@@ -101,9 +95,8 @@ public class BrowseUIController {
             @PathVariable Long jobId,
             @PathVariable Long runId,
             @PathVariable String stage) {
-        Map<StageTestResult, Map<TestSuitePojo, Map<TestCasePojo, List<TestCaseFaultPojo>>>> stageTestResultMap = browseService.getStageTestResultMap(company, org, repo, branch , jobId, runId, stage);
-        TestResultModel testResult = TestResultConverterUtil.fromStageTestResultMap(stageTestResultMap);
-        return new ResponseEntity<>(TestResultHtmlHelper.getTestResult(testResult), HttpStatus.OK);
+        StageTestResultModel stageTestResultModel = browseService.getStageTestResultMap(company, org, repo, branch , jobId, runId, stage);
+        return new ResponseEntity<>(TestResultHtmlHelper.getTestResult(stageTestResultModel.getTestResult()), HttpStatus.OK);
     }
 
 //

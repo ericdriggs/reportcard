@@ -5,6 +5,7 @@ import io.github.ericdriggs.reportcard.cache.model.*;
 import io.github.ericdriggs.reportcard.cache.model.CompanyOrgRepoBranch;
 import io.github.ericdriggs.reportcard.controller.StorageController;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.*;
+import io.github.ericdriggs.reportcard.model.StageTestResultPojo;
 import io.github.ericdriggs.reportcard.util.NumberStringUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -301,9 +302,9 @@ public class BrowseHtmlHelper {
 
         //JobRun row
         StringBuilder runRowsHtml = new StringBuilder();
-        for (Map.Entry<JobRun, Map<StageTestResult, Set<StoragePojo>>> jobRunEntry : branchStageViewResponse.getJobRun_StageTestResult_StoragesMap().entrySet()) {
+        for (Map.Entry<JobRun, Map<StageTestResultPojo, Set<StoragePojo>>> jobRunEntry : branchStageViewResponse.getJobRun_StageTestResult_StoragesMap().entrySet()) {
             final JobRun jobRun = jobRunEntry.getKey();
-            Map<StageTestResult, Set<StoragePojo>> stageTestResult_StorageMap = jobRunEntry.getValue();
+            Map<StageTestResultPojo, Set<StoragePojo>> stageTestResult_StorageMap = jobRunEntry.getValue();
             final JobPojo job = jobRun.getJob();
             final RunPojo run = jobRun.getRun();
 
@@ -315,8 +316,8 @@ public class BrowseHtmlHelper {
             final CompanyOrgRepoBranchJobRunStageDTO runPath = jobPath.toBuilder().runId(run.getRunId()).build();
 
             StringBuilder stagesHtml = new StringBuilder();
-            for (Map.Entry<StageTestResult, Set<StoragePojo>> stageTestResultEntry : stageTestResult_StorageMap.entrySet()) {
-                final StageTestResult stageTestResult = stageTestResultEntry.getKey();
+            for (Map.Entry<StageTestResultPojo, Set<StoragePojo>> stageTestResultEntry : stageTestResult_StorageMap.entrySet()) {
+                final StageTestResultPojo stageTestResult = stageTestResultEntry.getKey();
                 final StagePojo stage = stageTestResult.getStage();
                 final Set<StoragePojo> storages = stageTestResultEntry.getValue();
                 final boolean stageIsSuccess = stageTestResult.isSuccess();

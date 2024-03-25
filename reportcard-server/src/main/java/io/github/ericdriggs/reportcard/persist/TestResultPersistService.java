@@ -153,14 +153,8 @@ public class TestResultPersistService extends StagePathPersistService {
                                          .orderBy(TEST_RESULT.TEST_RESULT_ID, TEST_SUITE.TEST_SUITE_ID, TEST_CASE.TEST_CASE_ID, TEST_CASE_FAULT.TEST_CASE_FAULT_ID)
                                          .fetch();
 
-        Set<TestResultModel> testResultModels = testResultFromRecords(recordResult);
-        if (testResultModels.size() == 0) {
-            return null;
-        } else if (testResultModels.size() == 1) {
-            return testResultModels.iterator().next();
-        } else {
-            throw new IllegalStateException("expected 0 or 1 testResultModels, actual size: " + testResultModels.size());
-        }
+        return testResultFromRecords(recordResult);
+
     }
 
     public Set<TestResultModel> getTestResults(Long stageId) {
@@ -174,11 +168,22 @@ public class TestResultPersistService extends StagePathPersistService {
                                          .orderBy(TEST_RESULT.TEST_RESULT_ID, TEST_SUITE.TEST_SUITE_ID, TEST_CASE.TEST_CASE_ID, TEST_CASE_FAULT.TEST_CASE_FAULT_ID)
                                          .fetch();
 
-        return testResultFromRecords(recordResult);
+        return testResultsFromRecords(recordResult);
 
     }
 
-    protected static Set<TestResultModel> testResultFromRecords(Result<Record> recordResult) {
+    public static TestResultModel testResultFromRecords(Result<Record> recordResult) {
+        Set<TestResultModel> testResultModels = testResultsFromRecords(recordResult);
+        if (testResultModels.size() == 0) {
+            return null;
+        } else if (testResultModels.size() == 1) {
+            return testResultModels.iterator().next();
+        } else {
+            throw new IllegalStateException("expected 0 or 1 testResultModels, actual size: " + testResultModels.size());
+        }
+    }
+
+    public static Set<TestResultModel> testResultsFromRecords(Result<Record> recordResult) {
         Set<TestResultModel> testResults = new LinkedHashSet<>();
         TestResultModel prevTestResult = null;
         TestSuiteModel prevTestSuite = null;
@@ -194,7 +199,7 @@ public class TestResultPersistService extends StagePathPersistService {
 
             if (testResult.getTestResultId() == null || testSuite.getTestSuiteId() == null || testCase.getTestCaseId() == null) {
                 log.warn("null ids skipping record testResult.getTestResultId(): {}, testCase.getTestCaseId() : {}, testCase.getTestCaseId(): {}",
-                        testResult.getTestResultId(), testCase.getTestCaseId(), testCase.getTestCaseId() );
+                        testResult.getTestResultId(), testCase.getTestCaseId(), testCase.getTestCaseId());
                 continue;
             }
 
@@ -221,12 +226,14 @@ public class TestResultPersistService extends StagePathPersistService {
                 testCase = prevTestCase;
             }
 
-            //always add test case to current test suite
-            if (prevTestCaseFault == null || !prevTestCaseFault.getTestCaseFaultId().equals(testCaseFault.getTestCaseFaultId())) {
-                testCase.addTestCaseFault(testCaseFault);
-                prevTestCaseFault = testCaseFault;
-            } else {
-                testCaseFault = prevTestCaseFault;
+            if (testCaseFault.getTestCaseFaultId() != null) {
+                //always add test case to current test suite
+                if (prevTestCaseFault == null || !prevTestCaseFault.getTestCaseFaultId().equals(testCaseFault.getTestCaseFaultId())) {
+                    testCase.addTestCaseFault(testCaseFault);
+                    prevTestCaseFault = testCaseFault;
+                } else {
+                    testCaseFault = prevTestCaseFault;
+                }
             }
         }
 
@@ -238,7 +245,6 @@ public class TestResultPersistService extends StagePathPersistService {
 
 
     public Set<TestResultModel> getTestResultsBad(Long stageId) {
-
 
 
         Set<TestResultModel> testResults = new TreeSet<>(ModelComparators.TEST_RESULT_MODEL_CASE_INSENSITIVE_ORDER);

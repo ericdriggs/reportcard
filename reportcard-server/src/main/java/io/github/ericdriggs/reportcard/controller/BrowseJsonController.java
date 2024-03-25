@@ -1,10 +1,10 @@
 package io.github.ericdriggs.reportcard.controller;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import io.github.ericdriggs.reportcard.cache.dto.CompanyOrgRepoBranchDTO;
+import io.github.ericdriggs.reportcard.model.StageTestResultModel;
 import io.github.ericdriggs.reportcard.persist.BrowseService;
 import io.github.ericdriggs.reportcard.cache.dto.*;
 import io.github.ericdriggs.reportcard.cache.model.*;
@@ -113,7 +113,7 @@ public class BrowseJsonController {
     }
 
     @GetMapping(path = "company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/{runId}/stage/{stage}", produces = "application/json")
-    public ResponseEntity<Map<StageTestResult, Map<TestSuitePojo, Map<TestCasePojo, List<TestCaseFaultPojo>>>>> getStageTestResultsTestSuites(
+    public ResponseEntity<StageTestResultModel> getStageTestResultsTestSuites(
             @PathVariable String company,
             @PathVariable String org,
             @PathVariable String repo,

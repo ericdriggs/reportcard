@@ -2,6 +2,9 @@ package io.github.ericdriggs.reportcard.gen.db.tables.pojos;
 
 import io.github.ericdriggs.reportcard.cache.model.JobRun;
 
+import io.github.ericdriggs.reportcard.model.StageTestResultModel;
+import io.github.ericdriggs.reportcard.model.StageTestResultPojo;
+import io.github.ericdriggs.reportcard.model.TestResultModel;
 import io.github.ericdriggs.reportcard.util.JsonCompare;
 import org.apache.commons.lang3.ObjectUtils;
 
@@ -42,11 +45,14 @@ public class PojoComparators {
 
     public static final Comparator<StagePojo> STAGE_ASCENDING
             = new PojoComparators.StageAscendingComparator();
-    public static final Comparator<StageTestResult> STAGE_TEST_RESULT_COMPARATOR_CASE_INSENSITIVE_ORDER
+    public static final Comparator<StageTestResultModel> STAGE_TEST_RESULT_COMPARATOR_CASE_INSENSITIVE_ORDER
             = new StageTestResultCaseInsensitiveComparator();
 
-    public static final Comparator<StageTestResult> STAGE_TEST_RESULT_DATE_DESCENDING
-            = new StageTestResultDateDescendingCaseInsensitiveComparator();
+    public static final Comparator<StageTestResultPojo> STAGE_TEST_RESULT_POJO_DATE_DESCENDING
+            = new StageTestResultPojoDateDescendingCaseInsensitiveComparator();
+
+    public static final Comparator<StageTestResultModel> STAGE_TEST_RESULT_MODEL_DATE_DESCENDING
+            = new StageTestResultModelDateDescendingCaseInsensitiveComparator();
 
 
     public static final Comparator<TestResultPojo> TEST_RESULT_CASE_INSENSITIVE_ORDER
@@ -163,41 +169,60 @@ public class PojoComparators {
         }
     }
 
-    private static class StageTestResultDateDescendingCaseInsensitiveComparator implements Comparator<StageTestResult>, java.io.Serializable {
+    private static class StageTestResultModelDateDescendingCaseInsensitiveComparator implements Comparator<StageTestResultModel>, java.io.Serializable {
         @Serial
         private static final long serialVersionUID = 4582110728330687953L;
 
-        public int compare(StageTestResult val1, StageTestResult val2) {
-            return compareStageTestResultDateDescending(val1, val2);
+        public int compare(StageTestResultModel val1, StageTestResultModel val2) {
+            return compareStageTestResultModelDateDescending(val1, val2);
+        }
+    }
+
+    private static class StageTestResultPojoDateDescendingCaseInsensitiveComparator implements Comparator<StageTestResultPojo>, java.io.Serializable {
+        @Serial
+        private static final long serialVersionUID = -4913582120221201721L;
+
+        public int compare(StageTestResultPojo val1, StageTestResultPojo val2) {
+            return compareStageTestResultPojoDateDescending(val1, val2);
         }
     }
     private static class StageTestResultCaseInsensitiveComparator
-            implements Comparator<StageTestResult>, java.io.Serializable {
+            implements Comparator<StageTestResultModel>, java.io.Serializable {
         @Serial
         private static final long serialVersionUID = 3819926002811665135L;
 
-        public int compare(StageTestResult val1, StageTestResult val2) {
-            return compareStageTestResult(val1, val2);
+        public int compare(StageTestResultModel val1, StageTestResultModel val2) {
+            return compareStageTestResultModel(val1, val2);
         }
     }
 
-    public static int compareStageTestResultDateDescending(StageTestResult val1, StageTestResult val2) {
+    public static int compareStageTestResultModelDateDescending(StageTestResultModel val1, StageTestResultModel val2) {
         if (val1 == null || val2 == null) {
             return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
         }
         return chainCompare(
-                compareTestResultDateDescending(val1.getTestResult(), val2.getTestResult()),
+                compareTestResultModelDateDescending(val1.getTestResult(), val2.getTestResult()),
                 compareStage(val1.getStage(), val2.getStage())
         );
     }
 
-    public static int compareStageTestResult(StageTestResult val1, StageTestResult val2) {
+    public static int compareStageTestResultPojoDateDescending(StageTestResultPojo val1, StageTestResultPojo val2) {
+        if (val1 == null || val2 == null) {
+            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+        }
+        return chainCompare(
+                compareTestResultPojoDateDescending(val1.getTestResultPojo(), val2.getTestResultPojo()),
+                compareStage(val1.getStage(), val2.getStage())
+        );
+    }
+
+    public static int compareStageTestResultModel(StageTestResultModel val1, StageTestResultModel val2) {
         if (val1 == null || val2 == null) {
             return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
         }
         return chainCompare(
                 compareStage(val1.getStage(), val2.getStage()),
-                compareTestResult(val1.getTestResult(), val2.getTestResult())
+                compareTestResultModel(val1.getTestResult(), val2.getTestResult())
         );
     }
 
@@ -346,7 +371,7 @@ public class PojoComparators {
         );
     }
 
-    public static int compareTestResult(TestResultPojo val1, TestResultPojo val2) {
+    public static int compareTestResultModel(TestResultModel val1, TestResultModel val2) {
         if (val1 == null || val2 == null) {
             return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
         }
@@ -356,7 +381,28 @@ public class PojoComparators {
         );
     }
 
-    public static int compareTestResultDateDescending(TestResultPojo val1, TestResultPojo val2) {
+    public static int compareTestResultPojo(TestResultPojo val1, TestResultPojo val2) {
+        if (val1 == null || val2 == null) {
+            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+        }
+        return chainCompare(
+                compareLong(val1.getStageFk(), val2.getStageFk()),
+                ObjectUtils.compare(val1.getTestResultId(), val2.getTestResultId())
+        );
+    }
+
+    public static int compareTestResultModelDateDescending(TestResultModel val1, TestResultModel val2) {
+        if (val1 == null || val2 == null) {
+            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+        }
+        return chainCompare(
+                compareLocalDateTimeDescending(val1.getTestResultCreated(), val2.getTestResultCreated()),
+                compareLong(val1.getStageFk(), val2.getStageFk()),
+                ObjectUtils.compare(val1.getTestResultId(), val2.getTestResultId())
+        );
+    }
+
+    public static int compareTestResultPojoDateDescending(TestResultPojo val1, TestResultPojo val2) {
         if (val1 == null || val2 == null) {
             return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
         }
@@ -393,7 +439,7 @@ public class PojoComparators {
         private static final long serialVersionUID = -859866670502292563L;
 
         public int compare(TestResultPojo val1, TestResultPojo val2) {
-            return compareTestResult(val1, val2);
+            return compareTestResultPojo(val1, val2);
         }
     }
 
