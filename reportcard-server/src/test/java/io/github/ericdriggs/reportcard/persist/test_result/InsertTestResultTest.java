@@ -3,6 +3,7 @@ package io.github.ericdriggs.reportcard.persist.test_result;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.ericdriggs.reportcard.dto.TestCaseFault;
 import io.github.ericdriggs.reportcard.gen.db.TestData;
 import io.github.ericdriggs.reportcard.model.*;
 import io.github.ericdriggs.reportcard.persist.TestResultPersistService;
@@ -49,6 +50,11 @@ public class InsertTestResultTest extends AbstractTestResultPersistTest {
     final static String testCaseName = "testCaseName10";
     final static TestStatus testCaseStatus = TestStatus.FAILURE;
     final static BigDecimal testCaseTime = new BigDecimal("0.500");
+
+    final String testCaseFaultValue = "value1";
+    final String testCaseFaultMessage = "message1";
+    final String testCaseFaultType = "type1";
+    final FaultContext testCaseFaultContext = FaultContext.FAILURE;
 
     final static Map<String, String> externalLinksMap;
 
@@ -104,38 +110,51 @@ public class InsertTestResultTest extends AbstractTestResultPersistTest {
         assertEquals(1, testCases.size());
         final TestCaseModel testCase = testSuite.getTestCases().get(0);
 
-        Assertions.assertEquals(testResultErrorCount, testResult.getError());
-        Assertions.assertEquals(testResultFailureCount, testResult.getFailure());
-        Assertions.assertEquals(testResultSkippedCount, testResult.getSkipped());
-        Assertions.assertEquals(testResultTestCount, testResult.getTests());
+        List<TestCaseFaultModel> testCaseFaults = testCase.getTestCaseFaults();
+        assertFalse(testCaseFaults.isEmpty());
+        assertEquals(1, testCaseFaults.size());
+        final TestCaseFault testCaseFault = testCase.getTestCaseFaults().get(0);
+
+        assertEquals(testResultErrorCount, testResult.getError());
+        assertEquals(testResultFailureCount, testResult.getFailure());
+        assertEquals(testResultSkippedCount, testResult.getSkipped());
+        assertEquals(testResultTestCount, testResult.getTests());
         assertThat(testResultTime,  Matchers.comparesEqualTo(testResult.getTime()));
 
-        Assertions.assertEquals(testSuiteErrorCount, testSuite.getError());
-        Assertions.assertEquals(testSuiteFailureCount, testSuite.getFailure());
-        Assertions.assertEquals(testSuiteSkippedCount, testSuite.getSkipped());
-        Assertions.assertEquals(testSuiteName, testSuite.getName());
-        Assertions.assertEquals(testSuiteTestCount, testSuite.getTests());
+        assertEquals(testSuiteErrorCount, testSuite.getError());
+        assertEquals(testSuiteFailureCount, testSuite.getFailure());
+        assertEquals(testSuiteSkippedCount, testSuite.getSkipped());
+        assertEquals(testSuiteName, testSuite.getName());
+        assertEquals(testSuiteTestCount, testSuite.getTests());
         assertThat(testSuiteTime,  Matchers.comparesEqualTo(testSuite.getTime()));
-        Assertions.assertEquals(testSuitePackage, testSuite.getPackageName());
+        assertEquals(testSuitePackage, testSuite.getPackageName());
 
-        Assertions.assertEquals(testCaseClassName, testCase.getClassName());
-        Assertions.assertEquals(testCaseName, testCase.getName());
+        assertEquals(testCaseClassName, testCase.getClassName());
+        assertEquals(testCaseName, testCase.getName());
         assertEquals(testCaseStatus, testCase.getTestStatus());
-        Assertions.assertEquals(testCaseStatus.getStatusId(), testCase.getTestStatusFk());
+        assertEquals(testCaseStatus.getStatusId(), testCase.getTestStatusFk());
         assertThat(testCaseTime,  Matchers.comparesEqualTo(testCase.getTime()));
-    }
+
+        assertEquals(testCaseFaultContext.getFaultContextId(), testCaseFault.getFaultContextFk());
+        assertEquals(testCaseFaultMessage, testCaseFault.getMessage());
+        assertEquals(testCaseFaultType, testCaseFault.getType());
+        assertEquals(testCaseFaultValue, testCaseFault.getValue());
+    }   
 
     private void assertIdsAndFks(TestResultModel testResult) {
 
         final TestSuiteModel testSuite = testResult.getTestSuites().get(0);
         final TestCaseModel testCase = testSuite.getTestCases().get(0);
+        final TestCaseFault testCaseFault = testCase.getTestCaseFaults().get(0);
 
         assertNotNull(testResult.getTestResultId());
         assertNotNull(testSuite.getTestSuiteId());
         assertNotNull(testCase.getTestCaseId());
+        assertNotNull(testCaseFault.getTestCaseFaultId());
 
-        Assertions.assertEquals(testResult.getTestResultId(), testSuite.getTestResultFk());
-        Assertions.assertEquals(testSuite.getTestSuiteId(), testCase.getTestSuiteFk());
+        assertEquals(testResult.getTestResultId(), testSuite.getTestResultFk());
+        assertEquals(testSuite.getTestSuiteId(), testCase.getTestSuiteFk());
+        assertEquals(testCase.getTestCaseId(), testCaseFault.getTestCaseFk());
     }
 
     final static ObjectMapper objectMapper = new ObjectMapper();
@@ -206,6 +225,15 @@ public class InsertTestResultTest extends AbstractTestResultPersistTest {
                 testCase.setTestStatusFk(testCaseStatus.getStatusId());
                 testCase.setName(testCaseName);
                 testCase.setTime(testCaseTime);
+                TestCaseFaultModel testCaseFault = new TestCaseFaultModel();
+                {
+                    testCaseFault.setValue(testCaseFaultValue);
+                    testCaseFault.setMessage(testCaseFaultMessage);
+                    testCaseFault.setType(testCaseFaultType);
+                    testCaseFault.setFaultContextFk(FaultContext.FAILURE.getFaultContextId());
+                    testCaseFault.setFaultContext(FaultContext.FAILURE);
+                }
+                testCase.addTestCaseFault(testCaseFault);
                 testCases.add(testCase);
             }
             testSuite.setTestCases(testCases);

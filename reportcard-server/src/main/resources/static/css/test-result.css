@@ -24,7 +24,10 @@ body {
 .passed,
 .passed a {
     color: #080;
+}
 
+.indent {
+    margin-left:30px;
 }
 
 /*

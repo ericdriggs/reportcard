@@ -3,7 +3,6 @@ package io.github.ericdriggs.reportcard.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.github.ericdriggs.reportcard.xml.IsEmptyUtil;
 import io.github.ericdriggs.reportcard.xml.ResultCount;
-import lombok.Builder;
 
 import java.util.*;
 
@@ -70,11 +69,25 @@ public class TestSuiteModel extends io.github.ericdriggs.reportcard.dto.TestSuit
     public List<TestCaseModel> getTestCasesWithFaults() {
         List<TestCaseModel> matched = new ArrayList<>();
         for (TestCaseModel testCase : testCases) {
-            if (IsEmptyUtil.isCollectionEmpty(testCase.getTestCaseFaults())) {
+            if (!IsEmptyUtil.isCollectionEmpty(testCase.getTestCaseFaults())) {
                 matched.add(testCase);
             }
         }
         return matched;
+    }
+
+    @JsonIgnore
+    public TestStatus getTestStatus() {
+        if (getError() > 0) {
+            return TestStatus.ERROR;
+        }
+        else if (getFailure() > 0) {
+            return TestStatus.FAILURE;
+        }
+        else if (getIsSuccess()) {
+            return TestStatus.SUCCESS;
+        }
+        return TestStatus.SKIPPED;
     }
 
 

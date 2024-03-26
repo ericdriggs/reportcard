@@ -4,7 +4,6 @@ import io.github.ericdriggs.reportcard.xml.IsEmptyUtil;
 import io.github.ericdriggs.reportcard.xml.ResultCount;
 import lombok.Data;
 
-import java.time.Duration;
 import java.util.*;
 
 @Data
@@ -46,12 +45,6 @@ public class TestCaseModel extends io.github.ericdriggs.reportcard.dto.TestCase 
         return testCaseFaults;
     }
 
-    public Duration getDuration() {
-        if (time == null) {
-            return Duration.ofSeconds(0);
-        }
-        return Duration.ofSeconds(time.toBigInteger().longValue());
-    }
     public ResultCount getResultCount() {
         return testStatus.getResultCount(getTime());
     }

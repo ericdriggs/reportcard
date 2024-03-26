@@ -243,45 +243,6 @@ public class TestResultPersistService extends StagePathPersistService {
         return testResults;
     }
 
-
-    public Set<TestResultModel> getTestResultsBad(Long stageId) {
-
-
-        Set<TestResultModel> testResults = new TreeSet<>(ModelComparators.TEST_RESULT_MODEL_CASE_INSENSITIVE_ORDER);
-        testResults.addAll(
-                dsl.
-                        select(TEST_RESULT.fields())
-                        .from(STAGE
-                                .join(TEST_RESULT).on(TEST_RESULT.STAGE_FK.eq(STAGE.STAGE_ID))
-                        ).where(STAGE.STAGE_ID.eq(stageId))
-                        .fetchInto(TestResultModel.class));
-
-        for (TestResultModel testResult : testResults) {
-
-            List<TestSuiteModel> testSuites = dsl.
-                    select(TEST_SUITE.fields())
-                    .from(TEST_RESULT
-                            .join(TEST_SUITE).on(TEST_SUITE.TEST_RESULT_FK.eq(TEST_RESULT.TEST_RESULT_ID))
-                    ).where(TEST_RESULT.TEST_RESULT_ID.eq(testResult.getTestResultId()))
-                    .fetchInto(TestSuiteModel.class);
-
-            testResult.setTestSuites(testSuites);
-
-            for (TestSuiteModel testSuite : testResult.getTestSuites()) {
-                List<TestCaseModel> testCases = dsl.
-                        select(TEST_CASE.fields())
-                        .from(TEST_CASE
-                                .join(TEST_SUITE).on(TEST_CASE.TEST_SUITE_FK.eq(TEST_SUITE.TEST_SUITE_ID))
-                        ).where(TEST_SUITE.TEST_SUITE_ID.eq(testSuite.getTestSuiteId()))
-                        .fetchInto(TestCaseModel.class);
-
-                testSuite.setTestCases(testCases);
-            }
-
-        }
-        return testResults;
-    }
-
     public TestResultModel insertTestResult(TestResultModel testResult) {
 
         if (testResult.getStageFk() == null) {
@@ -353,19 +314,27 @@ public class TestResultPersistService extends StagePathPersistService {
                             .setClassName(testCase.getClassName())
                             .setName(testCase.getName())
                             .setTime(testCase.getTime())
-                            .setTestCaseId(testCase.getTestCaseId())
+                            .setTestCaseId(testCase.getTestCaseId()) //redundant? shouldn't store set the id?
                             .store();
 
-                    testCase = testCaseRecord.into(TestCaseModel.class);
-                    testCases.add(testCase);
-
+                    List<TestCaseFaultModel> testCaseFaults = new ArrayList<>();
                     for (TestCaseFaultModel testCaseFault : testCase.getTestCaseFaults()) {
                         if (testCaseFault.getTestCaseFaultId() == null) {
                             TestCaseFaultRecord testCaseFaultRecord = dsl.newRecord(TEST_CASE_FAULT);
+                            testCaseFaultRecord
+                                    .setMessage(testCaseFault.getMessage())
+                                    .setTestCaseFk(testCaseRecord.getTestCaseId())
+                                    .setType(testCaseFault.getType())
+                                    .setValue(testCaseFault.getValue())
+                                    .setFaultContextFk(testCaseFault.getFaultContextFk())
+                                    .store();
                             testCaseFault.setTestCaseFaultId(testCaseFaultRecord.getTestCaseFaultId());
-                            testCase.getTestCaseFaults().add(testCaseFault);
+                            testCaseFaults.add(testCaseFaultRecord.into(TestCaseFaultModel.class));
                         }
                     }
+                    testCase = testCaseRecord.into(TestCaseModel.class);
+                    testCase.setTestCaseFaults(testCaseFaults);
+                    testCases.add(testCase);
                 }
             }
             testSuite.setTestCases(testCases);

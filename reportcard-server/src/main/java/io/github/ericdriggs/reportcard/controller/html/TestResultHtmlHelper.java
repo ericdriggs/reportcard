@@ -4,11 +4,8 @@ import io.github.ericdriggs.reportcard.model.*;
 import io.github.ericdriggs.reportcard.util.NumberStringUtil;
 import io.github.ericdriggs.reportcard.xml.ResultCount;
 
-import java.time.Duration;
 import java.util.*;
 
-import static io.github.ericdriggs.reportcard.util.NumberStringUtil.bigDecimalToIntString;
-import static io.github.ericdriggs.reportcard.util.NumberStringUtil.bigDecimalToSecondDurationString;
 
 public enum TestResultHtmlHelper {
 
@@ -36,7 +33,7 @@ public enum TestResultHtmlHelper {
                     <link rel="stylesheet" href="/css/shared.css">
                     
                     <link rel="stylesheet" href="/css/test-result.css"/>
-                    <link rel="stylesheet" href="/js/test-result.js"/>
+                    <script src="/js/test-result.js"></script>
                 </head>
                 <div id="content">
                     <div id="overview" class="section">
@@ -44,7 +41,7 @@ public enum TestResultHtmlHelper {
                         <table class="classes show">
                             <thead>
                             <tr>
-                                <th>Class</th>
+                                <th>Test Suite (Class)</th>
                                 <th>Tests</th>
                                 <th>Failure</th>
                                 <th>skipped</th>
@@ -60,18 +57,18 @@ public enum TestResultHtmlHelper {
                     </div>
                     <div id="failures" class="failures section">
                         <h2 class="toggle" dataref="#" onclick="toggleSiblings(this)">Failed</h2>
-                        <ul class="show">
+                        <ul class="show indent">
                             <!--failureItems-->
                         </ul>
                     </div>
                     <div id="skipped" class="skipped section">
                         <h2 class="toggle" dataref="#" onclick="toggleSiblings(this)">Skipped</h2>
-                        <ul class="show">
+                        <ul class="show indent">
                             <!--skippedItems-->
                         </ul>
                     </div>
                     <div id="classes" class="section">
-                        <h2 class="toggle" dataref="#" onclick="toggleSiblings(this)">Classes</h2>
+                        <h2 class="toggle" dataref="#" onclick="toggleSiblings(this)">Test Suites (Classes)</h2>
                         <!--classRows-->
                     </div>
                 </html>
@@ -112,11 +109,11 @@ public enum TestResultHtmlHelper {
                 """
                 <tr class="{statusClass}">
                     <td><a onclick="showChildrenById('{testSuiteName}')" href="#{testSuiteName}">{testSuiteName}</a></td>
-                    <td>{tests}</td>
-                    <td>{failure}</td>
-                    <td>{skipped}</td>
-                    <td>{duration}</td>
-                    <td>{successRate}</td>
+                    <td class="number">{tests}</td>
+                    <td class="number">{failure}</td>
+                    <td class="number">{skipped}</td>
+                    <td class="number">{duration}</td>
+                    <td class="number">{successRate}</td>
                 </tr>
                 """;
 
@@ -127,20 +124,20 @@ public enum TestResultHtmlHelper {
                 .replace("{tests}", Integer.toString(resultCount.getTests()))
                 .replace("{failure}", Integer.toString(resultCount.getErrorsAndFailures()))
                 .replace("{skipped}", Integer.toString(resultCount.getSkipped()))
-                .replace("{duration}", Duration.ofSeconds(resultCount.getTime().toBigInteger().longValue()).toString())
-                .replace("{successRate}", Integer.toString(resultCount.getPassedPercent().toBigInteger().intValue()));
+                .replace("{duration}", NumberStringUtil.fromSecondBigDecimal(resultCount.getTime()))
+                .replace("{successRate}", NumberStringUtil.percentFromBigDecimal(resultCount.getPassedPercent()));
     }
 
     public static String getOverviewTotalRow(ResultCount resultCount) {
         final String baseTestClassTotalHtml =
                 """
                 <tr>
-                    <td>Total</td>
-                    <td>{tests}</td>
-                    <td>{failure}</td>
-                    <td>{skipped}</td>
-                    <td>{duration}</td>
-                    <td>{successRate}</td>
+                    <td class="number">Total</td>
+                    <td class="number">{tests}</td>
+                    <td class="number">{failure}</td>
+                    <td class="number">{skipped}</td>
+                    <td class="number">{duration}</td>
+                    <td class="number">{successRate}</td>
                 </tr>
                 """;
 
@@ -149,8 +146,8 @@ public enum TestResultHtmlHelper {
                 .replace("{tests}", NumberStringUtil.toString(resultCount.getTests()))
                 .replace("{failure}", NumberStringUtil.toString(resultCount.getErrorsAndFailures()))
                 .replace("{skipped}", NumberStringUtil.toString(resultCount.getSkipped()))
-                .replace("{duration}", NumberStringUtil.bigDecimalToSecondDurationString(resultCount.getTime())
-                .replace("{successRate}", NumberStringUtil.bigDecimalToIntString(resultCount.getPassedPercent())));
+                .replace("{duration}", NumberStringUtil.fromSecondBigDecimal(resultCount.getTime()))
+                .replace("{successRate}", NumberStringUtil.percentFromBigDecimal(resultCount.getPassedPercent()));
     }
 
     static String getStatusClass(TestStatus testStatus) {
@@ -218,7 +215,9 @@ public enum TestResultHtmlHelper {
                             <th>Result</th>
                         </tr>
                         </thead>
+                        <tbody>
                         <!--testCaseRows-->
+                        </tbody>
                     </table>
                     <!--failureMessages-->
                     <!--stdErr-->
@@ -234,6 +233,8 @@ public enum TestResultHtmlHelper {
                     .replace("<!--failureMessages-->", getFailureMessages(testSuite))
                     .replace("<!--stdErr-->", getStdErr(testSuite))
                     .replace("<!--stdOut-->", getStdOut(testSuite))
+                    .replace("{testSuiteName}", testSuite.getName())
+                    .replace("{statusClass}", getStatusClass(testSuite.getTestStatus()))
             ).append(ls);
         }
         return sb.toString();
@@ -255,13 +256,19 @@ public enum TestResultHtmlHelper {
             sb.append(baseTestCaseRow
                     .replace("{testSuiteName}", testSuite.getName())
                     .replace("{testName}", testCase.getName())
-                    .replace("{statusClass", getStatusClass(testCase.getTestStatus()))
+                    .replace("{duration}", NumberStringUtil.fromSecondBigDecimal(testCase.getTime()))
+                    .replace("{statusClass}", getStatusClass(testCase.getTestStatus()))
             );
         }
         return sb.toString();
     }
 
     public static String getFailureMessages(TestSuiteModel testSuite) {
+
+        final List<TestCaseModel> testCasesWithFaults = testSuite.getTestCasesWithFaults();
+        if (testCasesWithFaults.isEmpty()) {
+            return "";
+        }
         StringBuilder failureMessages = new StringBuilder();
 
         final String baseFailureMessages =
@@ -277,7 +284,7 @@ public enum TestResultHtmlHelper {
         final String baseFailureMessage =
                 """
                 <li class="failures">
-                    <a href="#" onclick="toggleSiblings(this)"><!--testSuiteName--></a>
+                    <a href="#{testCaseName}" onclick="toggleSiblings(this)"><!--testSuiteName--></a>
                     <!--faultMessage-->
                     <!--faultType-->
                     <pre class="failure-message show">
@@ -286,23 +293,34 @@ public enum TestResultHtmlHelper {
                 </li>
                 """;
 
-        for (TestCaseModel testCase : testSuite.getTestCases()) {
-            if (testCase.hasTestFault()) {
-                for (TestCaseFaultModel testCaseFault : testCase.getTestCaseFaults()) {
-                    failureMessages.append(
-                            baseFailureMessage
-                                    .replace("<!--faultMessage-->", "message: " + testCaseFault.getMessage() + "<br/>")
-                                    .replace("<!--faultType-->", "type: " + testCaseFault.getType() + "<br/>")
-                                    .replace("<!--faultValue-->", testCaseFault.getValue())
-                    );
-                }
-
+        for (TestCaseModel testCase : testCasesWithFaults) {
+            for (TestCaseFaultModel testCaseFault : testCase.getTestCaseFaults()) {
+                failureMessages.append(
+                        baseFailureMessage
+                                .replace("<!--faultMessage-->", "message: " + testCaseFault.getMessage() + "<br/>")
+                                .replace("<!--faultType-->", "type: " + testCaseFault.getType() + "<br/>")
+                                .replace("<!--faultValue-->", testCaseFault.getValue())
+                                .replace("<!--testSuiteName-->", testSuite.getName())
+                                .replace("{testCaseName}", testCase.getName())
+                );
             }
         }
+
         return baseFailureMessages.replace("<!--failureMessages-->", failureMessages.toString());
     }
 
     public static String getStdErr(TestSuiteModel testSuite) {
+
+        final String baseStdErr =
+                """
+                <div class="stderr button-wrapper hide">
+                    <button class="togglebutton" onclick="toggleSiblings(this)">Standard error</button>
+                    <pre class="stderr hide">
+                        <!--stdErrText-->
+                    </pre>
+                </div>
+                """;
+
         StringBuilder sb = new StringBuilder();
 
         if (testSuite.getSystemErr() != null) {
@@ -314,10 +332,23 @@ public enum TestResultHtmlHelper {
                 sb.append(testSuite.getName() + "." + testCase.getName() + ": <br/>" + testSuite.getSystemErr());
             }
         }
+        if (sb.isEmpty()) {
+            return "";
+        }
         return baseStdErr.replace("<!--stdErrText-->",sb.toString());
     }
 
     public static String getStdOut(TestSuiteModel testSuite) {
+
+        final String baseStdOut =
+                """
+                <div class="stdout button-wrapper hide">
+                    <button class="togglebutton" onclick="toggleSiblings(this)">Standard out</button>
+                    <pre class="stdout hide">
+                        <!--stdOutText-->
+                    </pre>
+                </div>
+                """;
         StringBuilder sb = new StringBuilder();
 
         if (testSuite.getSystemOut() != null) {
@@ -329,145 +360,11 @@ public enum TestResultHtmlHelper {
                 sb.append(testSuite.getName() + "." + testCase.getName() + ": <br/>" + testSuite.getSystemOut());
             }
         }
+        if (sb.isEmpty()) {
+            return "";
+        }
         return baseStdOut.replace("<!--stdOutText-->",sb.toString());
     }
 
-
-
-    public static final String baseStdErr =
-            """
-            <div class="stderr button-wrapper hide">
-                <button class="togglebutton" onclick="toggleSiblings(this)">Standard error</button>
-                <pre class="stderr hide">
-                    <!--stdErrText-->
-                </pre>
-            </div>
-            """;
-    public static final String baseStdOut =
-            """
-            <div class="stdout button-wrapper hide">
-                <button class="togglebutton" onclick="toggleSiblings(this)">Standard out</button>
-                <pre class="stdout hide">
-                    <!--stdOutText-->
-                </pre>
-            </div>
-            """;
-    /*
-    <div class="show" id="com.foo.qe.metrics.OpenApiCoverageMetricsPublisherTest" class="skipped">
-                        <a href="#" class="testclass skipped" onclick="toggleSiblings(this)">com.foo.qe.metrics.OpenApiCoverageMetricsPublisherTest</a>
-                        <table class="testcases hide">
-                            <thead>
-                            <tr>
-                                <th>Test</th>
-                                <th>Duration</th>
-                                <th>Result</th>
-                            </tr>
-                            </thead>
-                            <tr class="skipped" class="com.foo.FooTest">
-                                <td>publishCoverageMetricsPostTest()</td>
-                                <td>0s</td>
-                                <td>skipped</td>
-                            </tr>
-                        </table>
-                    </div>
-                    <div class="show" id="com.foo.qe.metrics.TestMetricsPublisherTest" class="passed">
-                        <a href="#" class="testclass passed" onclick="toggleSiblings(this)">com.foo.qe.metrics.TestMetricsPublisherTest</a>
-                        <table class="testcases hide">
-                            <thead>
-                            <tr>
-                                <th>Test</th>
-                                <th>Duration</th>
-                                <th>Result</th>
-                            </tr>
-                            </thead>
-                            <tr class="passed" class="com.foo.FooTest">
-                                <td>getTestResultTest()</td>
-                                <td>0s</td>
-                                <td>passed</td>
-                            </tr>
-                            <tr class="skipped" class="com.foo.FooTest">
-                                <td>publishTestMetricsTest()</td>
-                                <td>0s</td>
-                                <td>skipped</td>
-                            </tr>
-                        </table>
-                    </div>
-                    <div class="show" id="com.foo.coverage.PathRegexUtilTest" class="success">
-                        <a href="#" class="testclass success" onclick="toggleSiblings(this)">com.foo.coverage.PathRegexUtilTest</a>
-                        <table class="testcases hide">
-                            <thead>
-                            <tr>
-                                <th>Test</th>
-                                <th>Duration</th>
-                                <th>Result</th>
-                            </tr>
-                            </thead>
-                            <tr class="success" class="com.foo.FooTest">
-                                <td>longPathRegexTest</td>
-                                <td>0s</td>
-                                <td>passed</td>
-                            </tr>
-                            <tr class="passed" class="com.foo.FooTest">
-                                <td>shortPathRegexTest</td>
-                                <td>0s</td>
-                                <td>passed</td>
-                            </tr>
-                        </table>
-                    </div>
-                    <div class="show" id="com.foo.FooTest" class="failures">
-                        <a href="#" class="testclass failures" onclick="toggleSiblings(this)">com.foo.FooTest</a>
-                        <table class="testcases hide">
-                            <thead>
-                            <tr>
-                                <th>Test</th>
-                                <th>Duration</th>
-                                <th>Result</th>
-                            </tr>
-                            </thead>
-                            <tr class="failures" class="com.foo.FooTest">
-                                <td>failTest</td>
-                                <td>0.262s</td>
-                                <td>failed</td>
-                            </tr>
-                            <tr class="passed" class="com.foo.FooTest">
-                                <td>passTest</td>
-                                <td>0.262s</td>
-                                <td>passed</td>
-                            </tr>
-                            <tr class="skipped" class="com.foo.FooTest">
-                                <td>skipTest</td>
-                                <td>0.262s</td>
-                                <td>skipped</td>
-                            </tr>
-                        </table>
-                        <div class="failures button-wrapper hide">
-                            <button class="togglebutton" onclick="toggleSiblings(this)">Failure messages</button>
-                            <ul class="hide">
-                                <li class="failures">
-                                    <a href="#" onclick="toggleSiblings(this)">com.foo.FooTest</a>
-                                    <pre class="failure-message show">org.opentest4j.AssertionFailedError: expected: &lt;a&gt; but was: &lt;b&gt;
-            	at app//org.junit.jupiter.api.AssertionUtils.fail(AssertionUtils.java:55)
-            	at app//org.junit.jupiter.api.AssertionUtils.failNotEqual(AssertionUtils.java:62)
-            	at app//org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:182)
-            	at app//org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:177)
-            	at app//org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:1141)
-            	at app//com.foo.FooTest.failTest(FooTest.java:17)
-            				</pre>
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="stderr button-wrapper hide">
-                            <button class="togglebutton" onclick="toggleSiblings(this)">Standard error</button>
-                            <pre class="stderr hide">13:50:12.083 [Test worker] INFO  com.foo.FooTest - stderr entry 1
-            13:51:12.083 [Test worker] INFO  com.foo.FooTest - stderr entry 2
-            			</pre>
-                        </div>
-                        <div class="stdout button-wrapper hide">
-                            <button class="togglebutton" onclick="toggleSiblings(this)">Standard out</button>
-                            <pre class="stdout hide">13:50:12.083 [Test worker] INFO  com.foo.FooTest - stdout entry 1
-            			</pre>
-                        </div>
-                    </div>
-     */
 
 }
