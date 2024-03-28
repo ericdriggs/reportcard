@@ -1,6 +1,7 @@
 package io.github.ericdriggs.reportcard.model;
 
 import io.github.ericdriggs.file.FileUtils;
+import io.github.ericdriggs.reportcard.model.converter.surefire.SureFireResultParserUtil;
 import io.github.ericdriggs.reportcard.xml.ResultCount;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -31,7 +32,7 @@ public class ResultParserUtilTest {
         final String relativePath = "src/test/resources/format-samples/surefire-reports";
         final String absolutePath = FileUtils.absolutePathFromRelativePath(relativePath);
 
-        TestResultModel testResult = ResultParserUtil.fromSurefirePath(absolutePath);
+        TestResultModel testResult = SureFireResultParserUtil.fromSurefirePath(absolutePath);
         assertEquals(3, testResult.getTestSuites().size());
 
         Assertions.assertEquals(ERROR_COUNT, testResult.getError());
@@ -84,7 +85,7 @@ public class ResultParserUtilTest {
         final String invalidAbsolutePath = FileUtils.absolutePathFromRelativePath(invalidRelativePath);
 
         NoSuchFileException thrown = Assertions.assertThrows(NoSuchFileException.class, () -> {
-            ResultParserUtil.fromSurefirePath(invalidAbsolutePath);
+            SureFireResultParserUtil.fromSurefirePath(invalidAbsolutePath);
         });
 
     }

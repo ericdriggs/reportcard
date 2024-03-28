@@ -1,4 +1,4 @@
-package io.github.ericdriggs.reportcard.xml;
+package io.github.ericdriggs.reportcard.model.converter;
 
 import io.github.ericdriggs.reportcard.model.TestResultModel;
 import io.github.ericdriggs.reportcard.model.TestSuiteModel;
