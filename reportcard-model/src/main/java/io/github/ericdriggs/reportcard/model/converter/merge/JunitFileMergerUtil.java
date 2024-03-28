@@ -1,4 +1,4 @@
-package io.github.ericdriggs.reportcard.model.converter.junit;
+package io.github.ericdriggs.reportcard.model.converter.merge;
 
 import io.github.ericdriggs.file.FileUtils;
 import io.github.ericdriggs.reportcard.xml.junit.JunitParserUtil;
@@ -14,6 +14,10 @@ import java.util.List;
 
 import static io.github.ericdriggs.file.FileUtils.regexForExtension;
 
+@Deprecated
+/**
+ * @deprecated since does not support heterogeneous junit and surefire xml
+ */
 public class JunitFileMergerUtil {
 
     public static Testsuites mergeJunitFiles(String absoluteFolderPath) {

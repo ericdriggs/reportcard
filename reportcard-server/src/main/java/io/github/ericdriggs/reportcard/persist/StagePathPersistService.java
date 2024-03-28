@@ -298,6 +298,8 @@ public class StagePathPersistService extends AbstractPersistService {
                     .returningResult(JOB.JOB_ID, JOB.JOB_INFO, JOB.BRANCH_FK, JOB.JOB_INFO_STR, JOB.LAST_RUN)
                     .fetchOne().into(JobPojo.class);
 
+            //replace with request json since mysql does not sort keys alphabetically
+            insertedJob.setJobInfo(request.getJobInfoJson());
             stagePath.setJob(insertedJob);
         }
 

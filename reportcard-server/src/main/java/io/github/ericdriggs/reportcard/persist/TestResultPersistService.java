@@ -84,7 +84,6 @@ public class TestResultPersistService extends StagePathPersistService {
         return  JunitSurefireXmlParseUtil.parseTestXml(List.of(testXml));
     }
 
-
     public StagePathTestResult insertTestResult(StageDetails reportMetatData, TestResultModel testResult) {
         StagePath stagePath = getUpsertedStagePath(reportMetatData);
         return insertTestResult(stagePath, testResult);

@@ -1,5 +1,6 @@
 package io.github.ericdriggs.reportcard.model.converter;
 
+import io.github.ericdriggs.file.FileUtils;
 import io.github.ericdriggs.reportcard.model.TestResultModel;
 import io.github.ericdriggs.reportcard.model.TestSuiteModel;
 import io.github.ericdriggs.reportcard.model.converter.junit.JunitConvertersUtil;
@@ -15,11 +16,18 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.*;
+
+import static io.github.ericdriggs.file.FileUtils.regexForExtension;
 
 public enum JunitSurefireXmlParseUtil {
 
     ;//static methods only
+    public static TestResultModel parseTestXml(Path xmlFilePath) {
+        List<String> testXmlContents = FileUtils.fileContentsFromPathAndRegex(xmlFilePath, regexForExtension("xml"));
+        return parseTestXml(testXmlContents);
+    }
 
     public static TestResultModel parseTestXml(List<String> testXmlContents) {
         List<TestSuiteModel> testSuiteModels = new ArrayList<>();

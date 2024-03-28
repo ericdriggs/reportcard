@@ -1,16 +1,12 @@
 package io.github.ericdriggs.reportcard.controller;
 
 import io.github.ericdriggs.reportcard.controller.html.StorageHtmlHelper;
-import io.github.ericdriggs.reportcard.controller.util.JunitTarGzMergeUtil;
-import io.github.ericdriggs.reportcard.model.StageDetails;
-import io.github.ericdriggs.reportcard.model.StagePath;
-import io.github.ericdriggs.reportcard.model.StoragePath;
+import io.github.ericdriggs.reportcard.controller.util.TestXmlTarGzUtil;
+import io.github.ericdriggs.reportcard.model.*;
+import io.github.ericdriggs.reportcard.model.converter.JunitSurefireXmlParseUtil;
 import io.github.ericdriggs.reportcard.persist.StoragePersistService;
 import io.github.ericdriggs.reportcard.persist.StorageType;
 import io.github.ericdriggs.reportcard.persist.TestResultPersistService;
-import io.github.ericdriggs.reportcard.model.StagePathStorage;
-import io.github.ericdriggs.reportcard.model.StagePathStorageTestResult;
-import io.github.ericdriggs.reportcard.model.StagePathTestResult;
 import io.github.ericdriggs.reportcard.storage.DirectoryUploadResponse;
 import io.github.ericdriggs.reportcard.storage.S3Service;
 import io.github.ericdriggs.reportcard.util.StringMapUtil;
@@ -88,9 +84,10 @@ public class StorageController {
                                                 .externalLinks(StringMapUtil.stringToMap(externalLinks))
                                                 .build();
 
-        Path junitMerged = JunitTarGzMergeUtil.mergeJunitTarGz(junitXmls);
-        String junitXml = Files.readString(junitMerged);
-        StagePathTestResult stagePathTestResult = testResultPersistService.doPostXmlString(stageDetails, junitXml);
+        List<String> testXmlContents = TestXmlTarGzUtil.getFileContentsFromTarGz(junitXmls);
+        TestResultModel testResultModel = JunitSurefireXmlParseUtil.parseTestXml(testXmlContents);
+
+        StagePathTestResult stagePathTestResult = testResultPersistService.insertTestResult(stageDetails, testResultModel);
         StagePath stagePath = stagePathTestResult.getStagePath();
         final Long stageId = stagePath.getStage().getStageId();
         StagePathStorage stagePathStorage = doPostStageStorageTarGZ(stageId, label, reports, indexFile, storageType );
