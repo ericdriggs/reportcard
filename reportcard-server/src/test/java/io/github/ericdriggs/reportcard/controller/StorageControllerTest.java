@@ -57,7 +57,7 @@ public class StorageControllerTest {
     void postStorageOnlyTest() throws IOException {
 
         final String prefix = "abcd1234";
-        MultipartFile file = TestResultPersistServiceTest.getMockJunitMultipartFile(resourceReader);
+        MultipartFile file = TestResultPersistServiceTest.getMockJunitMultipartFile(resourceReader, "classpath:format-samples/sample-junit-small.xml");
         MultipartFile[] files = new MultipartFile[1];
         files[0] = file;
 

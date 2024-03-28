@@ -173,7 +173,10 @@ public class StagePathPersistService extends AbstractPersistService {
                 _job = record.into(JobRecord.class).into(JobPojo.class);
                 if (stageDetails != null && !ObjectUtils.isEmpty(stageDetails.getJobInfo()) && !StringUtils.isEmpty(_job.getJobInfo())) {
                     @SuppressWarnings("unchecked")
+
+                    //Alphabetize keys since mysql does not
                     TreeMap<String, String> jobInfo = mapper.readValue(_job.getJobInfo(), TreeMap.class);
+                    _job.setJobInfo(mapper.writeValueAsString(jobInfo));
 
                     if (!jobInfo.equals(stageDetails.getJobInfo())) {
                         log.debug("jobInfo: {}  != request.getJobInfo: {}", jobInfo, stageDetails.getJobInfo());

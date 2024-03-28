@@ -39,12 +39,12 @@ public class TestResultPersistServiceTest {
         this.testResultPersistService = testResultPersistService;
 
         this.xmlJunit = resourceReader.resourceAsString(xmlPath);
-        this.mulipartFile = getMockJunitMultipartFile(resourceReader);
+        this.mulipartFile = getMockJunitMultipartFile(resourceReader,"classpath:format-samples/sample-junit-small.xml");
     }
 
-    //FIXME: remove unused classpath param
-    public static MultipartFile getMockJunitMultipartFile(ResourceReaderComponent resourceReader) {
-        String xmlJunit = resourceReader.resourceAsString("classpath:format-samples/sample-junit-small.xml");
+
+    public static MultipartFile getMockJunitMultipartFile(ResourceReaderComponent resourceReader, String xmlClassPath) {
+        String xmlJunit = resourceReader.resourceAsString(xmlClassPath);
         return new MockMultipartFile(
                 "file",
                 "junit.xml",

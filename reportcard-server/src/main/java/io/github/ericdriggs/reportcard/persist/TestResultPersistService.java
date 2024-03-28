@@ -1,29 +1,20 @@
 package io.github.ericdriggs.reportcard.persist;
 
-import io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestSuitePojo;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.*;
 import io.github.ericdriggs.reportcard.model.TestCaseModel;
 import io.github.ericdriggs.reportcard.model.TestResultModel;
 import io.github.ericdriggs.reportcard.model.TestSuiteModel;
 import io.github.ericdriggs.reportcard.model.*;
-import io.github.ericdriggs.reportcard.model.converter.junit.JunitConvertersUtil;
+import io.github.ericdriggs.reportcard.model.converter.JunitSurefireXmlParseUtil;
 import io.github.ericdriggs.reportcard.model.StagePathTestResult;
-import io.github.ericdriggs.reportcard.xml.XmlUtil;
-import io.github.ericdriggs.reportcard.xml.junit.JunitParserUtil;
-import io.github.ericdriggs.reportcard.xml.junit.Testsuites;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.Result;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -32,7 +23,6 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import static io.github.ericdriggs.reportcard.gen.db.Tables.*;
-import static org.jooq.impl.DSL.select;
 
 /**
  * Main db service class.
@@ -66,7 +56,7 @@ public class TestResultPersistService extends StagePathPersistService {
     }
 
     public StagePathTestResult doPostXmlString(StageDetails stageDetails, String xmlString) {
-        TestResultModel testResult = fromXmlString(xmlString);
+        TestResultModel testResult = JunitSurefireXmlParseUtil.parseTestXml(List.of(xmlString));
         testResult.setExternalLinks(stageDetails.getExternalLinksJson());
         return insertTestResult(stageDetails, testResult);
     }
@@ -75,7 +65,7 @@ public class TestResultPersistService extends StagePathPersistService {
         StagePath stagePath = getOrInsertStage(runId, stageName);
 
         Map<StagePath, TestResultModel> stagePathTestResultMap = null;
-        TestResultModel testResult = fromXmlString(xmlString);
+        TestResultModel testResult = JunitSurefireXmlParseUtil.parseTestXml(List.of(xmlString));
         return insertTestResult(stagePath, testResult);
     }
 
@@ -87,37 +77,13 @@ public class TestResultPersistService extends StagePathPersistService {
         return insertTestResult(stagePath, testResult);
     }
 
-    public TestResultModel fromXmlString(String xmlString) {
-
-        if (StringUtils.isEmpty(xmlString)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing file");
-        }
-
-        //TODO: check all strings -- handle mixed case of testsuite and testsuites
-        String rootElementName = XmlUtil.getXmlRootElementName(xmlString);
-        if ("testsuite".equals(rootElementName)) {
-            return fromTestSuiteList(xmlString);
-        } else if ("testsuites".equals(rootElementName)) {
-            return fromTestSuites(xmlString);
-        }
-        throw new IllegalArgumentException("not list of junit xml");
-    }
-
     @SneakyThrows(IOException.class)
     public TestResultModel fromXmlPath(Path xmlPath)  {
 
-        return fromXmlString(Files.readString(xmlPath));
+        final String testXml =Files.readString(xmlPath);
+        return  JunitSurefireXmlParseUtil.parseTestXml(List.of(testXml));
     }
 
-    public TestResultModel fromTestSuites(String xmlString) {
-        Testsuites testsuites = JunitParserUtil.parseTestSuites(xmlString);
-        return JunitConvertersUtil.modelMapper.map(testsuites, TestResultModel.class);
-    }
-
-    public TestResultModel fromTestSuiteList(String xmlString) {
-        Testsuites testsuites = JunitParserUtil.parseTestSuites(xmlString);
-        return JunitConvertersUtil.doFromJunitToModelTestResult(testsuites);
-    }
 
     public StagePathTestResult insertTestResult(StageDetails reportMetatData, TestResultModel testResult) {
         StagePath stagePath = getUpsertedStagePath(reportMetatData);

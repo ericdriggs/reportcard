@@ -2,13 +2,10 @@ package io.github.ericdriggs.reportcard.controller;
 
 import io.github.ericdriggs.reportcard.ReportcardApplication;
 import io.github.ericdriggs.reportcard.config.LocalStackConfig;
-import io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestStatusPojo;
-import io.github.ericdriggs.reportcard.model.StageDetails;
-import io.github.ericdriggs.reportcard.model.StagePath;
-import io.github.ericdriggs.reportcard.model.TestResultModel;
+import io.github.ericdriggs.reportcard.gen.db.TestData;
+import io.github.ericdriggs.reportcard.model.*;
 import io.github.ericdriggs.reportcard.persist.BrowseService;
 import io.github.ericdriggs.reportcard.persist.test_result.TestResultPersistServiceTest;
-import io.github.ericdriggs.reportcard.model.StagePathTestResult;
 import io.github.ericdriggs.reportcard.storage.S3Service;
 import io.github.ericdriggs.reportcard.xml.ResourceReaderComponent;
 import lombok.extern.slf4j.Slf4j;
@@ -52,61 +49,88 @@ public class JunitControllerTest {
 
     private final static ObjectMapper mappper = new ObjectMapper();
 
+    static StageDetails getStageDetails(String stageName) {
+        return StageDetails.builder()
+                           .company(TestData.company)
+                           .org(TestData.org)
+                           .repo(TestData.repo)
+                           .branch(TestData.branch)
+                           .sha(TestData.sha)
+                           .jobInfo(TestData.jobInfo)
+                           .runReference(TestData.runReference)
+                           .stage(stageName)
+                           .build();
+    }
+
     @Test
     void postJunitTest() throws IOException {
 
-        List<TestStatusPojo> testStatuses = browseService.getAllTestStatuses();
-        assertNotNull(testStatuses);
-        log.info("testStatuses: {}", testStatuses);
+        final String stage = "postJunitTest";
+        final String xmlClassPath = "classpath:format-samples/sample-junit-small.xml";
+        postJunitFixture(stage, xmlClassPath);
+    }
+
+    @Test
+    void postJunitFailureTest() {
+        final String stage = "postJunitFailureTest";
+        final String xmlClassPath = "classpath:format-samples/fault/junit-faults.xml";
+        StagePathTestResult stagePathTestResult = postJunitFixture(stage, xmlClassPath);
+        TestResultModel testResult = stagePathTestResult.getTestResult();
+        assertEquals(1, testResult.getTestSuites().size());
+        final TestSuiteModel testSuite = testResult.getTestSuites().get(0);
+        assertEquals(5, testSuite.getTests());
+        assertEquals(4, testSuite.getTestCasesWithFaults().size());
+        assertTestCaseFaults(testSuite);
+    }
+
+    @Test
+    void postSurefireFailureTest() {
+        final String stage = "postSurefireFailureTest";
+        final String xmlClassPath = "classpath:format-samples/fault/surefire-faults.xml";
+        StagePathTestResult stagePathTestResult = postJunitFixture(stage, xmlClassPath);
+        TestResultModel testResult = stagePathTestResult.getTestResult();
+        assertEquals(1, testResult.getTestSuites().size());
+        final TestSuiteModel testSuite = testResult.getTestSuites().get(0);
+        assertEquals(4, testSuite.getTests());
+        assertEquals(3, testSuite.getTestCasesWithFaults().size());
+        assertTestCaseFaults(testSuite);
+    }
+
+    static void assertTestCaseFaults(TestSuiteModel testSuite) {
+        for (TestCaseModel testCase : testSuite.getTestCasesWithFaults()) {
+            assertNotNull(testCase.getTestCaseFaults());
+            assertEquals(1, testCase.getTestCaseFaults().size());
+            final TestCaseFaultModel testCaseFault = testCase.getTestCaseFaults().get(0);
+            assertNotNull(testCaseFault.getMessage());
+            assertNotNull(testCaseFault.getType());
+            assertNotNull(testCaseFault.getValue());
+        }
+    }
 
 
-        StageDetails stageDetails =
-                StageDetails.builder()
-                        .company("company1")
-                        .org("org1")
-                        .repo("repo1")
-                        .branch("branch1")
-                        .sha("sha1")
-                        .jobInfo(new TreeMap<>(Collections.singletonMap("host", "www.foo.com")))
-                        .runReference("abc123")
-                        .stage("api")
-                        .build();
+    StagePathTestResult postJunitFixture(String stage, String xmlClassPath) {
+        final StageDetails stageDetails = getStageDetails(stage);
 
-        System.out.println(mappper.writerWithDefaultPrettyPrinter().writeValueAsString(stageDetails));
-
-        MultipartFile file = TestResultPersistServiceTest.getMockJunitMultipartFile(resourceReader);
-        String stageDetailsJson =
-                """
-                {
-                  "company" : "company1",
-                  "org" : "org1",
-                  "repo" : "repo1",
-                  "branch" : "branch1",
-                  "sha" : "sha1",
-                  "jobInfo" : {
-                    "host" : "www.foo.com"
-                  },
-                  "runReference" : "abc123",
-                  "stage" : "api",
-                  "externalLinks" : null
-                }""";
-
-
-        StageDetails stageDetailsParsed = mappper.readValue(stageDetailsJson, StageDetails.class);
+        MultipartFile file = TestResultPersistServiceTest.getMockJunitMultipartFile(resourceReader, xmlClassPath);
         ResponseEntity<StagePathTestResult> response = junitController.postJunitXmlStageDetails(stageDetails, file);
         StagePathTestResult result = response.getBody();
         assertNotNull(result);
 
         final StagePath stagePath = result.getStagePath();
-        assertEquals("company1", stagePath.getCompany().getCompanyName());
-        assertEquals("org1", stagePath.getOrg().getOrgName());
-        assertEquals("repo1", stagePath.getRepo().getRepoName());
-        assertEquals("branch1", stagePath.getBranch().getBranchName());
-        assertEquals("{\"host\": \"www.foo.com\"}", stagePath.getJob().getJobInfo());
-        assertEquals("abc123", stagePath.getRun().getRunReference());
-        assertEquals("api", stagePath.getStage().getStageName());
+        assertStageDetails(stageDetails, stagePath);
+
         final TestResultModel testResult = result.getTestResult();
         assertNotNull(testResult.getTests());
+        return result;
+    }
 
+    static void assertStageDetails(StageDetails stageDetails, StagePath stagePath) {
+        assertEquals(stageDetails.getCompany(), stagePath.getCompany().getCompanyName());
+        assertEquals(stageDetails.getOrg(), stagePath.getOrg().getOrgName());
+        assertEquals(stageDetails.getRepo(), stagePath.getRepo().getRepoName());
+        assertEquals(stageDetails.getBranch(), stagePath.getBranch().getBranchName());
+        assertEquals(stageDetails.getJobInfoJson(), stagePath.getJob().getJobInfo());
+        assertEquals(stageDetails.getRunReference(), stagePath.getRun().getRunReference());
+        assertEquals(stageDetails.getStage(), stagePath.getStage().getStageName());
     }
 }
