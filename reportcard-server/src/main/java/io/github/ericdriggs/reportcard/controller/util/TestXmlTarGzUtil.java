@@ -21,6 +21,7 @@ public enum TestXmlTarGzUtil {
     public static List<String> getFileContentsFromTarGz(MultipartFile tarGz) {
         Path tempDir = Files.createTempDirectory("tar-gz");
         try {
+            extractTarGz(tempDir, tarGz);
             return FileUtils.fileContentsFromPathAndRegex(tempDir, regexForExtension("xml"));
         } finally {
             if (tempDir != null) {

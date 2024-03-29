@@ -604,7 +604,7 @@ public class BrowseService extends AbstractPersistService {
                    .leftJoin(TEST_RESULT).on(TEST_RESULT.STAGE_FK.eq(STAGE.STAGE_ID))
                    .leftJoin(TEST_SUITE).on(TEST_SUITE.TEST_RESULT_FK.eq(TEST_RESULT.TEST_RESULT_ID))
                    .leftJoin(TEST_CASE).on(TEST_CASE.TEST_SUITE_FK.eq(TEST_SUITE.TEST_SUITE_ID))
-                   .leftJoin(TEST_CASE_FAULT).on(TEST_CASE_FAULT.TEST_CASE_FAULT_ID.eq(TEST_CASE.TEST_CASE_ID))
+                   .leftJoin(TEST_CASE_FAULT).on(TEST_CASE_FAULT.TEST_CASE_FK.eq(TEST_CASE.TEST_CASE_ID))
                    .where(COMPANY.COMPANY_NAME.eq(companyName))
                    .fetch();
 

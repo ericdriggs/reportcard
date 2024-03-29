@@ -319,6 +319,7 @@ public class BrowseHtmlHelper {
             for (Map.Entry<StageTestResultPojo, Set<StoragePojo>> stageTestResultEntry : stageTestResult_StorageMap.entrySet()) {
                 final StageTestResultPojo stageTestResult = stageTestResultEntry.getKey();
                 final StagePojo stage = stageTestResult.getStage();
+                final CompanyOrgRepoBranchJobRunStageDTO stagePath = runPath.toBuilder().stageName(stage.getStageName()).build();
                 final Set<StoragePojo> storages = stageTestResultEntry.getValue();
                 final boolean stageIsSuccess = stageTestResult.isSuccess();
 
@@ -326,6 +327,7 @@ public class BrowseHtmlHelper {
                         .replace("{stageClass}", stageIsSuccess ? "stage-pass" : "stage-fail")
                         .replace("{stageName}", stage.getStageName())
                         .replace("{stageTime}", stageTestResult.getDurationString())
+                        .replace("{stageUrl}", getUrl(stagePath))
                         .replace("<!--reportLinks-->", getReportLinks(storages));
                 stagesHtml.append(stageHtml);
             }
@@ -363,7 +365,7 @@ public class BrowseHtmlHelper {
             """
             <div id="stage-view">
               <fieldset>
-                <legend>RunPojo stages view</legend>
+                <legend>Run stages view</legend>
                 <table class="sortable" id="stage-table">
                   <tbody>
                     <!--runRows-->
@@ -394,7 +396,7 @@ public class BrowseHtmlHelper {
     protected final static String stageItemHtmlBase =
             """
             <fieldset class="stage {stageClass}">
-              <legend class="stage-legend">{stageName}<br><span class="info">({stageTime})</span></legend>
+              <legend class="stage-legend"><a href="{stageUrl}">{stageName}</a><br><span class="info">({stageTime})</span></legend>
               <!--reportLinks-->
             </fieldset>
             """;
