@@ -74,7 +74,7 @@ public class BrowseUIController {
 
     @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/{runId}",
             "company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/{runId}/stage"}, produces = "text/html")
-    public ResponseEntity<String> getStagesByIds(
+    public ResponseEntity<String> getStageTestResults(
             @PathVariable String company,
             @PathVariable String org,
             @PathVariable String repo,
