@@ -4,7 +4,8 @@
 package io.github.ericdriggs.reportcard.gen.db.tables.records;
 
 
-import io.github.ericdriggs.reportcard.gen.db.tables.TestResult;
+import io.github.ericdriggs.reportcard.gen.db.tables.TestResultTable;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestResultPojo;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -25,7 +26,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> implements Record11<Long, Long, Integer, Integer, Integer, Integer, BigDecimal, LocalDateTime, String, Boolean, Boolean> {
 
-    private static final long serialVersionUID = -1855125137;
+    private static final long serialVersionUID = -1429854772;
 
     /**
      * Setter for <code>reportcard.test_result.test_result_id</code>.
@@ -217,57 +218,57 @@ public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> impl
 
     @Override
     public Field<Long> field1() {
-        return TestResult.TEST_RESULT.TEST_RESULT_ID;
+        return TestResultTable.TEST_RESULT.TEST_RESULT_ID;
     }
 
     @Override
     public Field<Long> field2() {
-        return TestResult.TEST_RESULT.STAGE_FK;
+        return TestResultTable.TEST_RESULT.STAGE_FK;
     }
 
     @Override
     public Field<Integer> field3() {
-        return TestResult.TEST_RESULT.TESTS;
+        return TestResultTable.TEST_RESULT.TESTS;
     }
 
     @Override
     public Field<Integer> field4() {
-        return TestResult.TEST_RESULT.SKIPPED;
+        return TestResultTable.TEST_RESULT.SKIPPED;
     }
 
     @Override
     public Field<Integer> field5() {
-        return TestResult.TEST_RESULT.ERROR;
+        return TestResultTable.TEST_RESULT.ERROR;
     }
 
     @Override
     public Field<Integer> field6() {
-        return TestResult.TEST_RESULT.FAILURE;
+        return TestResultTable.TEST_RESULT.FAILURE;
     }
 
     @Override
     public Field<BigDecimal> field7() {
-        return TestResult.TEST_RESULT.TIME;
+        return TestResultTable.TEST_RESULT.TIME;
     }
 
     @Override
     public Field<LocalDateTime> field8() {
-        return TestResult.TEST_RESULT.TEST_RESULT_CREATED;
+        return TestResultTable.TEST_RESULT.TEST_RESULT_CREATED;
     }
 
     @Override
     public Field<String> field9() {
-        return TestResult.TEST_RESULT.EXTERNAL_LINKS;
+        return TestResultTable.TEST_RESULT.EXTERNAL_LINKS;
     }
 
     @Override
     public Field<Boolean> field10() {
-        return TestResult.TEST_RESULT.IS_SUCCESS;
+        return TestResultTable.TEST_RESULT.IS_SUCCESS;
     }
 
     @Override
     public Field<Boolean> field11() {
-        return TestResult.TEST_RESULT.HAS_SKIP;
+        return TestResultTable.TEST_RESULT.HAS_SKIP;
     }
 
     @Override
@@ -470,14 +471,14 @@ public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> impl
      * Create a detached TestResultRecord
      */
     public TestResultRecord() {
-        super(TestResult.TEST_RESULT);
+        super(TestResultTable.TEST_RESULT);
     }
 
     /**
      * Create a detached, initialised TestResultRecord
      */
     public TestResultRecord(Long testResultId, Long stageFk, Integer tests, Integer skipped, Integer error, Integer failure, BigDecimal time, LocalDateTime testResultCreated, String externalLinks, Boolean isSuccess, Boolean hasSkip) {
-        super(TestResult.TEST_RESULT);
+        super(TestResultTable.TEST_RESULT);
 
         setTestResultId(testResultId);
         setStageFk(stageFk);
@@ -495,8 +496,8 @@ public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> impl
     /**
      * Create a detached, initialised TestResultRecord
      */
-    public TestResultRecord(io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestResult value) {
-        super(TestResult.TEST_RESULT);
+    public TestResultRecord(TestResultPojo value) {
+        super(TestResultTable.TEST_RESULT);
 
         if (value != null) {
             setTestResultId(value.getTestResultId());

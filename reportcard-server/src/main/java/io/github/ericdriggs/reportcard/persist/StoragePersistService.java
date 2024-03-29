@@ -1,7 +1,7 @@
 package io.github.ericdriggs.reportcard.persist;
 
 import io.github.ericdriggs.reportcard.gen.db.tables.daos.StorageDao;
-import io.github.ericdriggs.reportcard.gen.db.tables.pojos.Storage;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.StoragePojo;
 import io.github.ericdriggs.reportcard.model.StagePath;
 import io.github.ericdriggs.reportcard.model.StagePathStorage;
 import org.jooq.DSLContext;
@@ -36,12 +36,12 @@ public class StoragePersistService extends StagePathPersistService {
 
     public StagePathStorage persistStoragePath(String indexFile, String label, String prefix, Long stageFk, StorageType storageType) {
         final StagePath stagePath = getStagePath(stageFk);
-        final Storage storage = insertStorage(indexFile, label, prefix, stageFk, storageType);
+        final StoragePojo storage = insertStorage(indexFile, label, prefix, stageFk, storageType);
         return StagePathStorage.builder().stagePath(stagePath).storage(storage).build();
     }
 
-    protected Storage insertStorage(String indexFile, String label, String prefix, Long stageFk, StorageType storageType) {
-        Storage storage = new Storage()
+    protected StoragePojo insertStorage(String indexFile, String label, String prefix, Long stageFk, StorageType storageType) {
+        StoragePojo storage = new StoragePojo()
                 .setIndexFile(indexFile)
                 .setLabel(label)
                 .setPrefix(prefix)

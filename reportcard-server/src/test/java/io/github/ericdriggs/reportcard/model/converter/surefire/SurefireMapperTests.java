@@ -1,9 +1,9 @@
 package io.github.ericdriggs.reportcard.model.converter.surefire;
 
-import io.github.ericdriggs.reportcard.model.TestCase;
+import io.github.ericdriggs.reportcard.model.TestCaseModel;
 import io.github.ericdriggs.reportcard.model.TestStatus;
-import io.github.ericdriggs.reportcard.model.TestResult;
-import io.github.ericdriggs.reportcard.model.TestSuite;
+import io.github.ericdriggs.reportcard.model.TestResultModel;
+import io.github.ericdriggs.reportcard.model.TestSuiteModel;
 import io.github.ericdriggs.reportcard.xml.surefire.Testsuite;
 import io.github.ericdriggs.reportcard.xml.surefire.Properties;
 import io.github.ericdriggs.reportcard.xml.surefire.Property;
@@ -31,7 +31,7 @@ public class SurefireMapperTests {
         assertNull(surefireTestCase.getError());
         assertNull(surefireTestCase.getSkipped());
 
-        TestCase modelTestCase = modelMapper.map(surefireTestCase, TestCase.class);
+        TestCaseModel modelTestCase = modelMapper.map(surefireTestCase, TestCaseModel.class);
         assertEquals(surefireTestCase.getClassname(), modelTestCase.getClassName());
         assertEquals(surefireTestCase.getName(), modelTestCase.getName());
         assertEquals(surefireTestCase.getTime(), modelTestCase.getTime().toPlainString());
@@ -79,7 +79,7 @@ public class SurefireMapperTests {
             }
         }
 //
-        TestSuite modelTestSuite = modelMapper.map(suite, TestSuite.class);
+        TestSuiteModel modelTestSuite = modelMapper.map(suite, TestSuiteModel.class);
         {
             assertEquals(3, modelTestSuite.getError());
             assertEquals(3, modelTestSuite.getFailure());
@@ -98,8 +98,14 @@ public class SurefireMapperTests {
             assertEquals(8, modelTestSuite.getTests());
             assertEquals(new BigDecimal("9.84"), modelTestSuite.getTime());
             {
-                List<TestCase> testcases = modelTestSuite.getTestCases();
+                List<TestCaseModel> testcases = modelTestSuite.getTestCases();
                 assertEquals(TestStatus.SUCCESS, testcases.get(0).getTestStatus());
+
+                for (TestCaseModel testCaseModel : testcases) {
+                    if (testCaseModel.hasTestFault()) {
+                        assertTrue(testCaseModel.getTestCaseFaults().size() > 0);
+                    }
+                }
                 //TODO: assert testcases;
             }
         }
@@ -119,7 +125,7 @@ public class SurefireMapperTests {
         testsuites.add(suite); //calculations are by value so add same twice is valid
 
 //        io.github.ericdriggs.reportcard.model.TestResult modelTestResult = modelMapper.map(testsuites, io.github.ericdriggs.reportcard.model.TestResult.class);
-        TestResult modelTestResult = SurefireConvertersUtil.doFromSurefireToModelTestResult(testsuites);
+        TestResultModel modelTestResult = SurefireConvertersUtil.doFromSurefireToModelTestResult(testsuites);
         Assertions.assertEquals(16, modelTestResult.getTests());
         Assertions.assertEquals(6, modelTestResult.getError());
         Assertions.assertEquals(6, modelTestResult.getFailure());

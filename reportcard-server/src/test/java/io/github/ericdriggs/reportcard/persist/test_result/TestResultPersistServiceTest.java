@@ -39,12 +39,12 @@ public class TestResultPersistServiceTest {
         this.testResultPersistService = testResultPersistService;
 
         this.xmlJunit = resourceReader.resourceAsString(xmlPath);
-        this.mulipartFile = getMockJunitMultipartFile(resourceReader);
+        this.mulipartFile = getMockJunitMultipartFile(resourceReader,"classpath:format-samples/sample-junit-small.xml");
     }
 
-    //FIXME: remove unused classpath param
-    public static MultipartFile getMockJunitMultipartFile(ResourceReaderComponent resourceReader) {
-        String xmlJunit = resourceReader.resourceAsString("classpath:format-samples/sample-junit-small.xml");
+
+    public static MultipartFile getMockJunitMultipartFile(ResourceReaderComponent resourceReader, String xmlClassPath) {
+        String xmlJunit = resourceReader.resourceAsString(xmlClassPath);
         return new MockMultipartFile(
                 "file",
                 "junit.xml",
@@ -141,7 +141,7 @@ public class TestResultPersistServiceTest {
         assertNotNull(stagePath);
         assertEquals(false, stagePath.getRun().getIsSuccess());
 
-        TestResult inserted = stagePathTestResult.getTestResult();
+        TestResultModel inserted = stagePathTestResult.getTestResult();
         assertNotNull(inserted);
         assertNotNull(inserted.getTestResultId());
 
@@ -155,7 +155,7 @@ public class TestResultPersistServiceTest {
         assertEquals(false, inserted.getIsSuccess());
         assertNotNull(inserted.getTestResultCreated());
         assertTrue(LocalDateTime.now().isAfter(inserted.getTestResultCreated()));
-        Assertions.assertEquals(new BigDecimal("50.500"), inserted.getTime());
+        Assertions.assertEquals(new BigDecimal("50.5"), inserted.getTime());
 
         validateStagePath(stageDetails, stagePath);
     }

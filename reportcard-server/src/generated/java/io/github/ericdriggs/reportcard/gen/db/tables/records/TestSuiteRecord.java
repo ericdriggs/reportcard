@@ -4,7 +4,8 @@
 package io.github.ericdriggs.reportcard.gen.db.tables.records;
 
 
-import io.github.ericdriggs.reportcard.gen.db.tables.TestSuite;
+import io.github.ericdriggs.reportcard.gen.db.tables.TestSuiteTable;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestSuitePojo;
 
 import java.math.BigDecimal;
 
@@ -24,7 +25,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestSuiteRecord extends UpdatableRecordImpl<TestSuiteRecord> implements Record13<Long, Long, String, Integer, Integer, Integer, Integer, BigDecimal, String, String, String, Boolean, Boolean> {
 
-    private static final long serialVersionUID = -1830161886;
+    private static final long serialVersionUID = -973533780;
 
     /**
      * Setter for <code>reportcard.test_suite.test_suite_id</code>.
@@ -147,17 +148,17 @@ public class TestSuiteRecord extends UpdatableRecordImpl<TestSuiteRecord> implem
     }
 
     /**
-     * Setter for <code>reportcard.test_suite.package</code>.
+     * Setter for <code>reportcard.test_suite.package_name</code>.
      */
-    public TestSuiteRecord setPackage(String value) {
+    public TestSuiteRecord setPackageName(String value) {
         set(8, value);
         return this;
     }
 
     /**
-     * Getter for <code>reportcard.test_suite.package</code>.
+     * Getter for <code>reportcard.test_suite.package_name</code>.
      */
-    public String getPackage() {
+    public String getPackageName() {
         return (String) get(8);
     }
 
@@ -246,67 +247,67 @@ public class TestSuiteRecord extends UpdatableRecordImpl<TestSuiteRecord> implem
 
     @Override
     public Field<Long> field1() {
-        return TestSuite.TEST_SUITE.TEST_SUITE_ID;
+        return TestSuiteTable.TEST_SUITE.TEST_SUITE_ID;
     }
 
     @Override
     public Field<Long> field2() {
-        return TestSuite.TEST_SUITE.TEST_RESULT_FK;
+        return TestSuiteTable.TEST_SUITE.TEST_RESULT_FK;
     }
 
     @Override
     public Field<String> field3() {
-        return TestSuite.TEST_SUITE.NAME;
+        return TestSuiteTable.TEST_SUITE.NAME;
     }
 
     @Override
     public Field<Integer> field4() {
-        return TestSuite.TEST_SUITE.TESTS;
+        return TestSuiteTable.TEST_SUITE.TESTS;
     }
 
     @Override
     public Field<Integer> field5() {
-        return TestSuite.TEST_SUITE.SKIPPED;
+        return TestSuiteTable.TEST_SUITE.SKIPPED;
     }
 
     @Override
     public Field<Integer> field6() {
-        return TestSuite.TEST_SUITE.ERROR;
+        return TestSuiteTable.TEST_SUITE.ERROR;
     }
 
     @Override
     public Field<Integer> field7() {
-        return TestSuite.TEST_SUITE.FAILURE;
+        return TestSuiteTable.TEST_SUITE.FAILURE;
     }
 
     @Override
     public Field<BigDecimal> field8() {
-        return TestSuite.TEST_SUITE.TIME;
+        return TestSuiteTable.TEST_SUITE.TIME;
     }
 
     @Override
     public Field<String> field9() {
-        return TestSuite.TEST_SUITE.PACKAGE;
+        return TestSuiteTable.TEST_SUITE.PACKAGE_NAME;
     }
 
     @Override
     public Field<String> field10() {
-        return TestSuite.TEST_SUITE.GROUP;
+        return TestSuiteTable.TEST_SUITE.GROUP;
     }
 
     @Override
     public Field<String> field11() {
-        return TestSuite.TEST_SUITE.PROPERTIES;
+        return TestSuiteTable.TEST_SUITE.PROPERTIES;
     }
 
     @Override
     public Field<Boolean> field12() {
-        return TestSuite.TEST_SUITE.IS_SUCCESS;
+        return TestSuiteTable.TEST_SUITE.IS_SUCCESS;
     }
 
     @Override
     public Field<Boolean> field13() {
-        return TestSuite.TEST_SUITE.HAS_SKIP;
+        return TestSuiteTable.TEST_SUITE.HAS_SKIP;
     }
 
     @Override
@@ -351,7 +352,7 @@ public class TestSuiteRecord extends UpdatableRecordImpl<TestSuiteRecord> implem
 
     @Override
     public String component9() {
-        return getPackage();
+        return getPackageName();
     }
 
     @Override
@@ -416,7 +417,7 @@ public class TestSuiteRecord extends UpdatableRecordImpl<TestSuiteRecord> implem
 
     @Override
     public String value9() {
-        return getPackage();
+        return getPackageName();
     }
 
     @Override
@@ -489,7 +490,7 @@ public class TestSuiteRecord extends UpdatableRecordImpl<TestSuiteRecord> implem
 
     @Override
     public TestSuiteRecord value9(String value) {
-        setPackage(value);
+        setPackageName(value);
         return this;
     }
 
@@ -543,14 +544,14 @@ public class TestSuiteRecord extends UpdatableRecordImpl<TestSuiteRecord> implem
      * Create a detached TestSuiteRecord
      */
     public TestSuiteRecord() {
-        super(TestSuite.TEST_SUITE);
+        super(TestSuiteTable.TEST_SUITE);
     }
 
     /**
      * Create a detached, initialised TestSuiteRecord
      */
-    public TestSuiteRecord(Long testSuiteId, Long testResultFk, String name, Integer tests, Integer skipped, Integer error, Integer failure, BigDecimal time, String package_, String group, String properties, Boolean isSuccess, Boolean hasSkip) {
-        super(TestSuite.TEST_SUITE);
+    public TestSuiteRecord(Long testSuiteId, Long testResultFk, String name, Integer tests, Integer skipped, Integer error, Integer failure, BigDecimal time, String packageName, String group, String properties, Boolean isSuccess, Boolean hasSkip) {
+        super(TestSuiteTable.TEST_SUITE);
 
         setTestSuiteId(testSuiteId);
         setTestResultFk(testResultFk);
@@ -560,7 +561,7 @@ public class TestSuiteRecord extends UpdatableRecordImpl<TestSuiteRecord> implem
         setError(error);
         setFailure(failure);
         setTime(time);
-        setPackage(package_);
+        setPackageName(packageName);
         setGroup(group);
         setProperties(properties);
         setIsSuccess(isSuccess);
@@ -570,8 +571,8 @@ public class TestSuiteRecord extends UpdatableRecordImpl<TestSuiteRecord> implem
     /**
      * Create a detached, initialised TestSuiteRecord
      */
-    public TestSuiteRecord(io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestSuite value) {
-        super(TestSuite.TEST_SUITE);
+    public TestSuiteRecord(TestSuitePojo value) {
+        super(TestSuiteTable.TEST_SUITE);
 
         if (value != null) {
             setTestSuiteId(value.getTestSuiteId());
@@ -582,7 +583,7 @@ public class TestSuiteRecord extends UpdatableRecordImpl<TestSuiteRecord> implem
             setError(value.getError());
             setFailure(value.getFailure());
             setTime(value.getTime());
-            setPackage(value.getPackage());
+            setPackageName(value.getPackageName());
             setGroup(value.getGroup());
             setProperties(value.getProperties());
             setIsSuccess(value.getIsSuccess());

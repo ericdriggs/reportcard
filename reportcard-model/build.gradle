@@ -16,6 +16,9 @@ repositories {
 }
 
 dependencies {
+
+    api "ch.qos.logback:logback-classic:${logbackVersion}"
+
     //Lombok
     implementation "org.projectlombok:lombok:${lombokVersion}"
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
@@ -24,6 +27,9 @@ dependencies {
     implementation "org.apache.commons:commons-lang3:3.11"
     //JSON
     implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
+
+
+    implementation 'commons-io:commons-io:2.15.1'
 
     //XML
     implementation "jakarta.xml.bind:jakarta.xml.bind-api:${jakartaVersion}"

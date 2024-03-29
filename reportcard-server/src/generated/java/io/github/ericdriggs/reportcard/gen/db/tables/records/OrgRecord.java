@@ -4,7 +4,8 @@
 package io.github.ericdriggs.reportcard.gen.db.tables.records;
 
 
-import io.github.ericdriggs.reportcard.gen.db.tables.Org;
+import io.github.ericdriggs.reportcard.gen.db.tables.OrgTable;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.OrgPojo;
 
 import lombok.Generated;
 
@@ -22,7 +23,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class OrgRecord extends UpdatableRecordImpl<OrgRecord> implements Record3<Integer, String, Integer> {
 
-    private static final long serialVersionUID = 1173456497;
+    private static final long serialVersionUID = 484849551;
 
     /**
      * Setter for <code>reportcard.org.org_id</code>.
@@ -94,17 +95,17 @@ public class OrgRecord extends UpdatableRecordImpl<OrgRecord> implements Record3
 
     @Override
     public Field<Integer> field1() {
-        return Org.ORG.ORG_ID;
+        return OrgTable.ORG.ORG_ID;
     }
 
     @Override
     public Field<String> field2() {
-        return Org.ORG.ORG_NAME;
+        return OrgTable.ORG.ORG_NAME;
     }
 
     @Override
     public Field<Integer> field3() {
-        return Org.ORG.COMPANY_FK;
+        return OrgTable.ORG.COMPANY_FK;
     }
 
     @Override
@@ -171,14 +172,14 @@ public class OrgRecord extends UpdatableRecordImpl<OrgRecord> implements Record3
      * Create a detached OrgRecord
      */
     public OrgRecord() {
-        super(Org.ORG);
+        super(OrgTable.ORG);
     }
 
     /**
      * Create a detached, initialised OrgRecord
      */
     public OrgRecord(Integer orgId, String orgName, Integer companyFk) {
-        super(Org.ORG);
+        super(OrgTable.ORG);
 
         setOrgId(orgId);
         setOrgName(orgName);
@@ -188,8 +189,8 @@ public class OrgRecord extends UpdatableRecordImpl<OrgRecord> implements Record3
     /**
      * Create a detached, initialised OrgRecord
      */
-    public OrgRecord(io.github.ericdriggs.reportcard.gen.db.tables.pojos.Org value) {
-        super(Org.ORG);
+    public OrgRecord(OrgPojo value) {
+        super(OrgTable.ORG);
 
         if (value != null) {
             setOrgId(value.getOrgId());

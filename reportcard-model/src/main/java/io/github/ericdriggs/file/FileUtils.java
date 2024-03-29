@@ -26,6 +26,11 @@ public class FileUtils {
         return fileContentsFromPaths(absolutePaths);
     }
 
+    public static List<String> fileContentsFromPathAndRegex(Path absolutePath, String fileNameRegex) {
+        List<String> absolutePaths = filePathsForPathAndRegex(absolutePath, fileNameRegex);
+        return fileContentsFromPaths(absolutePaths);
+    }
+
 
     public static List<String> fileContentsFromPaths(List<String> absolutePaths) {
         List<String> fileContents = new ArrayList<>();
@@ -35,9 +40,14 @@ public class FileUtils {
         return fileContents;
     }
 
-    @SneakyThrows(IOException.class)
     public static List<String> filePathsForPathAndRegex(String absolutePath, String fileNameRegex) {
         Path dirPath = Path.of(absolutePath);
+        return filePathsForPathAndRegex(dirPath, fileNameRegex);
+    }
+
+    @SneakyThrows(IOException.class)
+    public static List<String> filePathsForPathAndRegex(Path dirPath, String fileNameRegex) {
+
 
         //not recursive
         final int maxDepth = 1;

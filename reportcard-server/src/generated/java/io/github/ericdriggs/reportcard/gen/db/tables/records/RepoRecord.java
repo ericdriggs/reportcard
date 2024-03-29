@@ -4,7 +4,8 @@
 package io.github.ericdriggs.reportcard.gen.db.tables.records;
 
 
-import io.github.ericdriggs.reportcard.gen.db.tables.Repo;
+import io.github.ericdriggs.reportcard.gen.db.tables.RepoTable;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.RepoPojo;
 
 import lombok.Generated;
 
@@ -22,7 +23,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RepoRecord extends UpdatableRecordImpl<RepoRecord> implements Record3<Integer, String, Integer> {
 
-    private static final long serialVersionUID = 627868596;
+    private static final long serialVersionUID = 770719570;
 
     /**
      * Setter for <code>reportcard.repo.repo_id</code>.
@@ -94,17 +95,17 @@ public class RepoRecord extends UpdatableRecordImpl<RepoRecord> implements Recor
 
     @Override
     public Field<Integer> field1() {
-        return Repo.REPO.REPO_ID;
+        return RepoTable.REPO.REPO_ID;
     }
 
     @Override
     public Field<String> field2() {
-        return Repo.REPO.REPO_NAME;
+        return RepoTable.REPO.REPO_NAME;
     }
 
     @Override
     public Field<Integer> field3() {
-        return Repo.REPO.ORG_FK;
+        return RepoTable.REPO.ORG_FK;
     }
 
     @Override
@@ -171,14 +172,14 @@ public class RepoRecord extends UpdatableRecordImpl<RepoRecord> implements Recor
      * Create a detached RepoRecord
      */
     public RepoRecord() {
-        super(Repo.REPO);
+        super(RepoTable.REPO);
     }
 
     /**
      * Create a detached, initialised RepoRecord
      */
     public RepoRecord(Integer repoId, String repoName, Integer orgFk) {
-        super(Repo.REPO);
+        super(RepoTable.REPO);
 
         setRepoId(repoId);
         setRepoName(repoName);
@@ -188,8 +189,8 @@ public class RepoRecord extends UpdatableRecordImpl<RepoRecord> implements Recor
     /**
      * Create a detached, initialised RepoRecord
      */
-    public RepoRecord(io.github.ericdriggs.reportcard.gen.db.tables.pojos.Repo value) {
-        super(Repo.REPO);
+    public RepoRecord(RepoPojo value) {
+        super(RepoTable.REPO);
 
         if (value != null) {
             setRepoId(value.getRepoId());

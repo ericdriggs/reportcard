@@ -2,7 +2,7 @@ package io.github.ericdriggs.reportcard.controller;
 
 import io.github.ericdriggs.reportcard.ReportcardApplication;
 import io.github.ericdriggs.reportcard.config.LocalStackConfig;
-import io.github.ericdriggs.reportcard.gen.db.tables.pojos.Storage;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.StoragePojo;
 import io.github.ericdriggs.reportcard.model.StagePath;
 import io.github.ericdriggs.reportcard.model.StagePathStorage;
 import io.github.ericdriggs.reportcard.persist.BrowseService;
@@ -57,7 +57,7 @@ public class StorageControllerTest {
     void postStorageOnlyTest() throws IOException {
 
         final String prefix = "abcd1234";
-        MultipartFile file = TestResultPersistServiceTest.getMockJunitMultipartFile(resourceReader);
+        MultipartFile file = TestResultPersistServiceTest.getMockJunitMultipartFile(resourceReader, "classpath:format-samples/sample-junit-small.xml");
         MultipartFile[] files = new MultipartFile[1];
         files[0] = file;
 
@@ -86,7 +86,7 @@ public class StorageControllerTest {
         assertNotNull(stagePathStorage);
 
         StagePath stagePath = stagePathStorage.getStagePath();
-        Storage storage = stagePathStorage.getStorage();
+        StoragePojo storage = stagePathStorage.getStorage();
 
         assertNotNull(storage.getStorageId());
         assertNotNull(storage.getLabel());

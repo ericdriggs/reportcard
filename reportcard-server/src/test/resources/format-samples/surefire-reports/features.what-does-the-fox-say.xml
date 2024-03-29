@@ -1,12 +1,12 @@
 <testsuite failures="4" name="features/what-does-the-fox-say.feature" skipped="0" tests="8" time="0.055215">
-  <testcase classname="features.what-does-the-fox-say" name="Range check" time="0.019675">
+  <testcase classname="features.what-does-the-fox-say" name="Range check 1" time="0.019675">
     <failure message="what-does-the-fox-say.feature:6 - path: $, actual: true, expected: false, reason: not equal (Boolean)">* match true == BooleanGenerator.generateBoolean(ratio) .......................................... failed
 
 Stack Trace:
 com.intuit.karate.exception.KarateException: what-does-the-fox-say.feature:6 - path: $, actual: true, expected: false, reason: not equal (Boolean)
 	at ✽.* match true == BooleanGenerator.generateBoolean(ratio) (what-does-the-fox-say.feature:6)</failure>
   </testcase>
-  <testcase classname="features.what-does-the-fox-say" name="Range check" time="0.014068">
+  <testcase classname="features.what-does-the-fox-say" name="Range check 2" time="0.014068">
     <failure message="what-does-the-fox-say.feature:6 - path: $, actual: true, expected: false, reason: not equal (Boolean)">* match true == BooleanGenerator.generateBoolean(ratio) .......................................... failed
 
 Stack Trace:
@@ -19,7 +19,7 @@ Stack Trace:
 com.intuit.karate.exception.KarateException: what-does-the-fox-say.feature:6 - path: $, actual: true, expected: false, reason: not equal (Boolean)
 	at ✽.* match true == BooleanGenerator.generateBoolean(ratio) (what-does-the-fox-say.feature:6)</failure>
   </testcase>
-  <testcase classname="features.what-does-the-fox-say" name="Range check" time="0.001349">
+  <testcase classname="features.what-does-the-fox-say" name="Range check 3" time="0.001349">
     <system-out>* match true == BooleanGenerator.generateBoolean(ratio) .......................................... failed
 
 Stack Trace:
@@ -34,7 +34,7 @@ com.intuit.karate.exception.KarateException: what-does-the-fox-say.feature:6 - p
 
 * match true == BooleanGenerator.generateBoolean(ratio) .......................................... passed</system-out>
   </testcase>
-  <testcase classname="features.what-does-the-fox-say" name="Range check" time="0.002136">
+  <testcase classname="features.what-does-the-fox-say" name="Range check 4" time="0.002136">
     <system-out>* match true == BooleanGenerator.generateBoolean(ratio) .......................................... failed
 
 Stack Trace:
@@ -50,7 +50,7 @@ com.intuit.karate.exception.KarateException: what-does-the-fox-say.feature:6 - p
 * match true == BooleanGenerator.generateBoolean(ratio) .......................................... passed
 * match true == BooleanGenerator.generateBoolean(ratio) .......................................... passed</system-out>
   </testcase>
-  <testcase classname="features.what-does-the-fox-say" name="Range check" time="0.003272">
+  <testcase classname="features.what-does-the-fox-say" name="Range check 5" time="0.003272">
     <system-out>* match true == BooleanGenerator.generateBoolean(ratio) .......................................... failed
 
 Stack Trace:

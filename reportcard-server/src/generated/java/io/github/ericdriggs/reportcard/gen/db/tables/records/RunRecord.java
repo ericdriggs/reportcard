@@ -4,7 +4,8 @@
 package io.github.ericdriggs.reportcard.gen.db.tables.records;
 
 
-import io.github.ericdriggs.reportcard.gen.db.tables.Run;
+import io.github.ericdriggs.reportcard.gen.db.tables.RunTable;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.RunPojo;
 
 import java.time.LocalDateTime;
 
@@ -24,7 +25,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7<Long, String, Long, Integer, String, LocalDateTime, Boolean> {
 
-    private static final long serialVersionUID = 508085510;
+    private static final long serialVersionUID = -523446957;
 
     /**
      * Setter for <code>reportcard.run.run_id</code>.
@@ -156,37 +157,37 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
 
     @Override
     public Field<Long> field1() {
-        return Run.RUN.RUN_ID;
+        return RunTable.RUN.RUN_ID;
     }
 
     @Override
     public Field<String> field2() {
-        return Run.RUN.RUN_REFERENCE;
+        return RunTable.RUN.RUN_REFERENCE;
     }
 
     @Override
     public Field<Long> field3() {
-        return Run.RUN.JOB_FK;
+        return RunTable.RUN.JOB_FK;
     }
 
     @Override
     public Field<Integer> field4() {
-        return Run.RUN.JOB_RUN_COUNT;
+        return RunTable.RUN.JOB_RUN_COUNT;
     }
 
     @Override
     public Field<String> field5() {
-        return Run.RUN.SHA;
+        return RunTable.RUN.SHA;
     }
 
     @Override
     public Field<LocalDateTime> field6() {
-        return Run.RUN.RUN_DATE;
+        return RunTable.RUN.RUN_DATE;
     }
 
     @Override
     public Field<Boolean> field7() {
-        return Run.RUN.IS_SUCCESS;
+        return RunTable.RUN.IS_SUCCESS;
     }
 
     @Override
@@ -321,14 +322,14 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
      * Create a detached RunRecord
      */
     public RunRecord() {
-        super(Run.RUN);
+        super(RunTable.RUN);
     }
 
     /**
      * Create a detached, initialised RunRecord
      */
     public RunRecord(Long runId, String runReference, Long jobFk, Integer jobRunCount, String sha, LocalDateTime runDate, Boolean isSuccess) {
-        super(Run.RUN);
+        super(RunTable.RUN);
 
         setRunId(runId);
         setRunReference(runReference);
@@ -342,8 +343,8 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
     /**
      * Create a detached, initialised RunRecord
      */
-    public RunRecord(io.github.ericdriggs.reportcard.gen.db.tables.pojos.Run value) {
-        super(Run.RUN);
+    public RunRecord(RunPojo value) {
+        super(RunTable.RUN);
 
         if (value != null) {
             setRunId(value.getRunId());

@@ -4,7 +4,8 @@
 package io.github.ericdriggs.reportcard.gen.db.tables.daos;
 
 
-import io.github.ericdriggs.reportcard.gen.db.tables.TestCase;
+import io.github.ericdriggs.reportcard.gen.db.tables.TestCaseTable;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCasePojo;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.TestCaseRecord;
 
 import java.math.BigDecimal;
@@ -22,24 +23,24 @@ import org.jooq.impl.DAOImpl;
  */
 @Generated
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class TestCaseDao extends DAOImpl<TestCaseRecord, io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCase, Long> {
+public class TestCaseDao extends DAOImpl<TestCaseRecord, TestCasePojo, Long> {
 
     /**
      * Create a new TestCaseDao without any configuration
      */
     public TestCaseDao() {
-        super(TestCase.TEST_CASE, io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCase.class);
+        super(TestCaseTable.TEST_CASE, TestCasePojo.class);
     }
 
     /**
      * Create a new TestCaseDao with an attached configuration
      */
     public TestCaseDao(Configuration configuration) {
-        super(TestCase.TEST_CASE, io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCase.class, configuration);
+        super(TestCaseTable.TEST_CASE, TestCasePojo.class, configuration);
     }
 
     @Override
-    public Long getId(io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCase object) {
+    public Long getId(TestCasePojo object) {
         return object.getTestCaseId();
     }
 
@@ -47,148 +48,148 @@ public class TestCaseDao extends DAOImpl<TestCaseRecord, io.github.ericdriggs.re
      * Fetch records that have <code>test_case_id BETWEEN lowerInclusive AND
      * upperInclusive</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCase> fetchRangeOfTestCaseId(Long lowerInclusive, Long upperInclusive) {
-        return fetchRange(TestCase.TEST_CASE.TEST_CASE_ID, lowerInclusive, upperInclusive);
+    public List<TestCasePojo> fetchRangeOfTestCaseIdTable(Long lowerInclusive, Long upperInclusive) {
+        return fetchRange(TestCaseTable.TEST_CASE.TEST_CASE_ID, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>test_case_id IN (values)</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCase> fetchByTestCaseId(Long... values) {
-        return fetch(TestCase.TEST_CASE.TEST_CASE_ID, values);
+    public List<TestCasePojo> fetchByTestCaseIdTable(Long... values) {
+        return fetch(TestCaseTable.TEST_CASE.TEST_CASE_ID, values);
     }
 
     /**
      * Fetch a unique record that has <code>test_case_id = value</code>
      */
-    public io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCase fetchOneByTestCaseId(Long value) {
-        return fetchOne(TestCase.TEST_CASE.TEST_CASE_ID, value);
+    public TestCasePojo fetchOneByTestCaseIdTable(Long value) {
+        return fetchOne(TestCaseTable.TEST_CASE.TEST_CASE_ID, value);
     }
 
     /**
      * Fetch a unique record that has <code>test_case_id = value</code>
      */
-    public Optional<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCase> fetchOptionalByTestCaseId(Long value) {
-        return fetchOptional(TestCase.TEST_CASE.TEST_CASE_ID, value);
+    public Optional<TestCasePojo> fetchOptionalByTestCaseIdTable(Long value) {
+        return fetchOptional(TestCaseTable.TEST_CASE.TEST_CASE_ID, value);
     }
 
     /**
      * Fetch records that have <code>test_suite_fk BETWEEN lowerInclusive AND
      * upperInclusive</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCase> fetchRangeOfTestSuiteFk(Long lowerInclusive, Long upperInclusive) {
-        return fetchRange(TestCase.TEST_CASE.TEST_SUITE_FK, lowerInclusive, upperInclusive);
+    public List<TestCasePojo> fetchRangeOfTestSuiteFkTable(Long lowerInclusive, Long upperInclusive) {
+        return fetchRange(TestCaseTable.TEST_CASE.TEST_SUITE_FK, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>test_suite_fk IN (values)</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCase> fetchByTestSuiteFk(Long... values) {
-        return fetch(TestCase.TEST_CASE.TEST_SUITE_FK, values);
+    public List<TestCasePojo> fetchByTestSuiteFkTable(Long... values) {
+        return fetch(TestCaseTable.TEST_CASE.TEST_SUITE_FK, values);
     }
 
     /**
      * Fetch records that have <code>test_status_fk BETWEEN lowerInclusive AND
      * upperInclusive</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCase> fetchRangeOfTestStatusFk(Byte lowerInclusive, Byte upperInclusive) {
-        return fetchRange(TestCase.TEST_CASE.TEST_STATUS_FK, lowerInclusive, upperInclusive);
+    public List<TestCasePojo> fetchRangeOfTestStatusFkTable(Byte lowerInclusive, Byte upperInclusive) {
+        return fetchRange(TestCaseTable.TEST_CASE.TEST_STATUS_FK, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>test_status_fk IN (values)</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCase> fetchByTestStatusFk(Byte... values) {
-        return fetch(TestCase.TEST_CASE.TEST_STATUS_FK, values);
+    public List<TestCasePojo> fetchByTestStatusFkTable(Byte... values) {
+        return fetch(TestCaseTable.TEST_CASE.TEST_STATUS_FK, values);
     }
 
     /**
      * Fetch records that have <code>name BETWEEN lowerInclusive AND
      * upperInclusive</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCase> fetchRangeOfName(String lowerInclusive, String upperInclusive) {
-        return fetchRange(TestCase.TEST_CASE.NAME, lowerInclusive, upperInclusive);
+    public List<TestCasePojo> fetchRangeOfNameTable(String lowerInclusive, String upperInclusive) {
+        return fetchRange(TestCaseTable.TEST_CASE.NAME, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>name IN (values)</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCase> fetchByName(String... values) {
-        return fetch(TestCase.TEST_CASE.NAME, values);
+    public List<TestCasePojo> fetchByNameTable(String... values) {
+        return fetch(TestCaseTable.TEST_CASE.NAME, values);
     }
 
     /**
      * Fetch records that have <code>class_name BETWEEN lowerInclusive AND
      * upperInclusive</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCase> fetchRangeOfClassName(String lowerInclusive, String upperInclusive) {
-        return fetchRange(TestCase.TEST_CASE.CLASS_NAME, lowerInclusive, upperInclusive);
+    public List<TestCasePojo> fetchRangeOfClassNameTable(String lowerInclusive, String upperInclusive) {
+        return fetchRange(TestCaseTable.TEST_CASE.CLASS_NAME, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>class_name IN (values)</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCase> fetchByClassName(String... values) {
-        return fetch(TestCase.TEST_CASE.CLASS_NAME, values);
+    public List<TestCasePojo> fetchByClassNameTable(String... values) {
+        return fetch(TestCaseTable.TEST_CASE.CLASS_NAME, values);
     }
 
     /**
      * Fetch records that have <code>time BETWEEN lowerInclusive AND
      * upperInclusive</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCase> fetchRangeOfTime(BigDecimal lowerInclusive, BigDecimal upperInclusive) {
-        return fetchRange(TestCase.TEST_CASE.TIME, lowerInclusive, upperInclusive);
+    public List<TestCasePojo> fetchRangeOfTimeTable(BigDecimal lowerInclusive, BigDecimal upperInclusive) {
+        return fetchRange(TestCaseTable.TEST_CASE.TIME, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>time IN (values)</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCase> fetchByTime(BigDecimal... values) {
-        return fetch(TestCase.TEST_CASE.TIME, values);
+    public List<TestCasePojo> fetchByTimeTable(BigDecimal... values) {
+        return fetch(TestCaseTable.TEST_CASE.TIME, values);
     }
 
     /**
      * Fetch records that have <code>system_out BETWEEN lowerInclusive AND
      * upperInclusive</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCase> fetchRangeOfSystemOut(String lowerInclusive, String upperInclusive) {
-        return fetchRange(TestCase.TEST_CASE.SYSTEM_OUT, lowerInclusive, upperInclusive);
+    public List<TestCasePojo> fetchRangeOfSystemOutTable(String lowerInclusive, String upperInclusive) {
+        return fetchRange(TestCaseTable.TEST_CASE.SYSTEM_OUT, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>system_out IN (values)</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCase> fetchBySystemOut(String... values) {
-        return fetch(TestCase.TEST_CASE.SYSTEM_OUT, values);
+    public List<TestCasePojo> fetchBySystemOutTable(String... values) {
+        return fetch(TestCaseTable.TEST_CASE.SYSTEM_OUT, values);
     }
 
     /**
      * Fetch records that have <code>system_err BETWEEN lowerInclusive AND
      * upperInclusive</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCase> fetchRangeOfSystemErr(String lowerInclusive, String upperInclusive) {
-        return fetchRange(TestCase.TEST_CASE.SYSTEM_ERR, lowerInclusive, upperInclusive);
+    public List<TestCasePojo> fetchRangeOfSystemErrTable(String lowerInclusive, String upperInclusive) {
+        return fetchRange(TestCaseTable.TEST_CASE.SYSTEM_ERR, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>system_err IN (values)</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCase> fetchBySystemErr(String... values) {
-        return fetch(TestCase.TEST_CASE.SYSTEM_ERR, values);
+    public List<TestCasePojo> fetchBySystemErrTable(String... values) {
+        return fetch(TestCaseTable.TEST_CASE.SYSTEM_ERR, values);
     }
 
     /**
      * Fetch records that have <code>assertions BETWEEN lowerInclusive AND
      * upperInclusive</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCase> fetchRangeOfAssertions(String lowerInclusive, String upperInclusive) {
-        return fetchRange(TestCase.TEST_CASE.ASSERTIONS, lowerInclusive, upperInclusive);
+    public List<TestCasePojo> fetchRangeOfAssertionsTable(String lowerInclusive, String upperInclusive) {
+        return fetchRange(TestCaseTable.TEST_CASE.ASSERTIONS, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>assertions IN (values)</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestCase> fetchByAssertions(String... values) {
-        return fetch(TestCase.TEST_CASE.ASSERTIONS, values);
+    public List<TestCasePojo> fetchByAssertionsTable(String... values) {
+        return fetch(TestCaseTable.TEST_CASE.ASSERTIONS, values);
     }
 }

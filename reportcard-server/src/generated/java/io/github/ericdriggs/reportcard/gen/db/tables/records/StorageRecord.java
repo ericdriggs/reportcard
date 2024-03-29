@@ -4,7 +4,8 @@
 package io.github.ericdriggs.reportcard.gen.db.tables.records;
 
 
-import io.github.ericdriggs.reportcard.gen.db.tables.Storage;
+import io.github.ericdriggs.reportcard.gen.db.tables.StorageTable;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.StoragePojo;
 
 import lombok.Generated;
 
@@ -22,7 +23,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements Record6<Long, Long, String, String, String, Integer> {
 
-    private static final long serialVersionUID = -392325944;
+    private static final long serialVersionUID = 1508217905;
 
     /**
      * Setter for <code>reportcard.storage.storage_id</code>.
@@ -139,32 +140,32 @@ public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements
 
     @Override
     public Field<Long> field1() {
-        return Storage.STORAGE.STORAGE_ID;
+        return StorageTable.STORAGE.STORAGE_ID;
     }
 
     @Override
     public Field<Long> field2() {
-        return Storage.STORAGE.STAGE_FK;
+        return StorageTable.STORAGE.STAGE_FK;
     }
 
     @Override
     public Field<String> field3() {
-        return Storage.STORAGE.LABEL;
+        return StorageTable.STORAGE.LABEL;
     }
 
     @Override
     public Field<String> field4() {
-        return Storage.STORAGE.PREFIX;
+        return StorageTable.STORAGE.PREFIX;
     }
 
     @Override
     public Field<String> field5() {
-        return Storage.STORAGE.INDEX_FILE;
+        return StorageTable.STORAGE.INDEX_FILE;
     }
 
     @Override
     public Field<Integer> field6() {
-        return Storage.STORAGE.STORAGE_TYPE;
+        return StorageTable.STORAGE.STORAGE_TYPE;
     }
 
     @Override
@@ -282,14 +283,14 @@ public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements
      * Create a detached StorageRecord
      */
     public StorageRecord() {
-        super(Storage.STORAGE);
+        super(StorageTable.STORAGE);
     }
 
     /**
      * Create a detached, initialised StorageRecord
      */
     public StorageRecord(Long storageId, Long stageFk, String label, String prefix, String indexFile, Integer storageType) {
-        super(Storage.STORAGE);
+        super(StorageTable.STORAGE);
 
         setStorageId(storageId);
         setStageFk(stageFk);
@@ -302,8 +303,8 @@ public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements
     /**
      * Create a detached, initialised StorageRecord
      */
-    public StorageRecord(io.github.ericdriggs.reportcard.gen.db.tables.pojos.Storage value) {
-        super(Storage.STORAGE);
+    public StorageRecord(StoragePojo value) {
+        super(StorageTable.STORAGE);
 
         if (value != null) {
             setStorageId(value.getStorageId());

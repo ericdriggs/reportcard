@@ -4,7 +4,8 @@
 package io.github.ericdriggs.reportcard.gen.db.tables.records;
 
 
-import io.github.ericdriggs.reportcard.gen.db.tables.Stage;
+import io.github.ericdriggs.reportcard.gen.db.tables.StageTable;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.StagePojo;
 
 import lombok.Generated;
 
@@ -22,7 +23,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class StageRecord extends UpdatableRecordImpl<StageRecord> implements Record3<Long, String, Long> {
 
-    private static final long serialVersionUID = 235066401;
+    private static final long serialVersionUID = 1359282229;
 
     /**
      * Setter for <code>reportcard.stage.stage_id</code>.
@@ -94,17 +95,17 @@ public class StageRecord extends UpdatableRecordImpl<StageRecord> implements Rec
 
     @Override
     public Field<Long> field1() {
-        return Stage.STAGE.STAGE_ID;
+        return StageTable.STAGE.STAGE_ID;
     }
 
     @Override
     public Field<String> field2() {
-        return Stage.STAGE.STAGE_NAME;
+        return StageTable.STAGE.STAGE_NAME;
     }
 
     @Override
     public Field<Long> field3() {
-        return Stage.STAGE.RUN_FK;
+        return StageTable.STAGE.RUN_FK;
     }
 
     @Override
@@ -171,14 +172,14 @@ public class StageRecord extends UpdatableRecordImpl<StageRecord> implements Rec
      * Create a detached StageRecord
      */
     public StageRecord() {
-        super(Stage.STAGE);
+        super(StageTable.STAGE);
     }
 
     /**
      * Create a detached, initialised StageRecord
      */
     public StageRecord(Long stageId, String stageName, Long runFk) {
-        super(Stage.STAGE);
+        super(StageTable.STAGE);
 
         setStageId(stageId);
         setStageName(stageName);
@@ -188,8 +189,8 @@ public class StageRecord extends UpdatableRecordImpl<StageRecord> implements Rec
     /**
      * Create a detached, initialised StageRecord
      */
-    public StageRecord(io.github.ericdriggs.reportcard.gen.db.tables.pojos.Stage value) {
-        super(Stage.STAGE);
+    public StageRecord(StagePojo value) {
+        super(StageTable.STAGE);
 
         if (value != null) {
             setStageId(value.getStageId());

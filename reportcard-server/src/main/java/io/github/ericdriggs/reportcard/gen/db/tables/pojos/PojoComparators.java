@@ -1,7 +1,10 @@
 package io.github.ericdriggs.reportcard.gen.db.tables.pojos;
 
 import io.github.ericdriggs.reportcard.cache.model.JobRun;
-import io.github.ericdriggs.reportcard.cache.model.StageTestResult;
+
+import io.github.ericdriggs.reportcard.model.StageTestResultModel;
+import io.github.ericdriggs.reportcard.model.StageTestResultPojo;
+import io.github.ericdriggs.reportcard.model.TestResultModel;
 import io.github.ericdriggs.reportcard.util.JsonCompare;
 import org.apache.commons.lang3.ObjectUtils;
 
@@ -13,102 +16,105 @@ import static io.github.ericdriggs.reportcard.util.CompareUtil.*;
 
 public class PojoComparators {
 
-    public static final Comparator<Company> COMPANY_CASE_INSENSITIVE_ORDER
+    public static final Comparator<CompanyPojo> COMPANY_CASE_INSENSITIVE_ORDER
             = new PojoComparators.CompanyCaseInsensitiveComparator();
 
-    public static final Comparator<Org> ORG_CASE_INSENSITIVE_ORDER
+    public static final Comparator<OrgPojo> ORG_CASE_INSENSITIVE_ORDER
             = new PojoComparators.OrgCaseInsensitiveComparator();
 
-    public static final Comparator<Repo> REPO_CASE_INSENSITIVE_ORDER
+    public static final Comparator<RepoPojo> REPO_CASE_INSENSITIVE_ORDER
             = new PojoComparators.RepoCaseInsensitiveComparator();
 
-    public static final Comparator<Branch> BRANCH_CASE_INSENSITIVE_ORDER
+    public static final Comparator<BranchPojo> BRANCH_CASE_INSENSITIVE_ORDER
             = new PojoComparators.BranchCaseInsensitiveComparator();
 
-    public static final Comparator<Job> JOB_CASE_INSENSITIVE_ORDER
+    public static final Comparator<JobPojo> JOB_CASE_INSENSITIVE_ORDER
             = new JobCaseInsensitiveComparator();
 
     public static final Comparator<JobRun> JOB_RUN_DATE_DESCENDING_ORDER
             = new JobRunDateDescendingComparator();
 
-    public static final Comparator<Run> RUN_CASE_INSENSITIVE_ORDER
+    public static final Comparator<RunPojo> RUN_CASE_INSENSITIVE_ORDER
             = new PojoComparators.RunCaseInsensitiveComparator();
 
-    public static final Comparator<Run> RUN_DESCENDING
+    public static final Comparator<RunPojo> RUN_DESCENDING
             = new PojoComparators.RunDescendingComparator();
 
-    public static final Comparator<Stage> STAGE_CASE_INSENSITIVE_ORDER
+    public static final Comparator<StagePojo> STAGE_CASE_INSENSITIVE_ORDER
             = new PojoComparators.StageCaseInsensitiveComparator();
 
-    public static final Comparator<Stage> STAGE_ASCENDING
+    public static final Comparator<StagePojo> STAGE_ASCENDING
             = new PojoComparators.StageAscendingComparator();
-    public static final Comparator<StageTestResult> STAGE_TEST_RESULT_COMPARATOR_CASE_INSENSITIVE_ORDER
+    public static final Comparator<StageTestResultModel> STAGE_TEST_RESULT_COMPARATOR_CASE_INSENSITIVE_ORDER
             = new StageTestResultCaseInsensitiveComparator();
 
-    public static final Comparator<StageTestResult> STAGE_TEST_RESULT_DATE_DESCENDING
-            = new StageTestResultDateDescendingCaseInsensitiveComparator();
+    public static final Comparator<StageTestResultPojo> STAGE_TEST_RESULT_POJO_DATE_DESCENDING
+            = new StageTestResultPojoDateDescendingCaseInsensitiveComparator();
+
+    public static final Comparator<StageTestResultModel> STAGE_TEST_RESULT_MODEL_DATE_DESCENDING
+            = new StageTestResultModelDateDescendingCaseInsensitiveComparator();
 
 
-    public static final Comparator<TestResult> TEST_RESULT_CASE_INSENSITIVE_ORDER
+    public static final Comparator<TestResultPojo> TEST_RESULT_CASE_INSENSITIVE_ORDER
             = new PojoComparators.TestResultCaseInsensitiveComparator();
 
-    public static final Comparator<TestSuite> TEST_SUITE_CASE_INSENSITIVE_ORDER
+    public static final Comparator<TestSuitePojo> TEST_SUITE_CASE_INSENSITIVE_ORDER
             = new PojoComparators.TestSuiteCaseInsensitiveComparator();
 
-    public static final Comparator<TestCase> TEST_CASE_CASE_INSENSITIVE_ORDER
+    public static final Comparator<TestCasePojo> TEST_CASE_CASE_INSENSITIVE_ORDER
             = new PojoComparators.TestCaseCaseInsensitiveComparator();
 
 
-    public static final Comparator<Storage> STORAGE_CASE_INSENSITIVE_ORDER
+    public static final Comparator<StoragePojo> STORAGE_CASE_INSENSITIVE_ORDER
             = new PojoComparators.StorageCaseInsensitiveComparator();
 
     private static class CompanyCaseInsensitiveComparator
-            implements Comparator<Company>, java.io.Serializable {
+            implements Comparator<CompanyPojo>, java.io.Serializable {
         @Serial
         private static final long serialVersionUID = 1546298733674170266L;
 
-        public int compare(Company val1, Company val2) {
+        public int compare(CompanyPojo val1, CompanyPojo val2) {
             return compareCompany(val1, val2);
         }
     }
 
     private static class OrgCaseInsensitiveComparator
-            implements Comparator<Org>, java.io.Serializable {
+            implements Comparator<OrgPojo>, java.io.Serializable {
         @Serial
         private static final long serialVersionUID = 7807917410507365390L;
 
-        public int compare(Org val1, Org val2) {
+        public int compare(OrgPojo val1, OrgPojo val2) {
             return compareOrg(val1, val2);
         }
     }
 
     private static class RepoCaseInsensitiveComparator
-            implements Comparator<Repo>, java.io.Serializable {
+            implements Comparator<RepoPojo>, java.io.Serializable {
         @Serial
         private static final long serialVersionUID = 1499664932611968428L;
 
-        public int compare(Repo val1, Repo val2) {
+        public int compare(RepoPojo val1, RepoPojo val2) {
             return compareRepo(val1, val2);
         }
 
     }
 
     private static class BranchCaseInsensitiveComparator
-            implements Comparator<Branch>, java.io.Serializable {
+            implements Comparator<BranchPojo>, java.io.Serializable {
         @Serial
         private static final long serialVersionUID = 6449752623071242729L;
 
-        public int compare(Branch val1, Branch val2) {
+        public int compare(BranchPojo val1, BranchPojo val2) {
             return compareBranch(val1, val2);
         }
     }
 
     private static class JobCaseInsensitiveComparator
-            implements Comparator<Job>, java.io.Serializable {
+            implements Comparator<JobPojo>, java.io.Serializable {
         @Serial
         private static final long serialVersionUID = 9214266396218473015L;
 
-        public int compare(Job val1, Job val2) {
+        public int compare(JobPojo val1, JobPojo val2) {
             return compareJob(val1, val2);
         }
     }
@@ -124,84 +130,103 @@ public class PojoComparators {
     }
 
     private static class RunCaseInsensitiveComparator
-            implements Comparator<Run>, java.io.Serializable {
+            implements Comparator<RunPojo>, java.io.Serializable {
         @Serial
         private static final long serialVersionUID = 414949285086649733L;
 
-        public int compare(Run val1, Run val2) {
+        public int compare(RunPojo val1, RunPojo val2) {
             return compareRun(val1, val2);
         }
     }
 
     private static class RunDescendingComparator
-            implements Comparator<Run>, java.io.Serializable {
+            implements Comparator<RunPojo>, java.io.Serializable {
         @Serial
         private static final long serialVersionUID = 8191789853614000953L;
 
-        public int compare(Run val1, Run val2) {
+        public int compare(RunPojo val1, RunPojo val2) {
             return compareRunDescending(val1, val2);
         }
     }
 
     private static class StageCaseInsensitiveComparator
-            implements Comparator<Stage>, java.io.Serializable {
+            implements Comparator<StagePojo>, java.io.Serializable {
         @Serial
         private static final long serialVersionUID = 4341786563640814257L;
 
-        public int compare(Stage val1, Stage val2) {
+        public int compare(StagePojo val1, StagePojo val2) {
             return compareStage(val1, val2);
         }
     }
 
     private static class StageAscendingComparator
-            implements Comparator<Stage>, java.io.Serializable {
+            implements Comparator<StagePojo>, java.io.Serializable {
         @Serial
         private static final long serialVersionUID = 5908227731873983860L;
 
-        public int compare(Stage val1, Stage val2) {
+        public int compare(StagePojo val1, StagePojo val2) {
             return compareStageAscending(val1, val2);
         }
     }
 
-    private static class StageTestResultDateDescendingCaseInsensitiveComparator implements Comparator<StageTestResult>, java.io.Serializable {
+    private static class StageTestResultModelDateDescendingCaseInsensitiveComparator implements Comparator<StageTestResultModel>, java.io.Serializable {
         @Serial
         private static final long serialVersionUID = 4582110728330687953L;
 
-        public int compare(StageTestResult val1, StageTestResult val2) {
-            return compareStageTestResultDateDescending(val1, val2);
+        public int compare(StageTestResultModel val1, StageTestResultModel val2) {
+            return compareStageTestResultModelDateDescending(val1, val2);
+        }
+    }
+
+    private static class StageTestResultPojoDateDescendingCaseInsensitiveComparator implements Comparator<StageTestResultPojo>, java.io.Serializable {
+        @Serial
+        private static final long serialVersionUID = -4913582120221201721L;
+
+        public int compare(StageTestResultPojo val1, StageTestResultPojo val2) {
+            return compareStageTestResultPojoDateDescending(val1, val2);
         }
     }
     private static class StageTestResultCaseInsensitiveComparator
-            implements Comparator<StageTestResult>, java.io.Serializable {
+            implements Comparator<StageTestResultModel>, java.io.Serializable {
         @Serial
         private static final long serialVersionUID = 3819926002811665135L;
 
-        public int compare(StageTestResult val1, StageTestResult val2) {
-            return compareStageTestResult(val1, val2);
+        public int compare(StageTestResultModel val1, StageTestResultModel val2) {
+            return compareStageTestResultModel(val1, val2);
         }
     }
 
-    public static int compareStageTestResultDateDescending(StageTestResult val1, StageTestResult val2) {
+    public static int compareStageTestResultModelDateDescending(StageTestResultModel val1, StageTestResultModel val2) {
         if (val1 == null || val2 == null) {
             return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
         }
         return chainCompare(
-                compareTestResultDateDescending(val1.getTestResult(), val2.getTestResult()),
+                compareTestResultModelDateDescending(val1.getTestResult(), val2.getTestResult()),
                 compareStage(val1.getStage(), val2.getStage())
         );
     }
 
-    public static int compareStageTestResult(StageTestResult val1, StageTestResult val2) {
+    public static int compareStageTestResultPojoDateDescending(StageTestResultPojo val1, StageTestResultPojo val2) {
+        if (val1 == null || val2 == null) {
+            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+        }
+        return chainCompare(
+                compareTestResultPojoDateDescending(val1.getTestResultPojo(), val2.getTestResultPojo()),
+                compareStage(val1.getStage(), val2.getStage())
+        );
+    }
+
+    public static int compareStageTestResultModel(StageTestResultModel val1, StageTestResultModel val2) {
         if (val1 == null || val2 == null) {
             return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
         }
         return chainCompare(
                 compareStage(val1.getStage(), val2.getStage()),
-                compareTestResult(val1.getTestResult(), val2.getTestResult())
+                compareTestResultModel(val1.getTestResult(), val2.getTestResult())
         );
     }
 
-    public static int compareCompany(Company val1, Company val2) {
+    public static int compareCompany(CompanyPojo val1, CompanyPojo val2) {
         if (val1 == null || val2 == null) {
             return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
         }
@@ -212,7 +237,7 @@ public class PojoComparators {
     }
 
 
-    public static int compareOrg(Org val1, Org val2) {
+    public static int compareOrg(OrgPojo val1, OrgPojo val2) {
         if (val1 == null || val2 == null) {
             return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
         }
@@ -222,7 +247,7 @@ public class PojoComparators {
         );
     }
 
-    public static int compareRepo(Repo val1, Repo val2) {
+    public static int compareRepo(RepoPojo val1, RepoPojo val2) {
         if (val1 == null || val2 == null) {
             return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
         }
@@ -233,7 +258,7 @@ public class PojoComparators {
         );
     }
 
-    public static int compareBranch(Branch val1, Branch val2) {
+    public static int compareBranch(BranchPojo val1, BranchPojo val2) {
         if (val1 == null || val2 == null) {
             return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
         }
@@ -244,7 +269,7 @@ public class PojoComparators {
         );
     }
 
-    public static int compareJob(Job val1, Job val2) {
+    public static int compareJob(JobPojo val1, JobPojo val2) {
         if (val1 == null || val2 == null) {
             return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
         }
@@ -255,7 +280,7 @@ public class PojoComparators {
         );
     }
 
-    public static int compareJobDateDescending(Job val1, Job val2) {
+    public static int compareJobDateDescending(JobPojo val1, JobPojo val2) {
         if (val1 == null || val2 == null) {
             return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
         }
@@ -284,7 +309,7 @@ public class PojoComparators {
         return val2.compareTo(val1);
     }
 
-    public static int compareRun(Run val1, Run val2) {
+    public static int compareRun(RunPojo val1, RunPojo val2) {
         if (val1 == null || val2 == null) {
             return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
         }
@@ -297,7 +322,7 @@ public class PojoComparators {
         );
     }
 
-    public static int compareRunDescending(Run val1, Run val2) {
+    public static int compareRunDescending(RunPojo val1, RunPojo val2) {
         if (val1 == null || val2 == null) {
             return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
         }
@@ -306,7 +331,7 @@ public class PojoComparators {
         return compareLong(val2.getRunId(), val1.getRunId());
     }
 
-    public static int compareRunDateDescending(Run val1, Run val2) {
+    public static int compareRunDateDescending(RunPojo val1, RunPojo val2) {
         if (val1 == null || val2 == null) {
             return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
         }
@@ -316,7 +341,7 @@ public class PojoComparators {
         );
     }
 
-    public static int compareStage(Stage val1, Stage val2) {
+    public static int compareStage(StagePojo val1, StagePojo val2) {
         if (val1 == null || val2 == null) {
             return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
         }
@@ -327,7 +352,7 @@ public class PojoComparators {
         );
     }
 
-    public static int compareStageAscending(Stage val1, Stage val2) {
+    public static int compareStageAscending(StagePojo val1, StagePojo val2) {
         if (val1 == null || val2 == null) {
             return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
         }
@@ -335,7 +360,7 @@ public class PojoComparators {
 
     }
 
-    public static int compareStorage(Storage val1, Storage val2) {
+    public static int compareStorage(StoragePojo val1, StoragePojo val2) {
         if (val1 == null || val2 == null) {
             return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
         }
@@ -346,7 +371,7 @@ public class PojoComparators {
         );
     }
 
-    public static int compareTestResult(TestResult val1, TestResult val2) {
+    public static int compareTestResultModel(TestResultModel val1, TestResultModel val2) {
         if (val1 == null || val2 == null) {
             return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
         }
@@ -356,7 +381,17 @@ public class PojoComparators {
         );
     }
 
-    public static int compareTestResultDateDescending(TestResult val1, TestResult val2) {
+    public static int compareTestResultPojo(TestResultPojo val1, TestResultPojo val2) {
+        if (val1 == null || val2 == null) {
+            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+        }
+        return chainCompare(
+                compareLong(val1.getStageFk(), val2.getStageFk()),
+                ObjectUtils.compare(val1.getTestResultId(), val2.getTestResultId())
+        );
+    }
+
+    public static int compareTestResultModelDateDescending(TestResultModel val1, TestResultModel val2) {
         if (val1 == null || val2 == null) {
             return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
         }
@@ -367,7 +402,18 @@ public class PojoComparators {
         );
     }
 
-    public static int compareTestSuite(TestSuite val1, TestSuite val2) {
+    public static int compareTestResultPojoDateDescending(TestResultPojo val1, TestResultPojo val2) {
+        if (val1 == null || val2 == null) {
+            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+        }
+        return chainCompare(
+                compareLocalDateTimeDescending(val1.getTestResultCreated(), val2.getTestResultCreated()),
+                compareLong(val1.getStageFk(), val2.getStageFk()),
+                ObjectUtils.compare(val1.getTestResultId(), val2.getTestResultId())
+        );
+    }
+
+    public static int compareTestSuite(TestSuitePojo val1, TestSuitePojo val2) {
         if (val1 == null || val2 == null) {
             return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
         }
@@ -377,7 +423,7 @@ public class PojoComparators {
         );
     }
 
-    public static int compareTestCase(TestCase val1, TestCase val2) {
+    public static int compareTestCase(TestCasePojo val1, TestCasePojo val2) {
         if (val1 == null || val2 == null) {
             return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
         }
@@ -388,41 +434,41 @@ public class PojoComparators {
     }
 
     private static class TestResultCaseInsensitiveComparator
-            implements Comparator<TestResult>, java.io.Serializable {
+            implements Comparator<TestResultPojo>, java.io.Serializable {
         @Serial
         private static final long serialVersionUID = -859866670502292563L;
 
-        public int compare(TestResult val1, TestResult val2) {
-            return compareTestResult(val1, val2);
+        public int compare(TestResultPojo val1, TestResultPojo val2) {
+            return compareTestResultPojo(val1, val2);
         }
     }
 
     private static class TestSuiteCaseInsensitiveComparator
-            implements Comparator<TestSuite>, java.io.Serializable {
+            implements Comparator<TestSuitePojo>, java.io.Serializable {
         @Serial
         private static final long serialVersionUID = -5672061856924641442L;
 
-        public int compare(TestSuite val1, TestSuite val2) {
+        public int compare(TestSuitePojo val1, TestSuitePojo val2) {
             return compareTestSuite(val1, val2);
         }
     }
 
     private static class TestCaseCaseInsensitiveComparator
-            implements Comparator<TestCase>, java.io.Serializable {
+            implements Comparator<TestCasePojo>, java.io.Serializable {
         @Serial
         private static final long serialVersionUID = 5737556829091435969L;
 
-        public int compare(TestCase val1, TestCase val2) {
+        public int compare(TestCasePojo val1, TestCasePojo val2) {
             return compareTestCase(val1, val2);
         }
     }
 
     private static class StorageCaseInsensitiveComparator
-            implements Comparator<Storage>, java.io.Serializable {
+            implements Comparator<StoragePojo>, java.io.Serializable {
         @Serial
         private static final long serialVersionUID = -3674131088370959367L;
 
-        public int compare(Storage val1, Storage val2) {
+        public int compare(StoragePojo val1, StoragePojo val2) {
             return compareStorage(val1, val2);
         }
     }

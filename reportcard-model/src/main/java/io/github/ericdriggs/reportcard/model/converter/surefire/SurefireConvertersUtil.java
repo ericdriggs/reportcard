@@ -2,13 +2,10 @@ package io.github.ericdriggs.reportcard.model.converter.surefire;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.ericdriggs.reportcard.model.TestCase;
-import io.github.ericdriggs.reportcard.model.TestResult;
-import io.github.ericdriggs.reportcard.model.TestStatus;
-import io.github.ericdriggs.reportcard.model.TestSuite;
-import io.github.ericdriggs.reportcard.xml.surefire.Property;
-import io.github.ericdriggs.reportcard.xml.surefire.Testcase;
-import io.github.ericdriggs.reportcard.xml.surefire.Testsuite;
+import io.github.ericdriggs.reportcard.model.*;
+import io.github.ericdriggs.reportcard.xml.IsEmptyUtil;
+import io.github.ericdriggs.reportcard.xml.junit.JunitParserUtil;
+import io.github.ericdriggs.reportcard.xml.surefire.*;
 import lombok.SneakyThrows;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.Converter;
@@ -24,34 +21,40 @@ public class SurefireConvertersUtil {
 
     private final static ObjectMapper mapper = new ObjectMapper();
 
-    public final static Converter<Testcase, TestCase> fromSurefireToModelTestCase = new AbstractConverter<Testcase, TestCase>() {
-        protected TestCase convert(io.github.ericdriggs.reportcard.xml.surefire.Testcase source) {
+    public final static Converter<Testcase, TestCaseModel> fromSurefireToModelTestCase = new AbstractConverter<Testcase, TestCaseModel>() {
+        protected TestCaseModel convert(io.github.ericdriggs.reportcard.xml.surefire.Testcase source) {
             return doFromSurefireToModelTestCase(source);
         }
     };
 
-    public final static Converter<Testsuite, TestSuite> fromSurefireToModelTestSuite = new AbstractConverter<Testsuite, TestSuite>() {
-        protected TestSuite convert(io.github.ericdriggs.reportcard.xml.surefire.Testsuite source) {
+    public final static Converter<Testsuite, TestSuiteModel> fromSurefireToModelTestSuite = new AbstractConverter<Testsuite, TestSuiteModel>() {
+        protected TestSuiteModel convert(io.github.ericdriggs.reportcard.xml.surefire.Testsuite source) {
             return doFromSurefireToModelTestSuite(source);
         }
     };
 
-    public final static Converter<Collection<Testsuite>, TestResult> fromSurefireToModelTestResult = new AbstractConverter<Collection<Testsuite>, TestResult>() {
-        protected TestResult convert(Collection<Testsuite> source) {
+    public final static Converter<Collection<Testsuite>, TestResultModel> fromSurefireToModelTestResult = new AbstractConverter<Collection<Testsuite>, TestResultModel>() {
+        protected TestResultModel convert(Collection<Testsuite> source) {
             return doFromSurefireToModelTestResult(source);
         }
     };
 
-    public static List<TestCase> doFromSurefireToModelTestCases(List<Testcase> source) {
-        List<TestCase> testCases = new ArrayList<>();
+
+    public static TestSuiteModel fromTestXmlContent(String testXmlContent ) {
+        Testsuite testsuite = SurefireParserUtil.parseTestSuite(testXmlContent);
+        return doFromSurefireToModelTestSuite(testsuite);
+    }
+
+    public static List<TestCaseModel> doFromSurefireToModelTestCases(List<Testcase> source) {
+        List<TestCaseModel> testCases = new ArrayList<>();
         for (Testcase testcase : source) {
             testCases.add(doFromSurefireToModelTestCase(testcase));
         }
         return testCases;
     }
 
-    public static TestCase doFromSurefireToModelTestCase(Testcase source) {
-        TestCase modelTestCase = new TestCase();
+    public static TestCaseModel doFromSurefireToModelTestCase(Testcase source) {
+        TestCaseModel modelTestCase = new TestCaseModel();
         modelTestCase.setName(source.getName());
         modelTestCase.setClassName(source.getClassname());
         modelTestCase.setTime(new BigDecimal(source.getTime()));
@@ -65,19 +68,56 @@ public class SurefireConvertersUtil {
         } else {
             modelTestCase.setTestStatus(TestStatus.SUCCESS);
         }
+        modelTestCase.addTestCaseFaults(getTestCaseFaults(source));
         return modelTestCase;
     }
 
-    public static List<TestSuite> doFromSurefireToModelTestSuites(Collection<Testsuite> source) {
-        List<TestSuite> testSuites = new ArrayList<>();
+    public static List<TestCaseFaultModel> getTestCaseFaults(Testcase source) {
+        List<TestCaseFaultModel> testCaseFaults = new ArrayList<>();
+        if (source.getError() != null) {
+            testCaseFaults.addAll(getTestCaseFaults(List.of(source.getError().getValue()), FaultContext.ERROR));
+        }
+        testCaseFaults.addAll(getTestCaseFaults(source.getFailure(), FaultContext.FAILURE));
+        testCaseFaults.addAll(getTestCaseFaults(source.getFlakyError(), FaultContext.ERROR));
+        testCaseFaults.addAll(getTestCaseFaults(source.getFlakyFailure(), FaultContext.FAILURE));
+        testCaseFaults.addAll(getTestCaseFaults(source.getRerunError(), FaultContext.ERROR));
+        testCaseFaults.addAll(getTestCaseFaults(source.getRerunFailure(), FaultContext.FAILURE));
+        return testCaseFaults;
+    }
+
+    public static List<TestCaseFaultModel> getTestCaseFaults(List<? extends HasValueMessageTypeSurefire> faults, FaultContext faultContext) {
+        List<TestCaseFaultModel> testCaseFaults = new ArrayList<>();
+        if (!IsEmptyUtil.isCollectionEmpty(faults)) {
+            for (Object o : faults) {
+                if (o instanceof HasValueMessageTypeSurefire hasValueMessageType) {
+                    testCaseFaults.add(getTestCaseFault(hasValueMessageType, faultContext));
+                }
+            }
+        }
+        return testCaseFaults;
+    }
+
+
+    public static TestCaseFaultModel getTestCaseFault(HasValueMessageTypeSurefire fault, FaultContext faultContext) {
+
+        TestCaseFaultModel testCaseFault = new TestCaseFaultModel();
+        testCaseFault.setFaultContextFk(faultContext.getFaultContextId())
+                     .setMessage(fault.getMessage())
+                     .setType(fault.getType())
+                     .setValue(fault.getValue());
+        return testCaseFault;
+    }
+
+    public static List<TestSuiteModel> doFromSurefireToModelTestSuites(Collection<Testsuite> source) {
+        List<TestSuiteModel> testSuites = new ArrayList<>();
         for (Testsuite testsuite : source) {
             testSuites.add(doFromSurefireToModelTestSuite(testsuite));
         }
         return testSuites;
     }
 
-    public static TestSuite doFromSurefireToModelTestSuite(Testsuite source) {
-        TestSuite modelTestSuite = new TestSuite();
+    public static TestSuiteModel doFromSurefireToModelTestSuite(Testsuite source) {
+        TestSuiteModel modelTestSuite = new TestSuiteModel();
         modelTestSuite.setName(source.getName());
         modelTestSuite.setError(source.getErrors());
         if (modelTestSuite.getError() == null) {
@@ -100,7 +140,7 @@ public class SurefireConvertersUtil {
             modelTestSuite.setSkipped(0);
         }
         modelTestSuite.setGroup(source.getGroup());
-        modelTestSuite.setPackage(null);
+        modelTestSuite.setPackageName(null);
         modelTestSuite.setProperties(convertPropertiesList(source.getProperties()));
         modelTestSuite.setTestCases(doFromSurefireToModelTestCases(source.getTestcase()));
         modelTestSuite.setTime(source.getTime());
@@ -121,6 +161,9 @@ public class SurefireConvertersUtil {
         for (io.github.ericdriggs.reportcard.xml.surefire.Properties surefireProperties : surefirePropertiesList) {
 
             Properties properties = new Properties();
+            if (surefireProperties.getProperty() == null) {
+                continue;
+            }
             List<Property> surefirePropertyList = surefireProperties.getProperty();
             for (Property property : surefirePropertyList) {
                 properties.setProperty(property.getName(), property.getValue());
@@ -130,8 +173,8 @@ public class SurefireConvertersUtil {
         return mapper.writeValueAsString(propertiesList);
     }
 
-    public static TestResult doFromSurefireToModelTestResult(Collection<Testsuite> sources) {
-        TestResult modelTestResult = new TestResult();
+    public static TestResultModel doFromSurefireToModelTestResult(Collection<Testsuite> sources) {
+        TestResultModel modelTestResult = new TestResultModel();
         modelTestResult.setTestSuites(doFromSurefireToModelTestSuites(sources));
         modelTestResult.setTests(0);
         modelTestResult.setSkipped(0);
@@ -140,7 +183,7 @@ public class SurefireConvertersUtil {
         modelTestResult.setTime(BigDecimal.ZERO);
 
         boolean hasSkip = false;
-        for (TestSuite testSuite : modelTestResult.getTestSuites()) {
+        for (TestSuiteModel testSuite : modelTestResult.getTestSuites()) {
             modelTestResult.setTime(modelTestResult.getTime().add(testSuite.getTime()));
             modelTestResult.setTests(modelTestResult.getTests() + testSuite.getTests());
             modelTestResult.setSkipped(modelTestResult.getSkipped() + testSuite.getSkipped());

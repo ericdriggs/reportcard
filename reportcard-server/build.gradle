@@ -75,6 +75,7 @@ dependencies {
     implementation 'org.apache.commons:commons-compress:1.26.0'
 
 
+
     //AWS
     implementation platform("software.amazon.awssdk:bom:${awsSdkVersion}")
     implementation("software.amazon.awssdk:s3-transfer-manager")
@@ -157,6 +158,7 @@ task generateJooqSchemaSource {
                                 .withPackageName('io.github.ericdriggs.reportcard.gen.db')
                                 .withDirectory('/Users/eric.r.driggs/github/ericdriggs/reportcard/reportcard-server/src/generated/java')
                         )
+                        .withStrategy(new Strategy().withName("org.jooq.codegen.SuffixGeneratorStrategy"))
                 )
         )
     }

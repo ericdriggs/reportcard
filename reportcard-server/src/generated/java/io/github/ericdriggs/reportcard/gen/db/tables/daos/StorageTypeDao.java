@@ -4,7 +4,8 @@
 package io.github.ericdriggs.reportcard.gen.db.tables.daos;
 
 
-import io.github.ericdriggs.reportcard.gen.db.tables.StorageType;
+import io.github.ericdriggs.reportcard.gen.db.tables.StorageTypeTable;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.StorageTypePojo;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.StorageTypeRecord;
 
 import java.util.List;
@@ -21,24 +22,24 @@ import org.jooq.impl.DAOImpl;
  */
 @Generated
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class StorageTypeDao extends DAOImpl<StorageTypeRecord, io.github.ericdriggs.reportcard.gen.db.tables.pojos.StorageType, Byte> {
+public class StorageTypeDao extends DAOImpl<StorageTypeRecord, StorageTypePojo, Byte> {
 
     /**
      * Create a new StorageTypeDao without any configuration
      */
     public StorageTypeDao() {
-        super(StorageType.STORAGE_TYPE, io.github.ericdriggs.reportcard.gen.db.tables.pojos.StorageType.class);
+        super(StorageTypeTable.STORAGE_TYPE, StorageTypePojo.class);
     }
 
     /**
      * Create a new StorageTypeDao with an attached configuration
      */
     public StorageTypeDao(Configuration configuration) {
-        super(StorageType.STORAGE_TYPE, io.github.ericdriggs.reportcard.gen.db.tables.pojos.StorageType.class, configuration);
+        super(StorageTypeTable.STORAGE_TYPE, StorageTypePojo.class, configuration);
     }
 
     @Override
-    public Byte getId(io.github.ericdriggs.reportcard.gen.db.tables.pojos.StorageType object) {
+    public Byte getId(StorageTypePojo object) {
         return object.getStorageTypeId();
     }
 
@@ -46,43 +47,43 @@ public class StorageTypeDao extends DAOImpl<StorageTypeRecord, io.github.ericdri
      * Fetch records that have <code>storage_type_id BETWEEN lowerInclusive AND
      * upperInclusive</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.StorageType> fetchRangeOfStorageTypeId(Byte lowerInclusive, Byte upperInclusive) {
-        return fetchRange(StorageType.STORAGE_TYPE.STORAGE_TYPE_ID, lowerInclusive, upperInclusive);
+    public List<StorageTypePojo> fetchRangeOfStorageTypeIdTable(Byte lowerInclusive, Byte upperInclusive) {
+        return fetchRange(StorageTypeTable.STORAGE_TYPE.STORAGE_TYPE_ID, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>storage_type_id IN (values)</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.StorageType> fetchByStorageTypeId(Byte... values) {
-        return fetch(StorageType.STORAGE_TYPE.STORAGE_TYPE_ID, values);
+    public List<StorageTypePojo> fetchByStorageTypeIdTable(Byte... values) {
+        return fetch(StorageTypeTable.STORAGE_TYPE.STORAGE_TYPE_ID, values);
     }
 
     /**
      * Fetch a unique record that has <code>storage_type_id = value</code>
      */
-    public io.github.ericdriggs.reportcard.gen.db.tables.pojos.StorageType fetchOneByStorageTypeId(Byte value) {
-        return fetchOne(StorageType.STORAGE_TYPE.STORAGE_TYPE_ID, value);
+    public StorageTypePojo fetchOneByStorageTypeIdTable(Byte value) {
+        return fetchOne(StorageTypeTable.STORAGE_TYPE.STORAGE_TYPE_ID, value);
     }
 
     /**
      * Fetch a unique record that has <code>storage_type_id = value</code>
      */
-    public Optional<io.github.ericdriggs.reportcard.gen.db.tables.pojos.StorageType> fetchOptionalByStorageTypeId(Byte value) {
-        return fetchOptional(StorageType.STORAGE_TYPE.STORAGE_TYPE_ID, value);
+    public Optional<StorageTypePojo> fetchOptionalByStorageTypeIdTable(Byte value) {
+        return fetchOptional(StorageTypeTable.STORAGE_TYPE.STORAGE_TYPE_ID, value);
     }
 
     /**
      * Fetch records that have <code>storage_type_name BETWEEN lowerInclusive
      * AND upperInclusive</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.StorageType> fetchRangeOfStorageTypeName(String lowerInclusive, String upperInclusive) {
-        return fetchRange(StorageType.STORAGE_TYPE.STORAGE_TYPE_NAME, lowerInclusive, upperInclusive);
+    public List<StorageTypePojo> fetchRangeOfStorageTypeNameTable(String lowerInclusive, String upperInclusive) {
+        return fetchRange(StorageTypeTable.STORAGE_TYPE.STORAGE_TYPE_NAME, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>storage_type_name IN (values)</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.StorageType> fetchByStorageTypeName(String... values) {
-        return fetch(StorageType.STORAGE_TYPE.STORAGE_TYPE_NAME, values);
+    public List<StorageTypePojo> fetchByStorageTypeNameTable(String... values) {
+        return fetch(StorageTypeTable.STORAGE_TYPE.STORAGE_TYPE_NAME, values);
     }
 }

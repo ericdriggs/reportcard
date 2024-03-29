@@ -1,6 +1,7 @@
+//TODO: move from model to pojo
 package io.github.ericdriggs.reportcard.model;
 
-import io.github.ericdriggs.reportcard.gen.db.tables.pojos.Storage;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.StoragePojo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
@@ -10,8 +11,8 @@ import lombok.Value;
 @AllArgsConstructor
 public class StagePathStorageTestResult {
     StagePath stagePath;
-    Storage storage;
-    TestResult testResult;
+    StoragePojo storage;
+    TestResultModel testResult;
 
     public StagePathStorageTestResult(StagePathStorage stagePathStorage, StagePathTestResult stagePathTestResult) {
         if (stagePathStorage == null) {

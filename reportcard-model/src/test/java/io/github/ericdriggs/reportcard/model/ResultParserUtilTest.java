@@ -1,12 +1,15 @@
 package io.github.ericdriggs.reportcard.model;
 
 import io.github.ericdriggs.file.FileUtils;
+import io.github.ericdriggs.reportcard.model.converter.surefire.SureFireResultParserUtil;
 import io.github.ericdriggs.reportcard.xml.ResultCount;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.file.NoSuchFileException;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -29,7 +32,7 @@ public class ResultParserUtilTest {
         final String relativePath = "src/test/resources/format-samples/surefire-reports";
         final String absolutePath = FileUtils.absolutePathFromRelativePath(relativePath);
 
-        TestResult testResult = ResultParserUtil.fromSurefirePath(absolutePath);
+        TestResultModel testResult = SureFireResultParserUtil.fromSurefirePath(absolutePath);
         assertEquals(3, testResult.getTestSuites().size());
 
         Assertions.assertEquals(ERROR_COUNT, testResult.getError());
@@ -46,7 +49,7 @@ public class ResultParserUtilTest {
         assertNull(testResult.getExternalLinks());
         assertNull(testResult.getTestResultCreated());
 
-        Assertions.assertEquals(TIME_TOTAL, testResult.getTime().setScale(1));
+        Assertions.assertEquals(TIME_TOTAL, testResult.getTime().setScale(1, RoundingMode.HALF_UP));
 
         ResultCount resultCount = testResult.getResultCount();
         assertEquals(ERROR_COUNT, resultCount.getErrors());
@@ -56,6 +59,23 @@ public class ResultParserUtilTest {
         assertEquals(SUCCESS_COUNT, resultCount.getSuccesses());
         assertEquals(TEST_COUNT, resultCount.getTests());
         assertEquals(TIME_TOTAL, resultCount.getTime());
+
+        boolean assertedFailureError = false;
+        for (TestSuiteModel testSuite : testResult.getTestSuites()) {
+            for (TestCaseModel testCase : testSuite.getTestCases()) {
+                if ("setTestAndRetrieveValue".equals(testCase.getName())){
+                    assertedFailureError = true;
+                    List<TestCaseFaultModel> testCaseFaults = testCase.getTestCaseFaults();
+                    assertEquals(1, testCaseFaults.size());
+                    for (TestCaseFaultModel testCaseFault : testCaseFaults) {
+                        assertEquals(FaultContext.ERROR.getFaultContextId(), testCaseFault.getFaultContextFk());
+                        assertEquals("fake error message", testCaseFault.getMessage());
+                        assertEquals("FakeError", testCaseFault.getType());
+                    }
+
+                }
+            }
+        }
     }
 
     @Test
@@ -65,7 +85,7 @@ public class ResultParserUtilTest {
         final String invalidAbsolutePath = FileUtils.absolutePathFromRelativePath(invalidRelativePath);
 
         NoSuchFileException thrown = Assertions.assertThrows(NoSuchFileException.class, () -> {
-            ResultParserUtil.fromSurefirePath(invalidAbsolutePath);
+            SureFireResultParserUtil.fromSurefirePath(invalidAbsolutePath);
         });
 
     }

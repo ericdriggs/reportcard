@@ -4,7 +4,8 @@
 package io.github.ericdriggs.reportcard.gen.db.tables.daos;
 
 
-import io.github.ericdriggs.reportcard.gen.db.tables.Branch;
+import io.github.ericdriggs.reportcard.gen.db.tables.BranchTable;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.BranchPojo;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.BranchRecord;
 
 import java.time.LocalDateTime;
@@ -22,24 +23,24 @@ import org.jooq.impl.DAOImpl;
  */
 @Generated
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class BranchDao extends DAOImpl<BranchRecord, io.github.ericdriggs.reportcard.gen.db.tables.pojos.Branch, Integer> {
+public class BranchDao extends DAOImpl<BranchRecord, BranchPojo, Integer> {
 
     /**
      * Create a new BranchDao without any configuration
      */
     public BranchDao() {
-        super(Branch.BRANCH, io.github.ericdriggs.reportcard.gen.db.tables.pojos.Branch.class);
+        super(BranchTable.BRANCH, BranchPojo.class);
     }
 
     /**
      * Create a new BranchDao with an attached configuration
      */
     public BranchDao(Configuration configuration) {
-        super(Branch.BRANCH, io.github.ericdriggs.reportcard.gen.db.tables.pojos.Branch.class, configuration);
+        super(BranchTable.BRANCH, BranchPojo.class, configuration);
     }
 
     @Override
-    public Integer getId(io.github.ericdriggs.reportcard.gen.db.tables.pojos.Branch object) {
+    public Integer getId(BranchPojo object) {
         return object.getBranchId();
     }
 
@@ -47,73 +48,73 @@ public class BranchDao extends DAOImpl<BranchRecord, io.github.ericdriggs.report
      * Fetch records that have <code>branch_id BETWEEN lowerInclusive AND
      * upperInclusive</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Branch> fetchRangeOfBranchId(Integer lowerInclusive, Integer upperInclusive) {
-        return fetchRange(Branch.BRANCH.BRANCH_ID, lowerInclusive, upperInclusive);
+    public List<BranchPojo> fetchRangeOfBranchIdTable(Integer lowerInclusive, Integer upperInclusive) {
+        return fetchRange(BranchTable.BRANCH.BRANCH_ID, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>branch_id IN (values)</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Branch> fetchByBranchId(Integer... values) {
-        return fetch(Branch.BRANCH.BRANCH_ID, values);
+    public List<BranchPojo> fetchByBranchIdTable(Integer... values) {
+        return fetch(BranchTable.BRANCH.BRANCH_ID, values);
     }
 
     /**
      * Fetch a unique record that has <code>branch_id = value</code>
      */
-    public io.github.ericdriggs.reportcard.gen.db.tables.pojos.Branch fetchOneByBranchId(Integer value) {
-        return fetchOne(Branch.BRANCH.BRANCH_ID, value);
+    public BranchPojo fetchOneByBranchIdTable(Integer value) {
+        return fetchOne(BranchTable.BRANCH.BRANCH_ID, value);
     }
 
     /**
      * Fetch a unique record that has <code>branch_id = value</code>
      */
-    public Optional<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Branch> fetchOptionalByBranchId(Integer value) {
-        return fetchOptional(Branch.BRANCH.BRANCH_ID, value);
+    public Optional<BranchPojo> fetchOptionalByBranchIdTable(Integer value) {
+        return fetchOptional(BranchTable.BRANCH.BRANCH_ID, value);
     }
 
     /**
      * Fetch records that have <code>branch_name BETWEEN lowerInclusive AND
      * upperInclusive</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Branch> fetchRangeOfBranchName(String lowerInclusive, String upperInclusive) {
-        return fetchRange(Branch.BRANCH.BRANCH_NAME, lowerInclusive, upperInclusive);
+    public List<BranchPojo> fetchRangeOfBranchNameTable(String lowerInclusive, String upperInclusive) {
+        return fetchRange(BranchTable.BRANCH.BRANCH_NAME, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>branch_name IN (values)</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Branch> fetchByBranchName(String... values) {
-        return fetch(Branch.BRANCH.BRANCH_NAME, values);
+    public List<BranchPojo> fetchByBranchNameTable(String... values) {
+        return fetch(BranchTable.BRANCH.BRANCH_NAME, values);
     }
 
     /**
      * Fetch records that have <code>repo_fk BETWEEN lowerInclusive AND
      * upperInclusive</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Branch> fetchRangeOfRepoFk(Integer lowerInclusive, Integer upperInclusive) {
-        return fetchRange(Branch.BRANCH.REPO_FK, lowerInclusive, upperInclusive);
+    public List<BranchPojo> fetchRangeOfRepoFkTable(Integer lowerInclusive, Integer upperInclusive) {
+        return fetchRange(BranchTable.BRANCH.REPO_FK, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>repo_fk IN (values)</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Branch> fetchByRepoFk(Integer... values) {
-        return fetch(Branch.BRANCH.REPO_FK, values);
+    public List<BranchPojo> fetchByRepoFkTable(Integer... values) {
+        return fetch(BranchTable.BRANCH.REPO_FK, values);
     }
 
     /**
      * Fetch records that have <code>last_run BETWEEN lowerInclusive AND
      * upperInclusive</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Branch> fetchRangeOfLastRun(LocalDateTime lowerInclusive, LocalDateTime upperInclusive) {
-        return fetchRange(Branch.BRANCH.LAST_RUN, lowerInclusive, upperInclusive);
+    public List<BranchPojo> fetchRangeOfLastRunTable(LocalDateTime lowerInclusive, LocalDateTime upperInclusive) {
+        return fetchRange(BranchTable.BRANCH.LAST_RUN, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>last_run IN (values)</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Branch> fetchByLastRun(LocalDateTime... values) {
-        return fetch(Branch.BRANCH.LAST_RUN, values);
+    public List<BranchPojo> fetchByLastRunTable(LocalDateTime... values) {
+        return fetch(BranchTable.BRANCH.LAST_RUN, values);
     }
 }

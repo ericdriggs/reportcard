@@ -4,7 +4,8 @@
 package io.github.ericdriggs.reportcard.gen.db.tables.records;
 
 
-import io.github.ericdriggs.reportcard.gen.db.tables.StorageType;
+import io.github.ericdriggs.reportcard.gen.db.tables.StorageTypeTable;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.StorageTypePojo;
 
 import lombok.Generated;
 
@@ -22,7 +23,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class StorageTypeRecord extends UpdatableRecordImpl<StorageTypeRecord> implements Record2<Byte, String> {
 
-    private static final long serialVersionUID = -721405249;
+    private static final long serialVersionUID = -2028015558;
 
     /**
      * Setter for <code>reportcard.storage_type.storage_type_id</code>.
@@ -79,12 +80,12 @@ public class StorageTypeRecord extends UpdatableRecordImpl<StorageTypeRecord> im
 
     @Override
     public Field<Byte> field1() {
-        return StorageType.STORAGE_TYPE.STORAGE_TYPE_ID;
+        return StorageTypeTable.STORAGE_TYPE.STORAGE_TYPE_ID;
     }
 
     @Override
     public Field<String> field2() {
-        return StorageType.STORAGE_TYPE.STORAGE_TYPE_NAME;
+        return StorageTypeTable.STORAGE_TYPE.STORAGE_TYPE_NAME;
     }
 
     @Override
@@ -134,14 +135,14 @@ public class StorageTypeRecord extends UpdatableRecordImpl<StorageTypeRecord> im
      * Create a detached StorageTypeRecord
      */
     public StorageTypeRecord() {
-        super(StorageType.STORAGE_TYPE);
+        super(StorageTypeTable.STORAGE_TYPE);
     }
 
     /**
      * Create a detached, initialised StorageTypeRecord
      */
     public StorageTypeRecord(Byte storageTypeId, String storageTypeName) {
-        super(StorageType.STORAGE_TYPE);
+        super(StorageTypeTable.STORAGE_TYPE);
 
         setStorageTypeId(storageTypeId);
         setStorageTypeName(storageTypeName);
@@ -150,8 +151,8 @@ public class StorageTypeRecord extends UpdatableRecordImpl<StorageTypeRecord> im
     /**
      * Create a detached, initialised StorageTypeRecord
      */
-    public StorageTypeRecord(io.github.ericdriggs.reportcard.gen.db.tables.pojos.StorageType value) {
-        super(StorageType.STORAGE_TYPE);
+    public StorageTypeRecord(StorageTypePojo value) {
+        super(StorageTypeTable.STORAGE_TYPE);
 
         if (value != null) {
             setStorageTypeId(value.getStorageTypeId());

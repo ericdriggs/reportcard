@@ -144,36 +144,39 @@ public class StagePathPersistService extends AbstractPersistService {
                 return stagePath;
             }
 
-            Company _company = null;
-            Org _org = null;
-            Repo _repo = null;
-            Branch _branch = null;
-            Job _job = null;
-            Run _run = null;
-            Stage _stage = null;
+            CompanyPojo _company = null;
+            OrgPojo _org = null;
+            RepoPojo _repo = null;
+            BranchPojo _branch = null;
+            JobPojo _job = null;
+            RunPojo _run = null;
+            StagePojo _stage = null;
 
             //TODO: explain why go through record to get to pojo
             if (record.get(COMPANY.COMPANY_ID.getName()) != null) {
-                _company = record.into(CompanyRecord.class).into(Company.class);
+                _company = record.into(CompanyRecord.class).into(CompanyPojo.class);
             }
             if (record.get(ORG.ORG_ID.getName()) != null) {
-                _org = record.into(OrgRecord.class).into(Org.class);
+                _org = record.into(OrgRecord.class).into(OrgPojo.class);
             }
             if (record.get(REPO.REPO_ID.getName()) != null) {
-                _repo = record.into(RepoRecord.class).into(Repo.class);
+                _repo = record.into(RepoRecord.class).into(RepoPojo.class);
             }
             if (record.get(BRANCH.BRANCH_ID.getName()) != null) {
-                _branch = record.into(BranchRecord.class).into(Branch.class);
+                _branch = record.into(BranchRecord.class).into(BranchPojo.class);
             }
 
             /*
              * It's difficult to compare json strings directly so use TreeMap<String,String> for comparisons
              */
             if (record.get(JOB.JOB_ID.getName()) != null) {
-                _job = record.into(JobRecord.class).into(Job.class);
+                _job = record.into(JobRecord.class).into(JobPojo.class);
                 if (stageDetails != null && !ObjectUtils.isEmpty(stageDetails.getJobInfo()) && !StringUtils.isEmpty(_job.getJobInfo())) {
                     @SuppressWarnings("unchecked")
+
+                    //Alphabetize keys since mysql does not
                     TreeMap<String, String> jobInfo = mapper.readValue(_job.getJobInfo(), TreeMap.class);
+                    _job.setJobInfo(mapper.writeValueAsString(jobInfo));
 
                     if (!jobInfo.equals(stageDetails.getJobInfo())) {
                         log.debug("jobInfo: {}  != request.getJobInfo: {}", jobInfo, stageDetails.getJobInfo());
@@ -184,10 +187,10 @@ public class StagePathPersistService extends AbstractPersistService {
                 }
             }
             if (record.get(RUN.RUN_ID.getName()) != null) {
-                _run = record.into(RunRecord.class).into(Run.class);
+                _run = record.into(RunRecord.class).into(RunPojo.class);
             }
             if (record.get(STAGE.STAGE_ID.getName()) != null) {
-                _stage = record.into(StageRecord.class).into(Stage.class);
+                _stage = record.into(StageRecord.class).into(StagePojo.class);
             }
 
             stagePath.setCompany(_company);
@@ -221,7 +224,7 @@ public class StagePathPersistService extends AbstractPersistService {
         StagePath stagePath = getStagePath(runId, stageName);
         if (stagePath.getStage() == null) {
             if (stagePath.getStage() == null) {
-                Stage stage = new Stage()
+                StagePojo stage = new StagePojo()
                         .setStageName(stageName)
                         .setRunFk(stagePath.getRun().getRunId());
                 stageDao.insert(stage);
@@ -248,14 +251,14 @@ public class StagePathPersistService extends AbstractPersistService {
         }
 
         if (stagePath.getCompany() == null) {
-            Company company = new Company()
+            CompanyPojo company = new CompanyPojo()
                     .setCompanyName(request.getCompany());
             companyDao.insert(company);
             stagePath.setCompany(company);
         }
 
         if (stagePath.getOrg() == null) {
-            Org org = new Org()
+            OrgPojo org = new OrgPojo()
                     .setOrgName(request.getOrg())
                     .setCompanyFk(stagePath.getCompany().getCompanyId());
             orgDao.insert(org);
@@ -263,7 +266,7 @@ public class StagePathPersistService extends AbstractPersistService {
         }
 
         if (stagePath.getRepo() == null) {
-            Repo repo = new Repo()
+            RepoPojo repo = new RepoPojo()
                     .setRepoName(request.getRepo())
                     .setOrgFk(stagePath.getOrg().getOrgId());
             repoDao.insert(repo);
@@ -271,30 +274,32 @@ public class StagePathPersistService extends AbstractPersistService {
         }
 
         if (stagePath.getBranch() == null) {
-            Branch branch = new Branch()
+            BranchPojo branch = new BranchPojo()
                     .setBranchName(request.getBranch())
                     .setRepoFk(stagePath.getRepo().getRepoId())
                     .setLastRun(nowUTC);
             branchDao.insert(branch);
             stagePath.setBranch(branch);
         } else {
-            Branch branch = stagePath.getBranch();
+            BranchPojo branch = stagePath.getBranch();
             //TODO: update lastRun AFTER post data
             //branch.setLastRun(nowUTC);
             branchDao.update(branch);
         }
 
         if (stagePath.getJob() == null) {
-            Job job = new Job()
+            JobPojo job = new JobPojo()
                     .setJobInfo(request.getJobInfoJson())
                     .setBranchFk(stagePath.getBranch().getBranchId())
                     .setLastRun(nowUTC);
             // insert since DAO/POJO would incorrectly attempt to insert generated column job_info_str
-            Job insertedJob = dsl.insertInto(JOB, JOB.BRANCH_FK, JOB.JOB_INFO, JOB.LAST_RUN)
+            JobPojo insertedJob = dsl.insertInto(JOB, JOB.BRANCH_FK, JOB.JOB_INFO, JOB.LAST_RUN)
                     .values(stagePath.getBranch().getBranchId(), request.getJobInfoJson(), nowUTC)
                     .returningResult(JOB.JOB_ID, JOB.JOB_INFO, JOB.BRANCH_FK, JOB.JOB_INFO_STR, JOB.LAST_RUN)
-                    .fetchOne().into(Job.class);
+                    .fetchOne().into(JobPojo.class);
 
+            //replace with request json since mysql does not sort keys alphabetically
+            insertedJob.setJobInfo(request.getJobInfoJson());
             stagePath.setJob(insertedJob);
         }
 
@@ -302,7 +307,7 @@ public class StagePathPersistService extends AbstractPersistService {
             //Result<Record1<Integer>> countRecord = dsl.selectCount().from(RUN).where(RUN.JOB_FK.eq(JOB.JOB_ID)).fetch();
             int runCount = 1 + dsl.fetchCount(selectFrom(RUN).where(RUN.JOB_FK.eq(stagePath.getJob().getJobId())));
 
-            Run run = new Run()
+            RunPojo run = new RunPojo()
                     .setRunReference(request.getRunReference())
                     .setSha(request.getSha())
                     .setJobFk(stagePath.getJob().getJobId())
@@ -314,7 +319,7 @@ public class StagePathPersistService extends AbstractPersistService {
         }
 
         if (stagePath.getStage() == null) {
-            Stage stage = new Stage()
+            StagePojo stage = new StagePojo()
                     .setStageName(request.getStage())
                     .setRunFk(stagePath.getRun().getRunId());
             stageDao.insert(stage);
@@ -326,13 +331,13 @@ public class StagePathPersistService extends AbstractPersistService {
     public LocalDateTime updateLastRunToNow(StagePath stagePath) {
         LocalDateTime nowUTC = LocalDateTime.now(ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS);
         if (stagePath.getBranch() != null) {
-            Branch branch = stagePath.getBranch();
+            BranchPojo branch = stagePath.getBranch();
             branch.setLastRun(nowUTC);
             branchDao.update(branch);
         }
 
         if (stagePath.getJob() != null) {
-            Job job = stagePath.getJob();
+            JobPojo job = stagePath.getJob();
             job.setLastRun(nowUTC);
             // insert since DAO/POJO would incorrectly attempt to insert generated column job_info_str
             dsl.update(JOB)

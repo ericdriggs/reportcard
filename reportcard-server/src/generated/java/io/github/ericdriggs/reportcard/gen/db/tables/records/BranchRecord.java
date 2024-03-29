@@ -4,7 +4,8 @@
 package io.github.ericdriggs.reportcard.gen.db.tables.records;
 
 
-import io.github.ericdriggs.reportcard.gen.db.tables.Branch;
+import io.github.ericdriggs.reportcard.gen.db.tables.BranchTable;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.BranchPojo;
 
 import java.time.LocalDateTime;
 
@@ -24,7 +25,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BranchRecord extends UpdatableRecordImpl<BranchRecord> implements Record4<Integer, String, Integer, LocalDateTime> {
 
-    private static final long serialVersionUID = -619020559;
+    private static final long serialVersionUID = 1557191483;
 
     /**
      * Setter for <code>reportcard.branch.branch_id</code>.
@@ -111,22 +112,22 @@ public class BranchRecord extends UpdatableRecordImpl<BranchRecord> implements R
 
     @Override
     public Field<Integer> field1() {
-        return Branch.BRANCH.BRANCH_ID;
+        return BranchTable.BRANCH.BRANCH_ID;
     }
 
     @Override
     public Field<String> field2() {
-        return Branch.BRANCH.BRANCH_NAME;
+        return BranchTable.BRANCH.BRANCH_NAME;
     }
 
     @Override
     public Field<Integer> field3() {
-        return Branch.BRANCH.REPO_FK;
+        return BranchTable.BRANCH.REPO_FK;
     }
 
     @Override
     public Field<LocalDateTime> field4() {
-        return Branch.BRANCH.LAST_RUN;
+        return BranchTable.BRANCH.LAST_RUN;
     }
 
     @Override
@@ -210,14 +211,14 @@ public class BranchRecord extends UpdatableRecordImpl<BranchRecord> implements R
      * Create a detached BranchRecord
      */
     public BranchRecord() {
-        super(Branch.BRANCH);
+        super(BranchTable.BRANCH);
     }
 
     /**
      * Create a detached, initialised BranchRecord
      */
     public BranchRecord(Integer branchId, String branchName, Integer repoFk, LocalDateTime lastRun) {
-        super(Branch.BRANCH);
+        super(BranchTable.BRANCH);
 
         setBranchId(branchId);
         setBranchName(branchName);
@@ -228,8 +229,8 @@ public class BranchRecord extends UpdatableRecordImpl<BranchRecord> implements R
     /**
      * Create a detached, initialised BranchRecord
      */
-    public BranchRecord(io.github.ericdriggs.reportcard.gen.db.tables.pojos.Branch value) {
-        super(Branch.BRANCH);
+    public BranchRecord(BranchPojo value) {
+        super(BranchTable.BRANCH);
 
         if (value != null) {
             setBranchId(value.getBranchId());

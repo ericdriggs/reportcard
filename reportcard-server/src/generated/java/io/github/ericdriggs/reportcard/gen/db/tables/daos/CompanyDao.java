@@ -4,7 +4,8 @@
 package io.github.ericdriggs.reportcard.gen.db.tables.daos;
 
 
-import io.github.ericdriggs.reportcard.gen.db.tables.Company;
+import io.github.ericdriggs.reportcard.gen.db.tables.CompanyTable;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.CompanyPojo;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.CompanyRecord;
 
 import java.util.List;
@@ -21,24 +22,24 @@ import org.jooq.impl.DAOImpl;
  */
 @Generated
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class CompanyDao extends DAOImpl<CompanyRecord, io.github.ericdriggs.reportcard.gen.db.tables.pojos.Company, Integer> {
+public class CompanyDao extends DAOImpl<CompanyRecord, CompanyPojo, Integer> {
 
     /**
      * Create a new CompanyDao without any configuration
      */
     public CompanyDao() {
-        super(Company.COMPANY, io.github.ericdriggs.reportcard.gen.db.tables.pojos.Company.class);
+        super(CompanyTable.COMPANY, CompanyPojo.class);
     }
 
     /**
      * Create a new CompanyDao with an attached configuration
      */
     public CompanyDao(Configuration configuration) {
-        super(Company.COMPANY, io.github.ericdriggs.reportcard.gen.db.tables.pojos.Company.class, configuration);
+        super(CompanyTable.COMPANY, CompanyPojo.class, configuration);
     }
 
     @Override
-    public Integer getId(io.github.ericdriggs.reportcard.gen.db.tables.pojos.Company object) {
+    public Integer getId(CompanyPojo object) {
         return object.getCompanyId();
     }
 
@@ -46,57 +47,57 @@ public class CompanyDao extends DAOImpl<CompanyRecord, io.github.ericdriggs.repo
      * Fetch records that have <code>company_id BETWEEN lowerInclusive AND
      * upperInclusive</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Company> fetchRangeOfCompanyId(Integer lowerInclusive, Integer upperInclusive) {
-        return fetchRange(Company.COMPANY.COMPANY_ID, lowerInclusive, upperInclusive);
+    public List<CompanyPojo> fetchRangeOfCompanyIdTable(Integer lowerInclusive, Integer upperInclusive) {
+        return fetchRange(CompanyTable.COMPANY.COMPANY_ID, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>company_id IN (values)</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Company> fetchByCompanyId(Integer... values) {
-        return fetch(Company.COMPANY.COMPANY_ID, values);
+    public List<CompanyPojo> fetchByCompanyIdTable(Integer... values) {
+        return fetch(CompanyTable.COMPANY.COMPANY_ID, values);
     }
 
     /**
      * Fetch a unique record that has <code>company_id = value</code>
      */
-    public io.github.ericdriggs.reportcard.gen.db.tables.pojos.Company fetchOneByCompanyId(Integer value) {
-        return fetchOne(Company.COMPANY.COMPANY_ID, value);
+    public CompanyPojo fetchOneByCompanyIdTable(Integer value) {
+        return fetchOne(CompanyTable.COMPANY.COMPANY_ID, value);
     }
 
     /**
      * Fetch a unique record that has <code>company_id = value</code>
      */
-    public Optional<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Company> fetchOptionalByCompanyId(Integer value) {
-        return fetchOptional(Company.COMPANY.COMPANY_ID, value);
+    public Optional<CompanyPojo> fetchOptionalByCompanyIdTable(Integer value) {
+        return fetchOptional(CompanyTable.COMPANY.COMPANY_ID, value);
     }
 
     /**
      * Fetch records that have <code>company_name BETWEEN lowerInclusive AND
      * upperInclusive</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Company> fetchRangeOfCompanyName(String lowerInclusive, String upperInclusive) {
-        return fetchRange(Company.COMPANY.COMPANY_NAME, lowerInclusive, upperInclusive);
+    public List<CompanyPojo> fetchRangeOfCompanyNameTable(String lowerInclusive, String upperInclusive) {
+        return fetchRange(CompanyTable.COMPANY.COMPANY_NAME, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>company_name IN (values)</code>
      */
-    public List<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Company> fetchByCompanyName(String... values) {
-        return fetch(Company.COMPANY.COMPANY_NAME, values);
+    public List<CompanyPojo> fetchByCompanyNameTable(String... values) {
+        return fetch(CompanyTable.COMPANY.COMPANY_NAME, values);
     }
 
     /**
      * Fetch a unique record that has <code>company_name = value</code>
      */
-    public io.github.ericdriggs.reportcard.gen.db.tables.pojos.Company fetchOneByCompanyName(String value) {
-        return fetchOne(Company.COMPANY.COMPANY_NAME, value);
+    public CompanyPojo fetchOneByCompanyNameTable(String value) {
+        return fetchOne(CompanyTable.COMPANY.COMPANY_NAME, value);
     }
 
     /**
      * Fetch a unique record that has <code>company_name = value</code>
      */
-    public Optional<io.github.ericdriggs.reportcard.gen.db.tables.pojos.Company> fetchOptionalByCompanyName(String value) {
-        return fetchOptional(Company.COMPANY.COMPANY_NAME, value);
+    public Optional<CompanyPojo> fetchOptionalByCompanyNameTable(String value) {
+        return fetchOptional(CompanyTable.COMPANY.COMPANY_NAME, value);
     }
 }

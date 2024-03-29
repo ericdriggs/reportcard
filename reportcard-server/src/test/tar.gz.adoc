@@ -1,1 +1,7 @@
 tar --strip-components 1 --disable-copyfile --exclude='.DS_Store' -cvzf cucumber-html-reports.tar.gz target/cucumber-html-reports/
+
+
+tar --strip-components 3 --disable-copyfile --exclude='.DS_Store' -cvzf junit.tar.gz build/test-results/test/
+
+
+tar --strip-components 1 --disable-copyfile --exclude='.DS_Store' -cvzf junit.tar.gz junit/

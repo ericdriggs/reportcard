@@ -1,6 +1,6 @@
 package jooq;
 
-import io.github.ericdriggs.reportcard.gen.db.tables.pojos.Stage;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.StagePojo;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.StageRecord;
 import org.junit.jupiter.api.Test;
 
@@ -11,7 +11,7 @@ public class RecordIntoClassTest {
     void givenRecordWithNoValues_WhenIntoClass_ThenNullFields() {
 
         StageRecord record = new StageRecord();
-        Stage stage = record.into(Stage.class);
+        StagePojo stage = record.into(StagePojo.class);
         assertNotNull(stage);
         assertNull(stage.getStageId());
     }
@@ -26,7 +26,7 @@ public class RecordIntoClassTest {
         record.setStageName(stageName);
         record.setRunFk(runFk);
 
-        Stage stage = record.into(Stage.class);
+        StagePojo stage = record.into(StagePojo.class);
         assertNotNull(stage);
         assertEquals(stageId, stage.getStageId());
         assertEquals(stageName, stage.getStageName());

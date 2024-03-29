@@ -1,6 +1,5 @@
 package io.github.ericdriggs.reportcard.controller.html;
 
-import io.github.ericdriggs.reportcard.cache.dto.CompanyOrgRepoBranchJobRunStageDTO;
 import io.github.ericdriggs.reportcard.controller.StorageController;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -12,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class StorageHtmlHelper extends HtmlHelper {
+public class StorageHtmlHelper extends BrowseHtmlHelper {
 
     ;//static methods only
 

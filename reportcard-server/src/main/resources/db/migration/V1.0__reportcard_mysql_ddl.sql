@@ -200,7 +200,7 @@ CREATE TABLE IF NOT EXISTS `reportcard`.`storage` (
   KEY `storage_type_fk_idx` (`storage_type`),
   CONSTRAINT `stage_fk` FOREIGN KEY (`stage_fk`) REFERENCES `stage` (`stage_id`),
   CONSTRAINT `storage_type_fk` FOREIGN KEY (`storage_type`) REFERENCES `storage_type` (`storage_type_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
 
@@ -259,7 +259,7 @@ CREATE TABLE IF NOT EXISTS `reportcard`.`test_suite` (
   `error` INT NOT NULL,
   `failure` INT NOT NULL,
   `time` DECIMAL(9,3) NOT NULL,
-  `package` VARCHAR(1024) NULL DEFAULT NULL,
+  `package_name` VARCHAR(1024) NULL DEFAULT NULL,
   `group` VARCHAR(1024) NULL DEFAULT NULL,
   `properties` JSON NULL DEFAULT NULL,
   `is_success` TINYINT(1) GENERATED ALWAYS AS (((`failure` + `error`) = 0)) VIRTUAL,
@@ -274,7 +274,6 @@ CREATE TABLE IF NOT EXISTS `reportcard`.`test_suite` (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
-
 
 -- -----------------------------------------------------
 -- Table `reportcard`.`test_case`
@@ -306,7 +305,40 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
+-- -----------------------------------------------------
+-- Table `reportcard`.`fault_context`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `reportcard`.`fault_context` ;
+
+CREATE TABLE `fault_context` (
+  `fault_context_id` tinyint NOT NULL AUTO_INCREMENT,
+  `fault_context_name` varchar(64) NOT NULL,
+  PRIMARY KEY (`fault_context_id`)
+) ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_0900_ai_ci;
+
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+
+-- -----------------------------------------------------
+-- Table `reportcard`.`test_case_fault`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `reportcard`.`test_case_fault` ;
+
+CREATE TABLE `test_case_fault` (
+    `test_case_fault_id` bigint unsigned NOT NULL AUTO_INCREMENT,
+    `test_case_fk` bigint unsigned NOT NULL,
+    `fault_context_fk` tinyint NOT NULL,
+    `type` varchar(1024) NOT NULL,
+    `message` varchar(1024) DEFAULT NULL,
+    `value` mediumtext,
+    PRIMARY KEY (`test_case_fault_id`),
+    KEY `fault_context_fk_idx` (`fault_context_fk`),
+    KEY `test_case_fk_idx` (`test_case_fk`),
+    CONSTRAINT `fk_test_case` FOREIGN KEY (`test_case_fk`) REFERENCES `test_case` (`test_case_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT `fk_fault_context` FOREIGN KEY (`fault_context_fk`) REFERENCES `fault_context` (`fault_context_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

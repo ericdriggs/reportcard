@@ -4,7 +4,8 @@
 package io.github.ericdriggs.reportcard.gen.db.tables.records;
 
 
-import io.github.ericdriggs.reportcard.gen.db.tables.Job;
+import io.github.ericdriggs.reportcard.gen.db.tables.JobTable;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.JobPojo;
 
 import java.time.LocalDateTime;
 
@@ -24,7 +25,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class JobRecord extends UpdatableRecordImpl<JobRecord> implements Record5<Long, String, Integer, String, LocalDateTime> {
 
-    private static final long serialVersionUID = 1387697110;
+    private static final long serialVersionUID = 760462851;
 
     /**
      * Setter for <code>reportcard.job.job_id</code>.
@@ -126,27 +127,27 @@ public class JobRecord extends UpdatableRecordImpl<JobRecord> implements Record5
 
     @Override
     public Field<Long> field1() {
-        return Job.JOB.JOB_ID;
+        return JobTable.JOB.JOB_ID;
     }
 
     @Override
     public Field<String> field2() {
-        return Job.JOB.JOB_INFO;
+        return JobTable.JOB.JOB_INFO;
     }
 
     @Override
     public Field<Integer> field3() {
-        return Job.JOB.BRANCH_FK;
+        return JobTable.JOB.BRANCH_FK;
     }
 
     @Override
     public Field<String> field4() {
-        return Job.JOB.JOB_INFO_STR;
+        return JobTable.JOB.JOB_INFO_STR;
     }
 
     @Override
     public Field<LocalDateTime> field5() {
-        return Job.JOB.LAST_RUN;
+        return JobTable.JOB.LAST_RUN;
     }
 
     @Override
@@ -247,14 +248,14 @@ public class JobRecord extends UpdatableRecordImpl<JobRecord> implements Record5
      * Create a detached JobRecord
      */
     public JobRecord() {
-        super(Job.JOB);
+        super(JobTable.JOB);
     }
 
     /**
      * Create a detached, initialised JobRecord
      */
     public JobRecord(Long jobId, String jobInfo, Integer branchFk, String jobInfoStr, LocalDateTime lastRun) {
-        super(Job.JOB);
+        super(JobTable.JOB);
 
         setJobId(jobId);
         setJobInfo(jobInfo);
@@ -266,8 +267,8 @@ public class JobRecord extends UpdatableRecordImpl<JobRecord> implements Record5
     /**
      * Create a detached, initialised JobRecord
      */
-    public JobRecord(io.github.ericdriggs.reportcard.gen.db.tables.pojos.Job value) {
-        super(Job.JOB);
+    public JobRecord(JobPojo value) {
+        super(JobTable.JOB);
 
         if (value != null) {
             setJobId(value.getJobId());

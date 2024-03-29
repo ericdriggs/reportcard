@@ -1,75 +1,76 @@
 package io.github.ericdriggs.reportcard.xml;
 
-import lombok.Data;
+import io.github.ericdriggs.reportcard.model.TestStatus;
+import io.github.ericdriggs.reportcard.xml.testng.suite.Exclude;
+import lombok.Builder;
+import lombok.Value;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 
-@Data
-public class ResultCount {
-    /**
-     * tests="3" skipped="1" failures="0" errors="0"
-     */
+import static io.github.ericdriggs.reportcard.util.CompareUtil.chainCompare;
 
-    private Integer errors = 0;
-    private Integer failures = 0;
-    private Integer skipped = 0;
-    private Integer successes = 0;
-    private Integer tests = 0;
-    private BigDecimal time = BigDecimal.ZERO;
+@Value
+@Builder(toBuilder = true)
+public class ResultCount implements Comparable<ResultCount> {
 
-    public ResultCount setErrors(Integer val) {
-        errors = zeroIfNull(val);
-        return this;
+    @Builder.Default
+    Integer errors = 0;
+    @Builder.Default
+    Integer failures = 0;
+    @Builder.Default
+    Integer skipped = 0;
+    @Builder.Default
+    Integer successes = 0;
+    @Builder.Default
+    Integer tests = 0;
+    @Builder.Default
+    BigDecimal time = BigDecimal.ZERO;
+
+    public TestStatus getTestStatus() {
+        if (errors > 0) {
+            return TestStatus.ERROR;
+        } else if (failures > 0) {
+            return TestStatus.FAILURE;
+        } else if (skipped > 0) {
+            return TestStatus.SKIPPED;
+        }
+        return TestStatus.SUCCESS;
     }
 
-    public ResultCount setFailures(Integer val) {
-        failures = zeroIfNull(val);
-        return this;
-    }
-
-    public ResultCount setSkipped(Integer val) {
-        this.skipped = zeroIfNull(val);
-        return this;
-    }
-
-    public ResultCount setSuccesses(Integer val) {
-        this.successes = zeroIfNull(val);
-        return this;
-    }
-
-    public ResultCount setTests(Integer val) {
-        this.tests = zeroIfNull(val);
-        return this;
-    }
-
-    public ResultCount setTime(BigDecimal val) {
-        this.time = zeroIfNull(val);
-        return this;
+    public Integer getErrorsAndFailures() {
+        return errors + failures;
     }
 
     /**
      * Sums the fields of a resultCount
      *
-     * @param that a ResultCount
+     * @param r1 a ResultCount
+     * @param r2 a ResultCount
      * @return a new ResultCount sum of this and that
      */
-    public ResultCount add(ResultCount that) {
-        ResultCount resultCount = new ResultCount();
-        resultCount.setErrors(addIntegers(this.getErrors(), that.getErrors()));
-        resultCount.setFailures(addIntegers(this.getFailures(), that.getFailures()));
-        resultCount.setSkipped(addIntegers(this.getSkipped(), that.getSkipped()));
-        resultCount.setSuccesses(addIntegers(this.getSuccesses(), that.getSuccesses()));
-        resultCount.setTests(addIntegers(this.getTests(), that.getTests()));
-        resultCount.setTime(addBigDecimal(this.getTime(), that.getTime()));
-        return resultCount;
+    public static ResultCount add(ResultCount r1, ResultCount r2) {
+        if (r1 == null) {
+            return r2;
+        }
+
+        ResultCount result = ResultCount
+                .builder()
+                .errors(addIntegers(r1.getErrors(), r2.getErrors()))
+                .failures(addIntegers(r1.getFailures(), r2.getFailures()))
+                .skipped(addIntegers(r1.getSkipped(), r2.getSkipped()))
+                .successes(addIntegers(r1.getSuccesses(), r2.getSuccesses()))
+                .tests(addIntegers(r1.getTests(), r2.getTests()))
+                .time(addBigDecimal(r1.getTime(), r2.getTime()))
+                .build();
+        return result;
     }
 
     public static ResultCount aggregate(List<ResultCount> resultCounts) {
-        ResultCount resultCount = new ResultCount();
+        ResultCount resultCount = ResultCount.builder().build();
         for (ResultCount r : resultCounts) {
-            resultCount = resultCount.add(r);
+            resultCount = add(resultCount, r);
         }
         return resultCount;
     }
@@ -79,12 +80,32 @@ public class ResultCount {
      */
     public BigDecimal getPassedPercent() {
 
-        final Integer passedCount = getSuccesses();
-        final Integer failureErrorsTotal = getFailures() + getErrors();
-        return BigDecimal.valueOf(
-                        (100 * passedCount.doubleValue()) /
-                                (passedCount.doubleValue() + failureErrorsTotal.doubleValue())
-                ).setScale(2, RoundingMode.HALF_UP);
+        if (tests == null || tests == 0) {
+            return BigDecimal.ZERO;
+        }
+
+        final int skippedCount = skipped == null ? 0 : skipped;
+        if (tests - skippedCount == 0) {
+            return BigDecimal.ZERO;
+        }
+        final int successCount = successes == null ? 0 : successes;
+
+        final int errorCount = errors == null ? 0 : errors;
+        final int failureCount = failures == null ? 0 : failures;
+
+
+        //@SuppressWarnings("WrapperTypeMayBePrimitive")
+        final int errorFailureCount = errorCount + failureCount;
+
+        try {
+            return BigDecimal.valueOf(
+                    100 * (double) successCount /
+                    (double) (tests - skippedCount)
+            ).setScale(2, RoundingMode.HALF_UP);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw ex;
+        }
     }
 
     protected Integer zeroIfNull(Integer val) {
@@ -111,10 +132,11 @@ public class ResultCount {
     private static Integer addIntegers(Integer thiz, Integer that) {
         if (thiz == null) {
             thiz = 0;
-        }if (that == null) {
+        }
+        if (that == null) {
             that = 0;
         }
-         return thiz + that;
+        return thiz + that;
     }
 
     /**
@@ -134,5 +156,18 @@ public class ResultCount {
         return thiz.add(that);
     }
 
-
+    @Override
+    public int compareTo(ResultCount that) {
+        if (that == null) {
+            return 1;
+        }
+        return chainCompare(
+                errors.compareTo(that.errors),
+                failures.compareTo(that.failures),
+                skipped.compareTo(that.skipped),
+                successes.compareTo(that.successes),
+                tests.compareTo(that.tests),
+                time.compareTo(that.time)
+        );
+    }
 }

@@ -65,7 +65,7 @@ INSERT INTO `reportcard`.`test_suite`
  `error`,
  `failure`,
  `time`,
- `package`,
+ `package_name`,
  `group`,
  `properties`)
 VALUES (1, --                  <{test_suite_id: }>,
@@ -76,7 +76,7 @@ VALUES (1, --                  <{test_suite_id: }>,
         6, --                  <{error: }>,
         0, --                  <{failure: }>,
         1.010, --              <{time: }>,
-        'com.foo.baz', --      <{package: }>,
+        'com.foo.baz', --      <{package_name: }>,
         null, --               <{group: }>,
         null --                <{properties: }>,
        );

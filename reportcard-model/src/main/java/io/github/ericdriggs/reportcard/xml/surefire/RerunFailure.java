@@ -1,5 +1,6 @@
 package io.github.ericdriggs.reportcard.xml.surefire;
 
+import io.github.ericdriggs.reportcard.xml.junit.HasValueMessageTypeJunit;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,7 +18,7 @@ import javax.xml.bind.annotation.*;
 @AllArgsConstructor
 @Builder(builderMethodName = "builderForRerunFailure")
 @Data
-public class RerunFailure {
+public class RerunFailure implements HasValueMessageTypeSurefire {
 
     @XmlElement(required = true)
     protected String stackTrace;
@@ -30,4 +31,7 @@ public class RerunFailure {
     @XmlAttribute(name = "type", required = true)
     protected String type;
 
+    public String getValue() {
+        return stackTrace;
+    }
 }

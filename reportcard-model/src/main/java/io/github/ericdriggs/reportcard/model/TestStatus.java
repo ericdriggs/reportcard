@@ -21,6 +21,13 @@ public enum TestStatus {
         this.testStatusType = testStatusType;
     }
 
+    public boolean isErrorOrFailure() {
+        return testStatusType == TestStatusType.ERROR || testStatusType == TestStatusType.FAILURE;
+    }
+
+    public boolean isSkipped() {
+        return testStatusType == TestStatusType.SKIPPED;
+    }
     private final byte statusId;
     private final TestStatusType testStatusType;
 
