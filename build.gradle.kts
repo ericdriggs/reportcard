@@ -100,7 +100,7 @@ allprojects {
 
     configure<PublishingExtension> {
         publications {
-            val main by creating(MavenPublication::class) {
+            val maven by creating(MavenPublication::class) {
                 from(components["java"])
 
                 versionMapping {

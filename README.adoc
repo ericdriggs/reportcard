@@ -20,3 +20,9 @@ TODOs:
 * create github issues for TODOs
 * planning for additional TODOs
 * size issues and assign to milestones
+
+
+
+publishing
+
+1. publishToSonatype
