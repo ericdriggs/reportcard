@@ -17,7 +17,7 @@ plugins {
     id 'idea'
     id 'org.springframework.boot'
     id 'io.spring.dependency-management'
-    id 'nu.studer.jooq' version '7.2'
+    id 'nu.studer.jooq' version '8.0'
 //    id "org.flywaydb.flyway" version "7.8.2"
 }
 
@@ -299,4 +299,5 @@ tasks.withType(GenerateMavenPom).all {
     }
 }
 
-//version = "0.1.0"
+//needed since jooq version will override the version
+version = "0.1.0"
