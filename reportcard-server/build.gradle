@@ -104,6 +104,8 @@ dependencies {
 import org.jooq.codegen.GenerationTool
 import org.jooq.meta.jaxb.*
 
+import java.util.regex.Matcher
+
 task generateJooqSchemaSource {
     group = "jooq"
     version = "3.18.4"
@@ -277,4 +279,20 @@ task integrationTest(type: Test) {
 
 bootRun {
     systemProperties System.properties
+}
+
+//address duplicated tag dependencyManagement https://github.com/spring-gradle-plugins/dependency-management-plugin/issues/257
+tasks.withType(GenerateMavenPom).all {
+    doLast {
+        File file = new File("$buildDir/publications/maven/pom-default.xml")
+        def text = file.text
+        def pattern = "(?s)(<dependencyManagement>.+?<dependencies>)(.+?)(</dependencies>.+?</dependencyManagement>)"
+        Matcher matcher = text =~ pattern
+        if (matcher.find()) {
+            text = text.replaceFirst(pattern, "")
+            def firstDeps = matcher.group(2)
+            text = text.replaceFirst(pattern, '$1$2' + firstDeps + '$3')
+        }
+        file.write(text)
+    }
 }
