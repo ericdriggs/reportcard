@@ -25,4 +25,9 @@ TODOs:
 
 publishing
 
-1. publishToSonatype
+1. ./gradlew publishToSonatype -Si
+
+2. https://s01.oss.sonatype.org/#stagingRepositories
+
+3. close
+
