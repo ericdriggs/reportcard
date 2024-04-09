@@ -299,5 +299,13 @@ tasks.withType(GenerateMavenPom).all {
     }
 }
 
+publishing {
+    publications {
+        bootJava(MavenPublication) {
+            artifact tasks.named("bootJar")
+        }
+    }
+}
+
 //needed since jooq version will override the version
-version = "0.1.0"
+version = "0.1.1"
