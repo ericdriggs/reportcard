@@ -21,7 +21,7 @@ plugins {
 //    id "org.flywaydb.flyway" version "7.8.2"
 }
 
-version = "0.1.0"
+
 
 configurations {
     compileOnly {
@@ -110,7 +110,7 @@ import java.util.regex.Matcher
 
 task generateJooqSchemaSource {
     group = "jooq"
-    //version = "3.18.4"
+    version = "3.18.4"
     doLast {
         GenerationTool.generate(new Configuration()
                 .withJdbc(new Jdbc()
@@ -169,7 +169,7 @@ task generateJooqSchemaSource {
 }
 
 jooq {
-    //version = '3.18.4'
+    version = '3.18.4'
     edition = nu.studer.gradle.jooq.JooqEdition.OSS
     configurations {
         generated {
@@ -298,3 +298,5 @@ tasks.withType(GenerateMavenPom).all {
         file.write(text)
     }
 }
+
+version = "0.1.0"
