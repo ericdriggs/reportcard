@@ -284,7 +284,7 @@ bootRun {
 //address duplicated tag dependencyManagement https://github.com/spring-gradle-plugins/dependency-management-plugin/issues/257
 tasks.withType(GenerateMavenPom).all {
     doLast {
-        File file = new File("$buildDir/publications/maven/pom-default.xml")
+        File file = new File("$buildDir/publications/main/maven/pom-default.xml")
         def text = file.text
         def pattern = "(?s)(<dependencyManagement>.+?<dependencies>)(.+?)(</dependencies>.+?</dependencyManagement>)"
         Matcher matcher = text =~ pattern
