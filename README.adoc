@@ -31,3 +31,8 @@ publishing
 
 3. close
 
+4. verify at https://s01.oss.sonatype.org/content/groups/staging/io/github/ericdriggs/reportcard/
+
+5. release
+
+6. verify deploy at https://s01.oss.sonatype.org/content/groups/public/io/github/ericdriggs/reportcard-server/
