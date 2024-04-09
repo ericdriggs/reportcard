@@ -41,7 +41,7 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok'
 
     //Swagger
-    implementation 'org.springdoc:springdoc-openapi-ui:1.7.0'
+    implementation 'org.springdoc:springdoc-openapi-ui:1.8.0'
 
     //XML
     implementation "javax.xml.bind:jaxb-api:${jaxbVersion}"
