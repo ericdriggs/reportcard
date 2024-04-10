@@ -299,10 +299,34 @@ tasks.withType(GenerateMavenPom).all {
     }
 }
 
+//override publishing so it publishes the runnable boot jar
 publishing {
     publications {
-        bootJava(MavenPublication) {
-            artifact tasks.named("bootJar")
+        mavenJava(MavenPublication) {
+            maven(MavenPublication) {
+                artifact bootJar
+            }
+            pom {
+                name = "reportcard :: ${project.name}"
+                description = "test report metrics and trend analysis reporting :: ${project.name}"
+                url = 'https://github.com/ericdriggs/reportcard'
+                licenses {
+                    license {
+                        name = 'MIT'
+                        url = 'https://opensource.org/licenses/MIT'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'ericdriggs'
+                        name = 'Eric Driggs'
+                    }
+                }
+                scm {
+                    url = 'https://github.com/ericdriggs/reportcarda'
+                    connection = 'scm:git@github.com:ericdriggs/reportcard.git'
+                }
+            }
         }
     }
 }
