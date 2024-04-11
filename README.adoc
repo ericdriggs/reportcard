@@ -27,12 +27,15 @@ publishing
 
 1. ./gradlew publishToSonatype -Si
 
-2. https://s01.oss.sonatype.org/#stagingRepositories
+2. close staging repository
+* https://s01.oss.sonatype.org/#stagingRepositories
 
-3. close
+3. verify
+* https://s01.oss.sonatype.org/content/groups/staging/io/github/ericdriggs/reportcard/
 
-4. verify at https://s01.oss.sonatype.org/content/groups/staging/io/github/ericdriggs/reportcard/
+4. release staging repository
+* https://s01.oss.sonatype.org/#stagingRepositories
 
-5. release
+5. verify
 
-6. verify deploy at https://s01.oss.sonatype.org/content/groups/public/io/github/ericdriggs/reportcard-server/
+* https://s01.oss.sonatype.org/content/groups/public/io/github/ericdriggs/reportcard-server/
