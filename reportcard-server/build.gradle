@@ -332,4 +332,4 @@ publishing {
 }
 
 //needed since jooq version will override the version
-version = "0.1.1"
+version = "0.1.2"
