@@ -81,6 +81,7 @@ dependencies {
     //AWS
     implementation platform("software.amazon.awssdk:bom:${awsSdkVersion}")
     implementation("software.amazon.awssdk:s3-transfer-manager")
+    implementation("software.amazon.awssdk:sts")
     implementation("software.amazon.awssdk.crt:aws-crt:${awsCrtVersion}")
 
     //AWS Test
@@ -332,4 +333,4 @@ publishing {
 }
 
 //needed since jooq version will override the version
-version = "0.1.2"
+version = "0.1.3"
