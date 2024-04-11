@@ -629,7 +629,7 @@ public class BrowseHtmlHelper {
             </div><!-- end main -->
             <footer>
               <span>Reportcard</span>&nbsp;
-              <span>version: 0.0.1</span>&nbsp;&nbsp;&nbsp;
+              <span>version: 0.1.3</span>&nbsp;&nbsp;&nbsp;
               <a href="/swagger-ui/index.html">swagger</a>&nbsp;&nbsp;&nbsp;
               <a href="https://github.com/ericdriggs/reportcard">source</a>&nbsp;&nbsp;&nbsp;
             </footer>
