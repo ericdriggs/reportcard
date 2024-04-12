@@ -7,6 +7,7 @@ import io.github.ericdriggs.reportcard.controller.StorageController;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.*;
 import io.github.ericdriggs.reportcard.model.StageTestResultPojo;
 import io.github.ericdriggs.reportcard.util.NumberStringUtil;
+import io.github.ericdriggs.reportcard.util.PrettyPrintUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.http.HttpStatus;
@@ -270,8 +271,8 @@ public class BrowseHtmlHelper {
             """
             <th>JobId</th>
             <th>Runs</th>
-            <th>JobPojo Info</th>
-            <th>Last RunPojo</th>
+            <th>Job Info</th>
+            <th>Last Run</th>
             """;
 
     protected final static String jobHeaders =
@@ -617,7 +618,15 @@ public class BrowseHtmlHelper {
               <title>ReportCard</title>
             </head>
             <body>
-            <header><img alt="reportcard logo" src="/image/clipboard-check.svg" width="40px" height="40px" style="vertical-align: middle"> <span class="logo-text">ReportCard</span></header>
+            <header>
+              <img alt="reportcard logo" src="/image/clipboard-check.svg" width="40px" height="40px" style="vertical-align: middle"> <span class="logo-text">ReportCard</span>
+              <span>
+                &nbsp;&nbsp;&nbsp;
+                <a href="/swagger-ui/index.html">swagger</a>&nbsp;&nbsp;&nbsp;
+                <a href="https://github.com/ericdriggs/reportcard">source</a>&nbsp;&nbsp;&nbsp;
+                <span style="color:white">ver: 0.1.4</span>
+              </span>
+            </header>
             <nav aria-label="breadcrumb">
               <ul class="breadcrumb">
                 <!--bread-crumb-items-->
@@ -627,12 +636,8 @@ public class BrowseHtmlHelper {
             <div class="flex-row" role="main" id="main">
             <!--main-->
             </div><!-- end main -->
-            <footer>
-              <span>Reportcard</span>&nbsp;
-              <span>version: 0.1.3</span>&nbsp;&nbsp;&nbsp;
-              <a href="/swagger-ui/index.html">swagger</a>&nbsp;&nbsp;&nbsp;
-              <a href="https://github.com/ericdriggs/reportcard">source</a>&nbsp;&nbsp;&nbsp;
-            </footer>
+            
+            
             </body>
             </html>
             """;
