@@ -6,8 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.*;
 
 import lombok.extern.jackson.Jacksonized;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -88,6 +88,14 @@ public class StageDetails {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @JsonIgnore
+    public String getJobInfoSqlClause() {
+        if (ObjectUtils.isEmpty(jobInfo)) {
+            return "true";
+        }
+        return " JSON_CONTAINS(`job_info`, '" + getJobInfoJson() + "') ";
     }
 
     @JsonIgnore

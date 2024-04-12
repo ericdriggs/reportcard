@@ -19,7 +19,7 @@ public enum StringMapUtil {
         }
         TreeMap<String,String> map = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         for (String s : kvs) {
-            String[] kv = str.split("=");
+            String[] kv = s.split("=");
             if (kv.length == 2) {
                 map.put(kv[0], kv[1]);
             } else {

@@ -111,7 +111,8 @@ public class StagePathPersistService extends AbstractPersistService {
                         .and(REPO.REPO_NAME.eq(request.getRepo())))
                 .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
                         .and(BRANCH.BRANCH_NAME.eq(request.getBranch())))
-                .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
+                .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID)
+                        .and(condition(request.getJobInfoSqlClause())))
                 .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID)
                         .and(RUN.SHA.eq(request.getSha()))
                         .and(RUN.RUN_REFERENCE.eq(request.getRunReference())))
@@ -152,7 +153,7 @@ public class StagePathPersistService extends AbstractPersistService {
             RunPojo _run = null;
             StagePojo _stage = null;
 
-            //TODO: explain why go through record to get to pojo
+            //cast first into record since allows casting into other objects using reflection instead of inheritance
             if (record.get(COMPANY.COMPANY_ID.getName()) != null) {
                 _company = record.into(CompanyRecord.class).into(CompanyPojo.class);
             }
@@ -168,6 +169,7 @@ public class StagePathPersistService extends AbstractPersistService {
 
             /*
              * It's difficult to compare json strings directly so use TreeMap<String,String> for comparisons
+             * TODO: simplify this section since we're matching in the query now for job_info json
              */
             if (record.get(JOB.JOB_ID.getName()) != null) {
                 _job = record.into(JobRecord.class).into(JobPojo.class);
