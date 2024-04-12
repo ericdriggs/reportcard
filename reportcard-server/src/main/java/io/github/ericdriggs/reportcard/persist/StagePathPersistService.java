@@ -157,19 +157,25 @@ public class StagePathPersistService extends AbstractPersistService {
             if (record.get(COMPANY.COMPANY_ID.getName()) != null) {
                 _company = record.into(CompanyRecord.class).into(CompanyPojo.class);
             }
+            stagePath.setCompany(_company);
+
             if (record.get(ORG.ORG_ID.getName()) != null) {
                 _org = record.into(OrgRecord.class).into(OrgPojo.class);
             }
+            stagePath.setOrg(_org);
+
             if (record.get(REPO.REPO_ID.getName()) != null) {
                 _repo = record.into(RepoRecord.class).into(RepoPojo.class);
             }
+            stagePath.setRepo(_repo);
+
             if (record.get(BRANCH.BRANCH_ID.getName()) != null) {
                 _branch = record.into(BranchRecord.class).into(BranchPojo.class);
             }
+            stagePath.setBranch(_branch);
 
             /*
-             * It's difficult to compare json strings directly so use TreeMap<String,String> for comparisons
-             * TODO: simplify this section since we're matching in the query now for job_info json
+             * Set job if exact match with job_info
              */
             if (record.get(JOB.JOB_ID.getName()) != null) {
                 _job = record.into(JobRecord.class).into(JobPojo.class);
@@ -178,29 +184,26 @@ public class StagePathPersistService extends AbstractPersistService {
 
                     //Alphabetize keys since mysql does not
                     TreeMap<String, String> jobInfo = mapper.readValue(_job.getJobInfo(), TreeMap.class);
-                    _job.setJobInfo(mapper.writeValueAsString(jobInfo));
-
+                    //if not exact match store current response and try again with next record
                     if (!jobInfo.equals(stageDetails.getJobInfo())) {
                         log.debug("jobInfo: {}  != request.getJobInfo: {}", jobInfo, stageDetails.getJobInfo());
                         //retain stagePath as return candidate in case no other record matches on jobInfo
                         returnStagePath = stagePath;
                         continue;
                     }
+                    _job.setJobInfo(mapper.writeValueAsString(jobInfo));
                 }
             }
+            stagePath.setJob(_job);
+
             if (record.get(RUN.RUN_ID.getName()) != null) {
                 _run = record.into(RunRecord.class).into(RunPojo.class);
             }
+            stagePath.setRun(_run);
+
             if (record.get(STAGE.STAGE_ID.getName()) != null) {
                 _stage = record.into(StageRecord.class).into(StagePojo.class);
             }
-
-            stagePath.setCompany(_company);
-            stagePath.setOrg(_org);
-            stagePath.setRepo(_repo);
-            stagePath.setBranch(_branch);
-            stagePath.setJob(_job);
-            stagePath.setRun(_run);
             stagePath.setStage(_stage);
             returnStagePath = stagePath;
         }

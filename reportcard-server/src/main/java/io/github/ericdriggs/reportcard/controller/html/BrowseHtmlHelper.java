@@ -7,7 +7,6 @@ import io.github.ericdriggs.reportcard.controller.StorageController;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.*;
 import io.github.ericdriggs.reportcard.model.StageTestResultPojo;
 import io.github.ericdriggs.reportcard.util.NumberStringUtil;
-import io.github.ericdriggs.reportcard.util.PrettyPrintUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.http.HttpStatus;
@@ -16,11 +15,8 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class BrowseHtmlHelper {
@@ -195,10 +191,9 @@ public class BrowseHtmlHelper {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "More than one entry found: " + path.toUrlPath());
         }
 
-        Map<JobPojo, Set<RunPojo>> jobRunMap = branchJobRunMap.values().stream().findFirst().orElseThrow();
         final String jobMain = baseMain.replace(LEGEND, "Jobs")
                                     .replace(TABLE_HEADERS, branchHeaders)
-                                    .replace(TABLE_ROWS, getJobRuns(path, jobRunMap) );
+                                    .replace(TABLE_ROWS, getJobRuns(path, branchStageViewResponse.getJobRun_StageTestResult_StoragesMap().keySet()) );
 
         final String stagesMain = getBranchStageView(branchStageViewResponse);
 
@@ -207,9 +202,19 @@ public class BrowseHtmlHelper {
         return getPage(jobMain + stagesMain, getBreadCrumb(path));
     }
 
-    protected static String getJobRuns(CompanyOrgRepoBranchJobRunStageDTO path, Map<JobPojo, Set<RunPojo>> jobRunMap) {
+    protected static String getJobRuns(CompanyOrgRepoBranchJobRunStageDTO path, Set<JobRun> jobRuns) {
 
         StringBuilder sb = new StringBuilder();
+
+        Map<JobPojo, Set<RunPojo>> jobRunMap = new LinkedHashMap<>();
+
+        for (JobRun jobRun : jobRuns) {
+            final JobPojo jobPojo = jobRun.getJob();
+            jobRunMap.computeIfAbsent(jobPojo, k -> new LinkedHashSet<>());
+            final RunPojo runPojo = jobRun.getRun();
+            jobRunMap.get(jobPojo).add(runPojo);
+        }
+
         for (Map.Entry<JobPojo, Set<RunPojo>> entry : jobRunMap.entrySet()) {
             final JobPojo job = entry.getKey();
             final Set<RunPojo> runs = entry.getValue();
@@ -382,8 +387,9 @@ public class BrowseHtmlHelper {
               <td>
                 <fieldset class="stage">
                   <legend id="run-{runId}-job-{jobId}">
-                    <a href="{runUrl}"><span class="dot {dotClass}"></span>run #{runCount}</a>
-                    &nbsp;<a class="info" title='{jobInfo}' href="{jobUrl}">jobId: {jobId}</a>
+                    <span class="dot {dotClass}"></span>
+                    <a class="info" title='{jobInfo}' href="{jobUrl}">jobId: {jobId}</a>
+                    <a href="{runUrl}">run #{runCount}</a>
                     &nbsp;<span class="info">{runDate}</span>
                   </legend>
                   <div class="flex-row" style="text-align:left">

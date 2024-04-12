@@ -303,9 +303,9 @@ public class PojoComparators {
 
     public static int compareLocalDateTimeDescending(LocalDateTime val1, LocalDateTime val2) {
         if (val1 == null || val2 == null) {
-            //val2 then val1 since descending
             return ObjectUtils.compare(ObjectUtils.isEmpty(val2), ObjectUtils.isEmpty(val1));
         }
+        //val2 then val1 since descending
         return val2.compareTo(val1);
     }
 
