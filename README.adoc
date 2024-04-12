@@ -31,7 +31,7 @@ publishing
 * https://s01.oss.sonatype.org/#stagingRepositories
 
 3. verify
-* https://s01.oss.sonatype.org/content/groups/staging/io/github/ericdriggs/reportcard/
+* https://s01.oss.sonatype.org/content/groups/staging/io/github/ericdriggs/reportcard-server
 
 4. release staging repository
 * https://s01.oss.sonatype.org/#stagingRepositories
