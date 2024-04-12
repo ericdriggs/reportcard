@@ -275,7 +275,6 @@ public class PojoComparators {
         }
         return chainCompare(
                 JsonCompare.compareTo(val1.getJobInfo(), val2.getJobInfo()),
-                compareLowerNullSafe(val1.getJobInfo(), val2.getJobInfo()),
                 compareLong(val1.getJobId(), val2.getJobId())
         );
     }
