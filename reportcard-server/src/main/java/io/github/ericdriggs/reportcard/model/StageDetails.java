@@ -95,7 +95,7 @@ public class StageDetails {
         if (ObjectUtils.isEmpty(jobInfo)) {
             return "true";
         }
-        return " JSON_CONTAINS(`job_info`, '" + getJobInfoJson() + "') ";
+        return " job_info = CAST('" + getJobInfoJson() + "') AS JSON";
     }
 
     @JsonIgnore
