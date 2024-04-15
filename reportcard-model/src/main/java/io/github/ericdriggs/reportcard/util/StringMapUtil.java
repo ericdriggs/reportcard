@@ -1,7 +1,10 @@
 package io.github.ericdriggs.reportcard.util;
 
+import com.sun.source.tree.Tree;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.TreeMap;
 
 
@@ -27,5 +30,17 @@ public enum StringMapUtil {
             }
         }
         return map;
+    }
+
+    public static TreeMap<String,String> lower(TreeMap<String,String> map) {
+        if (map == null || map .isEmpty()) {
+            return map;
+        }
+
+        TreeMap<String,String> ret = new TreeMap<>();
+        for (Map.Entry<String,String> entry : map.entrySet()) {
+            ret.put(entry.getKey().toLowerCase(), entry.getValue().toLowerCase());
+        }
+        return ret;
     }
 }

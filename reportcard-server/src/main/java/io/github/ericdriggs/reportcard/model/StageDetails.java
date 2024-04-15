@@ -13,6 +13,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 
+import static io.github.ericdriggs.reportcard.util.StringMapUtil.lower;
+
 //TODO: refactor to Value
 @Data
 @NoArgsConstructor
@@ -61,7 +63,7 @@ public class StageDetails {
             addErrorIfMissing(errors, branch, "branch");
             addErrorIfMissing(errors, sha, "sha");
             addErrorIfMissing(errors, stage, "stage");
-
+            jobInfo = lower(jobInfo);
             if (!errors.isEmpty()) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                         "errors - " + Arrays.toString(errors.entrySet().toArray()));
@@ -95,7 +97,7 @@ public class StageDetails {
         if (ObjectUtils.isEmpty(jobInfo)) {
             return "true";
         }
-        return " job_info = CAST('" + getJobInfoJson() + "') AS JSON";
+        return " job_info = CAST('" + getJobInfoJson() + "' AS JSON ) ";
     }
 
     @JsonIgnore

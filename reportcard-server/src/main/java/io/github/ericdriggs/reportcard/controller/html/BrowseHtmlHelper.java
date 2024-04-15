@@ -7,6 +7,7 @@ import io.github.ericdriggs.reportcard.controller.StorageController;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.*;
 import io.github.ericdriggs.reportcard.model.StageTestResultPojo;
 import io.github.ericdriggs.reportcard.util.NumberStringUtil;
+import io.github.ericdriggs.reportcard.util.PrettyPrintUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.http.HttpStatus;
@@ -220,7 +221,7 @@ public class BrowseHtmlHelper {
             final Set<RunPojo> runs = entry.getValue();
             final Instant lastRun = mostRecent(runs.stream().map(RunPojo::getRunDate).collect(Collectors.toSet()));
             final CompanyOrgRepoBranchJobRunStageDTO itemPath = path.toBuilder().jobId(job.getJobId()).build();
-            final String jobInfo = job.getJobInfo();
+            final String jobInfo = "<pre>" + PrettyPrintUtil.sortedPrettyPrint(job.getJobInfo()) + "\n</pre>";
             sb.append(getItemRow(itemPath, Long.toString(job.getJobId()), runs.size(), jobInfo, lastRun));
 
         }
