@@ -1,5 +1,8 @@
 package io.github.ericdriggs.reportcard.controller.html;
 
+import io.github.ericdriggs.reportcard.aws.comparatorr.CommonPrefixDescendingComparator;
+import io.github.ericdriggs.reportcard.aws.comparatorr.S3ObjectComparator;
+
 import io.github.ericdriggs.reportcard.controller.StorageController;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -8,8 +11,8 @@ import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
 import software.amazon.awssdk.services.s3.model.S3Object;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+import java.util.TreeSet;
 
 public class StorageHtmlHelper extends BrowseHtmlHelper {
 
@@ -20,7 +23,8 @@ public class StorageHtmlHelper extends BrowseHtmlHelper {
         StringBuilder sb = new StringBuilder();
         sb.append("<div style='margin:30px'>").append(ls);
         sb.append("<ul>").append(ls);
-        List<CommonPrefix> folders = response.commonPrefixes();
+        TreeSet<CommonPrefix> folders = new TreeSet<>(CommonPrefixDescendingComparator.INSTANCE);
+        folders.addAll(response.commonPrefixes());
         for (CommonPrefix folder : folders) {
             final String prefix = folder.prefix();// .replaceAll("/$", "");
 
@@ -34,7 +38,8 @@ public class StorageHtmlHelper extends BrowseHtmlHelper {
             sb.append("</a>");
             sb.append("</li>").append(ls);
         }
-        Collection<S3Object> s3Objects = response.contents();
+        TreeSet<S3Object> s3Objects = new TreeSet<>(S3ObjectComparator.INSTANCE);
+        s3Objects.addAll(response.contents());
 
         for (S3Object obj : s3Objects) {
             final String key = obj.key();
