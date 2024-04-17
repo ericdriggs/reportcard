@@ -7,6 +7,7 @@ import io.github.ericdriggs.reportcard.model.*;
 import io.github.ericdriggs.reportcard.persist.BrowseService;
 import io.github.ericdriggs.reportcard.persist.test_result.TestResultPersistServiceTest;
 import io.github.ericdriggs.reportcard.storage.S3Service;
+import io.github.ericdriggs.reportcard.xml.ResourceReader;
 import io.github.ericdriggs.reportcard.xml.ResourceReaderComponent;
 import lombok.extern.slf4j.Slf4j;
 
@@ -111,9 +112,9 @@ public class JunitControllerTest {
     StagePathTestResult postJunitFixture(String stage, String xmlClassPath) {
         final StageDetails stageDetails = getStageDetails(stage);
 
-        MultipartFile file = TestResultPersistServiceTest.getMockJunitMultipartFile(resourceReader, xmlClassPath);
-        ResponseEntity<StagePathTestResult> response = junitController.postJunitXmlStageDetails(stageDetails, file);
-        StagePathTestResult result = response.getBody();
+        String xmlString = ResourceReader.resourceAsString(xmlClassPath);
+
+        StagePathTestResult result = junitController.doPostJunitXml(stageDetails, List.of(xmlString));
         assertNotNull(result);
 
         final StagePath stagePath = result.getStagePath();

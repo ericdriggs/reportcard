@@ -2,19 +2,24 @@ package io.github.ericdriggs.reportcard.controller;
 
 import io.github.ericdriggs.reportcard.ReportcardApplication;
 import io.github.ericdriggs.reportcard.config.LocalStackConfig;
+import io.github.ericdriggs.reportcard.controller.util.TestXmlTarGzUtil;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.StoragePojo;
 import io.github.ericdriggs.reportcard.model.StagePath;
 import io.github.ericdriggs.reportcard.model.StagePathStorage;
 import io.github.ericdriggs.reportcard.persist.BrowseService;
+import io.github.ericdriggs.reportcard.persist.StorageType;
 import io.github.ericdriggs.reportcard.persist.test_result.TestResultPersistServiceTest;
 import io.github.ericdriggs.reportcard.storage.DirectoryUploadResponse;
 import io.github.ericdriggs.reportcard.storage.S3Service;
 import io.github.ericdriggs.reportcard.xml.ResourceReaderComponent;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,6 +27,8 @@ import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -53,6 +60,9 @@ public class StorageControllerTest {
 
     private final static ObjectMapper mappper = new ObjectMapper();
 
+
+    //only used for troubleshooting manually
+    @Disabled
     @Test
     void postStorageOnlyTest() throws IOException {
 
@@ -79,25 +89,38 @@ public class StorageControllerTest {
         String indexFile = TestResultPersistServiceTest.htmlIndexFile;
         Long stageId = 1L;
         final String label = "htmlSample";
-        ResponseEntity<StagePathStorage> responseEntity = storageController.postStageHtml(stageId, label, files, indexFile);
-        assertNotNull(responseEntity);
-        StagePathStorage stagePathStorage = responseEntity.getBody();
 
-        assertNotNull(stagePathStorage);
+        Path tempTarGz = null;
+        try {
+            tempTarGz = TestXmlTarGzUtil.createTarGzipFilesForTesting(files);
+            MockMultipartFile junitTarGz = new MockMultipartFile(
+                    "junit.tar.gz",
+                    "junit.tar.gz",
+                    MediaType.ALL_VALUE,
+                    Files.newInputStream(tempTarGz)
+            );
+            ResponseEntity<StagePathStorage> responseEntity = storageController.postStageStorageTarGZ(stageId, label, junitTarGz, indexFile, StorageType.HTML);
+            assertNotNull(responseEntity);
+            StagePathStorage stagePathStorage = responseEntity.getBody();
 
-        StagePath stagePath = stagePathStorage.getStagePath();
-        StoragePojo storage = stagePathStorage.getStorage();
+            assertNotNull(stagePathStorage);
 
-        assertNotNull(storage.getStorageId());
-        assertNotNull(storage.getLabel());
+            StagePath stagePath = stagePathStorage.getStagePath();
+            StoragePojo storage = stagePathStorage.getStorage();
 
-        System.out.println("stagePath: " + stagePath);
-        System.out.println("storage: " + storage);
+            assertNotNull(storage.getStorageId());
+            assertNotNull(storage.getLabel());
 
+            System.out.println("stagePath: " + stagePath);
+            System.out.println("storage: " + storage);
 
-        ListObjectsV2Response s3Objects = s3Service.listObjectsForBucket();
-        assertNotNull(s3Objects.contents());
-        assertThat(s3Objects.contents().size(), is(greaterThanOrEqualTo(3)));
-        System.out.println(s3Objects);
+            ListObjectsV2Response s3Objects = s3Service.listObjectsForBucket();
+            assertNotNull(s3Objects.contents());
+            assertThat(s3Objects.contents().size(), is(greaterThanOrEqualTo(3)));
+            System.out.println(s3Objects);
+        } finally {
+            Files.delete(tempTarGz);
+        }
+
     }
 }
