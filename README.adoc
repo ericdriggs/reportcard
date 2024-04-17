@@ -22,7 +22,6 @@ TODOs:
 * size issues and assign to milestones
 
 
-
 publishing
 
 1. ./gradlew publishToSonatype -Si
@@ -33,7 +32,7 @@ publishing
 3. verify
 * https://s01.oss.sonatype.org/content/groups/staging/io/github/ericdriggs/reportcard-server
 
-4. release staging repository
+4. release staging repository (once ready)
 * https://s01.oss.sonatype.org/#stagingRepositories
 
 5. verify
