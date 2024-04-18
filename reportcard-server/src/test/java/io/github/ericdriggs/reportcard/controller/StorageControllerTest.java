@@ -119,7 +119,9 @@ public class StorageControllerTest {
             assertThat(s3Objects.contents().size(), is(greaterThanOrEqualTo(3)));
             System.out.println(s3Objects);
         } finally {
-            Files.delete(tempTarGz);
+            if (tempTarGz != null) {
+                Files.delete(tempTarGz);
+            }
         }
 
     }

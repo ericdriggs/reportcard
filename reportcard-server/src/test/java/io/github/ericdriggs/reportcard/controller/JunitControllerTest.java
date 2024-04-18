@@ -67,14 +67,14 @@ public class JunitControllerTest {
     void postJunitTest() throws IOException {
 
         final String stage = "postJunitTest";
-        final String xmlClassPath = "classpath:format-samples/sample-junit-small.xml";
+        final String xmlClassPath = "format-samples/sample-junit-small.xml";
         postJunitFixture(stage, xmlClassPath);
     }
 
     @Test
     void postJunitFailureTest() {
         final String stage = "postJunitFailureTest";
-        final String xmlClassPath = "classpath:format-samples/fault/junit-faults.xml";
+        final String xmlClassPath = "format-samples/fault/junit-faults.xml";
         StagePathTestResult stagePathTestResult = postJunitFixture(stage, xmlClassPath);
         TestResultModel testResult = stagePathTestResult.getTestResult();
         assertEquals(1, testResult.getTestSuites().size());
@@ -87,7 +87,7 @@ public class JunitControllerTest {
     @Test
     void postSurefireFailureTest() {
         final String stage = "postSurefireFailureTest";
-        final String xmlClassPath = "classpath:format-samples/fault/surefire-faults.xml";
+        final String xmlClassPath = "format-samples/fault/surefire-faults.xml";
         StagePathTestResult stagePathTestResult = postJunitFixture(stage, xmlClassPath);
         TestResultModel testResult = stagePathTestResult.getTestResult();
         assertEquals(1, testResult.getTestSuites().size());
@@ -109,10 +109,10 @@ public class JunitControllerTest {
     }
 
 
-    StagePathTestResult postJunitFixture(String stage, String xmlClassPath) {
+    StagePathTestResult postJunitFixture(String stage, String xmlResourcePath) {
         final StageDetails stageDetails = getStageDetails(stage);
 
-        String xmlString = ResourceReader.resourceAsString(xmlClassPath);
+        String xmlString = ResourceReader.resourceAsString(xmlResourcePath);
 
         StagePathTestResult result = junitController.doPostJunitXml(stageDetails, List.of(xmlString));
         assertNotNull(result);

@@ -4,6 +4,7 @@ import io.github.ericdriggs.file.FileUtils;
 import io.github.ericdriggs.reportcard.util.tar.TarCompressor;
 import io.github.ericdriggs.reportcard.util.tar.TarExtractorCommonsCompress;
 import lombok.SneakyThrows;
+import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -13,7 +14,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.github.ericdriggs.file.FileUtils.regexForExtension;
+//import static io.github.ericdriggs.file.FileUtils.regexForExtension;
 
 public enum TestXmlTarGzUtil {
     ;
@@ -24,7 +25,7 @@ public enum TestXmlTarGzUtil {
         Path tempDir = Files.createTempDirectory("tar-gz");
         try {
             extractTarGz(tempDir, tarGz);
-            return FileUtils.fileContentsFromPathAndRegex(tempDir, regexForExtension("xml"));
+            return FileUtils.fileContentsFromPathAndRegex(tempDir, io.github.ericdriggs.file.FileUtils.regexForExtension("xml"));
         } finally {
             if (tempDir != null) {
                 org.apache.tomcat.util.http.fileupload.FileUtils.deleteDirectory(tempDir.toFile());
@@ -81,7 +82,7 @@ public enum TestXmlTarGzUtil {
             }
             return createTarGzipFilesForTesting(filePaths);
         } finally {
-            Files.delete(tmpDir);
+            FileSystemUtils.deleteRecursively(tmpDir);
         }
     }
 }
