@@ -13,17 +13,21 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
 import lombok.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
+import org.jooq.Function11;
 import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
+import org.jooq.Records;
 import org.jooq.Row11;
 import org.jooq.Schema;
+import org.jooq.SelectField;
 import org.jooq.Table;
 import org.jooq.TableField;
 import org.jooq.TableOptions;
@@ -40,7 +44,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestResultTable extends TableImpl<TestResultRecord> {
 
-    private static final long serialVersionUID = -1669822456;
+    private static final long serialVersionUID = -2059947631;
 
     /**
      * The reference instance of <code>reportcard.test_result</code>
@@ -190,6 +194,11 @@ public class TestResultTable extends TableImpl<TestResultRecord> {
         return new TestResultTable(alias, this);
     }
 
+    @Override
+    public TestResultTable as(Table<?> alias) {
+        return new TestResultTable(alias.getQualifiedName(), this);
+    }
+
     /**
      * Rename this table
      */
@@ -206,6 +215,14 @@ public class TestResultTable extends TableImpl<TestResultRecord> {
         return new TestResultTable(name, null);
     }
 
+    /**
+     * Rename this table
+     */
+    @Override
+    public TestResultTable rename(Table<?> name) {
+        return new TestResultTable(name.getQualifiedName(), null);
+    }
+
     // -------------------------------------------------------------------------
     // Row11 type methods
     // -------------------------------------------------------------------------
@@ -213,5 +230,20 @@ public class TestResultTable extends TableImpl<TestResultRecord> {
     @Override
     public Row11<Long, Long, Integer, Integer, Integer, Integer, BigDecimal, LocalDateTime, String, Boolean, Boolean> fieldsRow() {
         return (Row11) super.fieldsRow();
+    }
+
+    /**
+     * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
+     */
+    public <U> SelectField<U> mapping(Function11<? super Long, ? super Long, ? super Integer, ? super Integer, ? super Integer, ? super Integer, ? super BigDecimal, ? super LocalDateTime, ? super String, ? super Boolean, ? super Boolean, ? extends U> from) {
+        return convertFrom(Records.mapping(from));
+    }
+
+    /**
+     * Convenience mapping calling {@link SelectField#convertFrom(Class,
+     * Function)}.
+     */
+    public <U> SelectField<U> mapping(Class<U> toType, Function11<? super Long, ? super Long, ? super Integer, ? super Integer, ? super Integer, ? super Integer, ? super BigDecimal, ? super LocalDateTime, ? super String, ? super Boolean, ? super Boolean, ? extends U> from) {
+        return convertFrom(toType, Records.mapping(from));
     }
 }

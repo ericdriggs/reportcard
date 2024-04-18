@@ -22,17 +22,17 @@ import lombok.Generated;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestResultPojo implements Serializable {
 
-    private static final long serialVersionUID = -1531484591;
+    private static final long serialVersionUID = -783359589;
 
-    private Long          testResultId;
-    private Long          stageFk;
-    private Integer       tests;
-    private Integer       skipped;
-    private Integer       error;
-    private Integer       failure;
-    private BigDecimal    time;
+    private Long testResultId;
+    private Long stageFk;
+    private Integer tests;
+    private Integer skipped;
+    private Integer error;
+    private Integer failure;
+    private BigDecimal time;
     private LocalDateTime testResultCreated;
-    private String        externalLinks;
-    private Boolean       isSuccess;
-    private Boolean       hasSkip;
+    private String externalLinks;
+    private Boolean isSuccess;
+    private Boolean hasSkip;
 }

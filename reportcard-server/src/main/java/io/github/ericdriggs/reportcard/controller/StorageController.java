@@ -1,19 +1,16 @@
 package io.github.ericdriggs.reportcard.controller;
 
 import io.github.ericdriggs.reportcard.controller.html.StorageHtmlHelper;
-import io.github.ericdriggs.reportcard.controller.util.TestXmlTarGzUtil;
 import io.github.ericdriggs.reportcard.model.*;
-import io.github.ericdriggs.reportcard.model.converter.JunitSurefireXmlParseUtil;
 import io.github.ericdriggs.reportcard.persist.StoragePersistService;
 import io.github.ericdriggs.reportcard.persist.StorageType;
 import io.github.ericdriggs.reportcard.persist.TestResultPersistService;
 import io.github.ericdriggs.reportcard.storage.DirectoryUploadResponse;
 import io.github.ericdriggs.reportcard.storage.S3Service;
-import io.github.ericdriggs.reportcard.util.StringMapUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +25,6 @@ import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
 import software.amazon.awssdk.services.s3.model.S3Object;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 import java.util.List;
 
 @Slf4j
@@ -59,6 +55,7 @@ public class StorageController {
         return new ResponseEntity<>(s3Service.uploadDirectory(files, storagePrefix), HttpStatus.OK);
     }
 
+    @Operation(summary = "Retrieves s3 object or folder for path. Folders are browsable")
     @GetMapping(value = {"key/**"})
     public ResponseEntity<?> getKey(HttpServletRequest request) {
         final String prefix = request.getRequestURI().split(request.getContextPath() + "/key/")[1];
@@ -95,7 +92,6 @@ public class StorageController {
 
     protected ResponseEntity<?> getKeyContents(String prefix) {
 
-
         ResponseBytes<GetObjectResponse> responseBytes = s3Service.getObjectBytes(prefix);
         SdkHttpResponse sdkHttpResponse = responseBytes.response().sdkHttpResponse();
         if (!sdkHttpResponse.isSuccessful()) {
@@ -115,13 +111,28 @@ public class StorageController {
         return ResponseEntity.ok(StorageHtmlHelper.getS3BrowsePage(listResponse, prefix));
     }
 
+    @Operation(summary = "Post storage (usually html) for specified job stage.")
     @PostMapping(value = {"stage/{stageId}/reports/{label}/tar.gz"}, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<StagePathStorage> postStageStorageTarGZ(
+
+            @Parameter(description = "generated id for the stage")
             @PathVariable("stageId") Long stageId,
+
+            @Parameter(description = "Label for storage. Labels are unique per stage.")
             @PathVariable("label") String label,
-            @RequestPart("reports.tar.gz") MultipartFile file,
-            @RequestParam(value = "indexFile", required = false) String indexFile,
-            @RequestParam(value = "storageType", required = false) StorageType storageType) {
+
+            @Parameter(description = "Index file for html storage. Default: null")
+            @RequestParam(value = "indexFile", required = false)
+            String indexFile,
+
+            @Parameter(description = "Storage type. Default: HTML")
+            @RequestParam(value = "storageType", required = false)
+            StorageType storageType,
+
+            @Parameter(description = "Files and folders to store. Usually combination of html/css/js.")
+            @RequestPart("reports.tar.gz") MultipartFile file
+
+    ) {
 
         return new ResponseEntity<>(doPostStageStorageTarGZ(stageId, label, file, indexFile, storageType), HttpStatus.OK);
     }
@@ -141,7 +152,5 @@ public class StorageController {
         s3Service.uploadTarGZ(file, prefix);
         return storagePersistService.persistStoragePath(indexFile, label, prefix, stageId, storageType);
     }
-
-
 
 }

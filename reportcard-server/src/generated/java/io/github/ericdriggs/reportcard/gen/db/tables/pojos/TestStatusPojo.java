@@ -20,8 +20,8 @@ import lombok.Generated;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestStatusPojo implements Serializable {
 
-    private static final long serialVersionUID = 206708285;
+    private static final long serialVersionUID = 944252349;
 
-    private Byte   testStatusId;
+    private Byte testStatusId;
     private String testStatusName;
 }

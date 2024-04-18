@@ -18,7 +18,9 @@ VALUES (1, 'HTML'),
        (2, 'JSON'),
        (3, 'LOG'),
        (4, 'OTHER'),
-       (5, 'XML');
+       (5, 'TAR_GZ'),
+       (6, 'XML'),
+       (7, 'ZIP');
 
 
 INSERT `reportcard`.`fault_context`

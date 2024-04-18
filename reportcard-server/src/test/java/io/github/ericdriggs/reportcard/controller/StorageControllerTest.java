@@ -99,7 +99,7 @@ public class StorageControllerTest {
                     MediaType.ALL_VALUE,
                     Files.newInputStream(tempTarGz)
             );
-            ResponseEntity<StagePathStorage> responseEntity = storageController.postStageStorageTarGZ(stageId, label, junitTarGz, indexFile, StorageType.HTML);
+            ResponseEntity<StagePathStorage> responseEntity = storageController.postStageStorageTarGZ(stageId, label,  indexFile, StorageType.HTML, junitTarGz);
             assertNotNull(responseEntity);
             StagePathStorage stagePathStorage = responseEntity.getBody();
 

@@ -12,17 +12,21 @@ import io.github.ericdriggs.reportcard.gen.db.tables.records.RunRecord;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
 import lombok.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
+import org.jooq.Function7;
 import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
+import org.jooq.Records;
 import org.jooq.Row7;
 import org.jooq.Schema;
+import org.jooq.SelectField;
 import org.jooq.Table;
 import org.jooq.TableField;
 import org.jooq.TableOptions;
@@ -39,7 +43,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RunTable extends TableImpl<RunRecord> {
 
-    private static final long serialVersionUID = 53816994;
+    private static final long serialVersionUID = 1315425994;
 
     /**
      * The reference instance of <code>reportcard.run</code>
@@ -174,6 +178,11 @@ public class RunTable extends TableImpl<RunRecord> {
         return new RunTable(alias, this);
     }
 
+    @Override
+    public RunTable as(Table<?> alias) {
+        return new RunTable(alias.getQualifiedName(), this);
+    }
+
     /**
      * Rename this table
      */
@@ -190,6 +199,14 @@ public class RunTable extends TableImpl<RunRecord> {
         return new RunTable(name, null);
     }
 
+    /**
+     * Rename this table
+     */
+    @Override
+    public RunTable rename(Table<?> name) {
+        return new RunTable(name.getQualifiedName(), null);
+    }
+
     // -------------------------------------------------------------------------
     // Row7 type methods
     // -------------------------------------------------------------------------
@@ -197,5 +214,20 @@ public class RunTable extends TableImpl<RunRecord> {
     @Override
     public Row7<Long, String, Long, Integer, String, LocalDateTime, Boolean> fieldsRow() {
         return (Row7) super.fieldsRow();
+    }
+
+    /**
+     * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
+     */
+    public <U> SelectField<U> mapping(Function7<? super Long, ? super String, ? super Long, ? super Integer, ? super String, ? super LocalDateTime, ? super Boolean, ? extends U> from) {
+        return convertFrom(Records.mapping(from));
+    }
+
+    /**
+     * Convenience mapping calling {@link SelectField#convertFrom(Class,
+     * Function)}.
+     */
+    public <U> SelectField<U> mapping(Class<U> toType, Function7<? super Long, ? super String, ? super Long, ? super Integer, ? super String, ? super LocalDateTime, ? super Boolean, ? extends U> from) {
+        return convertFrom(toType, Records.mapping(from));
     }
 }

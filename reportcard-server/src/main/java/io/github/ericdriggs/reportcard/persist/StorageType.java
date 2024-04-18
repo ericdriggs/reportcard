@@ -6,7 +6,10 @@ public enum StorageType {
     JSON(2),
     LOG(3),
     OTHER(4),
-    XML(5);
+    TAR_GZ(5),
+    XML(6),
+    ZIP(7),
+    ;
 
 
     StorageType(int storageTypeId) {

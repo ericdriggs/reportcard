@@ -70,6 +70,16 @@ public class JavaLombokGenerator extends JavaGenerator {
         //No-op. Lombok handles boiler plate
     }
 
+    @Override
+    public boolean generatePojosEqualsAndHashCode() {
+        return false;
+    }
+
+    @Override
+    protected void generatePojoEqualsAndHashCode(Definition tableOrUDT, JavaWriter out) {
+        //No-op. Lombok handles boiler plate
+    }
+
 
 
 

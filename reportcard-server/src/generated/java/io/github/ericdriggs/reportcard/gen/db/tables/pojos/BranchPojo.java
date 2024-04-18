@@ -21,10 +21,10 @@ import lombok.Generated;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BranchPojo implements Serializable {
 
-    private static final long serialVersionUID = -1844838988;
+    private static final long serialVersionUID = -223274754;
 
-    private Integer       branchId;
-    private String        branchName;
-    private Integer       repoFk;
+    private Integer branchId;
+    private String branchName;
+    private Integer repoFk;
     private LocalDateTime lastRun;
 }

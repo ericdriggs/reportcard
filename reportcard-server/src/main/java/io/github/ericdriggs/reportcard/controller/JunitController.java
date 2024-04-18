@@ -8,6 +8,9 @@ import io.github.ericdriggs.reportcard.persist.StorageType;
 import io.github.ericdriggs.reportcard.persist.TestResultPersistService;
 import io.github.ericdriggs.reportcard.storage.S3Service;
 import io.github.ericdriggs.reportcard.util.StringMapUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,7 +21,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @RestController
@@ -41,19 +43,49 @@ public class JunitController {
     private final S3Service s3Service;
 
 
-    //For internal testing only
+    @Operation(summary = "Post junit/surefire xmls for specified job stage")
     @PostMapping(path = "tar.gz", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = "application/json")
     public ResponseEntity<StagePathTestResult> postJunitXml(
-            @RequestParam("company") String company,
-            @RequestParam("org") String org,
-            @RequestParam("repo") String repo,
-            @RequestParam("branch") String branch,
-            @RequestParam("sha") String sha,
-            @RequestParam("stage") String stage,
-            @RequestParam(value = "jobInfo", required = false) String jobInfo,
-            @RequestParam(value = "runReference", required = false) String runReference,
-            @RequestParam(value = "externalLinks", required = false) String externalLinks,
-            @RequestPart("junit.tar.gz") MultipartFile junitXmls
+            @Parameter(description = "Top level. Companies have orgs.")
+            @RequestParam("company")
+            String company,
+
+            @Parameter(description = "Orgs have repos.")
+            @RequestParam("org")
+            String org,
+
+            @Parameter(description = "Repos have branches.")
+            @RequestParam("repo")
+            String repo,
+
+            @Parameter(description = "Branches have jobs.")
+            @RequestParam("branch")
+            String branch,
+
+            @Parameter(description = "Each combination of job_info is a different job. Jobs have runs. Default: {}")
+            @RequestParam(value = "jobInfo", required = false)
+            String jobInfo,
+
+            @Parameter(description = "Optional unique identifier for a run. Runs have stages.")
+            @RequestParam(value = "runReference", required = false)
+            String runReference,
+
+            @Parameter(description = "Sha for the run.")
+            @RequestParam("sha")
+            String sha,
+
+            @Parameter(description = "Stage name.")
+            @RequestParam("stage")
+            String stage,
+
+            @Parameter(description = "Optional links for the stage. Each stage may have a single test result")
+            @RequestParam(value = "externalLinks", required = false)
+            String externalLinks,
+
+            @Parameter(description = "Junit and/or surefire xml files in the root of a .tar.gz file. " +
+                                     "Used to generate a single test result. Test results contain test suites. Test suites contain test cases.")
+            @RequestPart("junit.tar.gz")
+            MultipartFile junitXmls
     ) {
         StageDetails stageDetails = StageDetails.builder()
                                                 .company(company)
@@ -79,24 +111,68 @@ public class JunitController {
         return testResultPersistService.insertTestResult(stageDetails, testResultModel);
     }
 
-
-
+    @Operation(summary = "Post storage (usually html) and junit/surefire xmls for specified job stage.", description = "Single call which performs both /v1/api/junit/tar.gz and /v1/api/storage/stage/{stageId}/reports/{label}/tar.gz")
     @PostMapping(value = {"storage/{label}/tar.gz"}, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<StagePathStorageTestResult> postStageJunitStorageTarGZ(
-            @PathVariable("label") String label,
-            @RequestPart("junit.tar.gz") MultipartFile junitXmls,
-            @RequestPart("reports.tar.gz") MultipartFile reports,
-            @RequestParam("company") String company,
-            @RequestParam("org") String org,
-            @RequestParam("repo") String repo,
-            @RequestParam("branch") String branch,
-            @RequestParam("sha") String sha,
-            @RequestParam("stage") String stage,
-            @RequestParam(value = "jobInfo", required = false) String jobInfo,
-            @RequestParam(value = "runReference", required = false) String runReference,
-            @RequestParam(value = "indexFile", required = false) String indexFile,
-            @RequestParam(value = "storageType", required = false) StorageType storageType,
-            @RequestParam(value = "externalLinks", required = false) String externalLinks) throws IOException {
+
+            @Parameter(description = "Top level. Companies have orgs.")
+            @RequestParam("company")
+            String company,
+
+            @Parameter(description = "Orgs have repos.")
+            @RequestParam("org")
+            String org,
+
+            @Parameter(description = "Repos have branches.")
+            @RequestParam("repo")
+            String repo,
+
+            @Parameter(description = "Branches have jobs.")
+            @RequestParam("branch")
+            String branch,
+
+            @Parameter(description = "Each combination of job_info is a different job. Jobs have runs. Default: {}")
+            @RequestParam(value = "jobInfo", required = false)
+            String jobInfo,
+
+            @Parameter(description = "Optional unique identifier for a run. Runs have stages. Default: generated UUID")
+            @RequestParam(value = "runReference", required = false)
+            String runReference,
+
+            @Parameter(description = "Sha for the run.")
+            @RequestParam("sha")
+            String sha,
+
+            @Parameter(description = "Stage name.")
+            @RequestParam("stage")
+            String stage,
+
+            @Parameter(description = "Label for storage. Labels are unique per stage.")
+            @PathVariable("label")
+            String label,
+
+            @Parameter(description = "Index file for html storage. Default: null")
+            @RequestParam(value = "indexFile", required = false)
+            String indexFile,
+
+            @Parameter(description = "Storage type. Default: HTML")
+            @RequestParam(value = "storageType", required = false)
+            StorageType storageType,
+
+            @Parameter(description = "Optional links for the stage. Each stage may have a single test result")
+            @RequestParam(value = "externalLinks", required = false)
+            String externalLinks,
+
+            @Parameter(description = "Junit and/or surefire xml files in the root of a .tar.gz file. " +
+                                     "Used to generate a single test result. Test results contain test suites. Test suites contain test cases.")
+            @RequestPart("junit.tar.gz")
+            MultipartFile junitXmls,
+
+            @Parameter(description = "Files and folders to store. Usually combination of html/css/js.")
+            @RequestPart("reports.tar.gz")
+            MultipartFile reports
+
+    ) throws IOException {
 
         if (storageType == null) {
             storageType = StorageType.HTML;
@@ -120,16 +196,13 @@ public class JunitController {
         StagePathTestResult stagePathTestResult = testResultPersistService.insertTestResult(stageDetails, testResultModel);
         StagePath stagePath = stagePathTestResult.getStagePath();
         final Long stageId = stagePath.getStage().getStageId();
-        StagePathStorage stagePathStorage = doPostStageStorageTarGZ(stageId, label, reports, indexFile, storageType );
+        StagePathStorage stagePathStorage = doPostStageStorageTarGZ(stageId, label, reports, indexFile, storageType);
 
         StagePathStorageTestResult stagePathStorageTestResult = new StagePathStorageTestResult(stagePathStorage, stagePathTestResult);
         return new ResponseEntity<>(stagePathStorageTestResult, HttpStatus.OK);
     }
 
-
     @SuppressWarnings("ReassignedVariable")
-
-
 
     protected StagePathStorage doPostStageStorageTarGZ(
             @PathVariable("stageId") Long stageId,

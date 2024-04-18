@@ -12,17 +12,21 @@ import io.github.ericdriggs.reportcard.gen.db.tables.records.TestCaseRecord;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
 import lombok.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
+import org.jooq.Function9;
 import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
+import org.jooq.Records;
 import org.jooq.Row9;
 import org.jooq.Schema;
+import org.jooq.SelectField;
 import org.jooq.Table;
 import org.jooq.TableField;
 import org.jooq.TableOptions;
@@ -39,7 +43,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestCaseTable extends TableImpl<TestCaseRecord> {
 
-    private static final long serialVersionUID = -366645431;
+    private static final long serialVersionUID = 1414018007;
 
     /**
      * The reference instance of <code>reportcard.test_case</code>
@@ -192,6 +196,11 @@ public class TestCaseTable extends TableImpl<TestCaseRecord> {
         return new TestCaseTable(alias, this);
     }
 
+    @Override
+    public TestCaseTable as(Table<?> alias) {
+        return new TestCaseTable(alias.getQualifiedName(), this);
+    }
+
     /**
      * Rename this table
      */
@@ -208,6 +217,14 @@ public class TestCaseTable extends TableImpl<TestCaseRecord> {
         return new TestCaseTable(name, null);
     }
 
+    /**
+     * Rename this table
+     */
+    @Override
+    public TestCaseTable rename(Table<?> name) {
+        return new TestCaseTable(name.getQualifiedName(), null);
+    }
+
     // -------------------------------------------------------------------------
     // Row9 type methods
     // -------------------------------------------------------------------------
@@ -215,5 +232,20 @@ public class TestCaseTable extends TableImpl<TestCaseRecord> {
     @Override
     public Row9<Long, Long, Byte, String, String, BigDecimal, String, String, String> fieldsRow() {
         return (Row9) super.fieldsRow();
+    }
+
+    /**
+     * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
+     */
+    public <U> SelectField<U> mapping(Function9<? super Long, ? super Long, ? super Byte, ? super String, ? super String, ? super BigDecimal, ? super String, ? super String, ? super String, ? extends U> from) {
+        return convertFrom(Records.mapping(from));
+    }
+
+    /**
+     * Convenience mapping calling {@link SelectField#convertFrom(Class,
+     * Function)}.
+     */
+    public <U> SelectField<U> mapping(Class<U> toType, Function9<? super Long, ? super Long, ? super Byte, ? super String, ? super String, ? super BigDecimal, ? super String, ? super String, ? super String, ? extends U> from) {
+        return convertFrom(toType, Records.mapping(from));
     }
 }
