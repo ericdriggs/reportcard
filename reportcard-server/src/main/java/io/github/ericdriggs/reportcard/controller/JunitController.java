@@ -168,8 +168,8 @@ public class JunitController {
             @RequestPart("junit.tar.gz")
             MultipartFile junitXmls,
 
-            @Parameter(description = "Files and folders to store. Usually combination of html/css/js.")
-            @RequestPart("reports.tar.gz")
+            @Parameter(description = "Files and folders to store in s3. Usually combination of html/css/js.")
+            @RequestPart("storage.tar.gz")
             MultipartFile reports
 
     ) throws IOException {
@@ -207,7 +207,7 @@ public class JunitController {
     protected StagePathStorage doPostStageStorageTarGZ(
             @PathVariable("stageId") Long stageId,
             @PathVariable("label") String label,
-            @RequestPart("reports.tar.gz") MultipartFile file,
+            @RequestPart("storage.tar.gz") MultipartFile file,
             @RequestParam(value = "indexFile", required = false) String indexFile,
             @RequestParam(value = "storageType", required = false) StorageType storageType) {
         if (storageType == null) {

@@ -130,7 +130,7 @@ public class StorageController {
             StorageType storageType,
 
             @Parameter(description = "Files and folders to store. Usually combination of html/css/js.")
-            @RequestPart("reports.tar.gz") MultipartFile file
+            @RequestPart("storage.tar.gz") MultipartFile file
 
     ) {
 
@@ -140,7 +140,7 @@ public class StorageController {
     protected StagePathStorage doPostStageStorageTarGZ(
             @PathVariable("stageId") Long stageId,
             @PathVariable("label") String label,
-            @RequestPart("reports.tar.gz") MultipartFile file,
+            @RequestPart("storage.tar.gz") MultipartFile file,
             @RequestParam(value = "indexFile", required = false) String indexFile,
             @RequestParam(value = "storageType", required = false) StorageType storageType) {
         if (storageType == null) {
