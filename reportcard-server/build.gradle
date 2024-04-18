@@ -113,7 +113,6 @@ task generateJooqSchemaSource {
     version = "3.18.4"
     doLast {
         GenerationTool.generate(new Configuration()
-                .withLogging(Logging.DEBUG)
                 .withJdbc(new Jdbc()
                         .withDriver('com.mysql.cj.jdbc.Driver')
                         .withUrl('jdbc:mysql://127.0.0.1:3306/reportcard?serverTimezone=UTC')
@@ -302,7 +301,7 @@ tasks.withType(GenerateMavenPom).all {
 //override publishing so it publishes the runnable boot jar
 publishing {
     publications {
-        mavenJava(MavenPublication) {
+        maven(MavenPublication) {
             maven(MavenPublication) {
                 artifact bootJar
             }
