@@ -11,17 +11,21 @@ import io.github.ericdriggs.reportcard.gen.db.tables.records.StageRecord;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
 import lombok.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
+import org.jooq.Function3;
 import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
+import org.jooq.Records;
 import org.jooq.Row3;
 import org.jooq.Schema;
+import org.jooq.SelectField;
 import org.jooq.Table;
 import org.jooq.TableField;
 import org.jooq.TableOptions;
@@ -38,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class StageTable extends TableImpl<StageRecord> {
 
-    private static final long serialVersionUID = 1939314646;
+    private static final long serialVersionUID = -2096803610;
 
     /**
      * The reference instance of <code>reportcard.stage</code>
@@ -153,6 +157,11 @@ public class StageTable extends TableImpl<StageRecord> {
         return new StageTable(alias, this);
     }
 
+    @Override
+    public StageTable as(Table<?> alias) {
+        return new StageTable(alias.getQualifiedName(), this);
+    }
+
     /**
      * Rename this table
      */
@@ -169,6 +178,14 @@ public class StageTable extends TableImpl<StageRecord> {
         return new StageTable(name, null);
     }
 
+    /**
+     * Rename this table
+     */
+    @Override
+    public StageTable rename(Table<?> name) {
+        return new StageTable(name.getQualifiedName(), null);
+    }
+
     // -------------------------------------------------------------------------
     // Row3 type methods
     // -------------------------------------------------------------------------
@@ -176,5 +193,20 @@ public class StageTable extends TableImpl<StageRecord> {
     @Override
     public Row3<Long, String, Long> fieldsRow() {
         return (Row3) super.fieldsRow();
+    }
+
+    /**
+     * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
+     */
+    public <U> SelectField<U> mapping(Function3<? super Long, ? super String, ? super Long, ? extends U> from) {
+        return convertFrom(Records.mapping(from));
+    }
+
+    /**
+     * Convenience mapping calling {@link SelectField#convertFrom(Class,
+     * Function)}.
+     */
+    public <U> SelectField<U> mapping(Class<U> toType, Function3<? super Long, ? super String, ? super Long, ? extends U> from) {
+        return convertFrom(toType, Records.mapping(from));
     }
 }

@@ -7,6 +7,7 @@ import io.github.ericdriggs.reportcard.model.*;
 import io.github.ericdriggs.reportcard.persist.BrowseService;
 import io.github.ericdriggs.reportcard.persist.test_result.TestResultPersistServiceTest;
 import io.github.ericdriggs.reportcard.storage.S3Service;
+import io.github.ericdriggs.reportcard.xml.ResourceReader;
 import io.github.ericdriggs.reportcard.xml.ResourceReaderComponent;
 import lombok.extern.slf4j.Slf4j;
 
@@ -66,14 +67,14 @@ public class JunitControllerTest {
     void postJunitTest() throws IOException {
 
         final String stage = "postJunitTest";
-        final String xmlClassPath = "classpath:format-samples/sample-junit-small.xml";
+        final String xmlClassPath = "format-samples/sample-junit-small.xml";
         postJunitFixture(stage, xmlClassPath);
     }
 
     @Test
     void postJunitFailureTest() {
         final String stage = "postJunitFailureTest";
-        final String xmlClassPath = "classpath:format-samples/fault/junit-faults.xml";
+        final String xmlClassPath = "format-samples/fault/junit-faults.xml";
         StagePathTestResult stagePathTestResult = postJunitFixture(stage, xmlClassPath);
         TestResultModel testResult = stagePathTestResult.getTestResult();
         assertEquals(1, testResult.getTestSuites().size());
@@ -86,7 +87,7 @@ public class JunitControllerTest {
     @Test
     void postSurefireFailureTest() {
         final String stage = "postSurefireFailureTest";
-        final String xmlClassPath = "classpath:format-samples/fault/surefire-faults.xml";
+        final String xmlClassPath = "format-samples/fault/surefire-faults.xml";
         StagePathTestResult stagePathTestResult = postJunitFixture(stage, xmlClassPath);
         TestResultModel testResult = stagePathTestResult.getTestResult();
         assertEquals(1, testResult.getTestSuites().size());
@@ -108,12 +109,12 @@ public class JunitControllerTest {
     }
 
 
-    StagePathTestResult postJunitFixture(String stage, String xmlClassPath) {
+    StagePathTestResult postJunitFixture(String stage, String xmlResourcePath) {
         final StageDetails stageDetails = getStageDetails(stage);
 
-        MultipartFile file = TestResultPersistServiceTest.getMockJunitMultipartFile(resourceReader, xmlClassPath);
-        ResponseEntity<StagePathTestResult> response = junitController.postJunitXmlStageDetails(stageDetails, file);
-        StagePathTestResult result = response.getBody();
+        String xmlString = ResourceReader.resourceAsString(xmlResourcePath);
+
+        StagePathTestResult result = junitController.doPostJunitXml(stageDetails, List.of(xmlString));
         assertNotNull(result);
 
         final StagePath stagePath = result.getStagePath();

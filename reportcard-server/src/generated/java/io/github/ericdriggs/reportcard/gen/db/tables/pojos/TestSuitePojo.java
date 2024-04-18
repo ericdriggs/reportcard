@@ -21,19 +21,19 @@ import lombok.Generated;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestSuitePojo implements Serializable {
 
-    private static final long serialVersionUID = 1282244013;
+    private static final long serialVersionUID = -605461911;
 
-    private Long       testSuiteId;
-    private Long       testResultFk;
-    private String     name;
-    private Integer    tests;
-    private Integer    skipped;
-    private Integer    error;
-    private Integer    failure;
+    private Long testSuiteId;
+    private Long testResultFk;
+    private String name;
+    private Integer tests;
+    private Integer skipped;
+    private Integer error;
+    private Integer failure;
     private BigDecimal time;
-    private String     packageName;
-    private String     group;
-    private String     properties;
-    private Boolean    isSuccess;
-    private Boolean    hasSkip;
+    private String packageName;
+    private String group;
+    private String properties;
+    private Boolean isSuccess;
+    private Boolean hasSkip;
 }

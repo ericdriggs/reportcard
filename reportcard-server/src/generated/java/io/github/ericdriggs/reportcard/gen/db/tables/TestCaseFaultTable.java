@@ -11,17 +11,21 @@ import io.github.ericdriggs.reportcard.gen.db.tables.records.TestCaseFaultRecord
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
 import lombok.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
+import org.jooq.Function6;
 import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
+import org.jooq.Records;
 import org.jooq.Row6;
 import org.jooq.Schema;
+import org.jooq.SelectField;
 import org.jooq.Table;
 import org.jooq.TableField;
 import org.jooq.TableOptions;
@@ -38,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestCaseFaultTable extends TableImpl<TestCaseFaultRecord> {
 
-    private static final long serialVersionUID = -759882840;
+    private static final long serialVersionUID = 116256387;
 
     /**
      * The reference instance of <code>reportcard.test_case_fault</code>
@@ -176,6 +180,11 @@ public class TestCaseFaultTable extends TableImpl<TestCaseFaultRecord> {
         return new TestCaseFaultTable(alias, this);
     }
 
+    @Override
+    public TestCaseFaultTable as(Table<?> alias) {
+        return new TestCaseFaultTable(alias.getQualifiedName(), this);
+    }
+
     /**
      * Rename this table
      */
@@ -192,6 +201,14 @@ public class TestCaseFaultTable extends TableImpl<TestCaseFaultRecord> {
         return new TestCaseFaultTable(name, null);
     }
 
+    /**
+     * Rename this table
+     */
+    @Override
+    public TestCaseFaultTable rename(Table<?> name) {
+        return new TestCaseFaultTable(name.getQualifiedName(), null);
+    }
+
     // -------------------------------------------------------------------------
     // Row6 type methods
     // -------------------------------------------------------------------------
@@ -199,5 +216,20 @@ public class TestCaseFaultTable extends TableImpl<TestCaseFaultRecord> {
     @Override
     public Row6<Long, Long, Byte, String, String, String> fieldsRow() {
         return (Row6) super.fieldsRow();
+    }
+
+    /**
+     * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
+     */
+    public <U> SelectField<U> mapping(Function6<? super Long, ? super Long, ? super Byte, ? super String, ? super String, ? super String, ? extends U> from) {
+        return convertFrom(Records.mapping(from));
+    }
+
+    /**
+     * Convenience mapping calling {@link SelectField#convertFrom(Class,
+     * Function)}.
+     */
+    public <U> SelectField<U> mapping(Class<U> toType, Function6<? super Long, ? super Long, ? super Byte, ? super String, ? super String, ? super String, ? extends U> from) {
+        return convertFrom(toType, Records.mapping(from));
     }
 }

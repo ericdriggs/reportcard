@@ -21,15 +21,15 @@ import lombok.Generated;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestCasePojo implements Serializable {
 
-    private static final long serialVersionUID = 1501635959;
+    private static final long serialVersionUID = 960708727;
 
-    private Long       testCaseId;
-    private Long       testSuiteFk;
-    private Byte       testStatusFk;
-    private String     name;
-    private String     className;
+    private Long testCaseId;
+    private Long testSuiteFk;
+    private Byte testStatusFk;
+    private String name;
+    private String className;
     private BigDecimal time;
-    private String     systemOut;
-    private String     systemErr;
-    private String     assertions;
+    private String systemOut;
+    private String systemErr;
+    private String assertions;
 }

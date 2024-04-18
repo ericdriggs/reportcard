@@ -1,15 +1,14 @@
 package io.github.ericdriggs.reportcard.controller;
 
 import io.github.ericdriggs.reportcard.controller.html.StorageHtmlHelper;
-import io.github.ericdriggs.reportcard.controller.util.TestXmlTarGzUtil;
 import io.github.ericdriggs.reportcard.model.*;
-import io.github.ericdriggs.reportcard.model.converter.JunitSurefireXmlParseUtil;
 import io.github.ericdriggs.reportcard.persist.StoragePersistService;
 import io.github.ericdriggs.reportcard.persist.StorageType;
 import io.github.ericdriggs.reportcard.persist.TestResultPersistService;
 import io.github.ericdriggs.reportcard.storage.DirectoryUploadResponse;
 import io.github.ericdriggs.reportcard.storage.S3Service;
-import io.github.ericdriggs.reportcard.util.StringMapUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,9 +25,6 @@ import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
 import software.amazon.awssdk.services.s3.model.S3Object;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 
 @Slf4j
@@ -51,100 +47,7 @@ public class StorageController {
     private final TestResultPersistService testResultPersistService;
     private final S3Service s3Service;
 
-    @PostMapping(value = {"label/{label}/tar.gz"}, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<StagePathStorageTestResult> postStageJunitStorageTarGZ(
-            @PathVariable("label") String label,
-            @RequestPart("junit.tar.gz") MultipartFile junitXmls,
-            @RequestPart("reports.tar.gz") MultipartFile reports,
-            @RequestParam("company") String company,
-            @RequestParam("org") String org,
-            @RequestParam("repo") String repo,
-            @RequestParam("branch") String branch,
-            @RequestParam("sha") String sha,
-            @RequestParam("stage") String stage,
-            @RequestParam(value = "jobInfo", required = false) String jobInfo,
-            @RequestParam(value = "runReference", required = false) String runReference,
-            @RequestParam(value = "indexFile", required = false) String indexFile,
-            @RequestParam(value = "storageType", required = false) StorageType storageType,
-            @RequestParam(value = "externalLinks", required = false) String externalLinks) throws IOException {
-
-        if (storageType == null) {
-            storageType = StorageType.HTML;
-        }
-
-        StageDetails stageDetails = StageDetails.builder()
-                                                .company(company)
-                                                .org(org)
-                                                .repo(repo)
-                                                .branch(branch)
-                                                .sha(sha)
-                                                .stage(stage)
-                                                .jobInfo(StringMapUtil.stringToMap(jobInfo))
-                                                .runReference(runReference)
-                                                .externalLinks(StringMapUtil.stringToMap(externalLinks))
-                                                .build();
-
-        List<String> testXmlContents = TestXmlTarGzUtil.getFileContentsFromTarGz(junitXmls);
-        TestResultModel testResultModel = JunitSurefireXmlParseUtil.parseTestXml(testXmlContents);
-
-        StagePathTestResult stagePathTestResult = testResultPersistService.insertTestResult(stageDetails, testResultModel);
-        StagePath stagePath = stagePathTestResult.getStagePath();
-        final Long stageId = stagePath.getStage().getStageId();
-        StagePathStorage stagePathStorage = doPostStageStorageTarGZ(stageId, label, reports, indexFile, storageType );
-
-        StagePathStorageTestResult stagePathStorageTestResult = new StagePathStorageTestResult(stagePathStorage, stagePathTestResult);
-        return new ResponseEntity<>(stagePathStorageTestResult, HttpStatus.OK);
-    }
-
-
-    @SuppressWarnings("ReassignedVariable")
-    @PostMapping(value = {"stage/{stageId}/reports/{label}/tar.gz"}, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<StagePathStorage> postStageStorageTarGZ(
-            @PathVariable("stageId") Long stageId,
-            @PathVariable("label") String label,
-            @RequestPart("reports.tar.gz") MultipartFile file,
-            @RequestParam(value = "indexFile", required = false) String indexFile,
-            @RequestParam(value = "storageType", required = false) StorageType storageType) {
-
-        return new ResponseEntity<>(doPostStageStorageTarGZ(stageId, label, file, indexFile, storageType), HttpStatus.OK);
-    }
-
-    protected StagePathStorage doPostStageStorageTarGZ(
-            @PathVariable("stageId") Long stageId,
-            @PathVariable("label") String label,
-            @RequestPart("reports.tar.gz") MultipartFile file,
-            @RequestParam(value = "indexFile", required = false) String indexFile,
-            @RequestParam(value = "storageType", required = false) StorageType storageType) {
-        if (storageType == null) {
-            storageType = StorageType.HTML;
-        }
-        final StagePath stagePath = storagePersistService.getStagePath(stageId);
-        final String prefix = new StoragePath(stagePath, label).getPrefix();
-
-        s3Service.uploadTarGZ(file, prefix);
-        return storagePersistService.persistStoragePath(indexFile, label, prefix, stageId, storageType);
-    }
-
-    @PostMapping(value = {"stage/{stageId}/reports/{label}/files"}, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<StagePathStorage> postStageHtml(
-            @PathVariable("stageId") Long stageId,
-            @PathVariable("label") String label,
-            @RequestPart("files") MultipartFile[] files, //TODO: single file
-            @RequestParam(value = "indexFile", required = false) String indexFile
-    ) {
-        final StorageType storageType = StorageType.HTML;
-        final StagePath stagePath = storagePersistService.getStagePath(stageId);
-        final String prefix = new StoragePath(stagePath, label).getPrefix();
-
-        s3Service.uploadDirectory(files, prefix);
-        StagePathStorage stagePathStorage = storagePersistService.persistStoragePath(indexFile, label, prefix, stageId, storageType);
-        return new ResponseEntity<>(stagePathStorage, HttpStatus.OK);
-    }
-
-    //For testing only
-    //TODO: hide when not running locally
-    @PostMapping(value = {"path/"},
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    //For internal testing only.
     public ResponseEntity<DirectoryUploadResponse> postStorageOnly(
             @RequestParam("storagePrefix") String storagePrefix,
             @RequestPart("files") MultipartFile[] files
@@ -152,6 +55,7 @@ public class StorageController {
         return new ResponseEntity<>(s3Service.uploadDirectory(files, storagePrefix), HttpStatus.OK);
     }
 
+    @Operation(summary = "Retrieves s3 object or folder for path. Folders are browsable")
     @GetMapping(value = {"key/**"})
     public ResponseEntity<?> getKey(HttpServletRequest request) {
         final String prefix = request.getRequestURI().split(request.getContextPath() + "/key/")[1];
@@ -188,7 +92,6 @@ public class StorageController {
 
     protected ResponseEntity<?> getKeyContents(String prefix) {
 
-
         ResponseBytes<GetObjectResponse> responseBytes = s3Service.getObjectBytes(prefix);
         SdkHttpResponse sdkHttpResponse = responseBytes.response().sdkHttpResponse();
         if (!sdkHttpResponse.isSuccessful()) {
@@ -208,8 +111,46 @@ public class StorageController {
         return ResponseEntity.ok(StorageHtmlHelper.getS3BrowsePage(listResponse, prefix));
     }
 
+    @Operation(summary = "Post storage (usually html) for specified job stage.")
+    @PostMapping(value = {"stage/{stageId}/reports/{label}/tar.gz"}, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<StagePathStorage> postStageStorageTarGZ(
 
+            @Parameter(description = "generated id for the stage")
+            @PathVariable("stageId") Long stageId,
 
+            @Parameter(description = "Label for storage. Labels are unique per stage.")
+            @PathVariable("label") String label,
 
+            @Parameter(description = "Index file for html storage. Default: null")
+            @RequestParam(value = "indexFile", required = false)
+            String indexFile,
+
+            @Parameter(description = "Storage type. Default: HTML")
+            @RequestParam(value = "storageType", required = false)
+            StorageType storageType,
+
+            @Parameter(description = "Files and folders to store. Usually combination of html/css/js.")
+            @RequestPart("reports.tar.gz") MultipartFile file
+
+    ) {
+
+        return new ResponseEntity<>(doPostStageStorageTarGZ(stageId, label, file, indexFile, storageType), HttpStatus.OK);
+    }
+
+    protected StagePathStorage doPostStageStorageTarGZ(
+            @PathVariable("stageId") Long stageId,
+            @PathVariable("label") String label,
+            @RequestPart("reports.tar.gz") MultipartFile file,
+            @RequestParam(value = "indexFile", required = false) String indexFile,
+            @RequestParam(value = "storageType", required = false) StorageType storageType) {
+        if (storageType == null) {
+            storageType = StorageType.HTML;
+        }
+        final StagePath stagePath = storagePersistService.getStagePath(stageId);
+        final String prefix = new StoragePath(stagePath, label).getPrefix();
+
+        s3Service.uploadTarGZ(file, prefix);
+        return storagePersistService.persistStoragePath(indexFile, label, prefix, stageId, storageType);
+    }
 
 }

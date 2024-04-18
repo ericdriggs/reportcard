@@ -12,17 +12,21 @@ import io.github.ericdriggs.reportcard.gen.db.tables.records.BranchRecord;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
 import lombok.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
+import org.jooq.Function4;
 import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
+import org.jooq.Records;
 import org.jooq.Row4;
 import org.jooq.Schema;
+import org.jooq.SelectField;
 import org.jooq.Table;
 import org.jooq.TableField;
 import org.jooq.TableOptions;
@@ -39,7 +43,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BranchTable extends TableImpl<BranchRecord> {
 
-    private static final long serialVersionUID = -1951157628;
+    private static final long serialVersionUID = 1374402143;
 
     /**
      * The reference instance of <code>reportcard.branch</code>
@@ -154,6 +158,11 @@ public class BranchTable extends TableImpl<BranchRecord> {
         return new BranchTable(alias, this);
     }
 
+    @Override
+    public BranchTable as(Table<?> alias) {
+        return new BranchTable(alias.getQualifiedName(), this);
+    }
+
     /**
      * Rename this table
      */
@@ -170,6 +179,14 @@ public class BranchTable extends TableImpl<BranchRecord> {
         return new BranchTable(name, null);
     }
 
+    /**
+     * Rename this table
+     */
+    @Override
+    public BranchTable rename(Table<?> name) {
+        return new BranchTable(name.getQualifiedName(), null);
+    }
+
     // -------------------------------------------------------------------------
     // Row4 type methods
     // -------------------------------------------------------------------------
@@ -177,5 +194,20 @@ public class BranchTable extends TableImpl<BranchRecord> {
     @Override
     public Row4<Integer, String, Integer, LocalDateTime> fieldsRow() {
         return (Row4) super.fieldsRow();
+    }
+
+    /**
+     * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
+     */
+    public <U> SelectField<U> mapping(Function4<? super Integer, ? super String, ? super Integer, ? super LocalDateTime, ? extends U> from) {
+        return convertFrom(Records.mapping(from));
+    }
+
+    /**
+     * Convenience mapping calling {@link SelectField#convertFrom(Class,
+     * Function)}.
+     */
+    public <U> SelectField<U> mapping(Class<U> toType, Function4<? super Integer, ? super String, ? super Integer, ? super LocalDateTime, ? extends U> from) {
+        return convertFrom(toType, Records.mapping(from));
     }
 }

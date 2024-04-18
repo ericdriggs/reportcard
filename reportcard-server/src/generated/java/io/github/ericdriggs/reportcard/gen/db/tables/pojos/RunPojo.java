@@ -21,13 +21,13 @@ import lombok.Generated;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RunPojo implements Serializable {
 
-    private static final long serialVersionUID = 922617297;
+    private static final long serialVersionUID = -1784151661;
 
-    private Long          runId;
-    private String        runReference;
-    private Long          jobFk;
-    private Integer       jobRunCount;
-    private String        sha;
+    private Long runId;
+    private String runReference;
+    private Long jobFk;
+    private Integer jobRunCount;
+    private String sha;
     private LocalDateTime runDate;
-    private Boolean       isSuccess;
+    private Boolean isSuccess;
 }

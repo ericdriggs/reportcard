@@ -20,11 +20,11 @@ import lombok.Generated;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestCaseFaultPojo implements Serializable {
 
-    private static final long serialVersionUID = -1800902857;
+    private static final long serialVersionUID = -1774626569;
 
-    private Long   testCaseFaultId;
-    private Long   testCaseFk;
-    private Byte   faultContextFk;
+    private Long testCaseFaultId;
+    private Long testCaseFk;
+    private Byte faultContextFk;
     private String type;
     private String message;
     private String value;

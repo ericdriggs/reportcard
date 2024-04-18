@@ -106,7 +106,6 @@ dependencies {
 
 import org.jooq.codegen.GenerationTool
 import org.jooq.meta.jaxb.*
-
 import java.util.regex.Matcher
 
 task generateJooqSchemaSource {
@@ -114,6 +113,7 @@ task generateJooqSchemaSource {
     version = "3.18.4"
     doLast {
         GenerationTool.generate(new Configuration()
+                .withLogging(Logging.DEBUG)
                 .withJdbc(new Jdbc()
                         .withDriver('com.mysql.cj.jdbc.Driver')
                         .withUrl('jdbc:mysql://127.0.0.1:3306/reportcard?serverTimezone=UTC')
@@ -122,10 +122,9 @@ task generateJooqSchemaSource {
                         .withProperties(Arrays.asList(new Property().withKey("ssl").withValue("true")))
                 )
                 .withGenerator(new Generator()
-
                         .withName('org.jooq.codegen.JavaLombokGenerator')
                         .withStrategy(new Strategy()
-                                .withName('org.jooq.codegen.DefaultGeneratorStrategy')
+                                .withName('org.jooq.codegen.SuffixGeneratorStrategy')
                         )
                         .withDatabase(new Database()
                                 .withName('org.jooq.meta.mysql.MySQLDatabase')

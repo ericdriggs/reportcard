@@ -20,9 +20,9 @@ import lombok.Generated;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RepoPojo implements Serializable {
 
-    private static final long serialVersionUID = -1642182918;
+    private static final long serialVersionUID = 272124890;
 
     private Integer repoId;
-    private String  repoName;
+    private String repoName;
     private Integer orgFk;
 }

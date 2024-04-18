@@ -10,16 +10,20 @@ import io.github.ericdriggs.reportcard.gen.db.tables.records.CompanyRecord;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
 import lombok.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
+import org.jooq.Function2;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
+import org.jooq.Records;
 import org.jooq.Row2;
 import org.jooq.Schema;
+import org.jooq.SelectField;
 import org.jooq.Table;
 import org.jooq.TableField;
 import org.jooq.TableOptions;
@@ -36,7 +40,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CompanyTable extends TableImpl<CompanyRecord> {
 
-    private static final long serialVersionUID = -2121893261;
+    private static final long serialVersionUID = -1283832994;
 
     /**
      * The reference instance of <code>reportcard.company</code>
@@ -124,6 +128,11 @@ public class CompanyTable extends TableImpl<CompanyRecord> {
         return new CompanyTable(alias, this);
     }
 
+    @Override
+    public CompanyTable as(Table<?> alias) {
+        return new CompanyTable(alias.getQualifiedName(), this);
+    }
+
     /**
      * Rename this table
      */
@@ -140,6 +149,14 @@ public class CompanyTable extends TableImpl<CompanyRecord> {
         return new CompanyTable(name, null);
     }
 
+    /**
+     * Rename this table
+     */
+    @Override
+    public CompanyTable rename(Table<?> name) {
+        return new CompanyTable(name.getQualifiedName(), null);
+    }
+
     // -------------------------------------------------------------------------
     // Row2 type methods
     // -------------------------------------------------------------------------
@@ -147,5 +164,20 @@ public class CompanyTable extends TableImpl<CompanyRecord> {
     @Override
     public Row2<Integer, String> fieldsRow() {
         return (Row2) super.fieldsRow();
+    }
+
+    /**
+     * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
+     */
+    public <U> SelectField<U> mapping(Function2<? super Integer, ? super String, ? extends U> from) {
+        return convertFrom(Records.mapping(from));
+    }
+
+    /**
+     * Convenience mapping calling {@link SelectField#convertFrom(Class,
+     * Function)}.
+     */
+    public <U> SelectField<U> mapping(Class<U> toType, Function2<? super Integer, ? super String, ? extends U> from) {
+        return convertFrom(toType, Records.mapping(from));
     }
 }

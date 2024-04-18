@@ -11,17 +11,21 @@ import io.github.ericdriggs.reportcard.gen.db.tables.records.StorageRecord;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
 import lombok.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
+import org.jooq.Function6;
 import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
+import org.jooq.Records;
 import org.jooq.Row6;
 import org.jooq.Schema;
+import org.jooq.SelectField;
 import org.jooq.Table;
 import org.jooq.TableField;
 import org.jooq.TableOptions;
@@ -38,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class StorageTable extends TableImpl<StorageRecord> {
 
-    private static final long serialVersionUID = -1757715484;
+    private static final long serialVersionUID = -112693055;
 
     /**
      * The reference instance of <code>reportcard.storage</code>
@@ -180,6 +184,11 @@ public class StorageTable extends TableImpl<StorageRecord> {
         return new StorageTable(alias, this);
     }
 
+    @Override
+    public StorageTable as(Table<?> alias) {
+        return new StorageTable(alias.getQualifiedName(), this);
+    }
+
     /**
      * Rename this table
      */
@@ -196,6 +205,14 @@ public class StorageTable extends TableImpl<StorageRecord> {
         return new StorageTable(name, null);
     }
 
+    /**
+     * Rename this table
+     */
+    @Override
+    public StorageTable rename(Table<?> name) {
+        return new StorageTable(name.getQualifiedName(), null);
+    }
+
     // -------------------------------------------------------------------------
     // Row6 type methods
     // -------------------------------------------------------------------------
@@ -203,5 +220,20 @@ public class StorageTable extends TableImpl<StorageRecord> {
     @Override
     public Row6<Long, Long, String, String, String, Integer> fieldsRow() {
         return (Row6) super.fieldsRow();
+    }
+
+    /**
+     * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
+     */
+    public <U> SelectField<U> mapping(Function6<? super Long, ? super Long, ? super String, ? super String, ? super String, ? super Integer, ? extends U> from) {
+        return convertFrom(Records.mapping(from));
+    }
+
+    /**
+     * Convenience mapping calling {@link SelectField#convertFrom(Class,
+     * Function)}.
+     */
+    public <U> SelectField<U> mapping(Class<U> toType, Function6<? super Long, ? super Long, ? super String, ? super String, ? super String, ? super Integer, ? extends U> from) {
+        return convertFrom(toType, Records.mapping(from));
     }
 }
