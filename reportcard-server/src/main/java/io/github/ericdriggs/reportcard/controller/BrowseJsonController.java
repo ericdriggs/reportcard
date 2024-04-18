@@ -9,6 +9,7 @@ import io.github.ericdriggs.reportcard.persist.BrowseService;
 import io.github.ericdriggs.reportcard.cache.dto.*;
 import io.github.ericdriggs.reportcard.cache.model.*;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.*;
+import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 //TODO: add reports endpoint after stages
 @RestController
 @RequestMapping("/v1/api")
+@Hidden
 @SuppressWarnings("unused")
 public class BrowseJsonController {
 

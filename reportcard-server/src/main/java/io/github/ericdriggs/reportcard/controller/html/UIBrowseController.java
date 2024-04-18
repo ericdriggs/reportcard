@@ -14,12 +14,12 @@ import java.util.Map;
 @RestController
 @RequestMapping("")
 @SuppressWarnings("unused")
-public class BrowseUIController {
+public class UIBrowseController {
 
     private final BrowseService browseService;
 
     @Autowired
-    public BrowseUIController(BrowseService browseService) {
+    public UIBrowseController(BrowseService browseService) {
         this.browseService = browseService;
     }
 

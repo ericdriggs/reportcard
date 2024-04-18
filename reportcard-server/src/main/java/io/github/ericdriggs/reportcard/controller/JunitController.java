@@ -46,7 +46,7 @@ public class JunitController {
     @Operation(summary = "Post junit/surefire xmls for specified job stage")
     @PostMapping(path = "tar.gz", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = "application/json")
     public ResponseEntity<StagePathTestResult> postJunitXml(
-            @Parameter(description = "Top level. Companies have orgs.")
+            @Parameter(description = "Companies have orgs.")
             @RequestParam("company")
             String company,
 
@@ -62,7 +62,7 @@ public class JunitController {
             @RequestParam("branch")
             String branch,
 
-            @Parameter(description = "Each combination of job_info is a different job. Jobs have runs. Default: {}")
+            @Parameter(description = "Comma separated key=value. Order does not matter. Trailing commas ignored. Each combination of job_info is a different job. Jobs have runs. Default: null", example="application=foo-app,pipeline=staging")
             @RequestParam(value = "jobInfo", required = false)
             String jobInfo,
 
@@ -78,7 +78,7 @@ public class JunitController {
             @RequestParam("stage")
             String stage,
 
-            @Parameter(description = "Optional links for the stage. Each stage may have a single test result")
+            @Parameter(description = "Optional comma separated key=value links for the stage.", example="build=https://jenkins.mycorp.com/job/myorg/job/myrepo/job/main/123")
             @RequestParam(value = "externalLinks", required = false)
             String externalLinks,
 
@@ -115,7 +115,7 @@ public class JunitController {
     @PostMapping(value = {"storage/{label}/tar.gz"}, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<StagePathStorageTestResult> postStageJunitStorageTarGZ(
 
-            @Parameter(description = "Top level. Companies have orgs.")
+            @Parameter(description = "Companies have orgs.")
             @RequestParam("company")
             String company,
 
@@ -131,7 +131,7 @@ public class JunitController {
             @RequestParam("branch")
             String branch,
 
-            @Parameter(description = "Each combination of job_info is a different job. Jobs have runs. Default: {}")
+            @Parameter(description = "Comma separated key=value. Order does not matter. Trailing commas ignored. Each combination of job_info is a different job. Jobs have runs. Default: null", example="application=foo-app,pipeline=staging")
             @RequestParam(value = "jobInfo", required = false)
             String jobInfo,
 
@@ -159,7 +159,7 @@ public class JunitController {
             @RequestParam(value = "storageType", required = false)
             StorageType storageType,
 
-            @Parameter(description = "Optional links for the stage. Each stage may have a single test result")
+            @Parameter(description = "Optional comma separated key=value links for the stage.", example="build=https://jenkins.mycorp.com/job/myorg/job/myrepo/job/main/123")
             @RequestParam(value = "externalLinks", required = false)
             String externalLinks,
 

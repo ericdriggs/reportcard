@@ -111,11 +111,11 @@ public class StorageController {
         return ResponseEntity.ok(StorageHtmlHelper.getS3BrowsePage(listResponse, prefix));
     }
 
-    @Operation(summary = "Post storage (usually html) for specified job stage.")
+    @Operation(summary = "Prefer junit controller unless storing multiple types of reports per stage. Post storage (usually html) for specified job stage.")
     @PostMapping(value = {"stage/{stageId}/reports/{label}/tar.gz"}, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<StagePathStorage> postStageStorageTarGZ(
 
-            @Parameter(description = "generated id for the stage")
+            @Parameter(description = "generated id for the stage. See response from junit post.")
             @PathVariable("stageId") Long stageId,
 
             @Parameter(description = "Label for storage. Labels are unique per stage.")
