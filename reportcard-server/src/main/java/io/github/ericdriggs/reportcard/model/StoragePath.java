@@ -1,5 +1,6 @@
 package io.github.ericdriggs.reportcard.model;
 
+import io.github.ericdriggs.reportcard.util.truncate.TruncateUtils;
 import lombok.Value;
 
 import java.nio.charset.StandardCharsets;
@@ -68,22 +69,7 @@ public class StoragePath {
     }
 
     static String truncateBytes(String str) {
-
-        //Nothing to do
-        final byte[] bytes = str.getBytes(StandardCharsets.UTF_8);
-        if (bytes.length <= maxStringBytes) {
-            return str;
-        }
-
-        //Iteratively trim until below target length
-        for (int i = maxStringBytes; i > 0; i--) {
-            final String subString = str.substring(0, i);
-            final byte[] subStringBytes = subString.getBytes(StandardCharsets.UTF_8);
-            if (subStringBytes.length <= StoragePath.maxStringBytes) {
-                return subString;
-            }
-        }
-        throw new IllegalStateException("truncation coding error -- should be unreachable code");
+        return TruncateUtils.truncateBytes(str, maxStringBytes);
     }
 
     static String getPath(
