@@ -333,7 +333,7 @@ CREATE TABLE `test_case_fault` (
     `test_case_fault_id` bigint unsigned NOT NULL AUTO_INCREMENT,
     `test_case_fk` bigint unsigned NOT NULL,
     `fault_context_fk` tinyint NOT NULL,
-    `type` varchar(1024) NOT NULL,
+    `type` varchar(1024) DEFAULT NULL,
     `message` varchar(1024) DEFAULT NULL,
     `value` mediumtext,
     PRIMARY KEY (`test_case_fault_id`),

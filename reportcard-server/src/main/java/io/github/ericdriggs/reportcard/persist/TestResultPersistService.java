@@ -7,6 +7,7 @@ import io.github.ericdriggs.reportcard.model.TestSuiteModel;
 import io.github.ericdriggs.reportcard.model.*;
 import io.github.ericdriggs.reportcard.model.converter.JunitSurefireXmlParseUtil;
 import io.github.ericdriggs.reportcard.model.StagePathTestResult;
+import io.github.ericdriggs.reportcard.util.truncate.TruncateUtils;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
@@ -246,14 +247,14 @@ public class TestResultPersistService extends StagePathPersistService {
                 List<TestCaseModel> testCases = testSuite.getTestCases();
                 TestSuiteRecord testSuiteRecord = dsl.newRecord(TEST_SUITE);
                 testSuiteRecord.setTestResultFk(testResult.getTestResultId())
-                        .setName(testSuite.getName())
+                        .setName(TruncateUtils.truncateBytes(testSuite.getName(), 1024))
                         .setError(testSuite.getError())
                         .setFailure(testSuite.getFailure())
                         .setSkipped(testSuite.getSkipped())
                         .setTests(testSuite.getTests())
                         .setTime(testSuite.getTime())
-                        .setPackageName(testSuite.getPackageName())
-
+                        .setPackageName(TruncateUtils.truncateBytes(testSuite.getPackageName(), 1024))
+                        .setGroup(TruncateUtils.truncateBytes(testSuite.getGroup(), 1024))
                         .store();
 
                 //need select for generated values
@@ -276,8 +277,8 @@ public class TestResultPersistService extends StagePathPersistService {
                     TestCaseRecord testCaseRecord = dsl.newRecord(TEST_CASE);
                     testCaseRecord.setTestSuiteFk(testSuite.getTestSuiteId())
                             .setTestStatusFk(testCase.getTestStatusFk())
-                            .setClassName(testCase.getClassName())
-                            .setName(testCase.getName())
+                            .setClassName(TruncateUtils.truncateBytes(testCase.getClassName(), 1024))
+                            .setName(TruncateUtils.truncateBytes(testCase.getName(), 1024))
                             .setTime(testCase.getTime())
                             .setTestCaseId(testCase.getTestCaseId()) //redundant? shouldn't store set the id?
                             .store();
@@ -286,11 +287,18 @@ public class TestResultPersistService extends StagePathPersistService {
                     for (TestCaseFaultModel testCaseFault : testCase.getTestCaseFaults()) {
                         if (testCaseFault.getTestCaseFaultId() == null) {
                             TestCaseFaultRecord testCaseFaultRecord = dsl.newRecord(TEST_CASE_FAULT);
+                            final String message = TruncateUtils.truncateBytes(testCaseFault.getMessage(), 1024);
+                            final String value;
+                            if (testCaseFault.getValue() == null) {
+                                value = testCaseFault.getMessage();
+                            } else {
+                                value = testCaseFault.getValue();
+                            }
                             testCaseFaultRecord
-                                    .setMessage(testCaseFault.getMessage())
+                                    .setMessage(message)
                                     .setTestCaseFk(testCaseRecord.getTestCaseId())
-                                    .setType(testCaseFault.getType())
-                                    .setValue(testCaseFault.getValue())
+                                    .setType(TruncateUtils.truncateBytes(testCaseFault.getType(), 1024))
+                                    .setValue(value)
                                     .setFaultContextFk(testCaseFault.getFaultContextFk())
                                     .store();
                             testCaseFault.setTestCaseFaultId(testCaseFaultRecord.getTestCaseFaultId());
