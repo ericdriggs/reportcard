@@ -14,7 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.*;
 
@@ -564,12 +564,12 @@ public class BrowseHtmlHelper {
         return sb.toString();
     }
 
-    public static Instant mostRecent(Set<LocalDateTime> dateTimes) {
+    public static Instant mostRecent(Set<Instant> dateTimes) {
         if (dateTimes == null) {
             return null;
         }
-        LocalDateTime lastRun = null;
-        for (LocalDateTime localDateTime : dateTimes) {
+        Instant lastRun = null;
+        for (Instant localDateTime : dateTimes) {
             if (lastRun == null || localDateTime.isAfter(lastRun)) {
                 lastRun = localDateTime;
             }

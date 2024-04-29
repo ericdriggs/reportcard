@@ -8,7 +8,7 @@ import io.github.ericdriggs.reportcard.gen.db.Keys;
 import io.github.ericdriggs.reportcard.gen.db.ReportcardTable;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.JobRecord;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class JobTable extends TableImpl<JobRecord> {
 
-    private static final long serialVersionUID = 386649386;
+    private static final long serialVersionUID = 935871350;
 
     /**
      * The reference instance of <code>reportcard.job</code>
@@ -79,7 +79,7 @@ public class JobTable extends TableImpl<JobRecord> {
     /**
      * The column <code>reportcard.job.last_run</code>.
      */
-    public final TableField<JobRecord, LocalDateTime> LAST_RUN = createField(DSL.name("last_run"), SQLDataType.LOCALDATETIME(0).defaultValue(DSL.inline("utc_timestamp()", SQLDataType.LOCALDATETIME)), this, "");
+    public final TableField<JobRecord, Instant> LAST_RUN = createField(DSL.name("last_run"), SQLDataType.INSTANT.defaultValue(DSL.inline("utc_timestamp()", SQLDataType.INSTANT)), this, "");
 
     private JobTable(Name alias, Table<JobRecord> aliased) {
         this(alias, aliased, null);
@@ -195,14 +195,14 @@ public class JobTable extends TableImpl<JobRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row5<Long, String, Integer, String, LocalDateTime> fieldsRow() {
+    public Row5<Long, String, Integer, String, Instant> fieldsRow() {
         return (Row5) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function5<? super Long, ? super String, ? super Integer, ? super String, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function5<? super Long, ? super String, ? super Integer, ? super String, ? super Instant, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
@@ -210,7 +210,7 @@ public class JobTable extends TableImpl<JobRecord> {
      * Convenience mapping calling {@link SelectField#convertFrom(Class,
      * Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function5<? super Long, ? super String, ? super Integer, ? super String, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function5<? super Long, ? super String, ? super Integer, ? super String, ? super Instant, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

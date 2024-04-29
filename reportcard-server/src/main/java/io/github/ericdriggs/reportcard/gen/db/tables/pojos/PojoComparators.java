@@ -9,7 +9,7 @@ import io.github.ericdriggs.reportcard.util.JsonCompare;
 import org.apache.commons.lang3.ObjectUtils;
 
 import java.io.Serial;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Comparator;
 
 import static io.github.ericdriggs.reportcard.util.CompareUtil.*;
@@ -300,7 +300,7 @@ public class PojoComparators {
         );
     }
 
-    public static int compareLocalDateTimeDescending(LocalDateTime val1, LocalDateTime val2) {
+    public static int compareLocalDateTimeDescending(Instant val1, Instant val2) {
         if (val1 == null || val2 == null) {
             return ObjectUtils.compare(ObjectUtils.isEmpty(val2), ObjectUtils.isEmpty(val1));
         }

@@ -5,7 +5,7 @@ package io.github.ericdriggs.reportcard.gen.db.tables.pojos;
 
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 import lombok.Generated;
 
@@ -21,10 +21,10 @@ import lombok.Generated;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BranchPojo implements Serializable {
 
-    private static final long serialVersionUID = -223274754;
+    private static final long serialVersionUID = 867624052;
 
     private Integer branchId;
     private String branchName;
     private Integer repoFk;
-    private LocalDateTime lastRun;
+    private Instant lastRun;
 }

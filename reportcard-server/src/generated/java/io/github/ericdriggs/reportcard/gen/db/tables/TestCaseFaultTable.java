@@ -42,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestCaseFaultTable extends TableImpl<TestCaseFaultRecord> {
 
-    private static final long serialVersionUID = 116256387;
+    private static final long serialVersionUID = 435718146;
 
     /**
      * The reference instance of <code>reportcard.test_case_fault</code>
@@ -75,7 +75,7 @@ public class TestCaseFaultTable extends TableImpl<TestCaseFaultRecord> {
     /**
      * The column <code>reportcard.test_case_fault.type</code>.
      */
-    public final TableField<TestCaseFaultRecord, String> TYPE = createField(DSL.name("type"), SQLDataType.VARCHAR(1024).nullable(false), this, "");
+    public final TableField<TestCaseFaultRecord, String> TYPE = createField(DSL.name("type"), SQLDataType.VARCHAR(1024), this, "");
 
     /**
      * The column <code>reportcard.test_case_fault.message</code>.

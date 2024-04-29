@@ -9,7 +9,7 @@ import io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestResultPojo;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.TestResultRecord;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -168,14 +168,14 @@ public class TestResultDao extends DAOImpl<TestResultRecord, TestResultPojo, Lon
      * Fetch records that have <code>test_result_created BETWEEN lowerInclusive
      * AND upperInclusive</code>
      */
-    public List<TestResultPojo> fetchRangeOfTestResultCreatedTable(LocalDateTime lowerInclusive, LocalDateTime upperInclusive) {
+    public List<TestResultPojo> fetchRangeOfTestResultCreatedTable(Instant lowerInclusive, Instant upperInclusive) {
         return fetchRange(TestResultTable.TEST_RESULT.TEST_RESULT_CREATED, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>test_result_created IN (values)</code>
      */
-    public List<TestResultPojo> fetchByTestResultCreatedTable(LocalDateTime... values) {
+    public List<TestResultPojo> fetchByTestResultCreatedTable(Instant... values) {
         return fetch(TestResultTable.TEST_RESULT.TEST_RESULT_CREATED, values);
     }
 

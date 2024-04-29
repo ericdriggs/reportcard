@@ -8,7 +8,7 @@ import io.github.ericdriggs.reportcard.gen.db.tables.JobTable;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.JobPojo;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.JobRecord;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -122,14 +122,14 @@ public class JobDao extends DAOImpl<JobRecord, JobPojo, Long> {
      * Fetch records that have <code>last_run BETWEEN lowerInclusive AND
      * upperInclusive</code>
      */
-    public List<JobPojo> fetchRangeOfLastRunTable(LocalDateTime lowerInclusive, LocalDateTime upperInclusive) {
+    public List<JobPojo> fetchRangeOfLastRunTable(Instant lowerInclusive, Instant upperInclusive) {
         return fetchRange(JobTable.JOB.LAST_RUN, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>last_run IN (values)</code>
      */
-    public List<JobPojo> fetchByLastRunTable(LocalDateTime... values) {
+    public List<JobPojo> fetchByLastRunTable(Instant... values) {
         return fetch(JobTable.JOB.LAST_RUN, values);
     }
 }

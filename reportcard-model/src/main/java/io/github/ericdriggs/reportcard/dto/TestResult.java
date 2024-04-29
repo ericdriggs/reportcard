@@ -9,7 +9,7 @@ import lombok.Data;
 import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 
 @Data
@@ -25,7 +25,7 @@ public class TestResult implements Serializable {
     private Integer error;
     private Integer failure;
     private BigDecimal time;
-    private LocalDateTime testResultCreated;
+    private Instant testResultCreated;
     private Boolean isSuccess;
     private Boolean hasSkip;
     private String externalLinks;

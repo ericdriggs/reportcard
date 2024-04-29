@@ -7,7 +7,7 @@ package io.github.ericdriggs.reportcard.gen.db.tables.records;
 import io.github.ericdriggs.reportcard.gen.db.tables.BranchTable;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.BranchPojo;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 import lombok.Generated;
 
@@ -23,9 +23,9 @@ import org.jooq.impl.UpdatableRecordImpl;
  */
 @Generated
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class BranchRecord extends UpdatableRecordImpl<BranchRecord> implements Record4<Integer, String, Integer, LocalDateTime> {
+public class BranchRecord extends UpdatableRecordImpl<BranchRecord> implements Record4<Integer, String, Integer, Instant> {
 
-    private static final long serialVersionUID = 1557191483;
+    private static final long serialVersionUID = -439863136;
 
     /**
      * Setter for <code>reportcard.branch.branch_id</code>.
@@ -75,7 +75,7 @@ public class BranchRecord extends UpdatableRecordImpl<BranchRecord> implements R
     /**
      * Setter for <code>reportcard.branch.last_run</code>.
      */
-    public BranchRecord setLastRun(LocalDateTime value) {
+    public BranchRecord setLastRun(Instant value) {
         set(3, value);
         return this;
     }
@@ -83,8 +83,8 @@ public class BranchRecord extends UpdatableRecordImpl<BranchRecord> implements R
     /**
      * Getter for <code>reportcard.branch.last_run</code>.
      */
-    public LocalDateTime getLastRun() {
-        return (LocalDateTime) get(3);
+    public Instant getLastRun() {
+        return (Instant) get(3);
     }
 
     // -------------------------------------------------------------------------
@@ -101,12 +101,12 @@ public class BranchRecord extends UpdatableRecordImpl<BranchRecord> implements R
     // -------------------------------------------------------------------------
 
     @Override
-    public Row4<Integer, String, Integer, LocalDateTime> fieldsRow() {
+    public Row4<Integer, String, Integer, Instant> fieldsRow() {
         return (Row4) super.fieldsRow();
     }
 
     @Override
-    public Row4<Integer, String, Integer, LocalDateTime> valuesRow() {
+    public Row4<Integer, String, Integer, Instant> valuesRow() {
         return (Row4) super.valuesRow();
     }
 
@@ -126,7 +126,7 @@ public class BranchRecord extends UpdatableRecordImpl<BranchRecord> implements R
     }
 
     @Override
-    public Field<LocalDateTime> field4() {
+    public Field<Instant> field4() {
         return BranchTable.BRANCH.LAST_RUN;
     }
 
@@ -146,7 +146,7 @@ public class BranchRecord extends UpdatableRecordImpl<BranchRecord> implements R
     }
 
     @Override
-    public LocalDateTime component4() {
+    public Instant component4() {
         return getLastRun();
     }
 
@@ -166,7 +166,7 @@ public class BranchRecord extends UpdatableRecordImpl<BranchRecord> implements R
     }
 
     @Override
-    public LocalDateTime value4() {
+    public Instant value4() {
         return getLastRun();
     }
 
@@ -189,13 +189,13 @@ public class BranchRecord extends UpdatableRecordImpl<BranchRecord> implements R
     }
 
     @Override
-    public BranchRecord value4(LocalDateTime value) {
+    public BranchRecord value4(Instant value) {
         setLastRun(value);
         return this;
     }
 
     @Override
-    public BranchRecord values(Integer value1, String value2, Integer value3, LocalDateTime value4) {
+    public BranchRecord values(Integer value1, String value2, Integer value3, Instant value4) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -217,7 +217,7 @@ public class BranchRecord extends UpdatableRecordImpl<BranchRecord> implements R
     /**
      * Create a detached, initialised BranchRecord
      */
-    public BranchRecord(Integer branchId, String branchName, Integer repoFk, LocalDateTime lastRun) {
+    public BranchRecord(Integer branchId, String branchName, Integer repoFk, Instant lastRun) {
         super(BranchTable.BRANCH);
 
         setBranchId(branchId);

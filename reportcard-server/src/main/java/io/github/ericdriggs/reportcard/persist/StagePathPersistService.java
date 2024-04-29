@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -249,7 +249,8 @@ public class StagePathPersistService extends AbstractPersistService {
     @SuppressWarnings("resource")
     public StagePath getUpsertedStagePath(StageDetails request, StagePath stagePath) {
 
-        LocalDateTime nowUTC = LocalDateTime.now(ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS);
+        Instant nowUTC = Instant.now();
+        //.truncatedTo(ChronoUnit.SECONDS);
 
         if (stagePath == null) {
             stagePath = getStagePath(request);
@@ -333,16 +334,17 @@ public class StagePathPersistService extends AbstractPersistService {
         return stagePath;
     }
 
-    public LocalDateTime updateLastRunToNow(StagePath stagePath) {
-        LocalDateTime nowUTC = LocalDateTime.now(ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS);
-        if (stagePath.getBranch() != null) {
-            BranchPojo branch = stagePath.getBranch();
-            branch.setLastRun(nowUTC);
-            branchDao.update(branch);
-        }
+    public Instant updateLastRunToNow(StagePath stagePath) {
+        Instant nowUTC = Instant.now();
+            //.truncatedTo(ChronoUnit.SECONDS);
+            if (stagePath.getBranch() != null) {
+                BranchPojo branch = stagePath.getBranch();
+                branch.setLastRun(nowUTC);
+                branchDao.update(branch);
+            }
 
-        if (stagePath.getJob() != null) {
-            JobPojo job = stagePath.getJob();
+            if (stagePath.getJob() != null) {
+                JobPojo job = stagePath.getJob();
             job.setLastRun(nowUTC);
             // insert since DAO/POJO would incorrectly attempt to insert generated column job_info_str
             dsl.update(JOB)

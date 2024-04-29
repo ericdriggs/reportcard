@@ -71,7 +71,12 @@ public class ResultCountTest {
     @Test
     public void addSuitesTest() {
 
+        TestResultModel testResultModel = getTestResultModel();
+        ResultCount testResult_resultCount = testResultModel.getResultCount();
+        assertEquals(3, testResult_resultCount.getFailures());
+    }
 
+    public static TestResultModel getTestResultModel() {
         TestResultModel testResult = new TestResultModel();
         {
 
@@ -94,10 +99,7 @@ public class ResultCountTest {
             ResultCount testSuite_resultCount = testSuite.getResultCount();
             assertEquals(1, testSuite_resultCount.getFailures());
         }
-
-
-        ResultCount testResult_resultCount = testResult.getResultCount();
-        assertEquals(3, testResult_resultCount.getFailures());
+        return testResult;
     }
 
     private final static Random random = new Random();
