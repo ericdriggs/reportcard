@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
 import java.time.Duration;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 /**
  * A cache which supports asynchronous refreshing.
@@ -22,7 +22,7 @@ public abstract class AbstractAsyncCache<K, V> {
     protected final Logger log = LoggerFactory.getLogger(this.getClass().getName());
     protected final K key;
     protected V cache = null;
-    protected LocalDateTime lastUpdated;
+    protected Instant lastUpdated;
 
     public AbstractAsyncCache(K key) {
         this.key = key;
@@ -72,7 +72,7 @@ public abstract class AbstractAsyncCache<K, V> {
 
     private void setLastUpdatedNow() {
         if (!isCacheEmpty()) {
-            this.lastUpdated = LocalDateTime.now();
+            this.lastUpdated = Instant.now();
         }
     }
 
@@ -81,7 +81,7 @@ public abstract class AbstractAsyncCache<K, V> {
             return false;
         }
 
-        return LocalDateTime.now().isAfter(lastUpdated.plusSeconds(getAsyncRefreshableAge().toSeconds()));
+        return Instant.now().isAfter(lastUpdated.plusSeconds(getAsyncRefreshableAge().toSeconds()));
     }
 
     private boolean isExpired() {
@@ -90,7 +90,7 @@ public abstract class AbstractAsyncCache<K, V> {
         } else if (getExpiredAge() == null) {
             return false;
         }
-        return LocalDateTime.now().isAfter(lastUpdated.plusSeconds(getExpiredAge().toSeconds()));
+        return Instant.now().isAfter(lastUpdated.plusSeconds(getExpiredAge().toSeconds()));
     }
 
     private void refresh() {

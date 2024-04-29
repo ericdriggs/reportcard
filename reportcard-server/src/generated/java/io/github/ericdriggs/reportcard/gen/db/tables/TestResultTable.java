@@ -10,7 +10,7 @@ import io.github.ericdriggs.reportcard.gen.db.ReportcardTable;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.TestResultRecord;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
@@ -44,7 +44,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestResultTable extends TableImpl<TestResultRecord> {
 
-    private static final long serialVersionUID = -2059947631;
+    private static final long serialVersionUID = 1408455505;
 
     /**
      * The reference instance of <code>reportcard.test_result</code>
@@ -97,7 +97,7 @@ public class TestResultTable extends TableImpl<TestResultRecord> {
     /**
      * The column <code>reportcard.test_result.test_result_created</code>.
      */
-    public final TableField<TestResultRecord, LocalDateTime> TEST_RESULT_CREATED = createField(DSL.name("test_result_created"), SQLDataType.LOCALDATETIME(0).nullable(false).defaultValue(DSL.inline("utc_timestamp()", SQLDataType.LOCALDATETIME)), this, "");
+    public final TableField<TestResultRecord, Instant> TEST_RESULT_CREATED = createField(DSL.name("test_result_created"), SQLDataType.INSTANT.nullable(false).defaultValue(DSL.inline("utc_timestamp()", SQLDataType.INSTANT)), this, "");
 
     /**
      * The column <code>reportcard.test_result.external_links</code>.
@@ -228,14 +228,14 @@ public class TestResultTable extends TableImpl<TestResultRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row11<Long, Long, Integer, Integer, Integer, Integer, BigDecimal, LocalDateTime, String, Boolean, Boolean> fieldsRow() {
+    public Row11<Long, Long, Integer, Integer, Integer, Integer, BigDecimal, Instant, String, Boolean, Boolean> fieldsRow() {
         return (Row11) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function11<? super Long, ? super Long, ? super Integer, ? super Integer, ? super Integer, ? super Integer, ? super BigDecimal, ? super LocalDateTime, ? super String, ? super Boolean, ? super Boolean, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function11<? super Long, ? super Long, ? super Integer, ? super Integer, ? super Integer, ? super Integer, ? super BigDecimal, ? super Instant, ? super String, ? super Boolean, ? super Boolean, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
@@ -243,7 +243,7 @@ public class TestResultTable extends TableImpl<TestResultRecord> {
      * Convenience mapping calling {@link SelectField#convertFrom(Class,
      * Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function11<? super Long, ? super Long, ? super Integer, ? super Integer, ? super Integer, ? super Integer, ? super BigDecimal, ? super LocalDateTime, ? super String, ? super Boolean, ? super Boolean, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function11<? super Long, ? super Long, ? super Integer, ? super Integer, ? super Integer, ? super Integer, ? super BigDecimal, ? super Instant, ? super String, ? super Boolean, ? super Boolean, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

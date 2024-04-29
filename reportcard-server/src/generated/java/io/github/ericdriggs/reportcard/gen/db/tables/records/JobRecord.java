@@ -7,7 +7,7 @@ package io.github.ericdriggs.reportcard.gen.db.tables.records;
 import io.github.ericdriggs.reportcard.gen.db.tables.JobTable;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.JobPojo;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 import lombok.Generated;
 
@@ -23,9 +23,9 @@ import org.jooq.impl.UpdatableRecordImpl;
  */
 @Generated
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class JobRecord extends UpdatableRecordImpl<JobRecord> implements Record5<Long, String, Integer, String, LocalDateTime> {
+public class JobRecord extends UpdatableRecordImpl<JobRecord> implements Record5<Long, String, Integer, String, Instant> {
 
-    private static final long serialVersionUID = 760462851;
+    private static final long serialVersionUID = -708847940;
 
     /**
      * Setter for <code>reportcard.job.job_id</code>.
@@ -90,7 +90,7 @@ public class JobRecord extends UpdatableRecordImpl<JobRecord> implements Record5
     /**
      * Setter for <code>reportcard.job.last_run</code>.
      */
-    public JobRecord setLastRun(LocalDateTime value) {
+    public JobRecord setLastRun(Instant value) {
         set(4, value);
         return this;
     }
@@ -98,8 +98,8 @@ public class JobRecord extends UpdatableRecordImpl<JobRecord> implements Record5
     /**
      * Getter for <code>reportcard.job.last_run</code>.
      */
-    public LocalDateTime getLastRun() {
-        return (LocalDateTime) get(4);
+    public Instant getLastRun() {
+        return (Instant) get(4);
     }
 
     // -------------------------------------------------------------------------
@@ -116,12 +116,12 @@ public class JobRecord extends UpdatableRecordImpl<JobRecord> implements Record5
     // -------------------------------------------------------------------------
 
     @Override
-    public Row5<Long, String, Integer, String, LocalDateTime> fieldsRow() {
+    public Row5<Long, String, Integer, String, Instant> fieldsRow() {
         return (Row5) super.fieldsRow();
     }
 
     @Override
-    public Row5<Long, String, Integer, String, LocalDateTime> valuesRow() {
+    public Row5<Long, String, Integer, String, Instant> valuesRow() {
         return (Row5) super.valuesRow();
     }
 
@@ -146,7 +146,7 @@ public class JobRecord extends UpdatableRecordImpl<JobRecord> implements Record5
     }
 
     @Override
-    public Field<LocalDateTime> field5() {
+    public Field<Instant> field5() {
         return JobTable.JOB.LAST_RUN;
     }
 
@@ -171,7 +171,7 @@ public class JobRecord extends UpdatableRecordImpl<JobRecord> implements Record5
     }
 
     @Override
-    public LocalDateTime component5() {
+    public Instant component5() {
         return getLastRun();
     }
 
@@ -196,7 +196,7 @@ public class JobRecord extends UpdatableRecordImpl<JobRecord> implements Record5
     }
 
     @Override
-    public LocalDateTime value5() {
+    public Instant value5() {
         return getLastRun();
     }
 
@@ -225,13 +225,13 @@ public class JobRecord extends UpdatableRecordImpl<JobRecord> implements Record5
     }
 
     @Override
-    public JobRecord value5(LocalDateTime value) {
+    public JobRecord value5(Instant value) {
         setLastRun(value);
         return this;
     }
 
     @Override
-    public JobRecord values(Long value1, String value2, Integer value3, String value4, LocalDateTime value5) {
+    public JobRecord values(Long value1, String value2, Integer value3, String value4, Instant value5) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -254,7 +254,7 @@ public class JobRecord extends UpdatableRecordImpl<JobRecord> implements Record5
     /**
      * Create a detached, initialised JobRecord
      */
-    public JobRecord(Long jobId, String jobInfo, Integer branchFk, String jobInfoStr, LocalDateTime lastRun) {
+    public JobRecord(Long jobId, String jobInfo, Integer branchFk, String jobInfoStr, Instant lastRun) {
         super(JobTable.JOB);
 
         setJobId(jobId);

@@ -8,7 +8,7 @@ import io.github.ericdriggs.reportcard.gen.db.tables.BranchTable;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.BranchPojo;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.BranchRecord;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -107,14 +107,14 @@ public class BranchDao extends DAOImpl<BranchRecord, BranchPojo, Integer> {
      * Fetch records that have <code>last_run BETWEEN lowerInclusive AND
      * upperInclusive</code>
      */
-    public List<BranchPojo> fetchRangeOfLastRunTable(LocalDateTime lowerInclusive, LocalDateTime upperInclusive) {
+    public List<BranchPojo> fetchRangeOfLastRunTable(Instant lowerInclusive, Instant upperInclusive) {
         return fetchRange(BranchTable.BRANCH.LAST_RUN, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>last_run IN (values)</code>
      */
-    public List<BranchPojo> fetchByLastRunTable(LocalDateTime... values) {
+    public List<BranchPojo> fetchByLastRunTable(Instant... values) {
         return fetch(BranchTable.BRANCH.LAST_RUN, values);
     }
 }

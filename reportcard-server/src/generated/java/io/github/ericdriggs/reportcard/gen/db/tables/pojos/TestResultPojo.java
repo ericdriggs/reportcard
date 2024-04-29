@@ -6,7 +6,7 @@ package io.github.ericdriggs.reportcard.gen.db.tables.pojos;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 import lombok.Generated;
 
@@ -22,7 +22,7 @@ import lombok.Generated;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestResultPojo implements Serializable {
 
-    private static final long serialVersionUID = -783359589;
+    private static final long serialVersionUID = 478628027;
 
     private Long testResultId;
     private Long stageFk;
@@ -31,7 +31,7 @@ public class TestResultPojo implements Serializable {
     private Integer error;
     private Integer failure;
     private BigDecimal time;
-    private LocalDateTime testResultCreated;
+    private Instant testResultCreated;
     private String externalLinks;
     private Boolean isSuccess;
     private Boolean hasSkip;

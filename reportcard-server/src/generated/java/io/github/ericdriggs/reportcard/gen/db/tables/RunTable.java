@@ -9,7 +9,7 @@ import io.github.ericdriggs.reportcard.gen.db.Keys;
 import io.github.ericdriggs.reportcard.gen.db.ReportcardTable;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.RunRecord;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
@@ -43,7 +43,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RunTable extends TableImpl<RunRecord> {
 
-    private static final long serialVersionUID = 1315425994;
+    private static final long serialVersionUID = -1703280094;
 
     /**
      * The reference instance of <code>reportcard.run</code>
@@ -86,7 +86,7 @@ public class RunTable extends TableImpl<RunRecord> {
     /**
      * The column <code>reportcard.run.run_date</code>.
      */
-    public final TableField<RunRecord, LocalDateTime> RUN_DATE = createField(DSL.name("run_date"), SQLDataType.LOCALDATETIME(0).nullable(false).defaultValue(DSL.inline("utc_timestamp()", SQLDataType.LOCALDATETIME)), this, "");
+    public final TableField<RunRecord, Instant> RUN_DATE = createField(DSL.name("run_date"), SQLDataType.INSTANT.nullable(false).defaultValue(DSL.inline("utc_timestamp()", SQLDataType.INSTANT)), this, "");
 
     /**
      * The column <code>reportcard.run.is_success</code>.
@@ -212,14 +212,14 @@ public class RunTable extends TableImpl<RunRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row7<Long, String, Long, Integer, String, LocalDateTime, Boolean> fieldsRow() {
+    public Row7<Long, String, Long, Integer, String, Instant, Boolean> fieldsRow() {
         return (Row7) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function7<? super Long, ? super String, ? super Long, ? super Integer, ? super String, ? super LocalDateTime, ? super Boolean, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function7<? super Long, ? super String, ? super Long, ? super Integer, ? super String, ? super Instant, ? super Boolean, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
@@ -227,7 +227,7 @@ public class RunTable extends TableImpl<RunRecord> {
      * Convenience mapping calling {@link SelectField#convertFrom(Class,
      * Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function7<? super Long, ? super String, ? super Long, ? super Integer, ? super String, ? super LocalDateTime, ? super Boolean, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function7<? super Long, ? super String, ? super Long, ? super Integer, ? super String, ? super Instant, ? super Boolean, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

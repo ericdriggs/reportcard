@@ -8,7 +8,7 @@ import io.github.ericdriggs.reportcard.gen.db.tables.RunTable;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.RunPojo;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.RunRecord;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -137,14 +137,14 @@ public class RunDao extends DAOImpl<RunRecord, RunPojo, Long> {
      * Fetch records that have <code>run_date BETWEEN lowerInclusive AND
      * upperInclusive</code>
      */
-    public List<RunPojo> fetchRangeOfRunDateTable(LocalDateTime lowerInclusive, LocalDateTime upperInclusive) {
+    public List<RunPojo> fetchRangeOfRunDateTable(Instant lowerInclusive, Instant upperInclusive) {
         return fetchRange(RunTable.RUN.RUN_DATE, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>run_date IN (values)</code>
      */
-    public List<RunPojo> fetchByRunDateTable(LocalDateTime... values) {
+    public List<RunPojo> fetchByRunDateTable(Instant... values) {
         return fetch(RunTable.RUN.RUN_DATE, values);
     }
 

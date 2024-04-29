@@ -8,7 +8,7 @@ import io.github.ericdriggs.reportcard.gen.db.tables.TestResultTable;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestResultPojo;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 import lombok.Generated;
 
@@ -24,9 +24,9 @@ import org.jooq.impl.UpdatableRecordImpl;
  */
 @Generated
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> implements Record11<Long, Long, Integer, Integer, Integer, Integer, BigDecimal, LocalDateTime, String, Boolean, Boolean> {
+public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> implements Record11<Long, Long, Integer, Integer, Integer, Integer, BigDecimal, Instant, String, Boolean, Boolean> {
 
-    private static final long serialVersionUID = -1429854772;
+    private static final long serialVersionUID = 330872369;
 
     /**
      * Setter for <code>reportcard.test_result.test_result_id</code>.
@@ -136,7 +136,7 @@ public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> impl
     /**
      * Setter for <code>reportcard.test_result.test_result_created</code>.
      */
-    public TestResultRecord setTestResultCreated(LocalDateTime value) {
+    public TestResultRecord setTestResultCreated(Instant value) {
         set(7, value);
         return this;
     }
@@ -144,8 +144,8 @@ public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> impl
     /**
      * Getter for <code>reportcard.test_result.test_result_created</code>.
      */
-    public LocalDateTime getTestResultCreated() {
-        return (LocalDateTime) get(7);
+    public Instant getTestResultCreated() {
+        return (Instant) get(7);
     }
 
     /**
@@ -207,12 +207,12 @@ public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> impl
     // -------------------------------------------------------------------------
 
     @Override
-    public Row11<Long, Long, Integer, Integer, Integer, Integer, BigDecimal, LocalDateTime, String, Boolean, Boolean> fieldsRow() {
+    public Row11<Long, Long, Integer, Integer, Integer, Integer, BigDecimal, Instant, String, Boolean, Boolean> fieldsRow() {
         return (Row11) super.fieldsRow();
     }
 
     @Override
-    public Row11<Long, Long, Integer, Integer, Integer, Integer, BigDecimal, LocalDateTime, String, Boolean, Boolean> valuesRow() {
+    public Row11<Long, Long, Integer, Integer, Integer, Integer, BigDecimal, Instant, String, Boolean, Boolean> valuesRow() {
         return (Row11) super.valuesRow();
     }
 
@@ -252,7 +252,7 @@ public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> impl
     }
 
     @Override
-    public Field<LocalDateTime> field8() {
+    public Field<Instant> field8() {
         return TestResultTable.TEST_RESULT.TEST_RESULT_CREATED;
     }
 
@@ -307,7 +307,7 @@ public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> impl
     }
 
     @Override
-    public LocalDateTime component8() {
+    public Instant component8() {
         return getTestResultCreated();
     }
 
@@ -362,7 +362,7 @@ public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> impl
     }
 
     @Override
-    public LocalDateTime value8() {
+    public Instant value8() {
         return getTestResultCreated();
     }
 
@@ -424,7 +424,7 @@ public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> impl
     }
 
     @Override
-    public TestResultRecord value8(LocalDateTime value) {
+    public TestResultRecord value8(Instant value) {
         setTestResultCreated(value);
         return this;
     }
@@ -448,7 +448,7 @@ public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> impl
     }
 
     @Override
-    public TestResultRecord values(Long value1, Long value2, Integer value3, Integer value4, Integer value5, Integer value6, BigDecimal value7, LocalDateTime value8, String value9, Boolean value10, Boolean value11) {
+    public TestResultRecord values(Long value1, Long value2, Integer value3, Integer value4, Integer value5, Integer value6, BigDecimal value7, Instant value8, String value9, Boolean value10, Boolean value11) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -477,7 +477,7 @@ public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> impl
     /**
      * Create a detached, initialised TestResultRecord
      */
-    public TestResultRecord(Long testResultId, Long stageFk, Integer tests, Integer skipped, Integer error, Integer failure, BigDecimal time, LocalDateTime testResultCreated, String externalLinks, Boolean isSuccess, Boolean hasSkip) {
+    public TestResultRecord(Long testResultId, Long stageFk, Integer tests, Integer skipped, Integer error, Integer failure, BigDecimal time, Instant testResultCreated, String externalLinks, Boolean isSuccess, Boolean hasSkip) {
         super(TestResultTable.TEST_RESULT);
 
         setTestResultId(testResultId);

@@ -20,7 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.*;
 
 import static io.github.ericdriggs.reportcard.gen.db.Tables.*;
@@ -94,7 +94,9 @@ public class TestResultPersistService extends StagePathPersistService {
         testResult.setStageFk(stagePath.getStage().getStageId());
         TestResultModel inserted = insertTestResult(testResult);
 
-        LocalDateTime lastRun = updateLastRunToNow(stagePath);
+        //TODO: ensure StagePath job.lastRun is not stale and then refactor to update lastRun from job instead of now
+        //this current approach results in time differences between lastRun in stagePath and stageDetails
+        Instant lastRun = updateLastRunToNow(stagePath);
         stagePath.updateLastRun(lastRun);
         setIsRunSuccess(stagePath);
         return StagePathTestResult.builder().stagePath(stagePath).testResult(inserted).build();

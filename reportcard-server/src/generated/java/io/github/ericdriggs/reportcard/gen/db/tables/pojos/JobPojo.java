@@ -5,7 +5,7 @@ package io.github.ericdriggs.reportcard.gen.db.tables.pojos;
 
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 import lombok.Generated;
 
@@ -21,11 +21,11 @@ import lombok.Generated;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class JobPojo implements Serializable {
 
-    private static final long serialVersionUID = -384343607;
+    private static final long serialVersionUID = 752525929;
 
     private Long jobId;
     private String jobInfo;
     private Integer branchFk;
     private String jobInfoStr;
-    private LocalDateTime lastRun;
+    private Instant lastRun;
 }

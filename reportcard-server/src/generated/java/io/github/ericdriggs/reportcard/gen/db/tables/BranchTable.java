@@ -9,7 +9,7 @@ import io.github.ericdriggs.reportcard.gen.db.Keys;
 import io.github.ericdriggs.reportcard.gen.db.ReportcardTable;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.BranchRecord;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
@@ -43,7 +43,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BranchTable extends TableImpl<BranchRecord> {
 
-    private static final long serialVersionUID = 1374402143;
+    private static final long serialVersionUID = 2129338343;
 
     /**
      * The reference instance of <code>reportcard.branch</code>
@@ -76,7 +76,7 @@ public class BranchTable extends TableImpl<BranchRecord> {
     /**
      * The column <code>reportcard.branch.last_run</code>.
      */
-    public final TableField<BranchRecord, LocalDateTime> LAST_RUN = createField(DSL.name("last_run"), SQLDataType.LOCALDATETIME(0).defaultValue(DSL.inline("utc_timestamp()", SQLDataType.LOCALDATETIME)), this, "");
+    public final TableField<BranchRecord, Instant> LAST_RUN = createField(DSL.name("last_run"), SQLDataType.INSTANT.defaultValue(DSL.inline("utc_timestamp()", SQLDataType.INSTANT)), this, "");
 
     private BranchTable(Name alias, Table<BranchRecord> aliased) {
         this(alias, aliased, null);
@@ -192,14 +192,14 @@ public class BranchTable extends TableImpl<BranchRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row4<Integer, String, Integer, LocalDateTime> fieldsRow() {
+    public Row4<Integer, String, Integer, Instant> fieldsRow() {
         return (Row4) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function4<? super Integer, ? super String, ? super Integer, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function4<? super Integer, ? super String, ? super Integer, ? super Instant, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
@@ -207,7 +207,7 @@ public class BranchTable extends TableImpl<BranchRecord> {
      * Convenience mapping calling {@link SelectField#convertFrom(Class,
      * Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function4<? super Integer, ? super String, ? super Integer, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function4<? super Integer, ? super String, ? super Integer, ? super Instant, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

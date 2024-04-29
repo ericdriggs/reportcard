@@ -106,6 +106,8 @@ dependencies {
 
 import org.jooq.codegen.GenerationTool
 import org.jooq.meta.jaxb.*
+import org.jooq.meta.jaxb.ForcedType
+
 import java.util.regex.Matcher
 
 task generateJooqSchemaSource {
@@ -140,7 +142,9 @@ task generateJooqSchemaSource {
                                                 new ForcedType()
                                                         .withName('Boolean').withIncludeExpression("has_.*").withIncludeTypes('tinyint.*'),
                                                 new ForcedType()
-                                                        .withName('Integer').withIncludeExpression("storage_type").withIncludeTypes('tinyint.*')
+                                                        .withName('Integer').withIncludeExpression("storage_type").withIncludeTypes('tinyint.*'),
+                                                new ForcedType()
+                                                        .withName('INSTANT').withIncludeTypes('datetime')
 
                                         )
                                 )

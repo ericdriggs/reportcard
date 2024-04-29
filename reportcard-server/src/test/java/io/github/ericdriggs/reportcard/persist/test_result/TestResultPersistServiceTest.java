@@ -18,7 +18,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -154,7 +154,7 @@ public class TestResultPersistServiceTest {
         assertEquals(false, inserted.getIsSuccess());
         assertEquals(false, inserted.getIsSuccess());
         assertNotNull(inserted.getTestResultCreated());
-        assertTrue(LocalDateTime.now().isAfter(inserted.getTestResultCreated()));
+        assertTrue(Instant.now().isAfter(inserted.getTestResultCreated()));
         Assertions.assertEquals(new BigDecimal("50.5"), inserted.getTime());
 
         validateStagePath(stageDetails, stagePath);

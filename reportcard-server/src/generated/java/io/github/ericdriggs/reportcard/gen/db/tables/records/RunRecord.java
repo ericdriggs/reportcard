@@ -7,7 +7,7 @@ package io.github.ericdriggs.reportcard.gen.db.tables.records;
 import io.github.ericdriggs.reportcard.gen.db.tables.RunTable;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.RunPojo;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 import lombok.Generated;
 
@@ -23,9 +23,9 @@ import org.jooq.impl.UpdatableRecordImpl;
  */
 @Generated
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7<Long, String, Long, Integer, String, LocalDateTime, Boolean> {
+public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7<Long, String, Long, Integer, String, Instant, Boolean> {
 
-    private static final long serialVersionUID = -523446957;
+    private static final long serialVersionUID = -1314155804;
 
     /**
      * Setter for <code>reportcard.run.run_id</code>.
@@ -105,7 +105,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
     /**
      * Setter for <code>reportcard.run.run_date</code>.
      */
-    public RunRecord setRunDate(LocalDateTime value) {
+    public RunRecord setRunDate(Instant value) {
         set(5, value);
         return this;
     }
@@ -113,8 +113,8 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
     /**
      * Getter for <code>reportcard.run.run_date</code>.
      */
-    public LocalDateTime getRunDate() {
-        return (LocalDateTime) get(5);
+    public Instant getRunDate() {
+        return (Instant) get(5);
     }
 
     /**
@@ -146,12 +146,12 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
     // -------------------------------------------------------------------------
 
     @Override
-    public Row7<Long, String, Long, Integer, String, LocalDateTime, Boolean> fieldsRow() {
+    public Row7<Long, String, Long, Integer, String, Instant, Boolean> fieldsRow() {
         return (Row7) super.fieldsRow();
     }
 
     @Override
-    public Row7<Long, String, Long, Integer, String, LocalDateTime, Boolean> valuesRow() {
+    public Row7<Long, String, Long, Integer, String, Instant, Boolean> valuesRow() {
         return (Row7) super.valuesRow();
     }
 
@@ -181,7 +181,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
     }
 
     @Override
-    public Field<LocalDateTime> field6() {
+    public Field<Instant> field6() {
         return RunTable.RUN.RUN_DATE;
     }
 
@@ -216,7 +216,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
     }
 
     @Override
-    public LocalDateTime component6() {
+    public Instant component6() {
         return getRunDate();
     }
 
@@ -251,7 +251,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
     }
 
     @Override
-    public LocalDateTime value6() {
+    public Instant value6() {
         return getRunDate();
     }
 
@@ -291,7 +291,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
     }
 
     @Override
-    public RunRecord value6(LocalDateTime value) {
+    public RunRecord value6(Instant value) {
         setRunDate(value);
         return this;
     }
@@ -303,7 +303,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
     }
 
     @Override
-    public RunRecord values(Long value1, String value2, Long value3, Integer value4, String value5, LocalDateTime value6, Boolean value7) {
+    public RunRecord values(Long value1, String value2, Long value3, Integer value4, String value5, Instant value6, Boolean value7) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -328,7 +328,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
     /**
      * Create a detached, initialised RunRecord
      */
-    public RunRecord(Long runId, String runReference, Long jobFk, Integer jobRunCount, String sha, LocalDateTime runDate, Boolean isSuccess) {
+    public RunRecord(Long runId, String runReference, Long jobFk, Integer jobRunCount, String sha, Instant runDate, Boolean isSuccess) {
         super(RunTable.RUN);
 
         setRunId(runId);
