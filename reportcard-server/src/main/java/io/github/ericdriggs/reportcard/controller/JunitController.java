@@ -113,7 +113,7 @@ public class JunitController {
 
     @Operation(summary = "Post storage (usually html) and junit/surefire xmls for specified job stage.", description = "Single call which performs both /v1/api/junit/tar.gz and /v1/api/storage/stage/{stageId}/reports/{label}/tar.gz")
     @PostMapping(value = {"storage/{label}/tar.gz"}, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<StagePathStorageTestResult> postStageJunitStorageTarGZ(
+    public ResponseEntity<StagePathStorageResultCount> postStageJunitStorageTarGZ(
 
             @Parameter(description = "Companies have orgs.")
             @RequestParam("company")
@@ -198,8 +198,8 @@ public class JunitController {
         final Long stageId = stagePath.getStage().getStageId();
         StagePathStorage stagePathStorage = doPostStageStorageTarGZ(stageId, label, reports, indexFile, storageType);
 
-        StagePathStorageTestResult stagePathStorageTestResult = new StagePathStorageTestResult(stagePathStorage, stagePathTestResult);
-        return new ResponseEntity<>(stagePathStorageTestResult, HttpStatus.OK);
+        StagePathStorageResultCount StagePathStorageResultCount = new StagePathStorageResultCount(stagePathStorage, stagePathTestResult);
+        return new ResponseEntity<>(StagePathStorageResultCount, HttpStatus.OK);
     }
 
     @SuppressWarnings("ReassignedVariable")

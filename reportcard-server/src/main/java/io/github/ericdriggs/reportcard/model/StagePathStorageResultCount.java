@@ -2,6 +2,7 @@
 package io.github.ericdriggs.reportcard.model;
 
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.StoragePojo;
+import io.github.ericdriggs.reportcard.xml.ResultCount;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
@@ -9,12 +10,12 @@ import lombok.Value;
 @Value
 @Builder
 @AllArgsConstructor
-public class StagePathStorageTestResult {
+public class StagePathStorageResultCount {
     StagePath stagePath;
     StoragePojo storage;
-    TestResultModel testResult;
+    ResultCount resultCount;
 
-    public StagePathStorageTestResult(StagePathStorage stagePathStorage, StagePathTestResult stagePathTestResult) {
+    public StagePathStorageResultCount(StagePathStorage stagePathStorage, StagePathTestResult stagePathTestResult) {
         if (stagePathStorage == null) {
             throw new NullPointerException("stagePathStorage");
         }
@@ -35,6 +36,6 @@ public class StagePathStorageTestResult {
 
         this.stagePath = stagePathStorage.getStagePath();
         this.storage = stagePathStorage.getStorage();
-        this.testResult = stagePathTestResult.getTestResult();
+        this.resultCount = stagePathTestResult.getTestResult().getResultCount();
     }
 }
