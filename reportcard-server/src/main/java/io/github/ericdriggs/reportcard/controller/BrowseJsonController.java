@@ -1,14 +1,17 @@
 package io.github.ericdriggs.reportcard.controller;
 
+import java.time.Instant;
 import java.util.Map;
 import java.util.Set;
 
 import io.github.ericdriggs.reportcard.cache.dto.CompanyOrgRepoBranchDTO;
 import io.github.ericdriggs.reportcard.model.StageTestResultModel;
+import io.github.ericdriggs.reportcard.model.trend.JobTestTrend;
 import io.github.ericdriggs.reportcard.persist.BrowseService;
 import io.github.ericdriggs.reportcard.cache.dto.*;
 import io.github.ericdriggs.reportcard.cache.model.*;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.*;
+import io.github.ericdriggs.reportcard.persist.GraphService;
 import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,9 +27,15 @@ public class BrowseJsonController {
 
     private final BrowseService browseService;
 
+    //TODO: move to GraphJsonController
+    private final GraphService graphService;
+
     @Autowired
-    public BrowseJsonController(BrowseService browseService) {
+    public BrowseJsonController(BrowseService browseService, GraphService graphService) {
+
         this.browseService = browseService;
+        this.graphService = graphService;
+
     }
 
     @GetMapping(path = "", produces = "application/json")
@@ -125,6 +134,21 @@ public class BrowseJsonController {
             @PathVariable String stage) {
         return new ResponseEntity<>(browseService.getStageTestResultMap(company, org, repo, branch, jobId, runId, stage), HttpStatus.OK);
     }
+
+    @GetMapping(path = "trend/company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/stage/{stage}", produces = "application/json")
+    public ResponseEntity<JobTestTrend> getJobTestTrend(
+            @PathVariable String company,
+            @PathVariable String org,
+            @PathVariable String repo,
+            @PathVariable String branch,
+            @PathVariable Long jobId,
+            @PathVariable String stage,
+            @RequestParam(required = false) Instant start,
+            @RequestParam(required = false) Instant end
+            ) {
+        return new ResponseEntity<>(graphService.getJobTestTrend(company, org, repo, branch, jobId, stage, start, end), HttpStatus.OK);
+    }
+
 
 //    @GetMapping(path = "{org}/repo/{repo}/branch/{branch}/sha/{sha}/run/{runReference}/stages", produces = "application/json")
 //    public ResponseEntity<Map<StagePojo,Set<TestResultPojo>>> getStages (

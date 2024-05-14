@@ -1,5 +1,7 @@
 package io.github.ericdriggs.reportcard.persist;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.ericdriggs.reportcard.mappers.SharedObjectMappers;
 import org.jooq.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +20,8 @@ public abstract class AbstractPersistService {
 
     @Autowired
     protected DSLContext dsl;
+
+    protected final ObjectMapper mapper = SharedObjectMappers.simpleObjectMapper;
 
     private AbstractPersistService() {
         throw new RuntimeException("needs dsl in constructor");

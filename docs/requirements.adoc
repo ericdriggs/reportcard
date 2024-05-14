@@ -51,7 +51,7 @@ Author: Eric Driggs
 * % of runs with any test failures
 * % of tests which pass
 
-*Branch*
+*BranchGraph*
 
 * Dashboard similar on <<Test Results Analyzer Plugin>>
 
