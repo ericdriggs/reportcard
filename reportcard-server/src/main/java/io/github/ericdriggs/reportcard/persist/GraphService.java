@@ -61,11 +61,11 @@ public class GraphService extends AbstractPersistService {
     }
 
     @SneakyThrows(JsonProcessingException.class)
+    @SuppressWarnings("rawtypes")
     public List<CompanyGraph> getCompanyGraph(String companyName, String orgName, String repoName, String branchName, Long jobId, String stageName, TableConditionMap tableConditionMap)   {
         Result result = getFullTestGraph(tableConditionMap);
-        if (result.size() > 0) {
-            Record1 record1 = ((Record1) result.get(0));
-            String json = ((Record1) result.get(0)).formatJSON();
+        if (!result.isEmpty() && result.get(0) instanceof Record1 record1) {
+            String json = record1.formatJSON();
             log.info("getCompanyGraph json: " + json);
             return Arrays.asList(mapper.readValue(json, CompanyGraph[].class));
         }
