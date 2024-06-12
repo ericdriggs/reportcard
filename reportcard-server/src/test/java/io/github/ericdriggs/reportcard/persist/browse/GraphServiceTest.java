@@ -3,10 +3,13 @@ package io.github.ericdriggs.reportcard.persist.browse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.github.ericdriggs.reportcard.gen.db.TestData;
 import io.github.ericdriggs.reportcard.model.graph.*;
+import io.github.ericdriggs.reportcard.model.trend.CompanyOrgRepoBranchJob;
+import io.github.ericdriggs.reportcard.model.trend.JobTestTrend;
 import io.github.ericdriggs.reportcard.persist.GraphService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.batch.BatchProperties;
 import org.springframework.util.CollectionUtils;
 
 import java.time.Instant;
@@ -21,11 +24,42 @@ public class GraphServiceTest extends AbstractGraphServiceTest {
         super(graphService);
     }
 
-    @Test
-    void getCompanyGraphTest() throws JsonProcessingException {
+    List<CompanyGraph> getTestCompanyGraphs() {
         final Instant start = Instant.parse("2000-01-01T01:00:00.00Z");
         final Instant end = Instant.parse("4000-01-01T01:00:00.00Z");
-        List<CompanyGraph> companyGraphs = graphService.getTestTrendGraph(TestData.company, TestData.org, TestData.repo, TestData.branch, TestData.jobId, TestData.stage, start, end);
+        return graphService.getTestTrendGraph(TestData.company, TestData.org, TestData.repo, TestData.branch, TestData.jobId, TestData.stage, start, end);
+    }
+
+    @Test
+    void getJobTrendTest() {
+        List<CompanyGraph> companyGraphs = getTestCompanyGraphs();
+        JobTestTrend jobTestTrend = JobTestTrend.fromCompanyGraphs(companyGraphs);
+        assertNotNull(jobTestTrend);
+        final CompanyOrgRepoBranchJob companyOrgRepoBranchJob = jobTestTrend.getCompanyOrgRepoBranchJob();
+        assertNotNull(companyOrgRepoBranchJob);
+        assertNotNull(companyOrgRepoBranchJob.getCompanyPojo());
+        assertNotNull(companyOrgRepoBranchJob.getCompanyPojo().getCompanyId());
+        assertNotNull(companyOrgRepoBranchJob.getOrgPojo());
+        assertNotNull(companyOrgRepoBranchJob.getOrgPojo().getOrgId());
+        assertNotNull(companyOrgRepoBranchJob.getOrgPojo().getOrgName());
+        assertNotNull(companyOrgRepoBranchJob.getRepoPojo());
+        assertNotNull(companyOrgRepoBranchJob.getRepoPojo().getRepoId());
+        assertNotNull(companyOrgRepoBranchJob.getRepoPojo().getRepoName());
+        assertNotNull(companyOrgRepoBranchJob.getBranchPojo());
+        assertNotNull(companyOrgRepoBranchJob.getBranchPojo().getBranchId());
+        assertNotNull(companyOrgRepoBranchJob.getBranchPojo().getBranchName());
+        assertNotNull(companyOrgRepoBranchJob.getRepoPojo());
+        assertNotNull(companyOrgRepoBranchJob.getRepoPojo().getRepoId());
+        assertNotNull(companyOrgRepoBranchJob.getRepoPojo().getRepoName());
+        assertNotNull(companyOrgRepoBranchJob.getJobPojo());
+        assertNotNull(companyOrgRepoBranchJob.getJobPojo().getJobId());
+        assertNotNull(companyOrgRepoBranchJob.getJobPojo().getJobInfo());
+        assertNotNull(jobTestTrend.getTestCaseTrends());
+    }
+
+    @Test
+    void getCompanyGraphTest() throws JsonProcessingException {
+        List<CompanyGraph> companyGraphs = getTestCompanyGraphs();
         assertFalse(CollectionUtils.isEmpty(companyGraphs));
         CompanyGraph companyGraph = companyGraphs.get(0);
         log.info("companyGraph: " + objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(companyGraphs));
@@ -87,7 +121,7 @@ public class GraphServiceTest extends AbstractGraphServiceTest {
             assertFalse(CollectionUtils.isEmpty(companyGraph.orgs().get(0).repos().get(0).branches().get(0).jobs().get(0).runs().get(0).stages().get(0).testResults().get(0).testSuites().get(0).testCases()));
             final List<TestCaseGraph> testCases = companyGraph.orgs().get(0).repos().get(0).branches().get(0).jobs().get(0).runs().get(0).stages().get(0).testResults().get(0).testSuites().get(0).testCases();
             final List<Long> testCaseIds = testCases.stream().map(t -> t.testCaseId()).toList();
-            assertEquals(List.of(1L,2L), testCaseIds);
+            assertEquals(List.of(1L, 2L), testCaseIds);
         }
     }
 
