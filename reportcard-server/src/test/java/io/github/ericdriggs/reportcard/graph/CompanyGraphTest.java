@@ -21,6 +21,14 @@ public class CompanyGraphTest {
 
     @Test
     void serializeDeserializeTest() throws JsonProcessingException {
+        List<CompanyGraph> companies = List.of(getCompanyGraph());
+        String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(companies);
+        System.out.println("json: " + json);
+        List<CompanyGraph> companiesParsed = List.of(mapper.readValue(json, CompanyGraph[].class));
+        assertEquals(companies, companiesParsed);
+    }
+
+    public static CompanyGraph getCompanyGraph() {
         final Instant now = Instant.now();
         TestCaseFaultGraph testCaseFault = TestCaseFaultGraphBuilder
                 .builder()
@@ -99,7 +107,7 @@ public class CompanyGraphTest {
                 .branchFk(1)
                 .lastRun(now)
                 .jobId(1L)
-                .jobInfo(Collections.singletonMap("foo","bar"))
+                .jobInfo(Collections.singletonMap("foo", "bar"))
                 .jobInfoStr("{\"foo\":\"bar\"}")
                 .runs(List.of(run))
                 .build();
@@ -136,14 +144,7 @@ public class CompanyGraphTest {
                 .orgs(List.of(org))
                 .build();
 
-        List<CompanyGraph> companies = List.of(company);
-
-        String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(companies);
-
-        System.out.println("json: " + json);
-
-        List<CompanyGraph> companiesParsed = List.of(mapper.readValue(json, CompanyGraph[].class));
-
-        assertEquals(companies, companiesParsed);
+        return company;
     }
+
 }

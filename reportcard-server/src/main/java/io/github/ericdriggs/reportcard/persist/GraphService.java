@@ -62,7 +62,7 @@ public class GraphService extends AbstractPersistService {
 
     @SneakyThrows(JsonProcessingException.class)
     @SuppressWarnings("rawtypes")
-    public List<CompanyGraph> getCompanyGraph(String companyName, String orgName, String repoName, String branchName, Long jobId, String stageName, TableConditionMap tableConditionMap)   {
+    protected List<CompanyGraph> getCompanyGraph(String companyName, String orgName, String repoName, String branchName, Long jobId, String stageName, TableConditionMap tableConditionMap)   {
         Result result = getFullTestGraph(tableConditionMap);
         if (!result.isEmpty() && result.get(0) instanceof Record1 record1) {
             String json = record1.formatJSON();
@@ -84,7 +84,7 @@ public class GraphService extends AbstractPersistService {
     }
 
     @SuppressWarnings("rawtypes")
-    public Result getFullTestGraph(TableConditionMap tableConditionMap) {
+    protected Result getFullTestGraph(TableConditionMap tableConditionMap) {
 
         return dsl.select(jsonObject(
                           key("companyId").value(COMPANY.COMPANY_ID),
