@@ -1,0 +1,269 @@
+<html>
+<!--
+* skip stages need a class with a border
+* need to explain subscript for failure and in general need documentation page on how to use
+* add package column before test suite
+* separate columns for passed for all time and passed for past x e..g 10
+* deep link from trend report to the junit report with anchor tag
+
+-->
+
+<head>
+    <link rel="stylesheet" href="css/shared.css">
+    <link rel="stylesheet" href="css/sortable.min.css"/>
+    <script src="js/sortable.min.js"></script>
+    <title>ReportCard</title>
+    <style>
+        dl {
+            border: 3px double #ccc;
+            padding: 0.5em;
+        }
+
+        dt {
+            float: left;
+            clear: both;
+            font-weight: bold;
+            color: green;
+        }
+
+        .dt-context {
+            /*width:100px;*/
+            text-align: right;
+            float:left;
+        }
+
+        .dd-context {
+            text-align: left;
+            margin: 0 0 0 110px;
+            padding: 0 0 0.5em 0;
+        }
+
+
+        dt.fail-messages, dd.fail-messages {
+            text-align: left;
+            float:left;
+            width: 20px;
+            margin:0;
+            padding: 0;
+        }
+
+        dt::after {
+            content: ":";
+        }
+
+        dd {
+
+        }
+
+        details {
+            font:  16px "Open Sans", Calibri, sans-serif;
+        }
+
+        .test-trend-context {
+            width: 600px;
+        }
+
+        .test-trend-context-summary {
+            width: 564px;
+        }
+
+        details>summary.test-trend-context,details>summary.test-trend-context-summary {
+            padding-left: 30px;
+            text-align: left;
+        }
+
+        details>summary {
+            text-align: right;
+            /*float:left;*/
+            padding: 2px 6px;
+            padding: -20px;
+            /*padding-left: 0px;*/
+            font-weight: bold;
+            background-color: #eee;
+            box-shadow: 3px 3px 4px black;
+            cursor: pointer;
+        }
+
+
+        details>dl {
+            border-radius: 0 0 10px 10px;
+            background-color: #eee;
+            padding: 2px 6px;
+            padding-left: 20px;
+            margin: 0;
+            box-shadow: 3px 3px 4px black;
+        }
+
+        .pass-percent {
+            font-size: .9em;
+        }
+
+        .fail-messages {}
+
+        .job-run {
+            font-size: .7em;
+        }
+
+        .fail-since {
+            font-size: .8em;
+        }
+
+        label {
+            display: inline-block;
+            text-align: right;
+            width: 110px;
+            font-weight: bold;
+            font-size: .9em;
+        }
+    </style>
+</head>
+<div width="auto">
+    <details open=true class="test-trend-context">
+        <summary class="test-trend-context-summary">Test trend context</summary>
+        <dl class="test-trend-context">
+            <dt class="dt-context">company</dt>
+            <dd class="dd-context">company1</dd>
+            <dt class="dt-context">org</dt>
+            <dd class="dd-context">org1</dd>
+            <dt class="dt-context">repo</dt>
+            <dd class="dd-context">repo1</dd>
+            <dt class="dt-context">branch</dt>
+            <dd class="dd-context">main</dd>
+            <dt class="dt-context">jobInfo</dt>
+            <dd class="dd-context">"application": "random-unified-service"<br>
+                "pipeline": "staging-pipeline-for-widget-testing"<br>
+                "env": "staging"</dd>
+            <dt class="dt-context">stage</dt>
+            <dd class="dd-context">stage1</dd>
+        </dl>
+        <br>
+    </details>
+    <fieldset style="display:inline-block">
+        <legend>Filters</legend>
+        <label for="test-suites">Test Suite</label>
+        <select name="test-suites" id="test-suites">
+            <option value="all" default>all</option>
+            <option value="Suite1">Suite1</option>
+            <option value="Suite1">Suite2</option>
+        </select>
+        <br>
+        <label for="test-statuses">Test Status</label>
+        <select name="test-statuses" id="test-statuses">
+            <option value="all" default>all</option>
+            <option value="Fail">Fail</option>
+            <option value="Skip">Skip</option>
+            <option value="Success">Success</option>
+        </select>
+    </fieldset>
+    <br>
+    <table class="sortable">
+        <thead>
+        <tr>
+            <th>TestSuite</th>
+            <th>TestCase</th>
+            <th>pass%</th>
+            <th>Fail Since</th>
+            <th>Fail Messages</th>
+            <th class="job-run">10</th>
+            <th class="job-run" title="2024-06-09T23:59:24">9</th>
+            <th class="job-run" title="2024-06-08T23:59:24">8</th>
+            <th class="job-run" title="2024-06-07T23:59:24">7</th>
+            <th class="job-run" title="2024-06-06T23:59:24">6</th>
+            <th class="job-run" title="2024-06-05T23:59:24">5</th>
+            <th class="job-run" title="2024-06-04T23:59:24">4</th>
+            <th class="job-run" title="2024-06-03T23:59:24">3</th>
+            <th class="job-run" title="2024-06-02T23:59:24">2</th>
+            <th class="job-run" title="2024-06-01T23:59:24">1</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>Suite1</td>
+            <td>Case1A</td>
+            <td class="pass-percent stage-fail">50%</td>
+            <td class="fail-since">-</td>
+            <td class="fail-messages"><details class="fail-messages"><dl><dt>1</dt><dd>foo</dd><dt>2</dt><dd>bar</dd></dl></details></td>
+            <td class="stage-pass">S</td>
+            <td class="stage-fail">F<sub>1</sub></td>
+            <td class="stage-pass">S</td>
+            <td class="stage-fail">F<sub>1</sub></td>
+            <td class="stage-pass">S</td>
+            <td class="stage-fail">F<sub>2</sub></td>
+            <td class="stage-pass">S</td>
+            <td class="stage-fail">F<sub>2</sub></td>
+            <td class="stage-pass">S</td>
+            <td class="stage-fail">F<sub>2</sub></td>
+        </tr>
+        <tr>
+            <td>Suite1</td>
+            <td>Case1B</td>
+            <td class="pass-percent stage-fail">70%</td>
+            <td class="fail-since">-</td>
+            <td class="fail-messages">1: foo, 2: bar</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-fail">F</td>
+            <td class="stage-fail">F</td>
+            <td class="stage-fail">F</td>
+        </tr>
+        <tr>
+            <td>Suite2</td>
+            <td>Case2A</td>
+            <td class="pass-percent stage-fail">30%</td>
+            <td class="fail-since">2024-06-08</td>
+            <td class="fail-messages">1: foo, 2: bar</td>
+            <td class="stage-fail">F</td>
+            <td class="stage-fail">F</td>
+            <td class="stage-fail">F</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-pass">S</td>
+        </tr>
+        <tr>
+            <td>Suite2</td>
+            <td>Case2B</td>
+            <td class="pass-percent stage-fail">50%</td>
+            <td class="fail-since">2024-06-07</td>
+            <td class="fail-messages">1: foo, 2: bar</td>
+            <td class="stage-fail">F</td>
+            <td class="stage-fail">F</td>
+            <td class="stage-fail">F</td>
+            <td class="stage-fail">F</td>
+            <td class="stage-skip">-</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-skip">-</td>
+        </tr>
+        <tr>
+            <td>Suite2</td>
+            <td>Case2C</td>
+            <td class="pass-percent stage-pass">100%</td>
+            <td class="fail-since">-</td>
+            <td class="fail-messages">-</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-pass">S</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+</html>

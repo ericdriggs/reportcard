@@ -1,20 +1,17 @@
 package io.github.ericdriggs.reportcard.model.trend;
 
-import io.github.ericdriggs.reportcard.gen.db.tables.pojos.CompanyPojo;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.PojoComparators;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.RunPojo;
 import io.github.ericdriggs.reportcard.model.TestCaseModel;
 import io.github.ericdriggs.reportcard.model.graph.*;
-import io.github.ericdriggs.reportcard.xml.testng.suite.Run;
+import io.github.ericdriggs.reportcard.xml.testng.suite.Test;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.util.CollectionUtils;
 
-import javax.persistence.Tuple;
 import java.time.Instant;
-import java.util.Collection;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -25,7 +22,7 @@ public class JobTestTrend {
 
     CompanyOrgRepoBranchJob companyOrgRepoBranchJob;
     StageName stageName;
-    TreeMap<TestCaseName, TreeMap<RunPojo, TrendTestCase>> testCaseTrends;
+    TreeMap<TestSuiteNameTestCaseName, TreeMap<RunPojo, TestCaseModel>> testCaseTrends;
     InstantRange range;
     Instant generated;
 
@@ -45,7 +42,7 @@ public class JobTestTrend {
         JobGraph jobGraph = graphPair.getRight();
         Instant now = Instant.now();
         InstantRange instantRange = new InstantRange();
-        TreeMap<TestCaseName, TreeMap<RunPojo, TrendTestCase>> testCaseTrends = new TreeMap<>();
+        TreeMap<TestSuiteNameTestCaseName, TreeMap<RunPojo, TestCaseModel>> testCaseTrends = new TreeMap<>();
         StageName stageName = null;
 
         if (jobGraph != null) {
@@ -71,16 +68,16 @@ public class JobTestTrend {
                                     List<TestSuiteGraph> testSuiteGraphs = testResultGraph.testSuites();
                                     if (!CollectionUtils.isEmpty(testSuiteGraphs)) {
                                         for (TestSuiteGraph testSuiteGraph : testSuiteGraphs) {
-                                            final TestSuiteName testSuiteName = new TestSuiteName(testSuiteGraph.name());
+                                            final String testSuiteName = testSuiteGraph.name();
                                             List<TestCaseGraph> testCaseGraphs = testSuiteGraph.testCases();
                                             if (!CollectionUtils.isEmpty(testCaseGraphs)) {
                                                 for (TestCaseGraph testCaseGraph : testCaseGraphs) {
-                                                    final TestCaseName testCaseName = new TestCaseName(testCaseGraph.name());
+                                                    final TestSuiteNameTestCaseName testSuiteNameTestCaseName = new TestSuiteNameTestCaseName(testSuiteName, testCaseGraph.name());
                                                     final TestCaseModel testCaseModel = testCaseGraph.asTestCaseModel();
-                                                    final TrendTestCase trendTestCase = TrendTestCase.builder().testCaseModel(testCaseModel).testSuiteName(testSuiteName).build();
-                                                    testCaseTrends.computeIfAbsent(testCaseName, k -> new TreeMap<>(PojoComparators::compareRun));
-                                                    TreeMap<RunPojo, TrendTestCase> runTrend = testCaseTrends.get(testCaseName);
-                                                    runTrend.put(runPojo, trendTestCase);
+
+                                                    testCaseTrends.computeIfAbsent(testSuiteNameTestCaseName, k -> new TreeMap<>(PojoComparators::compareRun));
+                                                    TreeMap<RunPojo, TestCaseModel> runTrend = testCaseTrends.get(testSuiteNameTestCaseName);
+                                                    runTrend.put(runPojo, testCaseModel);
                                                 }
                                             }
                                         }

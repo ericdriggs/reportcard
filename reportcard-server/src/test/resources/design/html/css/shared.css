@@ -139,6 +139,11 @@ a:hover.info {
     border: 2px solid #cdc;
 }
 
+.stage-skip {
+    background-color: #ffe;
+    border: 2px solid #cdc;
+}
+
 .stage-legend {
     font-weight: normal;
     background-color: rgba(244, 244, 244, .6);
