@@ -1,10 +1,8 @@
 package io.github.ericdriggs.reportcard.controller.graph.trend;
 
 import io.github.ericdriggs.reportcard.cache.dto.CompanyOrgRepoBranchJobRunStageDTO;
-import io.github.ericdriggs.reportcard.controller.browse.BrowseHtmlHelper;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.RunPojo;
-import io.github.ericdriggs.reportcard.model.trend.CompanyOrgRepoBranchJob;
-import io.github.ericdriggs.reportcard.model.trend.StageName;
+import io.github.ericdriggs.reportcard.model.trend.CompanyOrgRepoBranchJobStageName;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -20,7 +18,7 @@ public class TestRunHeader implements Comparable<TestRunHeader> {
     String runUri;
     Instant runDate;
 
-    public static TestRunHeader fromRunPojo(CompanyOrgRepoBranchJob c, StageName stageName, RunPojo runPojo) {
+    public static TestRunHeader fromRunPojo(CompanyOrgRepoBranchJobStageName c, RunPojo runPojo) {
 
         final String runUri = CompanyOrgRepoBranchJobRunStageDTO
                 .builder()
@@ -29,7 +27,7 @@ public class TestRunHeader implements Comparable<TestRunHeader> {
                 .repo(c.getRepoPojo().getRepoName())
                 .branch(c.getBranchPojo().getBranchName())
                 .jobId(c.getJobPojo().getJobId())
-                .stageName(stageName.getStageName())
+                .stageName(c.getStageName())
                 .runId(runPojo.getRunId())
                 .build()
                 .toUrlPath();

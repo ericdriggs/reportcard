@@ -3,7 +3,7 @@ package io.github.ericdriggs.reportcard.persist;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.github.ericdriggs.reportcard.gen.db.TestData;
 import io.github.ericdriggs.reportcard.model.graph.*;
-import io.github.ericdriggs.reportcard.model.trend.CompanyOrgRepoBranchJob;
+import io.github.ericdriggs.reportcard.model.trend.CompanyOrgRepoBranchJobStageName;
 import io.github.ericdriggs.reportcard.model.trend.JobStageTestTrend;
 
 import lombok.extern.slf4j.Slf4j;
@@ -36,26 +36,27 @@ public class GraphServiceTest extends AbstractGraphServiceTest {
         List<CompanyGraph> companyGraphs = getTestCompanyGraphs();
         JobStageTestTrend jobTestTrend = JobStageTestTrend.fromCompanyGraphs(companyGraphs, maxRuns);
         assertNotNull(jobTestTrend);
-        final CompanyOrgRepoBranchJob companyOrgRepoBranchJob = jobTestTrend.getCompanyOrgRepoBranchJob();
-        assertNotNull(companyOrgRepoBranchJob);
-        assertNotNull(companyOrgRepoBranchJob.getCompanyPojo());
-        assertNotNull(companyOrgRepoBranchJob.getCompanyPojo().getCompanyId());
-        assertNotNull(companyOrgRepoBranchJob.getOrgPojo());
-        assertNotNull(companyOrgRepoBranchJob.getOrgPojo().getOrgId());
-        assertNotNull(companyOrgRepoBranchJob.getOrgPojo().getOrgName());
-        assertNotNull(companyOrgRepoBranchJob.getRepoPojo());
-        assertNotNull(companyOrgRepoBranchJob.getRepoPojo().getRepoId());
-        assertNotNull(companyOrgRepoBranchJob.getRepoPojo().getRepoName());
-        assertNotNull(companyOrgRepoBranchJob.getBranchPojo());
-        assertNotNull(companyOrgRepoBranchJob.getBranchPojo().getBranchId());
-        assertNotNull(companyOrgRepoBranchJob.getBranchPojo().getBranchName());
-        assertNotNull(companyOrgRepoBranchJob.getRepoPojo());
-        assertNotNull(companyOrgRepoBranchJob.getRepoPojo().getRepoId());
-        assertNotNull(companyOrgRepoBranchJob.getRepoPojo().getRepoName());
-        assertNotNull(companyOrgRepoBranchJob.getJobPojo());
-        assertNotNull(companyOrgRepoBranchJob.getJobPojo().getJobId());
-        assertNotNull(companyOrgRepoBranchJob.getJobPojo().getJobInfo());
+        final CompanyOrgRepoBranchJobStageName c = jobTestTrend.getCompanyOrgRepoBranchJobStageName();
+        assertNotNull(c);
+        assertNotNull(c.getCompanyPojo());
+        assertNotNull(c.getCompanyPojo().getCompanyId());
+        assertNotNull(c.getOrgPojo());
+        assertNotNull(c.getOrgPojo().getOrgId());
+        assertNotNull(c.getOrgPojo().getOrgName());
+        assertNotNull(c.getRepoPojo());
+        assertNotNull(c.getRepoPojo().getRepoId());
+        assertNotNull(c.getRepoPojo().getRepoName());
+        assertNotNull(c.getBranchPojo());
+        assertNotNull(c.getBranchPojo().getBranchId());
+        assertNotNull(c.getBranchPojo().getBranchName());
+        assertNotNull(c.getRepoPojo());
+        assertNotNull(c.getRepoPojo().getRepoId());
+        assertNotNull(c.getRepoPojo().getRepoName());
+        assertNotNull(c.getJobPojo());
+        assertNotNull(c.getJobPojo().getJobId());
+        assertNotNull(c.getJobPojo().getJobInfo());
         assertNotNull(jobTestTrend.getTestCaseTrends());
+        assertNotNull(c.getStageName());
     }
 
     @Test

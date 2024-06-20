@@ -50,7 +50,7 @@ public class TestTrendTable {
                     final RunPojo runPojo = runEntry.getKey();
                     final TestCaseModel testCaseModel = runEntry.getValue();
                     if (isFirst) {
-                        testRunHeaders.add(TestRunHeader.fromRunPojo(jobStageTestTrend.getCompanyOrgRepoBranchJob(), jobStageTestTrend.getStageName(), runPojo));
+                        testRunHeaders.add(TestRunHeader.fromRunPojo(jobStageTestTrend.getCompanyOrgRepoBranchJobStageName(), runPojo));
                     }
                     final TestStatus testStatus = TestStatus.fromStatusId(testCaseModel.getTestStatusFk());
 

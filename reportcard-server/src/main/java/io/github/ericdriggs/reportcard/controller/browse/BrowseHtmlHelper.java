@@ -523,25 +523,21 @@ public class BrowseHtmlHelper {
         return sb.toString();
     }
 
-//    protected static String getItemRowWithTrendReport(CompanyOrgRepoBranchJobRunStageDTO path, String name, int count, String info, Instant date) {
+//    protected static String getTrendLinkRows(List<CompanyOrgRepoBranchJobRunStageDTO> paths) {
 //        StringBuilder sb = new StringBuilder();
 //
-//        final String pathUrl = getUrl(path);
-//        sb.append("<tr>").append(ls)
-//          .append("  <td><a href=\"" + pathUrl + "\">" + name + "</a></td>").append(ls)
-//          .append("  <td class=\"count\">" + count + "</td>").append(ls);
-//        if (info != null) {
-//            sb.append("  <td class=\"info\">" + info + "</td>").append(ls);
+//        for (CompanyOrgRepoBranchJobRunStageDTO path : paths) {
+//            sb.append("<tr>").append(ls)
+//              .append("  <td><a href=\"" + getUrl(path) +  + "\">" + name + "</a></td>").append(ls)
+//              .append("  <td class=\"count\">" + count + "</td>").append(ls);
+//            if (info != null) {
+//                sb.append("  <td class=\"info\">" + info + "</td>").append(ls);
+//            }
+//            if (date != null) {
+//                sb.append("  <td class=\"info\">" + date + "</td>").append(ls);
+//            }
+//            sb.append("</tr>").append(ls);
 //        }
-//        if (date != null) {
-//            sb.append("  <td class=\"info\">" + date + "</td>").append(ls);
-//        }
-//        {
-//            http://localhost:8080/company/hulu/org/PEPC/repo/ballyhoo-api-test/branch/master/job/17/stage/apiTest/trend
-//            String trendUri = "/company/{company}/org/{org}/repo/ballyhoo-api-test/branch/master
-//            sb.append("  <td><a href=\"" + getUrl(path) + "\">" + name + "</a></td>").append(ls);
-//        }
-//        sb.append("</tr>").append(ls);
 //        return sb.toString();
 //    }
 

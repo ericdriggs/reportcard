@@ -4,7 +4,7 @@ import io.github.ericdriggs.reportcard.controller.browse.BrowseHtmlHelper;
 import io.github.ericdriggs.reportcard.controller.graph.trend.*;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.RunPojo;
 import io.github.ericdriggs.reportcard.model.TestCaseModel;
-import io.github.ericdriggs.reportcard.model.trend.CompanyOrgRepoBranchJob;
+import io.github.ericdriggs.reportcard.model.trend.CompanyOrgRepoBranchJobStageName;
 import io.github.ericdriggs.reportcard.model.trend.JobStageTestTrend;
 import io.github.ericdriggs.reportcard.model.trend.TestPackageSuiteCase;
 import io.github.ericdriggs.reportcard.util.StringMapUtil;
@@ -28,16 +28,16 @@ public class GraphHtmlHelper extends BrowseHtmlHelper {
     }
 
     public static String getTrendMainDiv(JobStageTestTrend jobStageTestTrend) {
-        final CompanyOrgRepoBranchJob companyOrgRepoBranchJob = jobStageTestTrend.getCompanyOrgRepoBranchJob();
+        final CompanyOrgRepoBranchJobStageName companyOrgRepoBranchJobStageName = jobStageTestTrend.getCompanyOrgRepoBranchJobStageName();
         final TreeMap<TestPackageSuiteCase, TreeMap<RunPojo, TestCaseModel>> testCaseTrends = jobStageTestTrend.getTestCaseTrends();
 
         TestTrendTable testTrendTable = TestTrendTable.fromJob(jobStageTestTrend);
-        return trendMainDiv.replace("<!--companyName-->", companyOrgRepoBranchJob.getCompanyPojo().getCompanyName())
-                           .replace("<!--orgName-->", companyOrgRepoBranchJob.getOrgPojo().getOrgName())
-                           .replace("<!--repoName-->", companyOrgRepoBranchJob.getRepoPojo().getRepoName())
-                           .replace("<!--branchName-->", companyOrgRepoBranchJob.getBranchPojo().getBranchName())
-                           .replace("<!--jobInfo-->", renderJobInfo(companyOrgRepoBranchJob.getJobPojo().getJobInfo()))
-                           .replace("<!--stageName-->", jobStageTestTrend.getStageName().getStageName())
+        return trendMainDiv.replace("<!--companyName-->", companyOrgRepoBranchJobStageName.getCompanyPojo().getCompanyName())
+                           .replace("<!--orgName-->", companyOrgRepoBranchJobStageName.getOrgPojo().getOrgName())
+                           .replace("<!--repoName-->", companyOrgRepoBranchJobStageName.getRepoPojo().getRepoName())
+                           .replace("<!--branchName-->", companyOrgRepoBranchJobStageName.getBranchPojo().getBranchName())
+                           .replace("<!--jobInfo-->", renderJobInfo(companyOrgRepoBranchJobStageName.getJobPojo().getJobInfo()))
+                           .replace("<!--stageName-->", companyOrgRepoBranchJobStageName.getStageName())
                            .replace("<!--jobRunHeaders-->", renderJobRunHeaders(testTrendTable.getTestRunHeaders()))
                            .replace("<!--jobRunTestRows-->", renderJobRunTestRows(testTrendTable.getTestCaseTrendRows()))
                 ;

@@ -22,8 +22,8 @@ import java.util.TreeMap;
 @Value
 public class JobStageTestTrend {
 
-    CompanyOrgRepoBranchJob companyOrgRepoBranchJob;
-    StageName stageName;
+    CompanyOrgRepoBranchJobStageName companyOrgRepoBranchJobStageName;
+
     TreeMap<TestPackageSuiteCase, TreeMap<RunPojo, TestCaseModel>> testCaseTrends;
     InstantRange range;
     Instant generated;
@@ -40,8 +40,8 @@ public class JobStageTestTrend {
     }
 
     private static JobStageTestTrend fromCompanyGraph(CompanyGraph companyGraph, int maxRuns) {
-        Pair<CompanyOrgRepoBranchJob, JobGraph> graphPair = getCompanyOrgRepoBranchJob(companyGraph);
-        CompanyOrgRepoBranchJob companyOrgRepoBranchJob = graphPair.getLeft();
+        Pair<CompanyOrgRepoBranchJobStageName, JobGraph> graphPair = getCompanyOrgRepoBranchJob(companyGraph);
+        CompanyOrgRepoBranchJobStageName companyOrgRepoBranchJobStageNameStageName = graphPair.getLeft();
         JobGraph jobGraph = graphPair.getRight();
         Instant now = Instant.now();
         InstantRange instantRange = new InstantRange();
@@ -96,8 +96,7 @@ public class JobStageTestTrend {
 
         return JobStageTestTrend
                 .builder()
-                .companyOrgRepoBranchJob(companyOrgRepoBranchJob)
-                .stageName(stageName)
+                .companyOrgRepoBranchJobStageName(companyOrgRepoBranchJobStageNameStageName)
                 .testCaseTrends(testCaseTrends)
                 .range(instantRange)
                 .generated(now)
@@ -109,16 +108,16 @@ public class JobStageTestTrend {
     public CompanyOrgRepoBranchJobRunStageDTO toCompanyOrgRepoBranchJobRunStageDTO() {
         return CompanyOrgRepoBranchJobRunStageDTO
                 .builder()
-                .company(companyOrgRepoBranchJob.getCompanyPojo().getCompanyName())
-                .org(companyOrgRepoBranchJob.getOrgPojo().getOrgName())
-                .repo(companyOrgRepoBranchJob.getRepoPojo().getRepoName())
-                .branch(companyOrgRepoBranchJob.getBranchPojo().getBranchName())
-                .jobId(companyOrgRepoBranchJob.getJobPojo().getJobId())
-                .stageName(stageName.getStageName())
+                .company(companyOrgRepoBranchJobStageName.getCompanyPojo().getCompanyName())
+                .org(companyOrgRepoBranchJobStageName.getOrgPojo().getOrgName())
+                .repo(companyOrgRepoBranchJobStageName.getRepoPojo().getRepoName())
+                .branch(companyOrgRepoBranchJobStageName.getBranchPojo().getBranchName())
+                .jobId(companyOrgRepoBranchJobStageName.getJobPojo().getJobId())
+                .stageName(companyOrgRepoBranchJobStageName.getStageName())
                 .build();
     }
 
-    private static Pair<CompanyOrgRepoBranchJob, JobGraph> getCompanyOrgRepoBranchJob(CompanyGraph companyGraph) {
+    private static Pair<CompanyOrgRepoBranchJobStageName, JobGraph> getCompanyOrgRepoBranchJob(CompanyGraph companyGraph) {
 
         assertSize1(companyGraph.orgs(), "orgs");
         final OrgGraph orgGraph = companyGraph.orgs().get(0);
@@ -132,15 +131,32 @@ public class JobStageTestTrend {
         assertSize1(branchGraph.jobs(), "jobs");
         final JobGraph jobGraph = branchGraph.jobs().get(0);
 
-        CompanyOrgRepoBranchJob companyOrgRepoBranchJob = CompanyOrgRepoBranchJob
+        String stageName = null;
+        for (RunGraph run : jobGraph.runs()) {
+            for (StageGraph stage : run.stages()) {
+                if (stage.stageName() != null) {
+                    if (stageName == null) {
+                        stageName = stage.stageName();
+                    }
+
+                    if (!stageName.equals(stage.stageName())) {
+                        throw new IllegalStateException("different stage detected. stageName: " + stageName + " != stage.getStageMame: " + stage.stageName());
+                    }
+                }
+            }
+        }
+
+
+        CompanyOrgRepoBranchJobStageName companyOrgRepoBranchJobStageName = CompanyOrgRepoBranchJobStageName
                 .builder()
                 .companyPojo(companyGraph.asCompanyPojo())
                 .orgPojo(orgGraph.asOrgPojo())
                 .repoPojo(repoGraph.asRepoPojo())
                 .branchPojo(branchGraph.asBranchPojo())
                 .jobPojo(jobGraph.asJobPojo())
+                .stageName(stageName)
                 .build();
-        return Pair.of(companyOrgRepoBranchJob, jobGraph);
+        return Pair.of(companyOrgRepoBranchJobStageName, jobGraph);
     }
 
     static void assertSize1(List<?> col, String name) {

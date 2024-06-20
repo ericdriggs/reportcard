@@ -8,10 +8,11 @@ import lombok.extern.jackson.Jacksonized;
 @Builder
 @Jacksonized
 @Value
-public class CompanyOrgRepoBranchJob {
+public class CompanyOrgRepoBranchJobStageName {
     CompanyPojo companyPojo;
     OrgPojo orgPojo;
     RepoPojo repoPojo;
     BranchPojo branchPojo;
     JobPojo jobPojo;
+    String stageName;
 }
