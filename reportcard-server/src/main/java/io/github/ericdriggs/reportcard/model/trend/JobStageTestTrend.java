@@ -1,10 +1,12 @@
 package io.github.ericdriggs.reportcard.model.trend;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.github.ericdriggs.reportcard.cache.dto.CompanyOrgRepoBranchJobRunStageDTO;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.PojoComparators;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.RunPojo;
 import io.github.ericdriggs.reportcard.model.TestCaseModel;
 import io.github.ericdriggs.reportcard.model.graph.*;
-import io.github.ericdriggs.reportcard.xml.testng.suite.Test;
+
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -18,31 +20,32 @@ import java.util.TreeMap;
 @Builder
 @Jacksonized
 @Value
-public class JobTestTrend {
+public class JobStageTestTrend {
 
     CompanyOrgRepoBranchJob companyOrgRepoBranchJob;
     StageName stageName;
-    TreeMap<TestSuiteNameTestCaseName, TreeMap<RunPojo, TestCaseModel>> testCaseTrends;
+    TreeMap<TestPackageSuiteCase, TreeMap<RunPojo, TestCaseModel>> testCaseTrends;
     InstantRange range;
     Instant generated;
+    Integer maxRuns;
 
-    public static JobTestTrend fromCompanyGraphs(List<CompanyGraph> companyGraphs) {
+    public static JobStageTestTrend fromCompanyGraphs(List<CompanyGraph> companyGraphs, int maxRuns) {
         if (companyGraphs == null) {
             throw new NullPointerException("companyGraphs");
         }
         if (companyGraphs.size() != 1) {
             throw new IllegalArgumentException("companyGraphs size must be only 1");
         }
-        return fromCompanyGraph(companyGraphs.get(0));
+        return fromCompanyGraph(companyGraphs.get(0), maxRuns);
     }
 
-    private static JobTestTrend fromCompanyGraph(CompanyGraph companyGraph) {
+    private static JobStageTestTrend fromCompanyGraph(CompanyGraph companyGraph, int maxRuns) {
         Pair<CompanyOrgRepoBranchJob, JobGraph> graphPair = getCompanyOrgRepoBranchJob(companyGraph);
         CompanyOrgRepoBranchJob companyOrgRepoBranchJob = graphPair.getLeft();
         JobGraph jobGraph = graphPair.getRight();
         Instant now = Instant.now();
         InstantRange instantRange = new InstantRange();
-        TreeMap<TestSuiteNameTestCaseName, TreeMap<RunPojo, TestCaseModel>> testCaseTrends = new TreeMap<>();
+        TreeMap<TestPackageSuiteCase, TreeMap<RunPojo, TestCaseModel>> testCaseTrends = new TreeMap<>();
         StageName stageName = null;
 
         if (jobGraph != null) {
@@ -68,14 +71,15 @@ public class JobTestTrend {
                                     List<TestSuiteGraph> testSuiteGraphs = testResultGraph.testSuites();
                                     if (!CollectionUtils.isEmpty(testSuiteGraphs)) {
                                         for (TestSuiteGraph testSuiteGraph : testSuiteGraphs) {
+                                            final String testPackage = testSuiteGraph.packageName();
                                             final String testSuiteName = testSuiteGraph.name();
                                             List<TestCaseGraph> testCaseGraphs = testSuiteGraph.testCases();
                                             if (!CollectionUtils.isEmpty(testCaseGraphs)) {
                                                 for (TestCaseGraph testCaseGraph : testCaseGraphs) {
-                                                    final TestSuiteNameTestCaseName testSuiteNameTestCaseName = new TestSuiteNameTestCaseName(testSuiteName, testCaseGraph.name());
+                                                    final TestPackageSuiteCase testSuiteNameTestCaseName = new TestPackageSuiteCase(testPackage, testSuiteName, testCaseGraph.name());
                                                     final TestCaseModel testCaseModel = testCaseGraph.asTestCaseModel();
 
-                                                    testCaseTrends.computeIfAbsent(testSuiteNameTestCaseName, k -> new TreeMap<>(PojoComparators::compareRun));
+                                                    testCaseTrends.computeIfAbsent(testSuiteNameTestCaseName, k -> new TreeMap<>(PojoComparators::compareRunDescending));
                                                     TreeMap<RunPojo, TestCaseModel> runTrend = testCaseTrends.get(testSuiteNameTestCaseName);
                                                     runTrend.put(runPojo, testCaseModel);
                                                 }
@@ -90,13 +94,27 @@ public class JobTestTrend {
             }
         }
 
-        return JobTestTrend
+        return JobStageTestTrend
                 .builder()
                 .companyOrgRepoBranchJob(companyOrgRepoBranchJob)
                 .stageName(stageName)
                 .testCaseTrends(testCaseTrends)
                 .range(instantRange)
                 .generated(now)
+                .maxRuns(maxRuns)
+                .build();
+    }
+
+    @JsonIgnore
+    public CompanyOrgRepoBranchJobRunStageDTO toCompanyOrgRepoBranchJobRunStageDTO() {
+        return CompanyOrgRepoBranchJobRunStageDTO
+                .builder()
+                .company(companyOrgRepoBranchJob.getCompanyPojo().getCompanyName())
+                .org(companyOrgRepoBranchJob.getOrgPojo().getOrgName())
+                .repo(companyOrgRepoBranchJob.getRepoPojo().getRepoName())
+                .branch(companyOrgRepoBranchJob.getBranchPojo().getBranchName())
+                .jobId(companyOrgRepoBranchJob.getJobPojo().getJobId())
+                .stageName(stageName.getStageName())
                 .build();
     }
 

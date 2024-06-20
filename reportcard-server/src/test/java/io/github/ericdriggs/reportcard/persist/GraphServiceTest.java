@@ -1,11 +1,11 @@
-package io.github.ericdriggs.reportcard.persist.browse;
+package io.github.ericdriggs.reportcard.persist;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.github.ericdriggs.reportcard.gen.db.TestData;
 import io.github.ericdriggs.reportcard.model.graph.*;
 import io.github.ericdriggs.reportcard.model.trend.CompanyOrgRepoBranchJob;
-import io.github.ericdriggs.reportcard.model.trend.JobTestTrend;
-import io.github.ericdriggs.reportcard.persist.GraphService;
+import io.github.ericdriggs.reportcard.model.trend.JobStageTestTrend;
+
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,13 +26,15 @@ public class GraphServiceTest extends AbstractGraphServiceTest {
     List<CompanyGraph> getTestCompanyGraphs() {
         final Instant start = Instant.parse("2000-01-01T01:00:00.00Z");
         final Instant end = Instant.parse("4000-01-01T01:00:00.00Z");
-        return graphService.getTestTrendGraph(TestData.company, TestData.org, TestData.repo, TestData.branch, TestData.jobId, TestData.stage, start, end);
+        final int maxRuns = 30;
+        return graphService.getJobTrendCompanyGraphs(TestData.company, TestData.org, TestData.repo, TestData.branch, TestData.jobId, TestData.stage, start, end, maxRuns);
     }
 
     @Test
     void getJobTrendTest() {
+        int maxRuns = 30;
         List<CompanyGraph> companyGraphs = getTestCompanyGraphs();
-        JobTestTrend jobTestTrend = JobTestTrend.fromCompanyGraphs(companyGraphs);
+        JobStageTestTrend jobTestTrend = JobStageTestTrend.fromCompanyGraphs(companyGraphs, maxRuns);
         assertNotNull(jobTestTrend);
         final CompanyOrgRepoBranchJob companyOrgRepoBranchJob = jobTestTrend.getCompanyOrgRepoBranchJob();
         assertNotNull(companyOrgRepoBranchJob);

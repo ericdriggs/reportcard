@@ -1,4 +1,4 @@
-package io.github.ericdriggs.reportcard.controller.html;
+package io.github.ericdriggs.reportcard.controller.browse;
 
 import io.github.ericdriggs.reportcard.cache.dto.*;
 import io.github.ericdriggs.reportcard.cache.model.*;
@@ -13,7 +13,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.Instant;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.*;
@@ -621,6 +620,7 @@ public class BrowseHtmlHelper {
             <head>
               <link rel="stylesheet" href="/css/shared.css">
               <link rel="stylesheet" href="/css/sortable.min.css"/>
+              <!--additionalLinks-->
               <script src="/js/sortable.min.js"></script>
               <title>ReportCard</title>
             </head>

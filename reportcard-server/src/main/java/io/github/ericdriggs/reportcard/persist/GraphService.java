@@ -4,10 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import io.github.ericdriggs.reportcard.model.graph.CompanyGraph;
 import io.github.ericdriggs.reportcard.model.graph.CompanyGraphBuilder;
 import io.github.ericdriggs.reportcard.model.graph.condition.TableConditionMap;
-import io.github.ericdriggs.reportcard.model.trend.JobTestTrend;
+import io.github.ericdriggs.reportcard.model.trend.JobStageTestTrend;
 import lombok.SneakyThrows;
 import org.jooq.*;
-import org.jooq.Record;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.slf4j.Logger;
@@ -16,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.*;
 
 import static io.github.ericdriggs.reportcard.gen.db.Tables.*;
@@ -39,14 +39,31 @@ public class GraphService extends AbstractPersistService {
 
     }
 
-    public List<CompanyGraph> getTestTrendGraph(String companyName,
-                                          String orgName,
-                                          String repoName,
-                                          String branchName,
-                                          Long jobId,
-                                          String stageName,
-                                          Instant start,
-                                          Instant end) {
+    public JobStageTestTrend getJobStageTestTrend(String companyName,
+                                                  String orgName,
+                                                  String repoName,
+                                                  String branchName,
+                                                  Long jobId,
+                                                  String stageName,
+                                                  Instant start,
+                                                  Instant end,
+                                                  Integer maxRuns) {
+        if (start == null) {
+            start = Instant.now().atZone(ZoneOffset.UTC).minusDays(30).toInstant();
+        }
+        List<CompanyGraph> companyGraphs = getJobTrendCompanyGraphs(companyName, orgName, repoName, branchName, jobId, stageName, start, end, maxRuns);
+        return JobStageTestTrend.fromCompanyGraphs(companyGraphs, 30);
+    }
+
+    List<CompanyGraph> getJobTrendCompanyGraphs(String companyName,
+                                                String orgName,
+                                                String repoName,
+                                                String branchName,
+                                                Long jobId,
+                                                String stageName,
+                                                Instant start,
+                                                Instant end,
+                                                Integer maxRuns) {
 
         TableConditionMap tableConditionMap = new TableConditionMap();
         tableConditionMap.put(COMPANY, COMPANY.COMPANY_NAME.eq(companyName));
@@ -54,15 +71,34 @@ public class GraphService extends AbstractPersistService {
         tableConditionMap.put(REPO, REPO.REPO_NAME.eq(repoName));
         tableConditionMap.put(BRANCH, BRANCH.BRANCH_NAME.eq(branchName));
         tableConditionMap.put(JOB, JOB.JOB_ID.eq(jobId));
+
+        Condition runCondition = RUN.JOB_FK.eq(JOB.JOB_ID);
+        if (start != null) {
+            runCondition = runCondition.and(RUN.RUN_DATE.ge(start));
+        }
+        if (end != null) {
+            runCondition = runCondition.and(RUN.RUN_DATE.le(end));
+        }
+        if (maxRuns != null) {
+            runCondition = runCondition.and(
+                    RUN.RUN_ID.in(
+                            select(RUN.RUN_ID)
+                                    .from(RUN)
+                                    .where(RUN.JOB_FK.eq(jobId))
+                                    .orderBy(RUN.RUN_ID.desc())
+                                    .limit(maxRuns)
+                    )
+            );
+        }
+        tableConditionMap.put(RUN, runCondition);
         tableConditionMap.put(STAGE, STAGE.STAGE_NAME.eq(stageName));
-        tableConditionMap.put(RUN, RUN.JOB_FK.eq(JOB.JOB_ID).and(RUN.RUN_DATE.between(start, end)));
-        return getCompanyGraph(companyName, orgName, repoName, branchName, jobId, stageName, tableConditionMap);
+        return getJobTrendCompanyGraphs(companyName, orgName, repoName, branchName, jobId, stageName, tableConditionMap);
 
     }
 
     @SneakyThrows(JsonProcessingException.class)
     @SuppressWarnings("rawtypes")
-    protected List<CompanyGraph> getCompanyGraph(String companyName, String orgName, String repoName, String branchName, Long jobId, String stageName, TableConditionMap tableConditionMap)   {
+    protected List<CompanyGraph> getJobTrendCompanyGraphs(String companyName, String orgName, String repoName, String branchName, Long jobId, String stageName, TableConditionMap tableConditionMap) {
         Result result = getFullTestGraph(tableConditionMap);
         if (!result.isEmpty() && result.get(0) instanceof Record1 record1) {
             String json = record1.formatJSON();
@@ -176,12 +212,4 @@ public class GraphService extends AbstractPersistService {
                   .fetch();
     }
 
-    private JobTestTrend resultToJobTestTrend(Result<Record> result) {
-        int i = 5;
-        throw new IllegalStateException("not yet implemented");
-    }
-
-    public JobTestTrend getJobTestTrend(String company, String org, String repo, String branch, Long jobId, String stage, Instant start, Instant end) {
-        throw new IllegalStateException("not yet implemented");
-    }
 }

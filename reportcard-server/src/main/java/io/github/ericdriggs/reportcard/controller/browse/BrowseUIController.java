@@ -1,6 +1,7 @@
-package io.github.ericdriggs.reportcard.controller.html;
+package io.github.ericdriggs.reportcard.controller.browse;
 
 import io.github.ericdriggs.reportcard.cache.model.*;
+import io.github.ericdriggs.reportcard.controller.html.TestResultHtmlHelper;
 import io.github.ericdriggs.reportcard.model.StageTestResultModel;
 import io.github.ericdriggs.reportcard.persist.BrowseService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,16 +11,15 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-//TODO: add reports endpoint after stages
 @RestController
 @RequestMapping("")
 @SuppressWarnings("unused")
-public class UIBrowseController {
+public class BrowseUIController {
 
     private final BrowseService browseService;
 
     @Autowired
-    public UIBrowseController(BrowseService browseService) {
+    public BrowseUIController(BrowseService browseService) {
         this.browseService = browseService;
     }
 
@@ -98,6 +98,5 @@ public class UIBrowseController {
         StageTestResultModel stageTestResultModel = browseService.getStageTestResultMap(company, org, repo, branch , jobId, runId, stage);
         return new ResponseEntity<>(TestResultHtmlHelper.getTestResult(stageTestResultModel.getTestResult()), HttpStatus.OK);
     }
-
 
 }

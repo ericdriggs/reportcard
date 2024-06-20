@@ -2,9 +2,7 @@
 <!--
 * need to explain subscript for failure and in general need documentation page on how to use
 
-* failure message definition term width should not be set
-
-* browser side cache
+* browser side cache using header, e.g. Cache-Control: max-age=600 //10 mins
 
 -->
 
@@ -12,138 +10,12 @@
     <link rel="stylesheet" href="css/shared.css">
     <link rel="stylesheet" href="css/sortable.min.css"/>
     <script src="js/sortable.min.js"></script>
+    <link rel="stylesheet" href="css/trend.css">
     <title>ReportCard</title>
-    <style>
-
-        body {
-            font: 1em Calibri, sans-serif;
-        }
-        table tr td {
-            vertical-align: top;
-        }
-
-        a {
-            color: white;
-        }
-
-        table {
-            margin-left: 20px;
-            border-radius: 6px;
-            box-shadow: 3px 3px 4px grey;
-        }
-
-
-        summary {
-            text-align: left;
-            max-width: 508px;
-            padding: 4px;
-            border-radius: 6px;
-        }
-
-        details {
-            border-radius: 10px;
-        }
-
-        details > summary {
-            font-weight: bold;
-            background-color: #eee;
-            box-shadow: 3px 3px 4px black;
-            cursor: pointer;
-        }
-
-        detals > summary.fail-messages {
-            font-weight: normal
-        }
-
-        details > dl {
-            border-radius: 6px;
-            background-color: #eee;
-            padding: 6px 6px 6px 20px;
-            margin: 0;
-            box-shadow: 3px 3px 4px black;
-        }
-
-        dl {
-            border: 3px double #ccc;
-            max-width:500px;
-        }
-
-        .trend-context-summary {
-            padding-left: 20px;
-        }
-
-        .trend-context {
-
-        }
-
-        .dd-trend-context {
-
-        }
-
-        .dt-trend-context {
-            width: 90px;
-        }
-
-        dt {
-            float: left;
-            font-weight: bold;
-            color: #468;
-        }
-
-        dt::after {
-            content: ":";
-        }
-
-        dd > div {
-            padding-left: 50px;
-        }
-
-        .test-trend-context {
-            padding-left:20px;
-            padding-top:20px;
-        }
-
-        .pass-percent {
-            font-size: .9em;
-        }
-
-        .fail-messages {
-            font-weight: normal;
-        }
-
-        .test-row-header {
-            font-size: .7em;
-        }
-
-        .job-info {
-            font-style: italic;
-        }
-
-        .job-info-term {
-            font-weight: bold;
-        }
-
-        .test-row {
-            font-size: .8em;
-        }
-
-        .fail-since {
-
-        }
-
-
-        label {
-            display: inline-block;
-            text-align: right;
-            width: 110px;
-            font-weight: bold;
-            font-size: .9em;
-        }
-    </style>
 </head>
-<div>
-    <details open="open" class="test-trend-context">
-        <summary class="trend-context-summary ">Test trend context</summary>
+<div id="main">
+    <details id="test-trend-context" open="open" class="test-trend-context">
+        <summary id="trend-context-summary" class="trend-context-summary ">Test trend context</summary>
         <dl class="trend-context">
             <dt class="dt-trend-context">company</dt>
             <dd class="dd-trend-context">company1</dd>
@@ -164,7 +36,7 @@
         </dl>
         <br>
     </details>
-    <fieldset style="display:inline-block">
+    <fieldset style="display:inline-block" id="test-filters">
         <legend>Test Filters</legend>
         <label for="test-suites">Suite</label>
         <select name="test-suites" id="test-suites">
@@ -196,12 +68,12 @@
         </select>
     </fieldset>
     <br>
-    <table class="sortable" style="vertical-align: top">
+    <table class="sortable" style="vertical-align: top" id="test-case-trends">
         <thead>
         <tr class="test-row-header">
-            <th>Suite</th>
-            <th>Class</th>
-            <th>Case</th>
+            <th>Test Package</th>
+            <th>Test Suite</th>
+            <th>Test Case</th>
             <th>Fail Messages</th>
             <th>Fail Since</th>
             <th>Avg(30)</th>
