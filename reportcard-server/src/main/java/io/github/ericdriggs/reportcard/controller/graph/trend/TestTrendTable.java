@@ -41,10 +41,11 @@ public class TestTrendTable {
             if (!CollectionUtils.isEmpty(runTestCaseMap)) {
 
                 SuccessAverage success30 = new SuccessAverage(30);
-                SuccessAverage success60 = new SuccessAverage(60);
+                SuccessAverage successTotal = new SuccessAverage(runTestCaseMap.size());
 
                 FailureMessageIndexMap failureMessageIndexMap = FailureMessageIndexMap.builder().build();
                 TreeSet<TestCaseRunGroupedState> testRunGroupedStates = new TreeSet<>();
+                boolean hasSkip = false;
                 for (Map.Entry<RunPojo, TestCaseModel> runEntry : runTestCaseMap.entrySet()) {
                     final RunPojo runPojo = runEntry.getKey();
                     final TestCaseModel testCaseModel = runEntry.getValue();
@@ -53,18 +54,28 @@ public class TestTrendTable {
                     }
                     final TestStatus testStatus = TestStatus.fromStatusId(testCaseModel.getTestStatusFk());
 
+                    if (testStatus.isErrorOrFailure()) {
+                        int i = 5;
+                        if (i == -1) {
+                            System.out.println("foo");
+                        }
+                    }
+
+                    successTotal.incrementTotalCount();
+                    if (testStatus.isSuccess()) {
+                        successTotal.incrementSuccessCount();
+                    } else if (testStatus.isSkipped()) {
+                        hasSkip = true;
+                    }
+
+
                     if (success30.getTotalCount() < success30.getMaxCount()) {
                         if (testStatus.isSuccess()) {
                             success30.incrementSuccessCount();
                         }
                         success30.incrementTotalCount();
                     }
-                    if (success60.getTotalCount() < success60.getMaxCount()) {
-                        if (testStatus.isSuccess()) {
-                            success60.incrementSuccessCount();
-                        }
-                        success60.incrementTotalCount();
-                    }
+
 
                     if (testStatus.isErrorOrFailure() && failSince == null) {
                         failSince = runPojo.getRunDate();
@@ -78,11 +89,10 @@ public class TestTrendTable {
                 testCaseTrendRows.add(TestCaseTrendRow
                         .builder()
                         .avg30(success30.successPercent())
-                        .avg60(success60.successPercent())
+                        .avgTotal(successTotal.successPercent())
+                        .hasSkip(hasSkip)
                         .failureMessageIndexMap(failureMessageIndexMap)
-                        .testPackage(testPackageName)
-                        .testSuite(testSuiteName)
-                        .testCase(testCaseName)
+                        .testPackageSuiteCase(TestPackageSuiteCase.builder().testPackageName(testPackageName).testSuiteName(testSuiteName).testCaseName(testCaseName).build())
                         .failSince(failSince)
                         .testRunGroupedStates(testRunGroupedStates)
                         .build());
@@ -110,7 +120,7 @@ public class TestTrendTable {
     }
 
     static String getTruncatedFailureMessage(TestCaseFaultModel testCaseFaultModel) {
-        final int maxLines = 3;
+        final int maxLines = 5;
         final int maxChars = 1000;
 
         if (testCaseFaultModel == null) {

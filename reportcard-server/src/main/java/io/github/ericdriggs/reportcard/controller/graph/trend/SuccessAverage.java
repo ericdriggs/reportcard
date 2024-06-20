@@ -13,7 +13,7 @@ public class SuccessAverage {
     private int successCount;
 
     @JsonIgnore
-    final static BigDecimal oneHundredPercent = new BigDecimal(100);
+    final static BigDecimal allSuccess = new BigDecimal(1);
 
     public SuccessAverage(int maxCount) {
         this.maxCount = maxCount;
@@ -34,11 +34,18 @@ public class SuccessAverage {
     }
 
     static BigDecimal successPercent(int successCount, int totalCount, int scale) {
-        return new BigDecimal(successCount).divide(new BigDecimal(totalCount), RoundingMode.HALF_UP).setScale(scale, RoundingMode.HALF_UP);
+        return BigDecimal.valueOf((float) successCount / (float) totalCount).setScale(scale, RoundingMode.HALF_UP);
     }
 
     @JsonIgnore
     public static boolean isSuccess(BigDecimal bigDecimal) {
-        return oneHundredPercent.compareTo(bigDecimal) >= 0;
+        return !isFail(bigDecimal);
     }
+
+    @JsonIgnore
+    public static boolean isFail(BigDecimal bigDecimal) {
+        return bigDecimal.compareTo(allSuccess) < 0;
+    }
+
+
 }

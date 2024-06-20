@@ -15,16 +15,16 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public class GraphHtmlHelper extends BrowseHtmlHelper {
 
     public static String renderHtml(JobStageTestTrend jobStageTestTrend) {
         final String main = getTrendMainDiv(jobStageTestTrend);
-        return getPage(main, getBreadCrumb(jobStageTestTrend.toCompanyOrgRepoBranchJobRunStageDTO())).replace("<!--additionalLinks-->", "<link rel=\"stylesheet\" href=\"/css/trend.css\">");
+        return getPage(main, getBreadCrumb(jobStageTestTrend.toCompanyOrgRepoBranchJobRunStageDTO()))
+                .replace("<body>", "<body onload=\"applyTestFilters()\">")
+                .replace("<!--additionalLinks-->", "<link rel=\"stylesheet\" href=\"/css/trend.css\">" + ls + "<script src=\"/js/trend.js\"></script>" + ls);
+
     }
 
     public static String getTrendMainDiv(JobStageTestTrend jobStageTestTrend) {
@@ -44,7 +44,7 @@ public class GraphHtmlHelper extends BrowseHtmlHelper {
     }
 
     static String renderJobInfo(String jobInfo) {
-        TreeMap<String, String> jobInfoMap = StringMapUtil.stringToMap(jobInfo);
+        TreeMap<String, String> jobInfoMap = StringMapUtil.jsonToMap(jobInfo);
 
         boolean isFirst = true;
         StringBuilder builder = new StringBuilder();
@@ -65,16 +65,41 @@ public class GraphHtmlHelper extends BrowseHtmlHelper {
         StringBuilder builder = new StringBuilder();
 
         for (TestRunHeader testRunHeader : testRunHeaders) {
-            builder.append("<th title=\"" + testRunHeader.getRunDate().toString() + "\"><a href=\"" + testRunHeader.getRunUri() + "\">" + testRunHeader.getJobRunCount() + "</a></th>");
+            builder.append("<th title=\"" + testRunHeader.getRunDate().toString() + "\"><a class=\"run-link\" href=\"" + testRunHeader.getRunUri() + "\">" + testRunHeader.getJobRunCount() + "</a></th>");
         }
         return builder.toString();
     }
 
     static String renderJobRunTestRows(List<TestCaseTrendRow> testCaseTrendRows) {
 
+        Set<TestPackageSuiteCase> testsWithFailures = new TreeSet<>();
+        Set<TestPackageSuiteCase> testWithSkip = new TreeSet<>();
+        Set<Long> runIdsWithFailures = new TreeSet<>();
+        Set<Long> runIdsWithSkip = new TreeSet<>();
+
+        for (TestCaseTrendRow row : testCaseTrendRows) {
+            for (TestCaseRunGroupedState col : row.getTestRunGroupedStates()) {
+                if (col.getTestCaseRunState().isFail()) {
+                    testsWithFailures.add(row.getTestPackageSuiteCase());
+                    runIdsWithFailures.add(col.getRunId());
+                }
+            }
+        }
+
+        for (TestCaseTrendRow row : testCaseTrendRows) {
+            if (row.isHasSkip()) {
+                testWithSkip.add(row.getTestPackageSuiteCase());
+                for (TestCaseRunGroupedState col : row.getTestRunGroupedStates()) {
+                    if (col.getTestCaseRunState().isSkipped()) {
+                        runIdsWithSkip.add(col.getRunId());
+                    }
+                }
+            }
+        }
+
         final String baseTestRow =
                 """
-                <tr class="test-row">
+                <tr class="test-row test-case-class">
                     <td><!--testPackageName--></td>
                     <td><!--testSuiteName--></td>
                     <td><!--testCaseName--></td>
@@ -90,47 +115,76 @@ public class GraphHtmlHelper extends BrowseHtmlHelper {
             StringBuilder runStatesBuilder = new StringBuilder();
 
             for (TestCaseRunGroupedState testCaseRunGroupedState : testCaseTrendRow.getTestRunGroupedStates()) {
-                runStatesBuilder.append(renderTestRunState(testCaseRunGroupedState));
+                final boolean runHasFail = runIdsWithFailures.contains(testCaseRunGroupedState.getRunId());
+                final boolean runHasSkip = runIdsWithSkip.contains(testCaseRunGroupedState.getRunId());
+                runStatesBuilder.append(renderTestRunState(testCaseRunGroupedState, runHasFail, runHasSkip));
             }
+
+            final boolean hasFail = testsWithFailures.contains(testCaseTrendRow.getTestPackageSuiteCase());
+            final boolean hasSkip = testWithSkip.contains(testCaseTrendRow.getTestPackageSuiteCase());
+
             builder.append(
                     baseTestRow
-                            .replace("<!--testPackageName-->", wrapNull(testCaseTrendRow.getTestPackage()))
-                            .replace("<!--testSuiteName-->", wrapNull(testCaseTrendRow.getTestSuite()))
-                            .replace("<!--testCaseName-->", wrapNull(testCaseTrendRow.getTestCase()))
+                            .replace("<!--testPackageName-->", TestPackageSuiteCase.getPackageName(testCaseTrendRow.getTestPackageSuiteCase()))
+                            .replace("<!--testSuiteName-->", TestPackageSuiteCase.getTestSuiteName(testCaseTrendRow.getTestPackageSuiteCase()))
+                            .replace("<!--testCaseName-->", TestPackageSuiteCase.getTestCaseName(testCaseTrendRow.getTestPackageSuiteCase()))
                             .replace("<!--failMessages-->", renderFailMessages(testCaseTrendRow.getFailureMessageIndexMap()))
                             .replace("<!--failSince-->", renderFailSince(testCaseTrendRow.getFailSince()))
                             .replace("<!--avg30-->", renderSuccessPercent(testCaseTrendRow.getAvg30()))
                             .replace("<!--runStates-->", runStatesBuilder.toString())
+                            .replace("test-case-class", getTestCaseClass(hasFail, hasSkip))
             );
         }
-
         return builder.toString();
     }
 
-    static String wrapNull(String str) {
-        if (str == null) {
-            return "";
+    static String getTestCaseClass(boolean hasFailure, boolean hasSkip) {
+        List<String> classes = new ArrayList<>();
+
+        if (hasFailure) {
+            classes.add("test-case-fail");
+        } else {
+            classes.add("test-case-success");
         }
-        return str;
+
+        if (hasSkip) {
+            classes.add("test-case-skip");
+        }
+        return String.join(" ", classes);
     }
 
-    static String renderTestRunState(TestCaseRunGroupedState testCaseRunGroupedState) {
+    static String renderTestRunState(TestCaseRunGroupedState testCaseRunGroupedState, boolean runHasFail, boolean runHasSkip) {
         final TestCaseRunState runState = testCaseRunGroupedState.getTestCaseRunState();
         String ret = runState.name();
         switch (runState) {
-            case SUCCESS -> ret = "<td class=\"stage-pass\">S</td>" + ls;
-            case SKIPPED -> ret = "<td class=\"stage-skip\">-</td>" + ls;
+            case SUCCESS -> ret = "<td class=\"stage-pass run-class\">S</td>" + ls;
+            case SKIPPED -> ret = "<td class=\"stage-skip run-class\">-</td>" + ls;
             case FAIL ->
-                    ret = "<td class=\"stage-fail\">F<sub>" + testCaseRunGroupedState.getTestCaseRunStateGroup() + "</sub></td>" + ls;
+                    ret = "<td class=\"stage-fail run-class\">F<sub>" + testCaseRunGroupedState.getTestCaseRunStateGroup() + "</sub></td>" + ls;
         }
-        return ret;
+        return ret.replace("run-class", getRunClass(runHasFail, runHasSkip));
+    }
+
+    static String getRunClass(boolean hasFailure, boolean hasSkip) {
+        List<String> classes = new ArrayList<>();
+
+        if (hasFailure) {
+            classes.add("run-fail");
+        } else {
+            classes.add("run-success");
+        }
+
+        if (hasSkip) {
+            classes.add("run-skip");
+        }
+        return String.join(" ", classes);
     }
 
     static String renderSuccessPercent(BigDecimal successPercent) {
         if (SuccessAverage.isSuccess(successPercent)) {
-            return "<td class=\"pass-percent stage-success\">100%</td>";
+            return "<td class=\"pass-percent stage-success\">" + successPercent.toPlainString() + "</td>";
         }
-        return "<td class=\"pass-percent stage-fail\">" + successPercent.toPlainString() + "%</td>";
+        return "<td class=\"pass-percent stage-fail\">" + successPercent.toPlainString() + "</td>";
     }
 
     static String renderFailSince(Instant failSince) {
@@ -193,35 +247,23 @@ public class GraphHtmlHelper extends BrowseHtmlHelper {
                 </details>
 
                 <!--todo: implement js filter functions and display-->
-                <fieldset style="display:inline-block" id="test-filters" display:none>
+                <fieldset style="display:inline-block;width=500px;" id="test-filters" display:none>
                     <legend>Test Filters</legend>
-                    <label for="test-suites">Suite</label>
 
-                    <select name="test-suites" id="test-suites">
-                        <option value="all" default>all</option>
-                        <option value="Suite1">Suite1</option>
-                        <option value="Suite1">Suite2</option>
-                    </select>
+                    <label for="test-case-status-filter">Test Cases</label>
+                    <select name="test-case-status-filter" id="test-case-status-filter" onchange="applyTestFilters()"   >
+                        <option value="all">All</option>
+                        <option value="fail" selected>Fail</option>
+                        <option value="skip">Skip</option>
+                        <option value="success">Success</option>
+                    </select><br>
 
-                    <label for="test-classes">Classes</label>
-                    <select name="test-classes" id="test-classes">
-                        <option value="all" default>all</option>
-                        <!--testClassOptions-->
-
-                    </select>
-
-                    <label for="test-classes">Cases</label>
-                    <select name="test-cases" id="test-cases">
-                        <option value="all" default>all</option>
-                        <!--testCaseOptions-->
-                    </select>
-
-                    <label for="test-statuses">Status</label>
-                    <select name="test-statuses" id="test-statuses">
-                        <option value="all" default>all</option>
-                        <option value="Fail">Fail</option>
-                        <option value="Skip">Skip</option>
-                        <option value="Success">Success</option>
+                    <label for="test-run-filter" style="display:none">Test Runs</label>
+                    <select name="test-run-filter" id="test-run-filter" style="display:none">
+                        <option value="all" selected>All</option>
+                        <option value="fail">Fail</option>
+                        <option value="skip">Skip</option>
+                        <option value="success">Success</option>
                     </select>
                 </fieldset>
                 <br>
@@ -234,7 +276,7 @@ public class GraphHtmlHelper extends BrowseHtmlHelper {
                         <th>Test Case</th>
                         <th>Fail Messages</th>
                         <th>Fail Since</th>
-                        <th>Avg(30)</th>
+                        <th>Success Avg(30)</th>
                         <!--jobRunHeaders-->
                     </tr>
                     </thead>

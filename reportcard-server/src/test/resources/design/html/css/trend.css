@@ -5,7 +5,7 @@ table tr td {
     vertical-align: top;
 }
 
-a {
+a.run-link {
     color: white;
 }
 

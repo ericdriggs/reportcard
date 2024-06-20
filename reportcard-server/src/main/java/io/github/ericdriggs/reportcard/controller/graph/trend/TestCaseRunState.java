@@ -8,14 +8,26 @@ public enum TestCaseRunState {
     FAIL,
     SKIPPED;
 
-
-    public static TestCaseRunState fromTestStatusFk(Byte  testStatusFk) {
+    public static TestCaseRunState fromTestStatusFk(Byte testStatusFk) {
         TestStatus testStatus = TestStatus.fromStatusId(testStatusFk);
         if (testStatus.isErrorOrFailure()) {
             return FAIL;
-        } else if(testStatus.isSkipped()) {
+        } else if (testStatus.isSkipped()) {
             return SKIPPED;
         }
         return SUCCESS;
     }
+
+    public boolean isSuccess() {
+        return this == SUCCESS;
+    }
+
+    public boolean isFail() {
+        return this == FAIL;
+    }
+
+    public boolean isSkipped() {
+        return this == SKIPPED;
+    }
+
 }

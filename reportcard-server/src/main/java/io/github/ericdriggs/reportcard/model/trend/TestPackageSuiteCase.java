@@ -1,5 +1,6 @@
 package io.github.ericdriggs.reportcard.model.trend;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.github.ericdriggs.reportcard.util.CompareUtil;
 import lombok.Builder;
 import lombok.Value;
@@ -28,4 +29,37 @@ public class TestPackageSuiteCase implements Comparable<TestPackageSuiteCase> {
         this.testSuiteName = testSuiteName;
         this.testCaseName = testCaseName;
     }
+
+    static String wrapNull(String str) {
+        if (str == null) {
+            return "";
+        }
+        return str;
+    }
+
+    @JsonIgnore
+    public static String getPackageName(TestPackageSuiteCase t) {
+        if (t == null) {
+            return "";
+        }
+        return wrapNull(t.testPackageName);
+    }
+
+
+    @JsonIgnore
+    public static String getTestSuiteName(TestPackageSuiteCase t) {
+        if (t == null) {
+            return "";
+        }
+        return wrapNull(t.testSuiteName);
+    }
+
+    @JsonIgnore
+    public static String getTestCaseName(TestPackageSuiteCase t) {
+        if (t == null) {
+            return "";
+        }
+        return wrapNull(t.testCaseName);
+    }
+
 }

@@ -517,11 +517,33 @@ public class BrowseHtmlHelper {
             sb.append("  <td class=\"info\">" + info + "</td>").append(ls);
         }
         if (date != null) {
-            sb.append("  <td class=\"info\">" + date.toString() + "</td>").append(ls);
+            sb.append("  <td class=\"info\">" + date + "</td>").append(ls);
         }
         sb.append("</tr>").append(ls);
         return sb.toString();
     }
+
+//    protected static String getItemRowWithTrendReport(CompanyOrgRepoBranchJobRunStageDTO path, String name, int count, String info, Instant date) {
+//        StringBuilder sb = new StringBuilder();
+//
+//        final String pathUrl = getUrl(path);
+//        sb.append("<tr>").append(ls)
+//          .append("  <td><a href=\"" + pathUrl + "\">" + name + "</a></td>").append(ls)
+//          .append("  <td class=\"count\">" + count + "</td>").append(ls);
+//        if (info != null) {
+//            sb.append("  <td class=\"info\">" + info + "</td>").append(ls);
+//        }
+//        if (date != null) {
+//            sb.append("  <td class=\"info\">" + date + "</td>").append(ls);
+//        }
+//        {
+//            http://localhost:8080/company/hulu/org/PEPC/repo/ballyhoo-api-test/branch/master/job/17/stage/apiTest/trend
+//            String trendUri = "/company/{company}/org/{org}/repo/ballyhoo-api-test/branch/master
+//            sb.append("  <td><a href=\"" + getUrl(path) + "\">" + name + "</a></td>").append(ls);
+//        }
+//        sb.append("</tr>").append(ls);
+//        return sb.toString();
+//    }
 
     protected static String getLink( String text, String url) {
         return getLink(text, url, null);
