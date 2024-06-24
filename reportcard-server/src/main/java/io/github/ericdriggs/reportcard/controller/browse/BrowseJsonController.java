@@ -25,9 +25,7 @@ public class BrowseJsonController {
 
     @Autowired
     public BrowseJsonController(BrowseService browseService) {
-
         this.browseService = browseService;
-
     }
 
     @GetMapping(path = "", produces = "application/json")

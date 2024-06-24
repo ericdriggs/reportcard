@@ -230,8 +230,6 @@ public class BrowseHtmlHelper {
         }
         return sb.toString();
     }
-
-
     //******************** job ********************//
 
     public static String getJobHtml(String company, String org, String repo, String branch, Long jobId, BranchStageViewResponse branchStageViewResponse) {
@@ -585,9 +583,6 @@ public class BrowseHtmlHelper {
         return breadCrumbs;
     }
 
-
-
-
     protected static String getItemRow(CompanyOrgRepoBranchJobRunStageDTO path, String name, int count, Instant date) {
         return getItemRow(path, name, count, null, date);
     }
@@ -607,7 +602,6 @@ public class BrowseHtmlHelper {
         sb.append("</tr>").append(ls);
         return sb.toString();
     }
-
 
     protected static String getLink(String text, String url) {
         return getLink(text, url, null);
