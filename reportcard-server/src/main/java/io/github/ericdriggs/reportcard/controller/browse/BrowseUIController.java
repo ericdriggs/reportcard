@@ -3,7 +3,9 @@ package io.github.ericdriggs.reportcard.controller.browse;
 import io.github.ericdriggs.reportcard.cache.model.*;
 import io.github.ericdriggs.reportcard.controller.html.TestResultHtmlHelper;
 import io.github.ericdriggs.reportcard.model.StageTestResultModel;
+import io.github.ericdriggs.reportcard.model.branch.BranchJobLatestRunMap;
 import io.github.ericdriggs.reportcard.persist.BrowseService;
+import io.github.ericdriggs.reportcard.persist.GraphService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,10 +19,12 @@ import java.util.Map;
 public class BrowseUIController {
 
     private final BrowseService browseService;
+    private final GraphService graphService;
 
     @Autowired
-    public BrowseUIController(BrowseService browseService) {
+    public BrowseUIController(BrowseService browseService, GraphService graphService) {
         this.browseService = browseService;
+        this.graphService = graphService;
     }
 
     @GetMapping(path = {"", "company"}, produces = "text/html")
@@ -57,7 +61,8 @@ public class BrowseUIController {
             @PathVariable String branch,
             @RequestParam(required = false) Map<String, String> jobInfoFilters) {
         BranchStageViewResponse branchStageViewResponse  = browseService.getStageViewForBranch(company, org, repo, branch);
-        return new ResponseEntity<>(BrowseHtmlHelper.getBranchHtml(company, org, repo, branch, branchStageViewResponse), HttpStatus.OK);
+        BranchJobLatestRunMap branchJobLatestRunMap = graphService.getBranchJobLatestRunMap(company, org, repo, branch);
+        return new ResponseEntity<>(BrowseHtmlHelper.getBranchHtml(company, org, repo, branch, branchStageViewResponse, branchJobLatestRunMap), HttpStatus.OK);
     }
 
     @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}",

@@ -68,6 +68,10 @@ public class PojoComparators {
     public static final Comparator<StoragePojo> STORAGE_CASE_INSENSITIVE_ORDER
             = new PojoComparators.StorageCaseInsensitiveComparator();
 
+    public static final Comparator<StoragePojo> STORAGE_DESCENDING_ORDER
+            = new PojoComparators.StorageDescendingComparator();
+
+
     private static class CompanyCaseInsensitiveComparator
             implements Comparator<CompanyPojo>, java.io.Serializable {
         @Serial
@@ -370,6 +374,17 @@ public class PojoComparators {
         );
     }
 
+    public static int compareStorageDescending(StoragePojo val1, StoragePojo val2) {
+        if (val1 == null || val2 == null) {
+            return ObjectUtils.compare(ObjectUtils.isEmpty(val2), ObjectUtils.isEmpty(val1));
+        }
+        return chainCompare(
+                compareLong(val2.getStageFk(), val1.getStageFk()),
+                ObjectUtils.compare(val2.getLabel(), val1.getLabel()),
+                compareLong(val2.getStorageId(), val1.getStorageId())
+        );
+    }
+
     public static int compareTestResultModel(TestResultModel val1, TestResultModel val2) {
         if (val1 == null || val2 == null) {
             return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
@@ -469,6 +484,16 @@ public class PojoComparators {
 
         public int compare(StoragePojo val1, StoragePojo val2) {
             return compareStorage(val1, val2);
+        }
+    }
+
+    private static class StorageDescendingComparator
+            implements Comparator<StoragePojo>, java.io.Serializable {
+        @Serial
+        private static final long serialVersionUID = 5666309842825239889L;
+
+        public int compare(StoragePojo val2, StoragePojo val1) {
+            return compareStorageDescending(val1, val2);
         }
     }
     

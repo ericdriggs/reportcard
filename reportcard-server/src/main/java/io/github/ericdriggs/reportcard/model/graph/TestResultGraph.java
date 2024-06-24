@@ -1,5 +1,7 @@
 package io.github.ericdriggs.reportcard.model.graph;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestResultPojo;
 import io.soabase.recordbuilder.core.RecordBuilder;
 
 import java.math.BigDecimal;
@@ -23,4 +25,22 @@ public record TestResultGraph(
         Boolean hasSkip,
         List<TestSuiteGraph> testSuites
 ) implements TestResultGraphBuilder.With {
+    @JsonIgnore
+    public TestResultPojo asTestResultPojo() {
+        return TestResultPojo
+                .builder()
+                .testResultId(testResultId)
+                .stageFk(stageFk)
+                .tests(tests)
+                .skipped(skipped)
+                .error(error)
+                .failure(failure)
+                .time(time)
+                .testResultCreated(testResultCreated)
+                .externalLinks(externalLinks)
+                .isSuccess(isSuccess)
+                .hasSkip(hasSkip)
+                .build();
+
+    }
 }

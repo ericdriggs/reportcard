@@ -1,5 +1,6 @@
 package io.github.ericdriggs.reportcard.controller.graph;
 
+import io.github.ericdriggs.reportcard.cache.dto.CompanyOrgRepoBranchJobRunStageDTO;
 import io.github.ericdriggs.reportcard.controller.browse.BrowseHtmlHelper;
 import io.github.ericdriggs.reportcard.controller.graph.trend.*;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.RunPojo;
@@ -9,6 +10,8 @@ import io.github.ericdriggs.reportcard.model.trend.JobStageTestTrend;
 import io.github.ericdriggs.reportcard.model.trend.TestPackageSuiteCase;
 import io.github.ericdriggs.reportcard.util.StringMapUtil;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
@@ -21,7 +24,7 @@ public class GraphHtmlHelper extends BrowseHtmlHelper {
 
     public static String renderHtml(JobStageTestTrend jobStageTestTrend) {
         final String main = getTrendMainDiv(jobStageTestTrend);
-        return getPage(main, getBreadCrumb(jobStageTestTrend.toCompanyOrgRepoBranchJobRunStageDTO()))
+        return getPage(main, getTrendBreadCrumb(jobStageTestTrend.toCompanyOrgRepoBranchJobRunStageDTO()))
                 .replace("<body>", "<body onload=\"applyTestFilters()\">")
                 .replace("<!--additionalLinks-->", "<link rel=\"stylesheet\" href=\"/css/trend.css\">" + ls + "<script src=\"/js/trend.js\"></script>" + ls);
 
@@ -273,7 +276,7 @@ public class GraphHtmlHelper extends BrowseHtmlHelper {
                     <tr class="test-row-header">
                         <th>Test Package</th>
                         <th>Test Suite</th>
-                        <th>Test Case</th>
+                        <th style="min-width:300px">Test Case</th>
                         <th>Fail Messages</th>
                         <th>Fail Since</th>
                         <th>Success Avg(30)</th>
@@ -286,4 +289,46 @@ public class GraphHtmlHelper extends BrowseHtmlHelper {
                 </table>
             </div>
             """;
+
+
+
+
+    protected static List<Pair<String, String>> getTrendBreadCrumb(CompanyOrgRepoBranchJobRunStageDTO path) {
+        List<Pair<String, String>> breadCrumbs = new ArrayList<>();
+        breadCrumbs.add(Pair.of("home", getUrl(null)));
+
+        if (path != null) {
+            if (!StringUtils.isEmpty(path.getCompany())) {
+                breadCrumbs.add(Pair.of(path.getCompany(),
+                        getUrl(CompanyOrgRepoBranchJobRunStageDTO.truncateCompany(path))));
+
+                if (!StringUtils.isEmpty(path.getOrg())) {
+                    breadCrumbs.add(Pair.of(path.getOrg(),
+                            getUrl(CompanyOrgRepoBranchJobRunStageDTO.truncateOrg(path))));
+
+                    if (!StringUtils.isEmpty(path.getRepo())) {
+                        breadCrumbs.add(Pair.of(path.getRepo(),
+                                getUrl(CompanyOrgRepoBranchJobRunStageDTO.truncateRepo(path))));
+
+                        if (!StringUtils.isEmpty(path.getBranch())) {
+                            breadCrumbs.add(Pair.of(path.getBranch(),
+                                    getUrl(CompanyOrgRepoBranchJobRunStageDTO.truncateBranch(path))));
+
+                            if (path.getJobId() != null) {
+                                final String jobUrl = getUrl(CompanyOrgRepoBranchJobRunStageDTO.truncateJob(path));
+                                breadCrumbs.add(Pair.of("jobId: " + path.getJobId(), jobUrl));
+                                if (path.getStageName() != null) {
+                                    String stageUrl =  jobUrl + "/stage/" + path.getStageName();
+                                    //TODO: replace with stage view when controller at that path
+                                    breadCrumbs.add(Pair.of("stage: " + path.getStageName(), "#"));
+                                    breadCrumbs.add(Pair.of("trend", stageUrl + "/trend"));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return breadCrumbs;
+    }
 }

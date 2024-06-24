@@ -1,6 +1,7 @@
 package io.github.ericdriggs.reportcard.persist;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import io.github.ericdriggs.reportcard.model.branch.BranchJobLatestRunMap;
 import io.github.ericdriggs.reportcard.model.graph.CompanyGraph;
 import io.github.ericdriggs.reportcard.model.graph.CompanyGraphBuilder;
 import io.github.ericdriggs.reportcard.model.graph.condition.TableConditionMap;
@@ -92,13 +93,52 @@ public class GraphService extends AbstractPersistService {
         }
         tableConditionMap.put(RUN, runCondition);
         tableConditionMap.put(STAGE, STAGE.STAGE_NAME.eq(stageName));
-        return getJobTrendCompanyGraphs(companyName, orgName, repoName, branchName, jobId, stageName, tableConditionMap);
+        return getJobTrendCompanyGraphs(tableConditionMap);
+
+    }
+
+    public BranchJobLatestRunMap getBranchJobLatestRunMap(String companyName,
+                                                          String orgName,
+                                                          String repoName,
+                                                          String branchName) {
+        List<CompanyGraph> companyGraphs = getLatestRunForBranchJobStages(companyName, orgName, repoName, branchName);
+        return BranchJobLatestRunMap.fromCompanyGraphs(companyGraphs);
+    }
+
+    List<CompanyGraph> getLatestRunForBranchJobStages(String companyName,
+                                                      String orgName,
+                                                      String repoName,
+                                                      String branchName) {
+
+        TableConditionMap tableConditionMap = new TableConditionMap();
+        tableConditionMap.put(COMPANY, COMPANY.COMPANY_NAME.eq(companyName));
+        tableConditionMap.put(ORG, ORG.ORG_NAME.eq(orgName));
+        tableConditionMap.put(REPO, REPO.REPO_NAME.eq(repoName));
+        tableConditionMap.put(BRANCH, BRANCH.BRANCH_NAME.eq(branchName));
+        //don't want the full test graph for this view
+        tableConditionMap.put(TEST_RESULT, TEST_RESULT.TEST_RESULT_ID.isNull());
+
+        Condition runCondition =
+                RUN.RUN_ID.in(
+                        select(max(RUN.RUN_ID))
+                                .from(COMPANY)
+                                .leftJoin(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID)).and(ORG.ORG_NAME.eq(orgName)).and(COMPANY.COMPANY_NAME.eq(companyName))
+                                .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID).and(REPO.REPO_NAME.eq(repoName)))
+                                .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID).and(BRANCH.BRANCH_NAME.eq(branchName)))
+                                .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
+                                .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID))
+                                .leftJoin(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID))
+                                .groupBy(JOB.JOB_ID, STAGE.STAGE_NAME)
+                );
+
+        tableConditionMap.put(RUN, runCondition);
+        return getJobTrendCompanyGraphs(tableConditionMap);
 
     }
 
     @SneakyThrows(JsonProcessingException.class)
     @SuppressWarnings("rawtypes")
-    protected List<CompanyGraph> getJobTrendCompanyGraphs(String companyName, String orgName, String repoName, String branchName, Long jobId, String stageName, TableConditionMap tableConditionMap) {
+    protected List<CompanyGraph> getJobTrendCompanyGraphs(TableConditionMap tableConditionMap) {
         Result result = getFullTestGraph(tableConditionMap);
         if (!result.isEmpty() && result.get(0) instanceof Record1 record1) {
             String json = record1.formatJSON();
@@ -156,6 +196,14 @@ public class GraphService extends AbstractPersistService {
                                                                           key("stageId").value(STAGE.STAGE_ID),
                                                                           key("stageName").value(STAGE.STAGE_NAME),
                                                                           key("runFk").value(STAGE.RUN_FK),
+                                                                          key("storages").value(dsl.select(jsonArrayAgg(jsonObject(
+                                                                                  key("storageId").value(STORAGE.STORAGE_ID),
+                                                                                  key("stageFk").value(STORAGE.STAGE_FK),
+                                                                                  key("label").value(STORAGE.LABEL),
+                                                                                  key("prefix").value(STORAGE.PREFIX),
+                                                                                  key("indexFile").value(STORAGE.INDEX_FILE),
+                                                                                  key("storageType").value(STORAGE.STORAGE_TYPE)
+                                                                          ))).from(STORAGE).where(STORAGE.STAGE_FK.eq(STAGE.STAGE_ID).and(tableConditionMap.getCondition(STORAGE)))),
                                                                           key("testResults").value(dsl.select(jsonArrayAgg(jsonObject(
                                                                                   key("testResultId").value(TEST_RESULT.TEST_RESULT_ID),
                                                                                   key("stageFk").value(TEST_RESULT.STAGE_FK),
