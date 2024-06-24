@@ -1,8 +1,11 @@
-package io.github.ericdriggs.reportcard.controller.html;
+package io.github.ericdriggs.reportcard.controller.browse;
 
 import io.github.ericdriggs.reportcard.cache.model.*;
+import io.github.ericdriggs.reportcard.controller.html.TestResultHtmlHelper;
 import io.github.ericdriggs.reportcard.model.StageTestResultModel;
+import io.github.ericdriggs.reportcard.model.branch.BranchJobLatestRunMap;
 import io.github.ericdriggs.reportcard.persist.BrowseService;
+import io.github.ericdriggs.reportcard.persist.GraphService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,17 +13,18 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-//TODO: add reports endpoint after stages
 @RestController
 @RequestMapping("")
 @SuppressWarnings("unused")
-public class UIBrowseController {
+public class BrowseUIController {
 
     private final BrowseService browseService;
+    private final GraphService graphService;
 
     @Autowired
-    public UIBrowseController(BrowseService browseService) {
+    public BrowseUIController(BrowseService browseService, GraphService graphService) {
         this.browseService = browseService;
+        this.graphService = graphService;
     }
 
     @GetMapping(path = {"", "company"}, produces = "text/html")
@@ -57,7 +61,8 @@ public class UIBrowseController {
             @PathVariable String branch,
             @RequestParam(required = false) Map<String, String> jobInfoFilters) {
         BranchStageViewResponse branchStageViewResponse  = browseService.getStageViewForBranch(company, org, repo, branch);
-        return new ResponseEntity<>(BrowseHtmlHelper.getBranchHtml(company, org, repo, branch, branchStageViewResponse), HttpStatus.OK);
+        BranchJobLatestRunMap branchJobLatestRunMap = graphService.getBranchJobLatestRunMap(company, org, repo, branch);
+        return new ResponseEntity<>(BrowseHtmlHelper.getBranchHtml(company, org, repo, branch, branchStageViewResponse, branchJobLatestRunMap), HttpStatus.OK);
     }
 
     @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}",
@@ -98,66 +103,5 @@ public class UIBrowseController {
         StageTestResultModel stageTestResultModel = browseService.getStageTestResultMap(company, org, repo, branch , jobId, runId, stage);
         return new ResponseEntity<>(TestResultHtmlHelper.getTestResult(stageTestResultModel.getTestResult()), HttpStatus.OK);
     }
-
-//
-//    @GetMapping(path = "company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/{runId}/stage/{stage}", produces = "text/html")
-//    public ResponseEntity<Map<Stage, Map<TestResult, Set<TestSuite>>>> getStageTestResultsTestSuites(
-//            @PathVariable String company,
-//            @PathVariable String org,
-//            @PathVariable String repo,
-//            @PathVariable String branch,
-//            @PathVariable Long jobId,
-//            @PathVariable Long runId,
-//            @PathVariable String stage) {
-//        return new ResponseEntity<>(browseService.getStageTestResultsTestSuites(company, org, repo, branch, jobId, runId, stage), HttpStatus.OK);
-//    }
-//
-//    @GetMapping(path = "company/{company}/{org}/repo/{repo}/branch/{branch}/sha/{sha}/run", produces = "text/html")
-//    public ResponseEntity<Map<Branch, Map<Job, Set<Run>>>> getRuns(
-//            @PathVariable String company,
-//            @PathVariable String org,
-//            @PathVariable String repo,
-//            @PathVariable String branch,
-//            @PathVariable String sha,
-//            @RequestParam(required = false) Map<String, String> jobInfoFilters) {
-//        //TODO: filters
-//        return new ResponseEntity<>(browseService.getBranchJobsRunsForSha(company, org, repo, branch, sha), HttpStatus.OK);
-//    }
-//
-//    @GetMapping(path = "company/{company}/{org}/repo/{repo}/branch/{branch}/sha/{sha}/run/{runReference}", produces = "text/html")
-//    public ResponseEntity<Run> getRunForReference(
-//            @PathVariable String company,
-//            @PathVariable String org,
-//            @PathVariable String repo,
-//            @PathVariable String branch,
-//            @PathVariable String sha,
-//            @PathVariable String runReference,
-//            @RequestParam(required = false) Map<String, String> metadataFilters) {
-//        return new ResponseEntity<>(browseService.getRunFromReference(company, org, repo, branch, sha, runReference), HttpStatus.OK);
-//    }
-//
-//    @GetMapping(path = "company/{company}/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/{runId}/stages/{stage}", produces = "text/html")
-//    public ResponseEntity<Map<Stage, Map<TestResult, Set<TestSuite>>>> getStage(
-//            @PathVariable String company,
-//            @PathVariable String org,
-//            @PathVariable String repo,
-//            @PathVariable String branch,
-//            @PathVariable Long jobId,
-//            @PathVariable Long runId,
-//            @PathVariable String stage,
-//            @RequestParam(required = false) Map<String, String> metadataFilters) {
-//        return new ResponseEntity<>(browseService.getStageTestResultsTestSuites(company, org, repo, branch, jobId, runId, stage), HttpStatus.OK);
-//    }
-
-//    @GetMapping(path = "{org}/repo/{repo}/branch/{branch}/sha/{sha}/run/{runReference}/stages", produces = "text/html")
-//    public ResponseEntity<Map<Stage,Set<TestResult>>> getStages (
-//            @PathVariable String org,
-//            @PathVariable String repo,
-//            @PathVariable String branch,
-//            @PathVariable String sha,
-//            @PathVariable String runReference,
-//            @RequestParam(required = false) Map<String,String> metadataFilters) {
-//        return new ResponseEntity<>(reportCardService.getStageTestResults(org, repo, branch, sha, runReference), HttpStatus.OK);
-//    }
 
 }

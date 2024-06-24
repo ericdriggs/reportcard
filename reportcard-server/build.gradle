@@ -4,6 +4,7 @@ buildscript {
         awsCrtVersion = "0.29.7"
         jaxbVersion = '2.3.1'
         mysqlPassword=System.getenv("MYSQL_PASSWORD")
+        recordProcessorVersion = '41'
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
@@ -37,10 +38,17 @@ repositories {
 dependencies {
     implementation project(':reportcard-model')
     testImplementation "net.javacrumbs.json-unit:json-unit:${jsonUnitVersion}"
+
     //Lombok
     implementation 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'
+
+    //record builders
+    implementation "io.soabase.record-builder:record-builder-processor:${recordProcessorVersion}"
+    annotationProcessor "io.soabase.record-builder:record-builder-processor:${recordProcessorVersion}"
+    testAnnotationProcessor "io.soabase.record-builder:record-builder-processor:${recordProcessorVersion}"
+    compileOnly "io.soabase.record-builder:record-builder-core:${recordProcessorVersion}"
 
     //Swagger
     implementation 'org.springdoc:springdoc-openapi-ui:1.8.0'
@@ -76,6 +84,8 @@ dependencies {
     //compress/decompress files
     implementation 'org.apache.commons:commons-compress:1.26.0'
 
+    //util
+    implementation 'org.apache.commons:commons-lang3:3.14.0'
 
 
     //AWS
@@ -112,12 +122,12 @@ import java.util.regex.Matcher
 
 task generateJooqSchemaSource {
     group = "jooq"
-    version = "3.18.4"
+    version = "3.19.8"
     doLast {
         GenerationTool.generate(new Configuration()
                 .withJdbc(new Jdbc()
                         .withDriver('com.mysql.cj.jdbc.Driver')
-                        .withUrl('jdbc:mysql://127.0.0.1:3306/reportcard?serverTimezone=UTC')
+                        .withUrl('jdbc:mysql://127.0.0.1:3306/reportcard?serverTimezone=UTC&allowMultiQueries=true')
                         .withUser('root')
                         .withPassword(mysqlPassword)
                         .withProperties(Arrays.asList(new Property().withKey("ssl").withValue("true")))
@@ -172,7 +182,7 @@ task generateJooqSchemaSource {
 }
 
 jooq {
-    version = '3.18.4'
+    version = '3.19.8'
     edition = nu.studer.gradle.jooq.JooqEdition.OSS
     configurations {
         generated {
@@ -180,7 +190,7 @@ jooq {
             generationTool {
                 jdbc {
                     driver = 'com.mysql.cj.jdbc.Driver'
-                    url = 'jdbc:mysql://127.0.0.1:3306/reportcard?serverTimezone=UTC'
+                    url = 'jdbc:mysql://127.0.0.1:3306/reportcard?serverTimezone=UTC&allowMultiQueries=true'
                     user = 'root'
                     password = mysqlPassword
                     properties {
@@ -192,9 +202,9 @@ jooq {
                 }
                 generator {
 
-                    name = 'org.jooq.codegen.DefaultGenerator'
+                    name = 'org.jooq.codegen.JavaLombokGenerator'
                     strategy {
-                        name = 'org.jooq.codegen.DefaultGeneratorStrategy'
+                        name = 'org.jooq.codegen.SuffixGeneratorStrategy'
                     }
                     database {
                         name = 'org.jooq.meta.mysql.MySQLDatabase'

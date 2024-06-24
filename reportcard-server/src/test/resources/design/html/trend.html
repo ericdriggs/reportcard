@@ -1,0 +1,255 @@
+<html>
+<!--
+* need to explain subscript for failure and in general need documentation page on how to use
+
+* browser side cache using header, e.g. Cache-Control: max-age=600 //10 mins
+
+-->
+
+<head>
+    <link rel="stylesheet" href="css/shared.css">
+    <link rel="stylesheet" href="css/sortable.min.css"/>
+    <script src="js/sortable.min.js"></script>
+    <link rel="stylesheet" href="css/trend.css">
+    <title>ReportCard</title>
+</head>
+<div id="main">
+    <details id="test-trend-context" open="open" class="test-trend-context">
+        <summary id="trend-context-summary" class="trend-context-summary ">Test trend context</summary>
+        <dl class="trend-context">
+            <dt class="dt-trend-context">company</dt>
+            <dd class="dd-trend-context">company1</dd>
+            <dt class="dt-trend-context">org</dt>
+            <dd class="dd-trend-context">org1</dd>
+            <dt class="dt-trend-context">repo</dt>
+            <dd class="dd-trend-context">repo1</dd>
+            <dt class="dt-trend-context">branch</dt>
+            <dd class="dd-trend-context">main</dd>
+            <dt class="dt-trend-context">jobInfo</dt>
+            <dd>
+                <span class="job-info"><span class="job-info-term">application:&nbsp;</span>&nbsp;random-unified-service</span>
+                <div class="job-info"><span class="job-info-term">pipeline:&nbsp;</span> staging-pipeline-for-widget-testing</div>
+                <div class="job-info"><span class="job-info-term">env:&nbsp;</span>staging</div>
+            </dd>
+            <dt class="dt-trend-context">stage</dt>
+            <dd>stage1</dd>
+        </dl>
+        <br>
+    </details>
+    <fieldset style="display:inline-block" id="test-filters">
+        <legend>Test Filters</legend>
+        <label for="test-suites">Suite</label>
+        <select name="test-suites" id="test-suites">
+            <option value="all" default>all</option>
+            <option value="Suite1">Suite1</option>
+            <option value="Suite1">Suite2</option>
+        </select>
+
+        <label for="test-classes">Classes</label>
+        <select name="test-classes" id="test-classes">
+            <option value="all" default>all</option>
+            <option value="Suite1">Class11</option>
+            <option value="Suite1">Suite21</option>
+            <option value="Suite1">Suite22</option>
+        </select>
+
+        <label for="test-classes">Cases</label>
+        <select name="test-cases" id="test-cases">
+            <option value="all" default>all</option>
+            <option value="TBD">TBD</option>
+        </select>
+
+        <label for="test-statuses">Status</label>
+        <select name="test-statuses" id="test-statuses">
+            <option value="all" default>all</option>
+            <option value="Fail">Fail</option>
+            <option value="Skip">Skip</option>
+            <option value="Success">Success</option>
+        </select>
+    </fieldset>
+    <br>
+    <table class="sortable" style="vertical-align: top" id="test-case-trends">
+        <thead>
+        <tr class="test-row-header">
+            <th>Test Package</th>
+            <th>Test Suite</th>
+            <th>Test Case</th>
+            <th>Fail Messages</th>
+            <th>Fail Since</th>
+            <th>Avg(30)</th>
+            <th>Avg(90)</th>
+            <th title="2024-06-10T23:59:24"><a href="#runLink">10</a></th>
+            <th title="2024-06-09T23:59:24"><a href="#runLink">9</a></th>
+            <th title="2024-06-08T23:59:24"><a href="#runLink">8</a></th>
+            <th title="2024-06-07T23:59:24"><a href="#runLink">7</a></th>
+            <th title="2024-06-06T23:59:24"><a href="#runLink">6</a></th>
+            <th title="2024-06-05T23:59:24"><a href="#runLink">5</a></th>
+            <th title="2024-06-04T23:59:24"><a href="#runLink">4</a></th>
+            <th title="2024-06-03T23:59:24"><a href="#runLink">3</a></th>
+            <th title="2024-06-02T23:59:24"><a href="#runLink">2</a></th>
+            <th title="2024-06-01T23:59:24"><a href="#runLink">1</a></th>
+        </tr>
+        </thead>
+        <tbody>
+
+        <tr class="test-row">
+            <td >features/never-gonna-give-you-up.feature</td>
+            <td>features.never-gonna-give-you-up</td>
+            <td>You know the rules and so do I</td>
+            <td class="fail-messages">
+                <details>
+                    <summary class="fail-messages">messages</summary>
+                    <dl>
+                        <dt>1</dt>
+                        <dd>never-gonna-give-you-up.feature:9 - path: $, actual: true, expected: false, reason: not equal (Boolean)">* match true == BooleanGenerator.generateBoolean(1) .............................................. passed--></dd>
+                    </dl>
+                </details>
+            </td>
+            <td class="fail-since">-</td>
+            <td class="pass-percent stage-fail">50%</td>
+            <td class="pass-percent stage-fail">50%</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-fail">F<sub>1</sub></td>
+            <td class="stage-pass">S</td>
+            <td class="stage-fail">F<sub>1</sub></td>
+            <td class="stage-pass">S</td>
+            <td class="stage-fail">F<sub>1</sub></td>
+            <td class="stage-pass">S</td>
+            <td class="stage-fail">F<sub>1</sub></td>
+            <td class="stage-pass">S</td>
+            <td class="stage-fail">F<sub>1</sub></td>
+        </tr>
+        <tr class="test-row">
+            <td>Suite1</td>
+            <td>Class11</td>
+            <td>Case11A</td>
+            <td class="fail-messages">
+                <details >
+                    <summary class="fail-messages">messages</summary>
+                    <dl>
+                        <dt>1</dt>
+                        <dd>foo</dd>
+                        <dt>2</dt>
+                        <dd>bar</dd>
+                    </dl>
+                </details>
+            </td>
+            <td class="fail-since">-</td>
+            <td class="pass-percent stage-fail">50%</td>
+            <td class="pass-percent stage-fail">50%</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-fail">F<sub>1</sub></td>
+            <td class="stage-pass">S</td>
+            <td class="stage-fail">F<sub>1</sub></td>
+            <td class="stage-pass">S</td>
+            <td class="stage-fail">F<sub>2</sub></td>
+            <td class="stage-pass">S</td>
+            <td class="stage-fail">F<sub>2</sub></td>
+            <td class="stage-pass">S</td>
+            <td class="stage-fail">F<sub>2</sub></td>
+        </tr>
+        <tr class="test-row">
+            <td>Suite1</td>
+            <td>Class11</td>
+            <td>Case11B</td>
+            <td class="fail-messages">
+                <details >
+                    <summary class="fail-messages">messages</summary>
+                    <dl>
+                        <dt>1</dt>
+                        <dd>foo</dd>
+                    </dl>
+                </details>
+            </td>
+            <td class="fail-since">-</td>
+            <td class="pass-percent stage-fail">70%</td>
+            <td class="pass-percent stage-fail">70%</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-fail">F<sub>1</sub></td>
+            <td class="stage-fail">F<sub>1</sub></td>
+            <td class="stage-fail">F<sub>1</sub></td>
+        </tr>
+        <tr class="test-row">
+            <td>Suite2</td>
+            <td>Class21</td>
+            <td>Case21A</td>
+            <td class="fail-messages">
+                <details >
+                    <summary class="fail-messages">messages</summary>
+                    <dl>
+                        <dt>1</dt>
+                        <dd>foo</dd>
+                    </dl>
+                </details>
+            </td>
+            <td class="fail-since">2024-06-08</td>
+            <td class="pass-percent stage-fail">30%</td>
+            <td class="pass-percent stage-fail">30%</td>
+            <td class="stage-fail">F</td>
+            <td class="stage-fail">F</td>
+            <td class="stage-fail">F</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-pass">S</td>
+        </tr>
+        <tr class="test-row">
+            <td>Suite2</td>
+            <td>Class21</td>
+            <td>Case21B</td>
+            <td class="fail-messages">
+                <details >
+                    <summary class="fail-messages">messages</summary>
+                    <dl>
+                        <dt>1</dt>
+                        <dd>foo</dd>
+                    </dl>
+                </details>
+            </td>
+            <td class="fail-since">2024-06-07</td>
+            <td class="pass-percent stage-fail">50%</td>
+            <td class="pass-percent stage-fail">50%</td>
+            <td class="stage-fail">F</td>
+            <td class="stage-fail">F</td>
+            <td class="stage-fail">F</td>
+            <td class="stage-fail">F</td>
+            <td class="stage-skip">-</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-skip">-</td>
+        </tr>
+        <tr class="test-row">
+            <td>Suite2</td>
+            <td>Class22</td>
+            <td>Case22A</td>
+            <td class="fail-messages">-</td>
+            <td class="fail-since">-</td>
+            <td class="pass-percent stage-pass">100%</td>
+            <td class="pass-percent stage-pass">100%</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-pass">S</td>
+            <td class="stage-pass">S</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+</html>

@@ -14,6 +14,7 @@ public enum TestData {
     public static final Long testResultId = 1L;
     public static final Long testSuiteId = 1L;
 
+    public final static Long jobId = 1l;
     public final static TreeMap<String, String> jobInfo = new TreeMap<>();
 
     static {

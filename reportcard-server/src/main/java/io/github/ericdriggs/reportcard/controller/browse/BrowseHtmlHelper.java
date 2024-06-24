@@ -1,23 +1,24 @@
-package io.github.ericdriggs.reportcard.controller.html;
+package io.github.ericdriggs.reportcard.controller.browse;
 
 import io.github.ericdriggs.reportcard.cache.dto.*;
 import io.github.ericdriggs.reportcard.cache.model.*;
-import io.github.ericdriggs.reportcard.cache.model.CompanyOrgRepoBranch;
 import io.github.ericdriggs.reportcard.controller.StorageController;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.*;
 import io.github.ericdriggs.reportcard.model.StageTestResultPojo;
+import io.github.ericdriggs.reportcard.model.branch.BranchJobLatestRunMap;
+import io.github.ericdriggs.reportcard.model.branch.RunStorageTestResult;
 import io.github.ericdriggs.reportcard.util.NumberStringUtil;
 import io.github.ericdriggs.reportcard.util.PrettyPrintUtil;
+import io.github.ericdriggs.reportcard.util.StringMapUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.Instant;
+import java.net.URI;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.*;
-
 import java.util.stream.Collectors;
 
 public class BrowseHtmlHelper {
@@ -40,9 +41,9 @@ public class BrowseHtmlHelper {
     //******************** companies ********************//
 
     public static String getCompaniesHtml() {
-        final String main = baseMain.replace(LEGEND, "Companies")
-                                    .replace(TABLE_HEADERS, nameCountHeaders)
-                                    .replace(TABLE_ROWS, getCompaniesItems());
+        final String main = baseFieldsetTable.replace(LEGEND, "Companies")
+                                             .replace(TABLE_HEADERS, nameCountHeaders)
+                                             .replace(TABLE_ROWS, getCompaniesItems());
 
         return getPage(main, getBreadCrumb(null));
     }
@@ -75,9 +76,9 @@ public class BrowseHtmlHelper {
 
         Map<OrgPojo, Set<RepoPojo>> orgRepos = companyOrgReposMap.values().stream().findFirst().get();
 
-        final String main = baseMain.replace(LEGEND, "Orgs")
-                                    .replace(TABLE_HEADERS, nameCountHeaders)
-                                    .replace(TABLE_ROWS, getCompanyOrgs(path, orgRepos));
+        final String main = baseFieldsetTable.replace(LEGEND, "Orgs")
+                                             .replace(TABLE_HEADERS, nameCountHeaders)
+                                             .replace(TABLE_ROWS, getCompanyOrgs(path, orgRepos));
         return getPage(main, getBreadCrumb(path));
     }
 
@@ -110,9 +111,9 @@ public class BrowseHtmlHelper {
 
         Map<RepoPojo, Set<BranchPojo>> repoBranchMap = orgRepoBranchMap.values().stream().findFirst().orElseThrow();
 
-        final String main = baseMain.replace(LEGEND, "Repos")
-                                    .replace(TABLE_HEADERS, nameCountLastUpdatedHeaders)
-                                    .replace(TABLE_ROWS, getOrgRepos(path, repoBranchMap));
+        final String main = baseFieldsetTable.replace(LEGEND, "Repos")
+                                             .replace(TABLE_HEADERS, nameCountLastUpdatedHeaders)
+                                             .replace(TABLE_ROWS, getOrgRepos(path, repoBranchMap));
 
         return getPage(main, getBreadCrumb(path));
     }
@@ -151,9 +152,9 @@ public class BrowseHtmlHelper {
         }
 
         Map<BranchPojo, Set<JobPojo>> branchJobMap = repoBranchJobMap.values().stream().findFirst().orElseThrow();
-        final String main = baseMain.replace(LEGEND, "Branches")
-                                    .replace(TABLE_HEADERS, nameCountLastUpdatedHeaders)
-                                    .replace(TABLE_ROWS, getRepoBranches(path, branchJobMap));
+        final String main = baseFieldsetTable.replace(LEGEND, "Branches")
+                                             .replace(TABLE_HEADERS, nameCountLastUpdatedHeaders)
+                                             .replace(TABLE_ROWS, getRepoBranches(path, branchJobMap));
 
         return getPage(main, getBreadCrumb(path));
     }
@@ -173,9 +174,9 @@ public class BrowseHtmlHelper {
 
     //******************** branch ********************//
 
-    public static String getBranchHtml(String company, String org, String repo, String branch, BranchStageViewResponse branchStageViewResponse) {
+    public static String getBranchHtml(String company, String org, String repo, String branch, BranchStageViewResponse branchStageViewResponse, BranchJobLatestRunMap branchJobLatestRunMap) {
 
-        final CompanyOrgRepoBranchJobRunStageDTO path = CompanyOrgRepoBranchJobRunStageDTO
+        final CompanyOrgRepoBranchDTO dto = CompanyOrgRepoBranchDTO
                 .builder()
                 .company(company)
                 .org(org)
@@ -183,7 +184,9 @@ public class BrowseHtmlHelper {
                 .branch(branch)
                 .build();
 
-        Map<BranchPojo, Map<JobPojo, Set<RunPojo>>> branchJobRunMap = BranchJobsRunsCacheMap.INSTANCE.getValue(new CompanyOrgRepoBranchDTO(company, org, repo, branch));
+        final CompanyOrgRepoBranchJobRunStageDTO path = dto.toCompanyOrgRepoBranchJobRunStageDTO();
+
+        Map<BranchPojo, Map<JobPojo, Set<RunPojo>>> branchJobRunMap = BranchJobsRunsCacheMap.INSTANCE.getValue(dto);
 
         if (branchJobRunMap == null || branchJobRunMap.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Entry not found: " + path.toUrlPath());
@@ -192,15 +195,15 @@ public class BrowseHtmlHelper {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "More than one entry found: " + path.toUrlPath());
         }
 
-        final String jobMain = baseMain.replace(LEGEND, "Jobs")
-                                    .replace(TABLE_HEADERS, branchHeaders)
-                                    .replace(TABLE_ROWS, getJobRuns(path, branchStageViewResponse.getJobRun_StageTestResult_StoragesMap().keySet()) );
+        final String jobMain = baseFieldsetTable.replace(LEGEND, "Jobs")
+                                                .replace(TABLE_HEADERS, branchHeaders)
+                                                .replace(TABLE_ROWS, getJobRuns(path, branchStageViewResponse.getJobRun_StageTestResult_StoragesMap().keySet()));
 
-        final String stagesMain = getBranchStageView(branchStageViewResponse);
+        final String jobStagesDiv = getJobStages(branchJobLatestRunMap);
 
+        final String stageHistory = getBranchStageView(branchStageViewResponse);
 
-
-        return getPage(jobMain + stagesMain, getBreadCrumb(path));
+        return getPage("<div>" + jobMain +  "<br>" + jobStagesDiv + "</div>" + stageHistory, getBreadCrumb(path));
     }
 
     protected static String getJobRuns(CompanyOrgRepoBranchJobRunStageDTO path, Set<JobRun> jobRuns) {
@@ -250,9 +253,9 @@ public class BrowseHtmlHelper {
         }
 
         Map<RunPojo, Set<StagePojo>> runStageMap = jobRunStageMap.values().stream().findFirst().orElseThrow();
-        final String main = baseMain.replace(LEGEND, "Runs")
-                                    .replace(TABLE_HEADERS, jobHeaders)
-                                    .replace(TABLE_ROWS, getRunStages(path, runStageMap));
+        final String main = baseFieldsetTable.replace(LEGEND, "Runs")
+                                             .replace(TABLE_HEADERS, jobHeaders)
+                                             .replace(TABLE_ROWS, getRunStages(path, runStageMap));
 
         final String stagesMain = getBranchStageView(branchStageViewResponse);
 
@@ -288,15 +291,14 @@ public class BrowseHtmlHelper {
             <th>Last Updated</th>
             """;
 
-
     public static String getBranchStageView(BranchStageViewResponse branchStageViewResponse) {
 
         if (branchStageViewResponse == null || branchStageViewResponse.getJobRun_StageTestResult_StoragesMap() == null || branchStageViewResponse.getJobRun_StageTestResult_StoragesMap().isEmpty()) {
             return "";
         }
 
-
-        final CompanyOrgRepoBranchJobRunStageDTO branchPath; {
+        final CompanyOrgRepoBranchJobRunStageDTO branchPath;
+        {
             final CompanyOrgRepoBranch c = branchStageViewResponse.getCompanyOrgRepoBranch();
             branchPath = CompanyOrgRepoBranchJobRunStageDTO
                     .builder()
@@ -359,7 +361,7 @@ public class BrowseHtmlHelper {
             return "";
         }
         StringBuilder sb = new StringBuilder();
-        for(StoragePojo storage : storages) {
+        for (StoragePojo storage : storages) {
             final String reportLink = reportLinkBase
                     .replace("{reportName}", storage.getLabel())
                     .replace("{reportUrl}", getStorageKey(storage));
@@ -372,12 +374,12 @@ public class BrowseHtmlHelper {
             """
             <div id="stage-view">
               <fieldset>
-                <legend>Run stages view</legend>
-                <table class="sortable" id="stage-table">
+                <legend>Run stage history</legend>
+                <table class="sortable" id="run-stage-history-table">
                   <tbody>
                     <!--runRows-->
                   </tbody>
-                </table> <!-- end stage-table -->
+                </table> <!-- end run-stage-history-table -->
               </fieldset>
             </div><!-- end stage view -->
             """;
@@ -410,9 +412,86 @@ public class BrowseHtmlHelper {
             """;
 
     protected final static String reportLinkBase = "<a class=\"info report-link\" href=\"{reportUrl}\">" +
-                                                 "<img alt=\"{reportName}\" class=\"report-img\" src=\"/image/report-simple.svg\">" +
-                                                 "{reportName}" +
-                                                 "</a>";
+                                                   "<img alt=\"{reportName}\" class=\"report-img\" src=\"/image/report-simple.svg\">" +
+                                                   "{reportName}" +
+                                                   "</a>";
+
+    //******************** job stages ********************//
+
+    public static String getJobStages(BranchJobLatestRunMap latest) {
+
+
+        StringBuilder jobStageRows = new StringBuilder();
+        CompanyOrgRepoBranchDTO companyOrgRepoBranchDTO = CompanyOrgRepoBranchDTO
+                .builder()
+                .company(latest.getCompanyPojo().getCompanyName())
+                .org(latest.getOrgPojo().getOrgName())
+                .repo(latest.getRepoPojo().getRepoName())
+                .branch(latest.getBranchPojo().getBranchName())
+                .build();
+
+        for (Map.Entry<JobPojo, TreeMap<String, RunStorageTestResult>> jobLatestEntry : latest.getJobStageLatestMap().entrySet()) {
+
+            final JobPojo jobPojo = jobLatestEntry.getKey();
+            final Long jobId = jobPojo.getJobId();
+            final CompanyOrgRepoBranchJobRunStageDTO jobPath = companyOrgRepoBranchDTO.toCompanyOrgRepoBranchJobRunStageDTO( jobId,  null, null);
+            final TreeMap<String, RunStorageTestResult> stageReports = jobLatestEntry.getValue();
+            for (Map.Entry<String, RunStorageTestResult> stageEntry : stageReports.entrySet()) {
+
+                final String stageName = stageEntry.getKey();
+                final RunStorageTestResult runStorageTestResult = stageEntry.getValue();
+                final RunPojo runPojo = runStorageTestResult.getRunPojo();
+                final Long runId = runPojo.getRunId();
+                final CompanyOrgRepoBranchJobRunStageDTO stagePath = companyOrgRepoBranchDTO.toCompanyOrgRepoBranchJobRunStageDTO( jobId,  runId, stageName);
+                final URI trendReportURI = getTrendReportURI(companyOrgRepoBranchDTO.toCompanyOrgRepoBranchJobRunStageDTO( jobId,  runId, stageName), stageName);
+                jobStageRows.append(getJobRunRow(jobPath,jobPojo.getJobInfo(), stageName, runStorageTestResult.getStoragePojos(), trendReportURI));
+
+            }
+        }
+
+        final String jobStageHeaders =
+                """
+                <th>Job Id</th>
+                <th>Job Info</th>
+                <th>Stage Name</th>
+                <th>Latest report(s)</th>
+                <th>Trend reports</th>
+                """;
+
+        return baseFieldsetTable.replace(LEGEND, "Job Stages")
+                                .replace(TABLE_HEADERS, jobStageHeaders)
+                                .replace(TABLE_ROWS, jobStageRows);
+    }
+
+
+    private static URI getTrendReportURI(CompanyOrgRepoBranchJobRunStageDTO c, String stageName)  {
+        //return new URI(c.toUrlPath() + "/trend");
+        return URI.create("/company/" + c.getCompany() + "/org/" + c.getOrg() + "/repo/" + c.getRepo() + "/branch/" + c.getBranch() + "/job/" + c.getJobId() + "/stage/" + stageName + "/trend");
+    }
+
+    private static String getJobRunRow(CompanyOrgRepoBranchJobRunStageDTO path, String jobInfo, String stageName, TreeSet<StoragePojo> storagePojos, URI trendReportURI) {
+
+        TreeMap<String,StoragePojo> latestStoragePojos = new TreeMap<>();
+        for (StoragePojo storagePojo : storagePojos) {
+            latestStoragePojos.putIfAbsent(storagePojo.getLabel(), storagePojo);
+        }
+        List<String> latestReports = new ArrayList<>();
+        for (Map.Entry<String, StoragePojo> entry : latestStoragePojos.entrySet()) {
+            final StoragePojo storagePojo = entry.getValue();
+            latestReports.add( getReportLinks(Set.of(storagePojo)));
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("<tr>").append(ls)
+          .append("  <td><a href=\"" + getUrl(CompanyOrgRepoBranchJobRunStageDTO.truncateJob(path)) + "\">" + path.getJobId() + "</a></td>").append(ls)
+          .append("  <td class=\"info\">" + StringMapUtil.jsonToDefinitionList(jobInfo) + "</td>").append(ls)
+          .append("  <td><a href=\"" + getUrl(path.toBuilder().stageName(stageName).build()) + "\">" + stageName + "</a></td>").append(ls)
+          .append("  <td>" + String.join(", ", latestReports + "</td>")).append(ls)
+          .append("  <td><a href=\"" + trendReportURI.toString() + "\">trend link</a></td>").append(ls);
+        sb.append("</tr>").append(ls);
+        return sb.toString();
+    }
 
     //******************** run ********************//
 
@@ -438,9 +517,9 @@ public class BrowseHtmlHelper {
         }
 
         Map<StagePojo, Set<TestResultPojo>> stageTestResultMap = runStageTestResultMap.values().stream().findFirst().orElseThrow();
-        final String main = baseMain.replace(LEGEND, "Stages")
-                                    .replace(TABLE_HEADERS, nameCountLastUpdatedHeaders)
-                                    .replace(TABLE_ROWS, getStageTestResult(path, stageTestResultMap));
+        final String main = baseFieldsetTable.replace(LEGEND, "Stages")
+                                             .replace(TABLE_HEADERS, nameCountLastUpdatedHeaders)
+                                             .replace(TABLE_ROWS, getStageTestResult(path, stageTestResultMap));
 
         return getPage(main, getBreadCrumb(path));
     }
@@ -518,13 +597,13 @@ public class BrowseHtmlHelper {
             sb.append("  <td class=\"info\">" + info + "</td>").append(ls);
         }
         if (date != null) {
-            sb.append("  <td class=\"info\">" + date.toString() + "</td>").append(ls);
+            sb.append("  <td class=\"info\">" + date + "</td>").append(ls);
         }
         sb.append("</tr>").append(ls);
         return sb.toString();
     }
 
-    protected static String getLink( String text, String url) {
+    protected static String getLink(String text, String url) {
         return getLink(text, url, null);
     }
 
@@ -598,9 +677,9 @@ public class BrowseHtmlHelper {
     protected final static String TABLE_HEADERS = "<!--tableHeaders-->";
     protected final static String TABLE_ROWS = "<!--tableRows-->";
 
-    protected final static String baseMain =
+    protected final static String baseFieldsetTable =
             """
-            <div name="browse">
+            <div name="base-fieldset-div" id="base-fieldset-div">
               <fieldset style="display: inline-block">
                 <legend><!--legend--></legend>
                 <table style="border:1px" class="sortable">
@@ -621,6 +700,7 @@ public class BrowseHtmlHelper {
             <head>
               <link rel="stylesheet" href="/css/shared.css">
               <link rel="stylesheet" href="/css/sortable.min.css"/>
+              <!--additionalLinks-->
               <script src="/js/sortable.min.js"></script>
               <title>ReportCard</title>
             </head>
@@ -643,8 +723,6 @@ public class BrowseHtmlHelper {
             <div class="flex-row" role="main" id="main">
             <!--main-->
             </div><!-- end main -->
-            
-            
             </body>
             </html>
             """;

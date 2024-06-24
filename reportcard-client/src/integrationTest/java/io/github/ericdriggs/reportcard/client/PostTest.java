@@ -1,14 +1,12 @@
 package io.github.ericdriggs.reportcard.client;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-import java.util.TreeMap;
-
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class PostTest {
 
@@ -39,8 +37,8 @@ public class PostTest {
         PostWebClient postClient = new PostWebClient();
         PostRequest postRequest = getTestPostRequest();
         Mono<String> response = postClient.postTestReport(postRequest);
-        response.subscribe(result -> assertNotNull(result));
-        response.subscribe(result -> System.out.println(result));
+        response.subscribe(Assertions::assertNotNull);
+        response.subscribe(System.out::println);
 
     }
 
@@ -63,7 +61,10 @@ public class PostTest {
                         .setJobInfo(metadata)
                         .setRunReference(runReference)
                         .setExternalLinks(externalLinks)
-                        .setStage(stage);
+                        .setStage(stage)
+                        .setTestReportPath(testReportPath)
+                        .setTestReportRegex(testReportRegex)
+                ;
 
         return new PostRequest(reportMetaData, new ReportCardServerData(reportCardHost, reportCardUser, reportCardPass));
     }

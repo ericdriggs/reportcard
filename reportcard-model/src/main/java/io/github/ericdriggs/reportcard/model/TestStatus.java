@@ -21,6 +21,10 @@ public enum TestStatus {
         this.testStatusType = testStatusType;
     }
 
+    public boolean isSuccess() {
+        return this == SUCCESS;
+    }
+
     public boolean isErrorOrFailure() {
         return testStatusType == TestStatusType.ERROR || testStatusType == TestStatusType.FAILURE;
     }

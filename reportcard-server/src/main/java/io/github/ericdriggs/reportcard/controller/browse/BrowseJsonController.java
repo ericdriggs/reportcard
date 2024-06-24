@@ -1,19 +1,18 @@
-package io.github.ericdriggs.reportcard.controller;
+package io.github.ericdriggs.reportcard.controller.browse;
 
-import java.util.Map;
-import java.util.Set;
-
-import io.github.ericdriggs.reportcard.cache.dto.CompanyOrgRepoBranchDTO;
-import io.github.ericdriggs.reportcard.model.StageTestResultModel;
-import io.github.ericdriggs.reportcard.persist.BrowseService;
 import io.github.ericdriggs.reportcard.cache.dto.*;
 import io.github.ericdriggs.reportcard.cache.model.*;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.*;
+import io.github.ericdriggs.reportcard.model.StageTestResultModel;
+import io.github.ericdriggs.reportcard.persist.BrowseService;
 import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
+import java.util.Set;
 
 //TODO: add reports endpoint after stages
 @RestController
@@ -89,7 +88,6 @@ public class BrowseJsonController {
         return new ResponseEntity<>(RunStagesTestResultsCacheMap.INSTANCE.getValue(new CompanyOrgRepoBranchJobRunDTO(company, org, repo, branch, jobId, runId)), HttpStatus.OK);
     }
 
-
     @GetMapping(path = "company/{company}/{org}/repo/{repo}/branch/{branch}/sha/{sha}/run", produces = "application/json")
     public ResponseEntity<Map<BranchPojo, Map<JobPojo, Set<RunPojo>>>> getRuns(
             @PathVariable String company,
@@ -125,16 +123,4 @@ public class BrowseJsonController {
             @PathVariable String stage) {
         return new ResponseEntity<>(browseService.getStageTestResultMap(company, org, repo, branch, jobId, runId, stage), HttpStatus.OK);
     }
-
-//    @GetMapping(path = "{org}/repo/{repo}/branch/{branch}/sha/{sha}/run/{runReference}/stages", produces = "application/json")
-//    public ResponseEntity<Map<StagePojo,Set<TestResultPojo>>> getStages (
-//            @PathVariable String org,
-//            @PathVariable String repo,
-//            @PathVariable String branch,
-//            @PathVariable String sha,
-//            @PathVariable String runReference,
-//            @RequestParam(required = false) Map<String,String> metadataFilters) {
-//        return new ResponseEntity<>(reportCardService.getStageTestResults(org, repo, branch, sha, runReference), HttpStatus.OK);
-//    }
-
 }

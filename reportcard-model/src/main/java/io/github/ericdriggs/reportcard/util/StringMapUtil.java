@@ -1,9 +1,12 @@
 package io.github.ericdriggs.reportcard.util;
 
-import com.sun.source.tree.Tree;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.ericdriggs.reportcard.mappers.SharedObjectMappers;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -11,6 +14,25 @@ import java.util.TreeMap;
 @Slf4j
 public enum StringMapUtil {
     ;//static methods only
+
+    private final static ObjectMapper  mapper = SharedObjectMappers.simpleObjectMapper;
+
+    @SneakyThrows(JsonProcessingException.class)
+    public static TreeMap<String,String> jsonToMap(String json) {
+        TypeReference<TreeMap<String, String>> typeRef
+                = new TypeReference<TreeMap<String, String>>() {};
+        return mapper.readValue(json, typeRef);
+    }
+
+    public static String jsonToDefinitionList(String json) {
+
+        StringBuilder builder = new StringBuilder();
+        TreeMap<String,String> map = jsonToMap(json);
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            builder.append("<dt>" + entry.getKey() + "</dt><dd>" + entry.getValue() + "</dd>");
+        }
+        return "<dl>" + builder + "</dl>";
+    }
 
     public static TreeMap<String,String> stringToMap(String str) {
         if (str == null) {
