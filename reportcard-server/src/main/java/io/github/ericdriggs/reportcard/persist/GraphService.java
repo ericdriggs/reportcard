@@ -5,6 +5,7 @@ import io.github.ericdriggs.reportcard.model.branch.BranchJobLatestRunMap;
 import io.github.ericdriggs.reportcard.model.graph.CompanyGraph;
 import io.github.ericdriggs.reportcard.model.graph.CompanyGraphBuilder;
 import io.github.ericdriggs.reportcard.model.graph.condition.TableConditionMap;
+import io.github.ericdriggs.reportcard.model.orgdashboard.OrgDashboard;
 import io.github.ericdriggs.reportcard.model.trend.JobStageTestTrend;
 import lombok.SneakyThrows;
 import org.jooq.*;
@@ -33,6 +34,7 @@ import static org.jooq.impl.DSL.*;
 public class GraphService extends AbstractPersistService {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
+    private final static List<String> defaultBranchNames = List.of("dev", "develop", "qa", "staging", "main", "master", "staging", "test");
 
     @Autowired
     public GraphService(DSLContext dsl) {
@@ -93,7 +95,7 @@ public class GraphService extends AbstractPersistService {
         }
         tableConditionMap.put(RUN, runCondition);
         tableConditionMap.put(STAGE, STAGE.STAGE_NAME.eq(stageName));
-        return getJobTrendCompanyGraphs(tableConditionMap);
+        return getCompanyGraphs(tableConditionMap);
 
     }
 
@@ -132,13 +134,62 @@ public class GraphService extends AbstractPersistService {
                 );
 
         tableConditionMap.put(RUN, runCondition);
-        return getJobTrendCompanyGraphs(tableConditionMap);
+        return getCompanyGraphs(tableConditionMap);
+
+    }
+
+    public OrgDashboard getOrgDashboard(String companyName, String orgName, List<String> branchNames, boolean shouldIncludeDefaultBranches) {
+        List<CompanyGraph> companyGraphs = getOrgDashboardCompanyGraphs(companyName, orgName, branchNames, shouldIncludeDefaultBranches);
+        return OrgDashboard.fromCompanyGraphs(companyGraphs);
+    }
+
+    List<CompanyGraph> getOrgDashboardCompanyGraphs(String companyName,
+                                                    String orgName,
+                                                    List<String> branchNames,
+                                                    boolean shouldIncludeDefaultBranches) {
+
+        TableConditionMap tableConditionMap = new TableConditionMap();
+        tableConditionMap.put(COMPANY, COMPANY.COMPANY_NAME.eq(companyName));
+        tableConditionMap.put(ORG, ORG.ORG_NAME.eq(orgName));
+        tableConditionMap.put(BRANCH, BRANCH.BRANCH_NAME.in(branchNames));
+
+        if (shouldIncludeDefaultBranches) {
+            branchNames.addAll(defaultBranchNames);
+        }
+        Condition runCondition =
+                RUN.RUN_ID.in(
+                        //latest run
+                        select(max(RUN.RUN_ID))
+                                .from(COMPANY)
+                                .leftJoin(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID)).and(ORG.ORG_NAME.eq(orgName)).and(COMPANY.COMPANY_NAME.eq(companyName))
+                                .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID))
+                                .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID).and(BRANCH.BRANCH_NAME.in(branchNames)))
+                                .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
+                                .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID))
+                                .leftJoin(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID))
+                                .groupBy(JOB.JOB_ID, STAGE.STAGE_NAME)
+                                .union(
+                                        //latest successful run
+                                        select(max(RUN.RUN_ID))
+                                                .from(COMPANY)
+                                                .leftJoin(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID)).and(ORG.ORG_NAME.eq(orgName)).and(COMPANY.COMPANY_NAME.eq(companyName))
+                                                .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID))
+                                                .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID).and(BRANCH.BRANCH_NAME.in(branchNames)))
+                                                .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
+                                                .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID).and(RUN.IS_SUCCESS))
+                                                .leftJoin(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID))
+                                                .groupBy(JOB.JOB_ID, STAGE.STAGE_NAME)
+                                )
+                );
+
+        tableConditionMap.put(RUN, runCondition);
+        return getCompanyGraphs(tableConditionMap);
 
     }
 
     @SneakyThrows(JsonProcessingException.class)
     @SuppressWarnings("rawtypes")
-    protected List<CompanyGraph> getJobTrendCompanyGraphs(TableConditionMap tableConditionMap) {
+    protected List<CompanyGraph> getCompanyGraphs(TableConditionMap tableConditionMap) {
         Result result = getFullTestGraph(tableConditionMap);
         if (!result.isEmpty() && result.get(0) instanceof Record1 record1) {
             String json = record1.formatJSON();

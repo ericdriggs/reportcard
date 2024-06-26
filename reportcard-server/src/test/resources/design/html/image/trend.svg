@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="50" height="16">
+    <title>Status date sha</title>
+
+    <linearGradient id="a" x2="0" y2="100%">
+        <stop offset="0" stop-color="#bbb" stop-opacity=".1"/>
+    </linearGradient>
+
+    <rect x="0" rx="3" width="50" height="16" fill="#533"/>
+
+    <a href="replace-link" style="fill:222;">
+        <g fill="#bea" text-anchor="middle" font-family="Arial" font-size="12px" font-weight="bold">
+            <text x="19" y="13">Trend</text>
+        </g>
+        <g text-anchor="middle" font-family="sans-serif" font-size="10px" font-weight="bold">
+            <text x="42" y="13">📈</text>
+        </g>
+    </a>
+
+</svg>

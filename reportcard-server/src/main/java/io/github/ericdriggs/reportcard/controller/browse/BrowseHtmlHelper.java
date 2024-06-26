@@ -454,7 +454,7 @@ public class BrowseHtmlHelper {
                 <th>Job Id</th>
                 <th>Job Info</th>
                 <th>Stage Name</th>
-                <th>Latest report(s)</th>
+                <th>Latest reports</th>
                 <th>Trend reports</th>
                 """;
 
@@ -541,7 +541,7 @@ public class BrowseHtmlHelper {
 
     //******************** util ********************//
 
-    protected static List<Pair<String, String>> getBreadCrumb(CompanyOrgRepoBranchJobRunStageDTO path) {
+    protected static List<Pair<String, String>> getBreadCrumb(CompanyOrgRepoBranchJobRunStageDTO path, String suffix) {
         List<Pair<String, String>> breadCrumbs = new ArrayList<>();
         breadCrumbs.add(Pair.of("home", getUrl(null)));
 
@@ -579,6 +579,10 @@ public class BrowseHtmlHelper {
                     }
                 }
             }
+        }
+        if (suffix != null && breadCrumbs.size() > 0) {
+            Pair<String, String> lastEntry =breadCrumbs.get(breadCrumbs.size() - 1);
+            breadCrumbs.add(Pair.of(suffix, lastEntry.getValue() + "/" + suffix));
         }
         return breadCrumbs;
     }

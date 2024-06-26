@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<!--suppress CssOverwrittenProperties, CssReplaceWithShorthandSafely, CssRedundantUnit -->
+<html lang="en-US">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard: Org1</title>
+    <link rel="shortcut icon" type="image/png" href="/images/favicon.png">
+    <style>
+        body {
+            font-family: Verdana, Arial, Helvetica, sans-serif;
+            font-size: 1em;
+        }
+
+        /* table, tr, td, th {
+          font-size: 0.6;
+          font-family: Verdana, Arial, Helvetica, sans-serif;
+        }*/
+
+        a {
+            white-space: nowrap;
+        }
+
+        table,
+        tr,
+        td,
+        th {
+            font-size: inherit;
+            font-style: inherit;
+            font-variant: inherit;
+        }
+
+        fieldset {
+            font-size: 12pt;
+            border: 2px groove #ccc;
+            border-radius: 8px;
+            margin: 0px;
+            margin-top: 4px;
+            padding-top: 4px;
+            padding-left: 14px;
+            padding-right: 8px;
+            padding-bottom: 8px;
+            display: inline-block;
+            max-width: max-content;
+        }
+
+        legend {
+            padding: 0px;
+            padding-left: 4px;
+            padding-right: 4px;
+            margin: 0px;
+            margin-left: 8px;
+            font-weight: bold;
+        }
+
+        legend > a {
+            font-weight: normal;
+        }
+
+        .fieldset-group {
+            display: block;
+            break-inside: avoid;
+            width: max-content;
+
+        }
+
+        dl {
+            border: 2px groove #eee;
+            width: 50%;
+            border-radius: 8px;
+            padding: 8px;
+            margin: 4px;
+        }
+
+        dt {
+
+            display: inline-block;
+            width: 50%;
+            margin: 0;
+            float: left;
+            font-weight: bold;
+            text-align: left;
+        }
+
+        dd {
+            display: inline-block;
+            width: 50%;
+            margin: 0;
+            text-align: left;
+        }
+
+        th:after {
+            content: ":"
+        }
+
+        .table-wrapper {
+            border: 2px groove #eee;
+            border-radius: 4px;
+            width: max-content;
+            margin: 0px;
+            padding: 0px;
+        }
+
+        .job-info {
+            font-size: .8em;
+        }
+
+        table,
+        td,
+        th {
+            border: 1px solid #eee;
+            padding: 2px;
+            width: max-content;
+        }
+
+        th {
+            text-align: center;
+        }
+
+        table {
+            border-collapse: collapse;
+            border-style: hidden;
+            width: max-content;
+        }
+
+        table {
+        }
+
+        object {
+            display: inline-block;
+        }
+
+        .last-success {
+            font-family: "Arial",sans-serif;
+            font-weight: bold;
+            font-size: .8em;
+            padding-left: 8px;
+            color: #393;
+            padding-top: 2px;
+        }
+
+        .legend {
+            border: 4px solid #aaa;
+            padding: 6px;
+            border-radius: 12px;
+            margin-bottom: 18px;
+        }
+
+
+    </style>
+</head>
+
+<body>
+<div class="table-wrapper legend">
+    <table>
+        <tr>
+            <th>company</th>
+            <td><a href="#">company1</a></td>
+        </tr>
+        <tr>
+            <th>org</th>
+            <td><a href="#">org1</a></td>
+        </tr>
+    </table>
+</div>
+<div>
+    <fieldset class="fieldset-group">
+        <legend>repo: <a href="/company1/org1/repo1">repo1</a></legend>
+        <fieldset class="fieldset-group">
+            <legend>branch: <a href="/company/org1/repo1/main">main</a></legend>
+            <fieldset class="fieldset-group">
+                <legend><a href="#">my-api-test:test</a></legend>
+                <div class="last-success">last success</div>
+                <object id="company1-org1-repo1-main-jobabc-last-most-recent-success" data="image/pass-run-date-sha.svg"></object>
+
+                <fieldset class="fieldset-group">
+                    <legend>run: <a href="/repo1/main/123">123</a></legend>
+                    <object data="image/fail-date-sha.svg"></object>
+                    <table>
+                        <tr>
+                            <th class="job-info"><a href="#">unitTest</a></th>
+                            <td>
+                                <object data="image/pass.svg"></object>
+                                <object data="image/trend.svg"></object>
+                            </td>
+                        </tr>
+                        <tr>
+
+                            <th class="job-info"><a href="#">apiTest</a></th>
+                            <td>
+                                <object data="image/fail.svg"></object>
+                                <object data="image/trend.svg"></object>
+                                <object data="image/html-anchor.svg"></object>
+                            </td>
+                        </tr>
+                    </table>
+                </fieldset>
+            </fieldset>
+
+            <fieldset class="fieldset-group">
+                <legend><a href="#">my-api-test:staging</a></legend>
+                <fieldset class="fieldset-group">
+                    <legend>run: <a href="/repo1/main/234">234</a></legend>
+                    <object data="image/pass-date-sha.svg"></object>
+                    <table>
+                        <tr>
+                            <th class="job-info"><a href="#">unitTest</a></th>
+                            <td>
+                                <object data="image/pass.svg"></object>
+                                <object data="image/trend.svg"></object>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="job-info"><a href="#">apiTest</a></th>
+                            <td>
+                                <object data="image/pass.svg"></object>
+                                <object data="image/trend.svg"></object>
+                                <object data="image/html-anchor.svg"></object>
+                            </td>
+                        </tr>
+                    </table>
+
+                </fieldset>
+            </fieldset>
+        </fieldset>
+    </fieldset>
+</div>
+</body>
