@@ -1,5 +1,6 @@
 package io.github.ericdriggs.reportcard.model;
 
+import io.github.ericdriggs.reportcard.cache.dto.CompanyOrgRepoBranchJobRunStageDTO;
 import io.github.ericdriggs.reportcard.util.truncate.TruncateUtils;
 import lombok.Value;
 
@@ -32,6 +33,18 @@ public class StoragePath {
     String label;
 
     final static DateTimeFormatter dateYmd = DateTimeFormatter.ISO_LOCAL_DATE.withZone(ZoneId.of("UTC"));
+
+    public StoragePath(CompanyOrgRepoBranchJobRunStageDTO stagePath, Integer jobRunCount, String label) {
+        this.company = sanitize(stagePath.getCompany());
+        this.org = sanitize(stagePath.getOrg());
+        this.repo = sanitize(stagePath.getRepo());
+        this.branch = sanitize(stagePath.getBranch());
+        this.date = dateYmd.format(Instant.now());
+        this.jobId = stagePath.getJobId();
+        this.runCount = jobRunCount == null ? 0 : jobRunCount;
+        this.stage = sanitize(stagePath.getStageName());
+        this.label = sanitize(label);
+    }
 
     public StoragePath(StagePath stagePath, String label) {
         stagePath.throwIfIncomplete();

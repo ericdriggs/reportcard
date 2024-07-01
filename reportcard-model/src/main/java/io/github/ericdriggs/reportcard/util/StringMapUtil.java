@@ -7,6 +7,8 @@ import io.github.ericdriggs.reportcard.mappers.SharedObjectMappers;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -22,6 +24,15 @@ public enum StringMapUtil {
         TypeReference<TreeMap<String, String>> typeRef
                 = new TypeReference<TreeMap<String, String>>() {};
         return mapper.readValue(json, typeRef);
+    }
+
+    public static String valuesOnlyColonSeparated(TreeMap<String,String> map) {
+        //preserving treemap key order for values
+        List<String> values = new ArrayList<>();
+        for (Map.Entry<String,String> entry : map.entrySet()) {
+            values.add(entry.getValue());
+        }
+        return String.join(":", values);
     }
 
     public static String jsonToDefinitionList(String json) {

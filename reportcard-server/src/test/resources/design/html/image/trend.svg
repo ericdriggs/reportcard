@@ -6,7 +6,7 @@
         <stop offset="0" stop-color="#bbb" stop-opacity=".1"/>
     </linearGradient>
 
-    <rect x="0" rx="3" width="50" height="16" fill="#533"/>
+    <rect x="0" rx="3" width="50" height="16" fill="#433"/>
 
     <a href="replace-link" style="fill:222;">
         <g fill="#bea" text-anchor="middle" font-family="Arial" font-size="12px" font-weight="bold">
@@ -16,5 +16,4 @@
             <text x="42" y="13">📈</text>
         </g>
     </a>
-
 </svg>

@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
+import java.util.TreeMap;
 
 import static org.junit.Assert.assertEquals;
 
@@ -107,7 +108,7 @@ public class CompanyGraphTest {
                 .branchFk(1)
                 .lastRun(now)
                 .jobId(1L)
-                .jobInfo(Collections.singletonMap("foo", "bar"))
+                .jobInfo(new TreeMap<>(Collections.singletonMap("foo", "bar")))
                 .jobInfoStr("{\"foo\":\"bar\"}")
                 .runs(List.of(run))
                 .build();

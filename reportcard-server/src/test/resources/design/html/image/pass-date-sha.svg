@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="135" height="20">
+<svg xmlns="http://www.w3.org/2000/svg" width="195" height="20">
     <title>Status date sha</title>
 
     <linearGradient id="a" x2="0" y2="100%">
@@ -7,23 +7,20 @@
         <stop offset="1" stop-opacity=".1"/>
     </linearGradient>
 
-    <rect x="0" rx="3" width="36" height="20" fill="#4c1"/>
-    <rect x="36" rx="3" width="43" height="20" fill="#666"/>
-    <rect x="79" rx="3" width="56" height="20" fill="#999"/>
-    <rect rx="3" width="135" height="20" fill="url(#a)"/>
+    <rect x="0" rx="3" width="44" height="20" fill="#4c1"/>
+    <rect x="44" rx="3" width="86" height="20" fill="#666"/>
+    <rect x="130" rx="3" width="65" height="20" fill="#999"/>
 
-    <g fill="#fff" text-anchor="middle" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="11">
+    <g fill="#fff" text-anchor="middle" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="13">
         <a href="replace-link" style="fill:white;">
-            <text x="18" y="15" fill="#010101" fill-opacity=".3">Pass</text>
-            <text x="18" y="14">Pass</text>
+            <text x="22px" y="15" fill="#010101" fill-opacity=".3">Pass</text>
+            <text x="22px" y="14">Pass</text>
 
-            <text x="58" y="15" fill="#010101" fill-opacity=".3">Apr 12</text>
-            <text x="58" y="14">Apr 12</text>
+            <text x="88px" y="15" fill="#000" fill-opacity=".3">2024-02-01</text>
+            <text x="88px" y="14">2024-02-01</text>
 
-            <text x="107" y="15" fill="#010101" fill-opacity=".3">19b88…</text>
-            <text x="107" y="14">19b88…</text>
+            <text x="162" y="15" fill="#000" fill-opacity=".3">abc123…</text>
+            <text x="162" y="14">abc123…</text>
         </a>
     </g>
-
-
 </svg>

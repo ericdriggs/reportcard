@@ -2,6 +2,8 @@ package io.github.ericdriggs.reportcard.util;
 
 import org.apache.commons.lang3.ObjectUtils;
 
+import java.net.URI;
+
 public enum CompareUtil {
     ;//static methods only
 
@@ -19,8 +21,15 @@ public enum CompareUtil {
             return ObjectUtils.compare(s1, s2);
         }
         return s1.toLowerCase().compareTo(s2.toLowerCase());
-
     }
+
+    public static int compareNullSafe(URI s1, URI s2) {
+        if (s1 == null || s2 == null) {
+            return ObjectUtils.compare(s1, s2);
+        }
+        return s1.toString().compareTo(s2.toString());
+    }
+
 
     public static String toLower(String string) {
         if (string == null) {

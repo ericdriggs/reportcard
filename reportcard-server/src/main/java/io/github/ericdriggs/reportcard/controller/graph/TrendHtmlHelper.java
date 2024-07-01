@@ -3,11 +3,9 @@ package io.github.ericdriggs.reportcard.controller.graph;
 import io.github.ericdriggs.reportcard.cache.dto.CompanyOrgRepoBranchJobRunStageDTO;
 import io.github.ericdriggs.reportcard.controller.browse.BrowseHtmlHelper;
 import io.github.ericdriggs.reportcard.controller.graph.trend.*;
-import io.github.ericdriggs.reportcard.gen.db.tables.pojos.CompanyPojo;
-import io.github.ericdriggs.reportcard.gen.db.tables.pojos.OrgPojo;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.RunPojo;
 import io.github.ericdriggs.reportcard.model.TestCaseModel;
-import io.github.ericdriggs.reportcard.model.orgdashboard.OrgDashboard;
+
 import io.github.ericdriggs.reportcard.model.trend.CompanyOrgRepoBranchJobStageName;
 import io.github.ericdriggs.reportcard.model.trend.JobStageTestTrend;
 import io.github.ericdriggs.reportcard.model.trend.TestPackageSuiteCase;
@@ -18,30 +16,19 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
+import java.net.URI;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
 import java.util.*;
 
-public class GraphHtmlHelper extends BrowseHtmlHelper {
+public class TrendHtmlHelper extends BrowseHtmlHelper {
 
     public static String renderTrendHtml(JobStageTestTrend jobStageTestTrend) {
         final String main = getTrendMainDiv(jobStageTestTrend);
         return getPage(main, getTrendBreadCrumb(jobStageTestTrend.toCompanyOrgRepoBranchJobRunStageDTO()))
                 .replace("<body>", "<body onload=\"applyTestFilters()\">")
                 .replace("<!--additionalLinks-->", "<link rel=\"stylesheet\" href=\"/css/trend.css\">" + ls + "<script src=\"/js/trend.js\"></script>" + ls);
-
-    }
-
-    public static String renderOrgDashboardHtml(OrgDashboard orgDashboard) {
-        final String main = getOrgDashboardMainDiv(orgDashboard);
-        return getPage(main, getOrgDashboardBreadCrumb(orgDashboard.getCompanyPojo(), orgDashboard.getOrgPojo()))
-                .replace("<body>", "<body onload=\"applyTestFilters()\">")
-                .replace("<!--additionalLinks-->", "<link rel=\"stylesheet\" href=\"/css/trend.css\">" + ls + "<script src=\"/js/trend.js\"></script>" + ls);
-
-    }
-
-    private static String getOrgDashboardMainDiv(OrgDashboard orgDashboard) {
 
     }
 
@@ -305,18 +292,6 @@ public class GraphHtmlHelper extends BrowseHtmlHelper {
             </div>
             """;
 
-    protected static List<Pair<String, String>> getOrgDashboardBreadCrumb(CompanyPojo companyPojo, OrgPojo orgPojo) {
-        if (companyPojo == null) {
-            throw new NullPointerException("companyPojo");
-        }
-        if (orgPojo == null) {
-            throw new NullPointerException("orgPojo");
-        }
-
-        CompanyOrgRepoBranchJobRunStageDTO path = CompanyOrgRepoBranchJobRunStageDTO.builder().company(companyPojo.getCompanyName()).org(orgPojo.getOrgName()).build();
-        return getBreadCrumb(path, "dashboard");
-    }
-
     protected static List<Pair<String, String>> getTrendBreadCrumb(CompanyOrgRepoBranchJobRunStageDTO path) {
         List<Pair<String, String>> breadCrumbs = new ArrayList<>();
         breadCrumbs.add(Pair.of("home", getUrl(null)));
@@ -354,5 +329,18 @@ public class GraphHtmlHelper extends BrowseHtmlHelper {
             }
         }
         return breadCrumbs;
+    }
+
+    public static URI getTrendURI(CompanyOrgRepoBranchJobRunStageDTO path) {
+        if (path.getJobId() == null) {
+            throw new NullPointerException("path.getJobId()");
+        }
+        if (path.getStageName() == null) {
+            throw new NullPointerException("path.getStageName()");
+        }
+
+        final String jobUrl = getUrl(CompanyOrgRepoBranchJobRunStageDTO.truncateJob(path));
+        final String stageUrl = jobUrl + "/stage/" + path.getStageName();
+        return URI.create(stageUrl + "/trend");
     }
 }

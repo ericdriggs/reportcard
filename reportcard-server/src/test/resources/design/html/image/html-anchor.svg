@@ -6,21 +6,20 @@
         <stop offset="0" stop-color="#bbb" stop-opacity=".1"/>
     </linearGradient>
 
-    <rect x="0" rx="3" width="52" height="16" fill="#ccc"/>
+    <rect x="0" rx="3" width="52" height="16" fill="#ddd"/>
 
     <a href="#replace-link">
-        <g fill="blue" text-anchor="middle" font-family="verdana, sans-serif" font-size="12" font-weight="bold">
-            <text x="20px" y="11px">HTML</text>
+
+        <g fill="#00c" text-anchor="middle" font-family="Arial Black, sans-serif" font-size="12" font-weight="bolder">
+            <text x="21.5" y="11px">HTML</text>
         </g>
-        <g  text-anchor="middle" font-family="courier" font-size="8px" color="black">
-            <text x="44" y="9">🔗</text>
+        <g text-anchor="middle" font-family="courier" font-size="8px" color="black">
+            <text x="46" y="9">🔗</text>
         </g>
-        <g fill="#009" text-anchor="middle" font-family="arial" font-size="4px" font-weight="bold">
-            <text x="50%" y="92%" style="inline-size: 8px">
+        <g fill="#008" text-anchor="middle" font-family="arial" font-size="4.5px" font-weight="bold">
+            <text x="50%" y="94%" style="inline-size: 8px">
                 cucumber-html-reports
             </text>
         </g>
-
     </a>
-
 </svg>

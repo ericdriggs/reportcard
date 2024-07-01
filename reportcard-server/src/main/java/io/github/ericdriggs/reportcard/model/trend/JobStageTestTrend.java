@@ -17,6 +17,8 @@ import java.time.Instant;
 import java.util.List;
 import java.util.TreeMap;
 
+import static io.github.ericdriggs.reportcard.util.list.ListAssertUtil.assertSize1;
+
 @Builder
 @Jacksonized
 @Value
@@ -159,14 +161,5 @@ public class JobStageTestTrend {
         return Pair.of(companyOrgRepoBranchJobStageName, jobGraph);
     }
 
-    static void assertSize1(List<?> col, String name) {
-        if (CollectionUtils.isEmpty(col)) {
-            throw new NullPointerException(name);
-        }
-
-        if (col.size() != 1) {
-            throw new IllegalArgumentException("expected size 1. actual " + name + ".size(): " + col.size());
-        }
-    }
 
 }

@@ -151,7 +151,13 @@ public class GraphService extends AbstractPersistService {
         TableConditionMap tableConditionMap = new TableConditionMap();
         tableConditionMap.put(COMPANY, COMPANY.COMPANY_NAME.eq(companyName));
         tableConditionMap.put(ORG, ORG.ORG_NAME.eq(orgName));
-        tableConditionMap.put(BRANCH, BRANCH.BRANCH_NAME.in(branchNames));
+
+        //tableConditionMap.put(BRANCH, BRANCH.BRANCH_NAME.in("main", "master"));//FIXME: revert to in branch names
+        //tableConditionMap.put(BRANCH, BRANCH.BRANCH_NAME.in(branchNames));
+        tableConditionMap.put(BRANCH, BRANCH.BRANCH_NAME.in("dev", "develop", "qa", "staging", "main", "master", "staging", "test"));
+
+        //don't want the full test graph for this view
+        tableConditionMap.put(TEST_RESULT, TEST_RESULT.TEST_RESULT_ID.isNull());
 
         if (shouldIncludeDefaultBranches) {
             branchNames.addAll(defaultBranchNames);

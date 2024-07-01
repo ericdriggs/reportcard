@@ -60,7 +60,7 @@ public class StorageHtmlHelper extends BrowseHtmlHelper {
         return getPage(sb.toString(), getBreadCrumbForKey(requestKey));
     }
 
-    protected static String getPrefixUrl(String prefix) {
+    public static String getPrefixUrl(String prefix) {
         return StorageController.storageKeyPath + "/" + prefix;
     }
 

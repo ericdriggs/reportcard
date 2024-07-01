@@ -33,7 +33,7 @@ details > summary {
     cursor: pointer;
 }
 
-detals > summary.fail-messages {
+details > summary.fail-messages {
     font-weight: normal
 }
 

@@ -203,7 +203,7 @@ public class BrowseHtmlHelper {
 
         final String stageHistory = getBranchStageView(branchStageViewResponse);
 
-        return getPage("<div>" + jobMain +  "<br>" + jobStagesDiv + "</div>" + stageHistory, getBreadCrumb(path));
+        return getPage("<div>" + jobMain + "<br>" + jobStagesDiv + "</div>" + stageHistory, getBreadCrumb(path));
     }
 
     protected static String getJobRuns(CompanyOrgRepoBranchJobRunStageDTO path, Set<JobRun> jobRuns) {
@@ -420,7 +420,6 @@ public class BrowseHtmlHelper {
 
     public static String getJobStages(BranchJobLatestRunMap latest) {
 
-
         StringBuilder jobStageRows = new StringBuilder();
         CompanyOrgRepoBranchDTO companyOrgRepoBranchDTO = CompanyOrgRepoBranchDTO
                 .builder()
@@ -434,7 +433,7 @@ public class BrowseHtmlHelper {
 
             final JobPojo jobPojo = jobLatestEntry.getKey();
             final Long jobId = jobPojo.getJobId();
-            final CompanyOrgRepoBranchJobRunStageDTO jobPath = companyOrgRepoBranchDTO.toCompanyOrgRepoBranchJobRunStageDTO( jobId,  null, null);
+            final CompanyOrgRepoBranchJobRunStageDTO jobPath = companyOrgRepoBranchDTO.toCompanyOrgRepoBranchJobRunStageDTO(jobId, null, null);
             final TreeMap<String, RunStorageTestResult> stageReports = jobLatestEntry.getValue();
             for (Map.Entry<String, RunStorageTestResult> stageEntry : stageReports.entrySet()) {
 
@@ -442,9 +441,9 @@ public class BrowseHtmlHelper {
                 final RunStorageTestResult runStorageTestResult = stageEntry.getValue();
                 final RunPojo runPojo = runStorageTestResult.getRunPojo();
                 final Long runId = runPojo.getRunId();
-                final CompanyOrgRepoBranchJobRunStageDTO stagePath = companyOrgRepoBranchDTO.toCompanyOrgRepoBranchJobRunStageDTO( jobId,  runId, stageName);
-                final URI trendReportURI = getTrendReportURI(companyOrgRepoBranchDTO.toCompanyOrgRepoBranchJobRunStageDTO( jobId,  runId, stageName), stageName);
-                jobStageRows.append(getJobRunRow(jobPath,jobPojo.getJobInfo(), stageName, runStorageTestResult.getStoragePojos(), trendReportURI));
+                final CompanyOrgRepoBranchJobRunStageDTO stagePath = companyOrgRepoBranchDTO.toCompanyOrgRepoBranchJobRunStageDTO(jobId, runId, stageName);
+                final URI trendReportURI = getTrendReportURI(companyOrgRepoBranchDTO.toCompanyOrgRepoBranchJobRunStageDTO(jobId, runId, stageName), stageName);
+                jobStageRows.append(getJobRunRow(jobPath, jobPojo.getJobInfo(), stageName, runStorageTestResult.getStoragePojos(), trendReportURI));
 
             }
         }
@@ -463,22 +462,21 @@ public class BrowseHtmlHelper {
                                 .replace(TABLE_ROWS, jobStageRows);
     }
 
-
-    private static URI getTrendReportURI(CompanyOrgRepoBranchJobRunStageDTO c, String stageName)  {
+    private static URI getTrendReportURI(CompanyOrgRepoBranchJobRunStageDTO c, String stageName) {
         //return new URI(c.toUrlPath() + "/trend");
         return URI.create("/company/" + c.getCompany() + "/org/" + c.getOrg() + "/repo/" + c.getRepo() + "/branch/" + c.getBranch() + "/job/" + c.getJobId() + "/stage/" + stageName + "/trend");
     }
 
     private static String getJobRunRow(CompanyOrgRepoBranchJobRunStageDTO path, String jobInfo, String stageName, TreeSet<StoragePojo> storagePojos, URI trendReportURI) {
 
-        TreeMap<String,StoragePojo> latestStoragePojos = new TreeMap<>();
+        TreeMap<String, StoragePojo> latestStoragePojos = new TreeMap<>();
         for (StoragePojo storagePojo : storagePojos) {
             latestStoragePojos.putIfAbsent(storagePojo.getLabel(), storagePojo);
         }
         List<String> latestReports = new ArrayList<>();
         for (Map.Entry<String, StoragePojo> entry : latestStoragePojos.entrySet()) {
             final StoragePojo storagePojo = entry.getValue();
-            latestReports.add( getReportLinks(Set.of(storagePojo)));
+            latestReports.add(getReportLinks(Set.of(storagePojo)));
         }
 
         StringBuilder sb = new StringBuilder();
@@ -541,6 +539,10 @@ public class BrowseHtmlHelper {
 
     //******************** util ********************//
 
+    protected static List<Pair<String, String>> getBreadCrumb(CompanyOrgRepoBranchJobRunStageDTO path) {
+        return getBreadCrumb(path, null);
+    }
+
     protected static List<Pair<String, String>> getBreadCrumb(CompanyOrgRepoBranchJobRunStageDTO path, String suffix) {
         List<Pair<String, String>> breadCrumbs = new ArrayList<>();
         breadCrumbs.add(Pair.of("home", getUrl(null)));
@@ -581,7 +583,7 @@ public class BrowseHtmlHelper {
             }
         }
         if (suffix != null && breadCrumbs.size() > 0) {
-            Pair<String, String> lastEntry =breadCrumbs.get(breadCrumbs.size() - 1);
+            Pair<String, String> lastEntry = breadCrumbs.get(breadCrumbs.size() - 1);
             breadCrumbs.add(Pair.of(suffix, lastEntry.getValue() + "/" + suffix));
         }
         return breadCrumbs;
@@ -701,6 +703,7 @@ public class BrowseHtmlHelper {
     protected final static String basePage =
             """
             <html lang="en">
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
             <head>
               <link rel="stylesheet" href="/css/shared.css">
               <link rel="stylesheet" href="/css/sortable.min.css"/>
