@@ -14,7 +14,7 @@ public record StageGraph(
         Long runFk,
         List<TestResultGraph> testResults,
         List<StorageGraph> storages
-) implements StageGraphBuilder.With {
+) {
 
     @JsonIgnore
     public StagePojo asStagePojo() {

@@ -17,8 +17,7 @@ public record RunGraph(
         String sha,
         Instant runDate,
         Boolean isSuccess,
-        List<StageGraph> stages)
-        implements RunGraphBuilder.With {
+        List<StageGraph> stages) {
 
     @JsonIgnore
     public RunPojo asRunPojo() {

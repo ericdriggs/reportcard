@@ -2,6 +2,8 @@ package io.github.ericdriggs.reportcard.util.badge;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.github.ericdriggs.reportcard.cache.dto.CompanyOrgRepoBranchJobRunStageDTO;
+import io.github.ericdriggs.reportcard.controller.browse.BrowseHtmlHelper;
+import io.github.ericdriggs.reportcard.controller.graph.TrendHtmlHelper;
 import io.github.ericdriggs.reportcard.model.graph.StageGraph;
 import io.github.ericdriggs.reportcard.util.CompareUtil;
 import lombok.Builder;
@@ -39,14 +41,14 @@ public class StageBadgesDTO implements Comparable<StageBadgesDTO> {
 
     public static StageBadgesDTO fromStageGraph(StageGraph stageGraph, CompanyOrgRepoBranchJobRunStageDTO path, TreeSet<StorageUri> storageUris) {
         final String stageUriString =  path.toUrlPath();
-        final String trendURIString =  path.toUrlPath() + "/trend";
+        final URI trendUri = TrendHtmlHelper.getTrendURI(path);
         return StageBadgesDTO
                 .builder()
                 .stageId(stageGraph.stageId())
                 .stageName(stageGraph.stageName())
                 .badgeStatus(BadgeStatus.fromStageGraph(stageGraph))
                 .stageUri(URI.create(stageUriString))
-                .trendUri(URI.create(stageUriString))
+                .trendUri(TrendHtmlHelper.getTrendURI(path))
                 .storageUris(storageUris)
                 .build();
     }

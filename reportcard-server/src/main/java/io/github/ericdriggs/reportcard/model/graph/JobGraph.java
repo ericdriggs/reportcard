@@ -18,7 +18,7 @@ public record JobGraph(Long jobId,
                        Integer branchFk,
                        String jobInfoStr,
                        Instant lastRun,
-                       List<RunGraph> runs) implements JobGraphBuilder.With {
+                       List<RunGraph> runs) {
 
     @JsonIgnore
     public JobPojo asJobPojo() {

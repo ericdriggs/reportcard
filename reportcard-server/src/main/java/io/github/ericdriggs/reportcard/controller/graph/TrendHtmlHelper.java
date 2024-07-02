@@ -230,22 +230,22 @@ public class TrendHtmlHelper extends BrowseHtmlHelper {
     static String trendMainDiv =
             """
             <div id="main">
-                <details id="test-trend-context" open="open" class="test-trend-context">
-                    <summary id="trend-context-summary" class="trend-context-summary ">Test trend context</summary>
-                    <dl class="trend-context">
-                        <dt class="dt-trend-context">company</dt>
-                        <dd class="dd-trend-context"><!--companyName--></dd>
-                        <dt class="dt-trend-context">org</dt>
-                        <dd class="dd-trend-context"><!--orgName--></dd>
-                        <dt class="dt-trend-context">repo</dt>
-                        <dd class="dd-trend-context"><!--repoName--></dd>
-                        <dt class="dt-trend-context">branch</dt>
-                        <dd class="dd-trend-context"><!--branchName--></dd>
-                        <dt class="dt-trend-context">jobInfo</dt>
+                <details id="test-page-context" open="open" class="test-page-context">
+                    <summary id="page-context-summary" class="page-context-summary ">Test trend context</summary>
+                    <dl class="page-context">
+                        <dt class="dt-page-context">company</dt>
+                        <dd class="dd-page-context"><!--companyName--></dd>
+                        <dt class="dt-page-context">org</dt>
+                        <dd class="dd-page-context"><!--orgName--></dd>
+                        <dt class="dt-page-context">repo</dt>
+                        <dd class="dd-page-context"><!--repoName--></dd>
+                        <dt class="dt-page-context">branch</dt>
+                        <dd class="dd-page-context"><!--branchName--></dd>
+                        <dt class="dt-page-context">jobInfo</dt>
                         <dd>
                             <!--jobInfo-->
                         </dd>
-                        <dt class="dt-trend-context">stage</dt>
+                        <dt class="dt-page-context">stage</dt>
                         <dd><!--stageName--></dd>
                     </dl>
                     <br>

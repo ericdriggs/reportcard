@@ -14,6 +14,77 @@ body {
     font-family: Verdana, sans-serif;
 }
 
+summary {
+    text-align: left;
+    max-width: 508px;
+    padding: 4px;
+    border-radius: 6px;
+    margin-left: 8px;
+    margin-right: 8px;
+}
+
+details {
+    border-radius: 10px;
+}
+
+details > summary {
+    font-weight: bold;
+    background-color: #eee;
+    box-shadow: 3px 3px 4px black;
+    cursor: pointer;
+    margin: 0;
+
+}
+
+details > summary.fail-messages {
+    font-weight: normal
+}
+
+
+details > dl {
+    border-radius: 6px;
+    background-color: #eee;
+    padding: 6px 6px 6px 20px;
+    margin: 0;
+    box-shadow: 3px 3px 4px black;
+}
+
+dl {
+    border: 3px double #ccc;
+    max-width:500px;
+}
+
+.page-context-summary {
+    padding-left: 20px;
+}
+
+.page-context {
+    width: auto;
+    /*display:block;*/
+}
+
+.dd-page-context {
+
+}
+
+.dt-page-context {
+    width: 90px;
+}
+
+dt {
+    float: left;
+    font-weight: bold;
+    color: #468;
+}
+
+dt::after {
+    content: ":";
+}
+
+dd > div {
+    padding-left: 50px;
+}
+
 fieldset {
     margin: 20px;
     border-radius: 8px;

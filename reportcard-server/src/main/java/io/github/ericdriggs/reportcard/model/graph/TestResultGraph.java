@@ -24,7 +24,7 @@ public record TestResultGraph(
         Boolean isSuccess,
         Boolean hasSkip,
         List<TestSuiteGraph> testSuites
-) implements TestResultGraphBuilder.With {
+) {
     @JsonIgnore
     public TestResultPojo asTestResultPojo() {
         return TestResultPojo

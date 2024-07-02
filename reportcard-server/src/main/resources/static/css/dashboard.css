@@ -34,7 +34,7 @@ dt {
 fieldset {
     border: 2px groove #ccc;
     border-radius: 8px;
-    margin: 0px;
+    margin-left: 2px;
     margin-top: 4px;
     padding: 4px 8px 8px 14px;
     display: inline-block;
@@ -45,7 +45,13 @@ legend {
     padding: 0px 4px 0px 4px;
     margin: 0px;
     margin-left: 8px;
+    margin-right: 8px;
     font-weight: bold;
+}
+
+details {
+    margin-left: 8px;
+    margin-right: 8px;
 }
 
 legend > a {

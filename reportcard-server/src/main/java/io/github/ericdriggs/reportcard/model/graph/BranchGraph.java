@@ -14,8 +14,7 @@ public record BranchGraph(
         String branchName,
         Integer repoFk,
         Instant lastRun,
-        List<JobGraph> jobs)
-        implements BranchGraphBuilder.With {
+        List<JobGraph> jobs) {
 
     @JsonIgnore
     public BranchPojo asBranchPojo() {

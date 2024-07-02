@@ -22,5 +22,5 @@ public record TestSuiteGraph(
         Boolean isSuccess,
         Boolean hasSkip,
         List<TestCaseGraph> testCases
-) implements TestSuiteGraphBuilder.With {
+) {
 }

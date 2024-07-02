@@ -5,6 +5,7 @@ import io.github.ericdriggs.reportcard.aws.comparatorr.S3ObjectComparator;
 
 import io.github.ericdriggs.reportcard.controller.StorageController;
 import io.github.ericdriggs.reportcard.controller.browse.BrowseHtmlHelper;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.StoragePojo;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import software.amazon.awssdk.services.s3.model.CommonPrefix;
@@ -60,7 +61,17 @@ public class StorageHtmlHelper extends BrowseHtmlHelper {
         return getPage(sb.toString(), getBreadCrumbForKey(requestKey));
     }
 
-    public static String getPrefixUrl(String prefix) {
+    public static String getStorageUrl(StoragePojo storage) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(StorageController.storageKeyPath );
+        sb.append("/" + storage.getPrefix());
+        if (storage.getIndexFile() != null) {
+            sb.append("/" + storage.getIndexFile());
+        }
+        return sb.toString();
+    }
+
+    static String getPrefixUrl(String prefix) {
         return StorageController.storageKeyPath + "/" + prefix;
     }
 

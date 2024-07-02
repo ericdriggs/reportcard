@@ -11,9 +11,7 @@ import java.util.List;
 public record CompanyGraph(
         Integer companyId,
         String companyName,
-        List<OrgGraph> orgs
-) implements CompanyGraphBuilder.With {
-
+        List<OrgGraph> orgs) {
     @JsonIgnore
     public CompanyPojo asCompanyPojo() {
         return CompanyPojo.builder().companyId(companyId).companyName(companyName).build();

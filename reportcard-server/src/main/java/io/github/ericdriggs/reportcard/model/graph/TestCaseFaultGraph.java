@@ -18,7 +18,7 @@ public record TestCaseFaultGraph(
         String type,
         String message,
         String value
-) implements TestCaseFaultGraphBuilder.With {
+) {
 
     @JsonIgnore
     public static List<TestCaseFaultModel> toTestCaseModels(List<TestCaseFaultGraph> testCaseFaultGraphs) {

@@ -37,7 +37,7 @@ public enum BadgeSvgHelper {
 
     public static String status(BadgeStatusUri b) {
         return wrapObject(
-                statusDateShaBase
+                statusBase
                         .replace("{statusColor}", b.getBadgeStatus().getColor())
                         .replace("{statusText}", b.getBadgeStatus().getText())
                         .replace("{uri}", b.getUri().toString())

@@ -54,13 +54,6 @@ public class TestTrendTable {
                     }
                     final TestStatus testStatus = TestStatus.fromStatusId(testCaseModel.getTestStatusFk());
 
-                    if (testStatus.isErrorOrFailure()) {
-                        int i = 5;
-                        if (i == -1) {
-                            System.out.println("foo");
-                        }
-                    }
-
                     successTotal.incrementTotalCount();
                     if (testStatus.isSuccess()) {
                         successTotal.incrementSuccessCount();

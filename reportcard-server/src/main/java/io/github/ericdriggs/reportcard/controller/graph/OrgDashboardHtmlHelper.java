@@ -6,8 +6,9 @@ import io.github.ericdriggs.reportcard.controller.browse.BrowseHtmlHelper;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.CompanyPojo;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.OrgPojo;
 import io.github.ericdriggs.reportcard.mappers.SharedObjectMappers;
-import io.github.ericdriggs.reportcard.model.StoragePath;
+
 import io.github.ericdriggs.reportcard.model.graph.*;
+import io.github.ericdriggs.reportcard.model.graph.comparator.GraphComparators;
 import io.github.ericdriggs.reportcard.model.orgdashboard.OrgDashboard;
 import io.github.ericdriggs.reportcard.util.NumberStringUtil;
 import io.github.ericdriggs.reportcard.util.StringMapUtil;
@@ -17,7 +18,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
 
-import static io.github.ericdriggs.reportcard.controller.html.StorageHtmlHelper.getPrefixUrl;
+import static io.github.ericdriggs.reportcard.controller.html.StorageHtmlHelper.getStorageUrl;
 import static io.github.ericdriggs.reportcard.util.list.ListAssertUtil.emptyIfNull;
 
 public class OrgDashboardHtmlHelper extends BrowseHtmlHelper {
@@ -25,26 +26,19 @@ public class OrgDashboardHtmlHelper extends BrowseHtmlHelper {
     public static String renderOrgDashboardHtml(OrgDashboard orgDashboard) {
         final String main = getOrgDashboardMainDiv(orgDashboard);
         return getPage(main, getOrgDashboardBreadCrumb(orgDashboard.getCompanyPojo(), orgDashboard.getOrgPojo()))
-                .replace("<body>", "<body onload=\"applyTestFilters()\">")
                 .replace("<!--additionalLinks-->", "<link rel=\"stylesheet\" href=\"/css/dashboard.css\">" + ls);
-
     }
 
     private static String getOrgDashboardMainDiv(OrgDashboard orgDashboard) {
 
-        final String companyName = orgDashboard.getCompanyPojo().getCompanyName();
-        final String orgName = orgDashboard.getOrgPojo().getOrgName();
-        final CompanyOrgRepoBranchJobRunStageDTO companyPath = CompanyOrgRepoBranchJobRunStageDTO.builder().company(companyName).build();
-        final CompanyOrgRepoBranchJobRunStageDTO orgPath = CompanyOrgRepoBranchJobRunStageDTO.builder().company(companyName).org(orgName).build();
-        final String companyUrl = getUrl(companyPath);
-        final String orgUrl = getUrl(orgPath);
-        final String companyOrgLegendTable = getCompanyOrgLegendTable(companyName, companyUrl, orgName, orgUrl);
-
+        final CompanyOrgRepoBranchJobRunStageDTO orgPath = CompanyOrgRepoBranchJobRunStageDTO.builder()
+                .company(orgDashboard.getCompanyPojo().getCompanyName())
+                .org(orgDashboard.getOrgPojo().getOrgName()).build();
         StringBuilder str = new StringBuilder();
         for (RepoGraph repoGraph : emptyIfNull(orgDashboard.getRepoGraphs())) {
             final CompanyOrgRepoBranchJobRunStageDTO repoPath = orgPath.toBuilder().repo(repoGraph.repoName()).build();
             final String repoUrl = getUrl(repoPath);
-            str.append("<fieldset class=\"fieldset-group\">").append(ls);
+            str.append("<div><fieldset class=\"fieldset-group\">").append(ls);
             str.append("  <legend>repo: <a href=\"{repoUrl}\">{repoName}</a></legend>"
                     .replace("{repoUrl}", repoUrl)
                     .replace("{repoName}", repoGraph.repoName())
@@ -72,7 +66,8 @@ public class OrgDashboardHtmlHelper extends BrowseHtmlHelper {
                     RunGraph runGraph = null;
                     {
 
-                        List<RunGraph> runGraphs = emptyIfNull(jobGraph.runs());
+                        TreeSet<RunGraph> runGraphs = new TreeSet<>(GraphComparators.RUN_GRAPH_DESC);
+                        runGraphs.addAll(emptyIfNull(jobGraph.runs()));
                         if (runGraphs.size() > 2) {
                             String runGraphsString = null;
                             try {
@@ -84,11 +79,10 @@ public class OrgDashboardHtmlHelper extends BrowseHtmlHelper {
                         }
 
                         if (runGraphs.size() == 2) {
-                            lastSuccess = runGraphs.get(1);
+                            lastSuccess = runGraphs.last();
                         }
                         if (!runGraphs.isEmpty()) {
-                            //should already be in descending order by runId, but if not, use TreeSet
-                            runGraph = runGraphs.get(0);
+                            runGraph = runGraphs.first();
                         }
                     }
                     if (lastSuccess != null) {
@@ -100,7 +94,6 @@ public class OrgDashboardHtmlHelper extends BrowseHtmlHelper {
                     if (runGraph != null) {
                         final CompanyOrgRepoBranchJobRunStageDTO runPath = jobPath.toBuilder().runId(runGraph.runId()).build();
                         final RunBadgeDTO badgeStatusDateShaUri = RunBadgeDTO.fromRunGraph(runGraph, runPath);
-
 
                         final String runUrl = getUrl(runPath);
 
@@ -118,8 +111,7 @@ public class OrgDashboardHtmlHelper extends BrowseHtmlHelper {
 
                             TreeSet<StorageUri> storageUris = new TreeSet<>();
                             for (StorageGraph storageGraph : emptyIfNull(stageGraph.storages())) {
-                                final StoragePath storagePath = new StoragePath(stagePath, runGraph.jobRunCount(), storageGraph.label());
-                                final String storageUri = getPrefixUrl(storagePath.getPrefix());
+                                final String storageUri = getStorageUrl(storageGraph.asStoragePojo());
                                 storageUris.add(StorageUri.builder().uri(storageUri).label(storageGraph.label()).build());
                             }
                             stageBadgesDTOS.add(StageBadgesDTO.fromStageGraph(stageGraph, stagePath, storageUris));
@@ -132,9 +124,9 @@ public class OrgDashboardHtmlHelper extends BrowseHtmlHelper {
                 }
                 str.append("</fieldset><!--end-branch-fieldset-->").append(ls);
             }
-            str.append("</fieldset><!--end-repo-fieldset-->").append(ls);
+            str.append("</fieldset></div><!--end-repo-fieldset-->").append(ls);
         }
-        return companyOrgLegendTable + str;
+        return str.toString();
     }
 
     static String getStages(TreeSet<StageBadgesDTO> stageBadgesDTO) {
@@ -146,6 +138,9 @@ public class OrgDashboardHtmlHelper extends BrowseHtmlHelper {
                 """;
 
         StringBuilder builder = new StringBuilder();
+        for (StageBadgesDTO badgesDTO : stageBadgesDTO) {
+            builder.append(getStage(badgesDTO));
+        }
 
         return tableBase.replace("<!--stages-->", builder.toString());
     }
@@ -155,9 +150,9 @@ public class OrgDashboardHtmlHelper extends BrowseHtmlHelper {
                 """
                 <tr>
                   <th class="job-info"><a href="{stageUri}">{stageName}</a></th>
-                  <!--statusBadge-->
-                  <!--trendBadge-->
-                  <!--htmlLinks-->
+                  <td><!--statusBadge--></td>
+                  <td><!--trendBadge--></td>
+                  <td><!--htmlLinks--></td>
                 </tr>
                 """;
 
@@ -174,28 +169,6 @@ public class OrgDashboardHtmlHelper extends BrowseHtmlHelper {
                 .replace("<!--statusBadge-->", statusBadge)
                 .replace("<!--trendBadge-->", trendBadge)
                 .replace("<!--htmlLinks-->", htmlLinks.toString());
-    }
-
-    static String getCompanyOrgLegendTable(String companyName, String companyUrl, String orgName, String orgUrl) {
-        return
-                """
-                <div class="table-wrapper org-legend" >
-                    <table>
-                        <tr>
-                            <th>company</th>
-                            <td><a href="companyUrl">companyName</a></td>
-                        </tr>
-                        <tr>
-                            <th>org</th>
-                            <td><a href="orgUrl">companyUrl</a></td>
-                        </tr>
-                    </table>
-                </div>
-                """.replace("companyName", companyName)
-                   .replace("companyUrl", companyUrl)
-                   .replace("orgName", orgName)
-                   .replace("orgUrl", orgUrl);
-
     }
 
     protected static List<Pair<String, String>> getOrgDashboardBreadCrumb(CompanyPojo companyPojo, OrgPojo orgPojo) {

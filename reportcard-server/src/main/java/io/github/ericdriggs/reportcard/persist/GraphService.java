@@ -1,6 +1,7 @@
 package io.github.ericdriggs.reportcard.persist;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import io.github.ericdriggs.reportcard.cache.model.BranchStageViewResponse;
 import io.github.ericdriggs.reportcard.model.branch.BranchJobLatestRunMap;
 import io.github.ericdriggs.reportcard.model.graph.CompanyGraph;
 import io.github.ericdriggs.reportcard.model.graph.CompanyGraphBuilder;
@@ -30,7 +31,7 @@ import static org.jooq.impl.DSL.*;
  */
 
 @Service
-@SuppressWarnings({"unused", "ConstantConditions"})
+@SuppressWarnings({"unused", "ConstantConditions", "DuplicatedCode"})
 public class GraphService extends AbstractPersistService {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
@@ -51,9 +52,6 @@ public class GraphService extends AbstractPersistService {
                                                   Instant start,
                                                   Instant end,
                                                   Integer maxRuns) {
-        if (start == null) {
-            start = Instant.now().atZone(ZoneOffset.UTC).minusDays(30).toInstant();
-        }
         List<CompanyGraph> companyGraphs = getJobTrendCompanyGraphs(companyName, orgName, repoName, branchName, jobId, stageName, start, end, maxRuns);
         return JobStageTestTrend.fromCompanyGraphs(companyGraphs, 30);
     }
@@ -75,7 +73,7 @@ public class GraphService extends AbstractPersistService {
         tableConditionMap.put(BRANCH, BRANCH.BRANCH_NAME.eq(branchName));
         tableConditionMap.put(JOB, JOB.JOB_ID.eq(jobId));
 
-        Condition runCondition = RUN.JOB_FK.eq(JOB.JOB_ID);
+        Condition runCondition = trueCondition();
         if (start != null) {
             runCondition = runCondition.and(RUN.RUN_DATE.ge(start));
         }
@@ -98,6 +96,35 @@ public class GraphService extends AbstractPersistService {
         return getCompanyGraphs(tableConditionMap);
 
     }
+
+    public BranchStageViewResponse getRunBranchStageViewResponse(String companyName,
+                                                           String orgName,
+                                                           String repoName,
+                                                           String branchName,
+                                                           Long jobId,
+                                                           Long runId) {
+
+        List<CompanyGraph> companyGraphs = getRunCompanyGraphs(companyName,orgName,repoName,branchName,jobId,runId);
+        return BranchStageViewResponse.fromCompanyGraphs(companyGraphs);
+    }
+
+    List<CompanyGraph> getRunCompanyGraphs(String companyName,
+                                                String orgName,
+                                                String repoName,
+                                                String branchName,
+                                                Long jobId,
+                                                Long runId) {
+
+        TableConditionMap tableConditionMap = new TableConditionMap();
+        tableConditionMap.put(COMPANY, COMPANY.COMPANY_NAME.eq(companyName));
+        tableConditionMap.put(ORG, ORG.ORG_NAME.eq(orgName));
+        tableConditionMap.put(REPO, REPO.REPO_NAME.eq(repoName));
+        tableConditionMap.put(BRANCH, BRANCH.BRANCH_NAME.eq(branchName));
+        tableConditionMap.put(JOB, JOB.JOB_ID.eq(jobId));
+        tableConditionMap.put(RUN, RUN.RUN_ID.eq(runId));
+        return getCompanyGraphs(tableConditionMap);
+    }
+
 
     public BranchJobLatestRunMap getBranchJobLatestRunMap(String companyName,
                                                           String orgName,
@@ -138,6 +165,8 @@ public class GraphService extends AbstractPersistService {
 
     }
 
+
+
     public OrgDashboard getOrgDashboard(String companyName, String orgName, List<String> branchNames, boolean shouldIncludeDefaultBranches) {
         List<CompanyGraph> companyGraphs = getOrgDashboardCompanyGraphs(companyName, orgName, branchNames, shouldIncludeDefaultBranches);
         return OrgDashboard.fromCompanyGraphs(companyGraphs);
@@ -156,8 +185,8 @@ public class GraphService extends AbstractPersistService {
         //tableConditionMap.put(BRANCH, BRANCH.BRANCH_NAME.in(branchNames));
         tableConditionMap.put(BRANCH, BRANCH.BRANCH_NAME.in("dev", "develop", "qa", "staging", "main", "master", "staging", "test"));
 
-        //don't want the full test graph for this view
-        tableConditionMap.put(TEST_RESULT, TEST_RESULT.TEST_RESULT_ID.isNull());
+        //Only need test result summary, not the suites or cases
+        tableConditionMap.put(TEST_SUITE, TEST_SUITE.TEST_SUITE_ID.isNull());
 
         if (shouldIncludeDefaultBranches) {
             branchNames.addAll(defaultBranchNames);
