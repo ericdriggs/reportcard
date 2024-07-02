@@ -27,24 +27,24 @@ public class BrowseUIController {
         this.graphService = graphService;
     }
 
-    @GetMapping(path = {"", "company"}, produces = "text/html")
+    @GetMapping(path = {"", "company"}, produces = "text/html;charset=UTF-8")
     public ResponseEntity<String> getCompanies() {
         return new ResponseEntity<>(BrowseHtmlHelper.getCompaniesHtml(), HttpStatus.OK);
     }
 
-    @GetMapping(path = {"company/{company}", "company/{company}/org"}, produces = "text/html")
+    @GetMapping(path = {"company/{company}", "company/{company}/org"}, produces = "text/html;charset=UTF-8")
     public ResponseEntity<String> getCompanyOrgs(@PathVariable String company) {
         return new ResponseEntity<>(BrowseHtmlHelper.getCompanyHtml(company), HttpStatus.OK);
     }
 
-    @GetMapping(path = {"company/{company}/org/{org}", "org/{org}/repo"}, produces = "text/html")
+    @GetMapping(path = {"company/{company}/org/{org}", "org/{org}/repo"}, produces = "text/html;charset=UTF-8")
     public ResponseEntity<String> getRepoBranches(
             @PathVariable String company,
             @PathVariable String org) {
         return new ResponseEntity<>(BrowseHtmlHelper.getOrgHtml(company, org), HttpStatus.OK);
     }
 
-    @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}", "org/{org}/repo/{repo}/branch"}, produces = "text/html")
+    @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}", "org/{org}/repo/{repo}/branch"}, produces = "text/html;charset=UTF-8")
     public ResponseEntity<String> getBranchJobs(
             @PathVariable String company,
             @PathVariable String org,
@@ -53,7 +53,7 @@ public class BrowseUIController {
     }
 
     @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}/branch/{branch}",
-            "company/{company}/org/{org}/repo/{repo}/branch/{branch}/job"}, produces = "text/html")
+            "company/{company}/org/{org}/repo/{repo}/branch/{branch}/job"}, produces = "text/html;charset=UTF-8")
     public ResponseEntity<String> getJobRuns(
             @PathVariable String company,
             @PathVariable String org,
@@ -66,7 +66,7 @@ public class BrowseUIController {
     }
 
     @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}",
-            "company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run"}, produces = "text/html")
+            "company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run"}, produces = "text/html;charset=UTF-8")
     public ResponseEntity<String> getRunStages(
             @PathVariable String company,
             @PathVariable String org,
@@ -78,7 +78,7 @@ public class BrowseUIController {
     }
 
     @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/{runId}",
-            "company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/{runId}/stage"}, produces = "text/html")
+            "company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/{runId}/stage"}, produces = "text/html;charset=UTF-8")
     public ResponseEntity<String> getStageTestResults(
             @PathVariable String company,
             @PathVariable String org,
@@ -86,12 +86,13 @@ public class BrowseUIController {
             @PathVariable String branch,
             @PathVariable Long jobId,
             @PathVariable Long runId) {
-        return new ResponseEntity<>(BrowseHtmlHelper.getRunHtml(company, org, repo, branch, jobId, runId), HttpStatus.OK);
+        BranchStageViewResponse branchStageViewResponse = graphService.getRunBranchStageViewResponse(company, org, repo, branch, jobId, runId);
+        return new ResponseEntity<>(BrowseHtmlHelper.getJobHtml(company, org, repo, branch, jobId, branchStageViewResponse), HttpStatus.OK);
     }
 
 
     @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/{runId}/stage/{stage}",
-            "company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/{runId}/stage/{stage}"}, produces = "text/html")
+            "company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/{runId}/stage/{stage}"}, produces = "text/html;charset=UTF-8")
     public ResponseEntity<String> getTestResult(
             @PathVariable String company,
             @PathVariable String org,

@@ -4,7 +4,7 @@ buildscript {
         awsCrtVersion = "0.29.7"
         jaxbVersion = '2.3.1'
         mysqlPassword=System.getenv("MYSQL_PASSWORD")
-        recordProcessorVersion = '41'
+        recordProcessorVersion = '42'
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")

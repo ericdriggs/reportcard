@@ -9,15 +9,16 @@ import io.soabase.recordbuilder.core.RecordBuilder;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 @RecordBuilder.Options(useImmutableCollections = true)
 @RecordBuilder
 public record JobGraph(Long jobId,
-                       Map<String, String> jobInfo,
+                       TreeMap<String, String> jobInfo,
                        Integer branchFk,
                        String jobInfoStr,
                        Instant lastRun,
-                       List<RunGraph> runs) implements JobGraphBuilder.With {
+                       List<RunGraph> runs) {
 
     @JsonIgnore
     public JobPojo asJobPojo() {

@@ -15,72 +15,8 @@ table {
     box-shadow: 3px 3px 4px grey;
 }
 
-summary {
-    text-align: left;
-    max-width: 508px;
-    padding: 4px;
-    border-radius: 6px;
-}
 
-details {
-    border-radius: 10px;
-}
-
-details > summary {
-    font-weight: bold;
-    background-color: #eee;
-    box-shadow: 3px 3px 4px black;
-    cursor: pointer;
-}
-
-detals > summary.fail-messages {
-    font-weight: normal
-}
-
-details > dl {
-    border-radius: 6px;
-    background-color: #eee;
-    padding: 6px 6px 6px 20px;
-    margin: 0;
-    box-shadow: 3px 3px 4px black;
-}
-
-dl {
-    border: 3px double #ccc;
-    max-width:500px;
-}
-
-.trend-context-summary {
-    padding-left: 20px;
-}
-
-.trend-context {
-
-}
-
-.dd-trend-context {
-
-}
-
-.dt-trend-context {
-    width: 90px;
-}
-
-dt {
-    float: left;
-    font-weight: bold;
-    color: #468;
-}
-
-dt::after {
-    content: ":";
-}
-
-dd > div {
-    padding-left: 50px;
-}
-
-.test-trend-context {
+.test-page-context {
     padding-left:20px;
     padding-top:20px;
 }

@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="195" height="20">
+    <title>Status date sha</title>
+
+    <linearGradient id="a" x2="0" y2="100%">
+        <stop offset="0" stop-color="#bbb" stop-opacity=".1"/>
+        <stop offset="1" stop-opacity=".1"/>
+    </linearGradient>
+
+    <rect x="0" rx="3" width="44" height="20" fill="#454"/>
+    <rect x="44" rx="3" width="86" height="20" fill="#676"/>
+    <rect x="130" rx="3" width="65" height="20" fill="#9a9"/>
+
+    <g fill="#fff" text-anchor="middle" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="13">
+        <a href="#replace-link" style="fill:white;">
+            <text x="22px" y="15" fill="#000" fill-opacity=".3">1234</text>
+            <text x="22px" y="14">1234</text>
+
+            <text x="88px" y="15" fill="#000" fill-opacity=".3">2024-02-01</text>
+            <text x="88px" y="14">2024-02-01</text>
+
+            <text x="162" y="15" fill="#000" fill-opacity=".3">abc123…</text>
+            <text x="162" y="14">abc123…</text>
+        </a>
+    </g>
+
+
+</svg>

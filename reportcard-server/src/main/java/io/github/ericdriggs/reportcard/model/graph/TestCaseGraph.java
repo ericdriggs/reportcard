@@ -21,7 +21,7 @@ public record TestCaseGraph(
         String systemErr,
         String assertions,
         List<TestCaseFaultGraph> testCaseFaults
-) implements TestCaseGraphBuilder.With {
+) {
 
     @JsonIgnore
     public TestCaseModel asTestCaseModel() {

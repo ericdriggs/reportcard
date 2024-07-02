@@ -185,3 +185,33 @@ footer {
 footer a {
     font-family: Verdana, sans-serif;
 }
+
+.page-context-summary {
+    padding-left: 20px;
+}
+
+.page-context {
+
+}
+
+.dd-page-context {
+
+}
+
+.dt-page-context {
+    width: 90px;
+}
+
+dt {
+    float: left;
+    font-weight: bold;
+    color: #468;
+}
+
+dt::after {
+    content: ":";
+}
+
+dd > div {
+    padding-left: 50px;
+}

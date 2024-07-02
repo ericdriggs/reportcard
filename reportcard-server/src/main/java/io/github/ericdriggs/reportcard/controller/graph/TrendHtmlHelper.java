@@ -5,6 +5,7 @@ import io.github.ericdriggs.reportcard.controller.browse.BrowseHtmlHelper;
 import io.github.ericdriggs.reportcard.controller.graph.trend.*;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.RunPojo;
 import io.github.ericdriggs.reportcard.model.TestCaseModel;
+
 import io.github.ericdriggs.reportcard.model.trend.CompanyOrgRepoBranchJobStageName;
 import io.github.ericdriggs.reportcard.model.trend.JobStageTestTrend;
 import io.github.ericdriggs.reportcard.model.trend.TestPackageSuiteCase;
@@ -15,14 +16,15 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
+import java.net.URI;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
 import java.util.*;
 
-public class GraphHtmlHelper extends BrowseHtmlHelper {
+public class TrendHtmlHelper extends BrowseHtmlHelper {
 
-    public static String renderHtml(JobStageTestTrend jobStageTestTrend) {
+    public static String renderTrendHtml(JobStageTestTrend jobStageTestTrend) {
         final String main = getTrendMainDiv(jobStageTestTrend);
         return getPage(main, getTrendBreadCrumb(jobStageTestTrend.toCompanyOrgRepoBranchJobRunStageDTO()))
                 .replace("<body>", "<body onload=\"applyTestFilters()\">")
@@ -228,22 +230,22 @@ public class GraphHtmlHelper extends BrowseHtmlHelper {
     static String trendMainDiv =
             """
             <div id="main">
-                <details id="test-trend-context" open="open" class="test-trend-context">
-                    <summary id="trend-context-summary" class="trend-context-summary ">Test trend context</summary>
-                    <dl class="trend-context">
-                        <dt class="dt-trend-context">company</dt>
-                        <dd class="dd-trend-context"><!--companyName--></dd>
-                        <dt class="dt-trend-context">org</dt>
-                        <dd class="dd-trend-context"><!--orgName--></dd>
-                        <dt class="dt-trend-context">repo</dt>
-                        <dd class="dd-trend-context"><!--repoName--></dd>
-                        <dt class="dt-trend-context">branch</dt>
-                        <dd class="dd-trend-context"><!--branchName--></dd>
-                        <dt class="dt-trend-context">jobInfo</dt>
+                <details id="test-page-context" open="open" class="test-page-context">
+                    <summary id="page-context-summary" class="page-context-summary ">Test trend context</summary>
+                    <dl class="page-context">
+                        <dt class="dt-page-context">company</dt>
+                        <dd class="dd-page-context"><!--companyName--></dd>
+                        <dt class="dt-page-context">org</dt>
+                        <dd class="dd-page-context"><!--orgName--></dd>
+                        <dt class="dt-page-context">repo</dt>
+                        <dd class="dd-page-context"><!--repoName--></dd>
+                        <dt class="dt-page-context">branch</dt>
+                        <dd class="dd-page-context"><!--branchName--></dd>
+                        <dt class="dt-page-context">jobInfo</dt>
                         <dd>
                             <!--jobInfo-->
                         </dd>
-                        <dt class="dt-trend-context">stage</dt>
+                        <dt class="dt-page-context">stage</dt>
                         <dd><!--stageName--></dd>
                     </dl>
                     <br>
@@ -290,9 +292,6 @@ public class GraphHtmlHelper extends BrowseHtmlHelper {
             </div>
             """;
 
-
-
-
     protected static List<Pair<String, String>> getTrendBreadCrumb(CompanyOrgRepoBranchJobRunStageDTO path) {
         List<Pair<String, String>> breadCrumbs = new ArrayList<>();
         breadCrumbs.add(Pair.of("home", getUrl(null)));
@@ -318,7 +317,7 @@ public class GraphHtmlHelper extends BrowseHtmlHelper {
                                 final String jobUrl = getUrl(CompanyOrgRepoBranchJobRunStageDTO.truncateJob(path));
                                 breadCrumbs.add(Pair.of("jobId: " + path.getJobId(), jobUrl));
                                 if (path.getStageName() != null) {
-                                    String stageUrl =  jobUrl + "/stage/" + path.getStageName();
+                                    String stageUrl = jobUrl + "/stage/" + path.getStageName();
                                     //TODO: replace with stage view when controller at that path
                                     breadCrumbs.add(Pair.of("stage: " + path.getStageName(), "#"));
                                     breadCrumbs.add(Pair.of("trend", stageUrl + "/trend"));
@@ -330,5 +329,18 @@ public class GraphHtmlHelper extends BrowseHtmlHelper {
             }
         }
         return breadCrumbs;
+    }
+
+    public static URI getTrendURI(CompanyOrgRepoBranchJobRunStageDTO path) {
+        if (path.getJobId() == null) {
+            throw new NullPointerException("path.getJobId()");
+        }
+        if (path.getStageName() == null) {
+            throw new NullPointerException("path.getStageName()");
+        }
+
+        final String jobUrl = getUrl(CompanyOrgRepoBranchJobRunStageDTO.truncateJob(path));
+        final String stageUrl = jobUrl + "/stage/" + path.getStageName();
+        return URI.create(stageUrl + "/trend");
     }
 }

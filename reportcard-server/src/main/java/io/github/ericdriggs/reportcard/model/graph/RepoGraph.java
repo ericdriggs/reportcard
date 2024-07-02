@@ -13,7 +13,7 @@ public record RepoGraph(
         String repoName,
         Integer orgFk,
         List<BranchGraph> branches
-) implements RepoGraphBuilder.With {
+) {
 
     @JsonIgnore
     public RepoPojo asRepoPojo() {

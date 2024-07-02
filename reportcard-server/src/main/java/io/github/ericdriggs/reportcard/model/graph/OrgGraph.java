@@ -11,7 +11,7 @@ import java.util.List;
 public record OrgGraph(Integer orgId,
                        String orgName,
                        Integer companyFk,
-                       List<RepoGraph> repos) implements OrgGraphBuilder.With {
+                       List<RepoGraph> repos) {
 
     @JsonIgnore
     public OrgPojo asOrgPojo() {

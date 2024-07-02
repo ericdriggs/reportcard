@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="135" height="20">
+    <title>Status date sha</title>
+
+    <linearGradient id="a" x2="0" y2="100%">
+        <stop offset="0" stop-color="#bbb" stop-opacity=".1"/>
+        <stop offset="1" stop-opacity=".1"/>
+    </linearGradient>
+
+    <rect x="0" rx="3" width="40" height="14" fill="#34f"/>
+    <g fill="#fff" text-anchor="middle" font-family="courier,Geneva,sans-serif" font-size="11">
+        <a href="replace-link" style="fill:white;">
+            <text x="20" y="12" fill="#010101" fill-opacity=".3">report</text>
+            <text x="20" y="11">report</text>
+        </a>
+    </g>
+</svg>

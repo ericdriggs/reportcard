@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<!--suppress CssOverwrittenProperties, CssReplaceWithShorthandSafely, CssRedundantUnit -->
+<html lang="en-US">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard: Org1</title>
+    <link rel="stylesheet" href="css/shared.css">
+    <link rel="stylesheet" href="css/sortable.min.css"/>
+    <script src="js/sortable.min.js"></script>
+    <link rel="stylesheet" href="css/dashboard.css">
+
+</head>
+
+<body>
+<div class="table-wrapper org-legend" >
+    <table>
+        <tr>
+            <th>company</th>
+            <td><a href="#">company1</a></td>
+        </tr>
+        <tr>
+            <th>org</th>
+            <td><a href="#">org1</a></td>
+        </tr>
+    </table>
+</div>
+<div>
+    <fieldset class="fieldset-group">
+        <legend>repo: <a href="/company1/org1/repo1">repo1</a></legend>
+        <fieldset class="fieldset-group">
+            <legend>branch: <a href="/company/org1/repo1/main">main</a></legend>
+            <fieldset class="fieldset-group">
+                <legend><a href="#">my-api-test:test</a></legend>
+                <div class="last-success">last success</div>
+                <object id="company1-org1-repo1-main-jobabc-last-most-recent-success" data="image/pass-run-date-sha.svg"></object>
+
+                <fieldset class="fieldset-group">
+                    <legend>run: <a href="/repo1/main/123">123</a></legend>
+                    <object data="image/fail-date-sha.svg"></object>
+                    <table>
+                        <tr>
+                            <th class="job-info"><a href="#">unitTest</a></th>
+                            <td>
+                                <object data="image/pass.svg"></object>
+                                <object data="image/trend.svg"></object>
+                            </td>
+                        </tr>
+                        <tr>
+
+                            <th class="job-info"><a href="#">apiTest</a></th>
+                            <td>
+                                <object data="image/fail.svg"></object>
+                                <object data="image/trend.svg"></object>
+                                <object data="image/html-anchor.svg"></object>
+                            </td>
+                        </tr>
+                    </table>
+                </fieldset>
+            </fieldset>
+
+            <fieldset class="fieldset-group">
+                <legend><a href="#">my-api-test:staging</a></legend>
+                <fieldset class="fieldset-group">
+                    <legend>run: <a href="/repo1/main/234">234</a></legend>
+                    <object data="image/pass-date-sha.svg"></object>
+                    <table>
+                        <tr>
+                            <th class="job-info"><a href="#">unitTest</a></th>
+                            <td>
+                                <object data="image/pass.svg"></object>
+                                <object data="image/trend.svg"></object>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="job-info"><a href="#">apiTest</a></th>
+                            <td>
+                                <object data="image/pass.svg"></object>
+                                <object data="image/trend.svg"></object>
+                                <object data="image/html-anchor.svg"></object>
+                            </td>
+                        </tr>
+                    </table>
+
+                </fieldset>
+            </fieldset>
+        </fieldset>
+    </fieldset>
+</div>
+</body>

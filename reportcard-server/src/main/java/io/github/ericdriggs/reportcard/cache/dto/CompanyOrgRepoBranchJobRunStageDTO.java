@@ -117,4 +117,36 @@ public class CompanyOrgRepoBranchJobRunStageDTO {
         }
         return sb.toString();
     }
+
+    public String toHtmlId() {
+        StringBuilder sb = new StringBuilder();
+        if (!StringUtils.isEmpty(company)) {
+            sb.append("company-" + company);
+
+            if (!StringUtils.isEmpty(org)) {
+                sb.append("_org-" + org);
+
+                if (!StringUtils.isEmpty(repo)) {
+                    sb.append("_repo-" + repo);
+
+                    if (!StringUtils.isEmpty(branch)) {
+                        sb.append("_branch-" + branch);
+
+                        if (jobId != null) {
+                            sb.append("_jobid-" + jobId);
+
+                            if (runId != null) {
+                                sb.append("_runid-" + runId);
+
+                                if (stageName != null) {
+                                    sb.append("_stage-" + stageName);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return sb.toString();
+    }
 }

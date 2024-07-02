@@ -1,0 +1,129 @@
+a {
+    white-space: nowrap;
+}
+
+body {
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 1em;
+}
+
+dd {
+    display: inline-block;
+    width: 50%;
+    margin: 0;
+    text-align: left;
+}
+
+dl {
+    border: 2px groove #eee;
+    width: 50%;
+    border-radius: 8px;
+    padding: 8px;
+    margin: 4px;
+}
+
+dt {
+    display: inline-block;
+    width: 50%;
+    margin: 0;
+    float: left;
+    font-weight: bold;
+    text-align: left;
+}
+
+fieldset {
+    border: 2px groove #ccc;
+    border-radius: 8px;
+    margin-left: 2px;
+    margin-top: 4px;
+    padding: 4px 8px 8px 14px;
+    display: inline-block;
+    max-width: max-content;
+}
+
+legend {
+    padding: 0px 4px 0px 4px;
+    margin: 0px;
+    margin-left: 8px;
+    margin-right: 8px;
+    font-weight: bold;
+}
+
+details {
+    margin-left: 8px;
+    margin-right: 8px;
+}
+
+legend > a {
+    font-weight: normal;
+}
+
+object {
+    display: inline-block;
+}
+
+table,
+td,
+th,
+tr {
+    font-size: inherit;
+    font-style: inherit;
+    font-variant: inherit;
+}
+
+table {
+    border-collapse: collapse;
+    border-style: hidden;
+    width: max-content;
+}
+
+table,
+td,
+th {
+    border: 1px solid #eee;
+    padding: 2px;
+    width: max-content;
+}
+
+th {
+    text-align: center;
+}
+
+th:after {
+    content: ":"
+}
+
+.fieldset-group {
+    display: block;
+    break-inside: avoid;
+    width: max-content;
+
+}
+
+.job-info {
+    font-size: .8em;
+}
+
+.last-success {
+    font-family: "Arial", sans-serif;
+    font-weight: bold;
+    font-size: .8em;
+    padding-left: 8px;
+    color: #393;
+    padding-top: 2px;
+}
+
+div.org-legend {
+    border: 4px solid #aaa;
+    padding: 6px;
+    border-radius: 12px;
+    margin-bottom: 18px;
+}
+
+.table-wrapper {
+    border: 2px groove #eee;
+    border-radius: 4px;
+    width: max-content;
+    margin: 0px;
+    padding: 0px;
+}

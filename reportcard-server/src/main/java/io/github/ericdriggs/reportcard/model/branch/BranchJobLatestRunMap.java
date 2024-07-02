@@ -5,13 +5,14 @@ import io.github.ericdriggs.reportcard.model.graph.*;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
-import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
 
 import java.util.List;
 import java.util.TreeMap;
 import java.util.TreeSet;
+
+import static io.github.ericdriggs.reportcard.util.list.ListAssertUtil.assertSize1;
+import static io.github.ericdriggs.reportcard.util.list.ListAssertUtil.emptyIfNull;
 
 @Builder
 @Jacksonized
@@ -77,20 +78,5 @@ public class BranchJobLatestRunMap {
                 .build();
     }
 
-    static <T> List<T> emptyIfNull(List<T> list) {
-        if (CollectionUtils.isEmpty(list)) {
-            return new ArrayList<>();
-        }
-        return list;
-    }
 
-    static void assertSize1(List<?> col, String name) {
-        if (CollectionUtils.isEmpty(col)) {
-            throw new NullPointerException(name);
-        }
-
-        if (col.size() != 1) {
-            throw new IllegalArgumentException("expected size 1. actual " + name + ".size(): " + col.size());
-        }
-    }
 }
