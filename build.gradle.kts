@@ -138,7 +138,7 @@ allprojects {
 tasks {
     register<Javadoc>("javadocs") {
         group = "Documentation"
-        //destinationDir = reporting.file("$buildcDir/docs/javadoc")
+        //destinationDir = reporting.file("$buildDir/docs/javadoc")
         title = project.name
         //destinationDir = file("$buildDir/docs/javadoc")
         with(options as StandardJavadocDocletOptions) {
