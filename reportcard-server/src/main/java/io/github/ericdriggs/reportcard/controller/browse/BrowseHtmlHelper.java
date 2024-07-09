@@ -354,6 +354,7 @@ public class BrowseHtmlHelper {
                 final String stageHtml = stageItemHtmlBase
                         .replace("{stageClass}", stageIsSuccess ? "stage-pass" : "stage-fail")
                         .replace("{stageName}", stage.getStageName())
+                        .replace("{stageId}", Long.toString(stage.getStageId()))
                         .replace("{stageTime}", stageTestResult.getDurationString())
                         .replace("{stageUrl}", getUrl(stagePath))
                         .replace("<!--reportLinks-->", getReportLinks(storages));
@@ -425,7 +426,10 @@ public class BrowseHtmlHelper {
     protected final static String stageItemHtmlBase =
             """
             <fieldset class="stage {stageClass}">
-              <legend class="stage-legend"><a href="{stageUrl}">{stageName}</a><br><span class="info">({stageTime})</span></legend>
+              <legend class="stage-legend">
+                <a href="{stageUrl}">{stageName}</a>
+                <a class="info" title='{jobInfo}' href="{stageUrl}">stageId: {stageId}</a>
+                <br><span class="info">({stageTime})</span></legend>
               <!--reportLinks-->
             </fieldset>
             """;
