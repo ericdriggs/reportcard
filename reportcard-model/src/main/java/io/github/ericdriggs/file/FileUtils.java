@@ -1,6 +1,7 @@
 package io.github.ericdriggs.file;
 
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -8,9 +9,11 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Slf4j
 public class FileUtils {
 
     public static String absolutePathFromRelativePath(String relativePath) {
@@ -35,9 +38,22 @@ public class FileUtils {
     public static List<String> fileContentsFromPaths(List<String> absolutePaths) {
         List<String> fileContents = new ArrayList<>();
         for (String absolutePath : absolutePaths) {
+            if (isJunkFile(absolutePath)) {
+                continue;
+            }
             fileContents.add(stringFromPath(absolutePath));
         }
         return fileContents;
+    }
+
+    public static boolean isJunkFile(String absolutePath) {
+        Set<String> junkPatterns = Set.of("/._", "/.DS_Store");
+        for (String pattern : junkPatterns) {
+            if (absolutePath.contains(pattern)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static List<String> filePathsForPathAndRegex(String absolutePath, String fileNameRegex) {
@@ -66,7 +82,12 @@ public class FileUtils {
 
     @SneakyThrows(IOException.class)
     public static String stringFromPath(String absolutePath) {
-        return Files.readString(Path.of(absolutePath));
+        try {
+            return Files.readString(Path.of(absolutePath));
+        } catch (IOException e) {
+            log.error("error while reading file: {}, e.getMessage(): {}", absolutePath, e.getMessage());
+            throw e;
+        }
     }
 
     @SneakyThrows(IOException.class)

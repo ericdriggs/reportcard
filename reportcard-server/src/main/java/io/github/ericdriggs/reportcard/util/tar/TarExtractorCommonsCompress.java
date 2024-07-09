@@ -11,6 +11,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 
+import static io.github.ericdriggs.file.FileUtils.isJunkFile;
 
 public class TarExtractorCommonsCompress extends TarExtractor {
 
@@ -25,7 +26,11 @@ public class TarExtractorCommonsCompress extends TarExtractor {
                 isGzip() ? new GzipCompressorInputStream(inputStream) : inputStream)) {
             ArchiveEntry entry;
             while ((entry = tar.getNextEntry()) != null) {
-                Path extractTo = getDestination().resolve(entry.getName());
+                final String entryName = entry.getName();
+                if (isJunkFile(entryName)) {
+                    continue;
+                }
+                Path extractTo = getDestination().resolve(entryName);
                 if (entry.isDirectory()) {
                     Files.createDirectories(extractTo);
                 } else {
