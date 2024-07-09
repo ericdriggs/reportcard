@@ -1,6 +1,7 @@
 package io.github.ericdriggs.reportcard.controller;
 
 import io.github.ericdriggs.reportcard.controller.html.StorageHtmlHelper;
+import io.github.ericdriggs.reportcard.controller.model.StagePathStorageResponse;
 import io.github.ericdriggs.reportcard.model.*;
 import io.github.ericdriggs.reportcard.persist.StoragePersistService;
 import io.github.ericdriggs.reportcard.persist.StorageType;
@@ -113,7 +114,7 @@ public class StorageController {
 
     @Operation(summary = "Prefer junit controller unless storing multiple types of reports per stage. Post storage (usually html) for specified job stage.")
     @PostMapping(value = {"stage/{stageId}/reports/{label}/tar.gz"}, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<StagePathStorage> postStageStorageTarGZ(
+    public ResponseEntity<StagePathStorageResponse> postStageStorageTarGZ(
 
             @Parameter(description = "generated id for the stage. See response from junit post.")
             @PathVariable("stageId") Long stageId,
@@ -133,8 +134,12 @@ public class StorageController {
             @RequestPart("storage.tar.gz") MultipartFile file
 
     ) {
-
-        return new ResponseEntity<>(doPostStageStorageTarGZ(stageId, label, file, indexFile, storageType), HttpStatus.OK);
+        try {
+            final StagePathStorage stagePathStorage = doPostStageStorageTarGZ(stageId, label, file, indexFile, storageType);
+            return StagePathStorageResponse.created(stagePathStorage).toResponseEntity();
+        } catch (Exception ex) {
+            return StagePathStorageResponse.fromException(ex).toResponseEntity();
+        }
     }
 
     protected StagePathStorage doPostStageStorageTarGZ(

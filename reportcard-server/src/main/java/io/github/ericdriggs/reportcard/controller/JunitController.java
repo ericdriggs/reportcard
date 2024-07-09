@@ -1,5 +1,7 @@
 package io.github.ericdriggs.reportcard.controller;
 
+import io.github.ericdriggs.reportcard.controller.model.StagePathStorageResultCountResponse;
+import io.github.ericdriggs.reportcard.controller.model.StagePathTestResultResponse;
 import io.github.ericdriggs.reportcard.controller.util.TestXmlTarGzUtil;
 import io.github.ericdriggs.reportcard.model.*;
 import io.github.ericdriggs.reportcard.model.converter.JunitSurefireXmlParseUtil;
@@ -45,7 +47,7 @@ public class JunitController {
 
     @Operation(summary = "Post junit/surefire xmls for specified job stage")
     @PostMapping(path = "tar.gz", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = "application/json")
-    public ResponseEntity<StagePathTestResult> postJunitXml(
+    public ResponseEntity<StagePathTestResultResponse> postJunitXml(
             @Parameter(description = "Companies have orgs.")
             @RequestParam("company")
             String company,
@@ -88,21 +90,26 @@ public class JunitController {
             MultipartFile junitXmls
     ) {
         StageDetails stageDetails = StageDetails.builder()
-                                                .company(company)
-                                                .org(org)
-                                                .repo(repo)
-                                                .branch(branch)
-                                                .sha(sha)
-                                                .stage(stage)
-                                                .jobInfo(StringMapUtil.stringToMap(jobInfo))
-                                                .runReference(runReference)
-                                                .externalLinks(StringMapUtil.stringToMap(externalLinks))
-                                                .build();
+                .company(company)
+                .org(org)
+                .repo(repo)
+                .branch(branch)
+                .sha(sha)
+                .stage(stage)
+                .jobInfo(StringMapUtil.stringToMap(jobInfo))
+                .runReference(runReference)
+                .externalLinks(StringMapUtil.stringToMap(externalLinks))
+                .build();
+        try {
+            List<String> testXmlContents = TestXmlTarGzUtil.getFileContentsFromTarGz(junitXmls);
 
-        List<String> testXmlContents = TestXmlTarGzUtil.getFileContentsFromTarGz(junitXmls);
-
-        StagePathTestResult stagePathTestResult = doPostJunitXml(stageDetails, testXmlContents);
-        return new ResponseEntity<>(stagePathTestResult, HttpStatus.OK);
+            final StagePathTestResult stagePathTestResult = doPostJunitXml(stageDetails, testXmlContents);
+            final StagePathTestResultResponse stagePathTestResultResponse = StagePathTestResultResponse.created(stagePathTestResult);
+            return new ResponseEntity<>(stagePathTestResultResponse, HttpStatus.valueOf(stagePathTestResultResponse.getResponseDetails().getHttpStatus()));
+        } catch (Exception ex) {
+            log.error("postJunitXml - stageDetails: {}", stageDetails, ex);
+            return StagePathTestResultResponse.fromException(ex).toResponseEntity();
+        }
     }
 
     public StagePathTestResult doPostJunitXml(StageDetails stageDetails, List<String> testXmlContents) {
@@ -113,7 +120,7 @@ public class JunitController {
 
     @Operation(summary = "Post storage (usually html) and junit/surefire xmls for specified job stage.", description = "Single call which performs both /v1/api/junit/tar.gz and /v1/api/storage/stage/{stageId}/reports/{label}/tar.gz")
     @PostMapping(value = {"storage/{label}/tar.gz"}, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<StagePathStorageResultCount> postStageJunitStorageTarGZ(
+    public ResponseEntity<StagePathStorageResultCountResponse> postStageJunitStorageTarGZ(
 
             @Parameter(description = "Companies have orgs.")
             @RequestParam("company")
@@ -179,27 +186,32 @@ public class JunitController {
         }
 
         StageDetails stageDetails = StageDetails.builder()
-                                                .company(company)
-                                                .org(org)
-                                                .repo(repo)
-                                                .branch(branch)
-                                                .sha(sha)
-                                                .stage(stage)
-                                                .jobInfo(StringMapUtil.stringToMap(jobInfo))
-                                                .runReference(runReference)
-                                                .externalLinks(StringMapUtil.stringToMap(externalLinks))
-                                                .build();
+                .company(company)
+                .org(org)
+                .repo(repo)
+                .branch(branch)
+                .sha(sha)
+                .stage(stage)
+                .jobInfo(StringMapUtil.stringToMap(jobInfo))
+                .runReference(runReference)
+                .externalLinks(StringMapUtil.stringToMap(externalLinks))
+                .build();
+        try {
+            List<String> testXmlContents = TestXmlTarGzUtil.getFileContentsFromTarGz(junitXmls);
+            TestResultModel testResultModel = JunitSurefireXmlParseUtil.parseTestXml(testXmlContents);
 
-        List<String> testXmlContents = TestXmlTarGzUtil.getFileContentsFromTarGz(junitXmls);
-        TestResultModel testResultModel = JunitSurefireXmlParseUtil.parseTestXml(testXmlContents);
+            StagePathTestResult stagePathTestResult = testResultPersistService.insertTestResult(stageDetails, testResultModel);
+            StagePath stagePath = stagePathTestResult.getStagePath();
+            final Long stageId = stagePath.getStage().getStageId();
+            StagePathStorage stagePathStorage = doPostStageStorageTarGZ(stageId, label, reports, indexFile, storageType);
 
-        StagePathTestResult stagePathTestResult = testResultPersistService.insertTestResult(stageDetails, testResultModel);
-        StagePath stagePath = stagePathTestResult.getStagePath();
-        final Long stageId = stagePath.getStage().getStageId();
-        StagePathStorage stagePathStorage = doPostStageStorageTarGZ(stageId, label, reports, indexFile, storageType);
-
-        StagePathStorageResultCount StagePathStorageResultCount = new StagePathStorageResultCount(stagePathStorage, stagePathTestResult);
-        return new ResponseEntity<>(StagePathStorageResultCount, HttpStatus.OK);
+            StagePathStorageResultCount stagePathStorageResultCount = new StagePathStorageResultCount(stagePathStorage, stagePathTestResult);
+            final StagePathStorageResultCountResponse response = StagePathStorageResultCountResponse.created(stagePathStorageResultCount);
+            return new ResponseEntity<>(response, HttpStatus.valueOf(response.getHttpStatusCode()));
+        } catch (Exception ex) {
+            log.error("postJunitXml - stageDetails: {}", stageDetails, ex);
+            return StagePathStorageResultCountResponse.fromException(ex).toResponseEntity();
+        }
     }
 
     @SuppressWarnings("ReassignedVariable")

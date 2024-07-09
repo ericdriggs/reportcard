@@ -1,11 +1,15 @@
 //TODO: move from model to pojo
 package io.github.ericdriggs.reportcard.model;
 
+import io.github.ericdriggs.reportcard.controller.html.StorageHtmlHelper;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.StoragePojo;
 import io.github.ericdriggs.reportcard.xml.ResultCount;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Value
 @Builder
@@ -20,7 +24,7 @@ public class StagePathStorageResultCount {
             throw new NullPointerException("stagePathStorage");
         }
         if (stagePathTestResult == null) {
-            throw new NullPointerException("stagepathTestResult");
+            throw new NullPointerException("stagePathTestResult");
         }
 
         if (stagePathStorage.getStagePath() == null) {
@@ -31,11 +35,15 @@ public class StagePathStorageResultCount {
         }
 
         if (stagePathStorage.getStagePath().compareTo(stagePathTestResult.getStagePath()) != 0) {
-            throw new IllegalStateException("stagePathStorage.getStagePath(): " + stagePathStorage.getStagePath() + " != stagePathTestResult.getStagePath(): " + stagePathTestResult.getStagePath() );
+            throw new IllegalStateException("stagePathStorage.getStagePath(): " + stagePathStorage.getStagePath() + " != stagePathTestResult.getStagePath(): " + stagePathTestResult.getStagePath());
         }
 
         this.stagePath = stagePathStorage.getStagePath();
         this.storage = stagePathStorage.getStorage();
         this.resultCount = stagePathTestResult.getTestResult().getResultCount();
+    }
+
+    public List<String> getUrls() {
+        return StagePathStorage.getUrls(stagePath, storage);
     }
 }

@@ -1,8 +1,6 @@
 package io.github.ericdriggs.reportcard.client;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.Data;
-import lombok.SneakyThrows;
 import org.springframework.util.ObjectUtils;
 
 import java.util.Map;

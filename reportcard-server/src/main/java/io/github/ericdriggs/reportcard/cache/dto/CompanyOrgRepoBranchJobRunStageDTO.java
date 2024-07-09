@@ -1,5 +1,7 @@
 package io.github.ericdriggs.reportcard.cache.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.github.ericdriggs.reportcard.model.StagePath;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,8 +24,8 @@ public class CompanyOrgRepoBranchJobRunStageDTO {
             return null;
         }
         return CompanyOrgRepoBranchJobRunStageDTO.builder()
-                                                 .company(o.company)
-                                                 .build();
+                .company(o.company)
+                .build();
     }
 
     public static CompanyOrgRepoBranchJobRunStageDTO truncateOrg(CompanyOrgRepoBranchJobRunStageDTO o) {
@@ -31,9 +33,9 @@ public class CompanyOrgRepoBranchJobRunStageDTO {
             return null;
         }
         return CompanyOrgRepoBranchJobRunStageDTO.builder()
-                                                 .company(o.company)
-                                                 .org(o.org)
-                                                 .build();
+                .company(o.company)
+                .org(o.org)
+                .build();
     }
 
     public static CompanyOrgRepoBranchJobRunStageDTO truncateRepo(CompanyOrgRepoBranchJobRunStageDTO o) {
@@ -41,10 +43,10 @@ public class CompanyOrgRepoBranchJobRunStageDTO {
             return null;
         }
         return CompanyOrgRepoBranchJobRunStageDTO.builder()
-                                                 .company(o.company)
-                                                 .org(o.org)
-                                                 .repo(o.repo)
-                                                 .build();
+                .company(o.company)
+                .org(o.org)
+                .repo(o.repo)
+                .build();
     }
 
     public static CompanyOrgRepoBranchJobRunStageDTO truncateBranch(CompanyOrgRepoBranchJobRunStageDTO o) {
@@ -52,11 +54,11 @@ public class CompanyOrgRepoBranchJobRunStageDTO {
             return null;
         }
         return CompanyOrgRepoBranchJobRunStageDTO.builder()
-                                                 .company(o.company)
-                                                 .org(o.org)
-                                                 .repo(o.repo)
-                                                 .branch(o.branch)
-                                                 .build();
+                .company(o.company)
+                .org(o.org)
+                .repo(o.repo)
+                .branch(o.branch)
+                .build();
     }
 
     public static CompanyOrgRepoBranchJobRunStageDTO truncateJob(CompanyOrgRepoBranchJobRunStageDTO o) {
@@ -64,12 +66,12 @@ public class CompanyOrgRepoBranchJobRunStageDTO {
             return null;
         }
         return CompanyOrgRepoBranchJobRunStageDTO.builder()
-                                                 .company(o.company)
-                                                 .org(o.org)
-                                                 .repo(o.repo)
-                                                 .branch(o.branch)
-                                                 .jobId(o.jobId)
-                                                 .build();
+                .company(o.company)
+                .org(o.org)
+                .repo(o.repo)
+                .branch(o.branch)
+                .jobId(o.jobId)
+                .build();
     }
 
     public static CompanyOrgRepoBranchJobRunStageDTO truncateRun(CompanyOrgRepoBranchJobRunStageDTO o) {
@@ -77,13 +79,13 @@ public class CompanyOrgRepoBranchJobRunStageDTO {
             return null;
         }
         return CompanyOrgRepoBranchJobRunStageDTO.builder()
-                                                 .company(o.company)
-                                                 .org(o.org)
-                                                 .repo(o.repo)
-                                                 .branch(o.branch)
-                                                 .jobId(o.jobId)
-                                                 .runId(o.runId)
-                                                 .build();
+                .company(o.company)
+                .org(o.org)
+                .repo(o.repo)
+                .branch(o.branch)
+                .jobId(o.jobId)
+                .runId(o.runId)
+                .build();
     }
 
     public String toUrlPath() {
@@ -148,5 +150,43 @@ public class CompanyOrgRepoBranchJobRunStageDTO {
             }
         }
         return sb.toString();
+    }
+
+    @JsonIgnore
+    public static CompanyOrgRepoBranchJobRunStageDTO fromStagePath(StagePath stagePath) {
+        if (stagePath == null) {
+            return CompanyOrgRepoBranchJobRunStageDTO.builder().build();
+        }
+        CompanyOrgRepoBranchJobRunStageDTOBuilder builder = CompanyOrgRepoBranchJobRunStageDTO.builder();
+        if (stagePath.getCompany() != null && stagePath.getCompany().getCompanyName() != null) {
+            builder.company(stagePath.getCompany().getCompanyName());
+
+            if (stagePath.getOrg() != null && stagePath.getOrg().getOrgName() != null) {
+                builder.org(stagePath.getOrg().getOrgName());
+
+                if (stagePath.getRepo() != null && stagePath.getRepo().getRepoName() != null) {
+                    builder.org(stagePath.getRepo().getRepoName());
+
+                    if (stagePath.getBranch() != null && stagePath.getBranch().getBranchName() != null) {
+                        builder.org(stagePath.getBranch().getBranchName());
+
+                        if (stagePath.getJob() != null && stagePath.getJob().getJobId() != null) {
+                            builder.jobId(stagePath.getJob().getJobId());
+
+                            if (stagePath.getRun() != null && stagePath.getRun().getRunId() != null) {
+                                builder.runId(stagePath.getRun().getRunId());
+
+                                if (stagePath.getStage() != null && stagePath.getStage().getStageName() != null) {
+                                    builder.stageName(stagePath.getStage().getStageName());
+
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+        return builder.build();
     }
 }

@@ -2,6 +2,7 @@
 package io.github.ericdriggs.reportcard.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.github.ericdriggs.reportcard.cache.dto.CompanyOrgRepoBranchJobRunStageDTO;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.*;
 import io.github.ericdriggs.reportcard.util.CompareUtil;
 import lombok.Data;
@@ -125,5 +126,11 @@ public class StagePath implements Comparable<StagePath> {
     @Override
     public int hashCode() {
         return HashCodeBuilder.reflectionHashCode(this);
+    }
+
+
+    @JsonIgnore
+    public String getUrl() {
+        return CompanyOrgRepoBranchJobRunStageDTO.fromStagePath(this).toUrlPath();
     }
 }
