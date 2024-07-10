@@ -7,7 +7,9 @@ import lombok.Builder;
 import lombok.Value;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Value
 @Builder
@@ -15,17 +17,17 @@ public class StagePathStorage {
     StagePath stagePath;
     StoragePojo storage;
 
-    public List<String> getUrls() {
+    public Map<String,String> getUrls() {
         return getUrls(stagePath, storage);
     }
 
-    static List<String> getUrls(StagePath stagePath, StoragePojo storage) {
-        List<String> urls = new ArrayList<>();
+    static Map<String,String> getUrls(StagePath stagePath, StoragePojo storage) {
+        Map<String,String> urls = new LinkedHashMap<>();
         if (stagePath != null) {
-            urls.add(stagePath.getUrl());
+            urls.put("stage", stagePath.getUrl());
         }
         if (storage != null) {
-            urls.add(StorageHtmlHelper.getStorageUrl(storage));
+            urls.put("storage", StorageHtmlHelper.getStorageUrl(storage));
         }
         return urls;
     }

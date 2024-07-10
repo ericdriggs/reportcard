@@ -2,10 +2,11 @@ package io.github.ericdriggs.reportcard.controller;
 
 import io.github.ericdriggs.reportcard.ReportcardApplication;
 import io.github.ericdriggs.reportcard.config.LocalStackConfig;
+import io.github.ericdriggs.reportcard.controller.model.ResponseDetails;
+import io.github.ericdriggs.reportcard.controller.model.StagePathStorageResponse;
 import io.github.ericdriggs.reportcard.controller.util.TestXmlTarGzUtil;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.StoragePojo;
 import io.github.ericdriggs.reportcard.model.StagePath;
-import io.github.ericdriggs.reportcard.model.StagePathStorage;
 import io.github.ericdriggs.reportcard.persist.BrowseService;
 import io.github.ericdriggs.reportcard.persist.StorageType;
 import io.github.ericdriggs.reportcard.persist.test_result.TestResultPersistServiceTest;
@@ -31,9 +32,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
 
+import static net.javacrumbs.jsonunit.JsonAssert.assertJsonEquals;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(classes = {ReportcardApplication.class, LocalStackConfig.class},
@@ -99,25 +100,53 @@ public class StorageControllerTest {
                     MediaType.ALL_VALUE,
                     Files.newInputStream(tempTarGz)
             );
-            ResponseEntity<StagePathStorage> responseEntity = storageController.postStageStorageTarGZ(stageId, label,  indexFile, StorageType.HTML, junitTarGz);
+            ResponseEntity<StagePathStorageResponse> responseEntity = storageController.postStageStorageTarGZ(stageId, label,  indexFile, StorageType.HTML, junitTarGz);
             assertNotNull(responseEntity);
-            StagePathStorage stagePathStorage = responseEntity.getBody();
+            StagePathStorageResponse response = responseEntity.getBody();
 
-            assertNotNull(stagePathStorage);
+            final String expectedStageUrl = "/company/company1/org/org1/repo/repo1/branch/master/job/1/run/1/stage/api";
+            {
+                final ResponseDetails responseDetails = response.getResponseDetails();
+                assertEquals(201, responseDetails.getHttpStatus());
+                assertNull(responseDetails.getDetail());
+                assertNull(responseDetails.getStackTrace());
+                assertNull(responseDetails.getProblemInstance());
+                assertNull(responseDetails.getProblemType());
+                final Map<String, String> createdUrls = responseDetails.getCreatedUrls();
+                assertEquals(2, createdUrls.size());
+                assertEquals(createdUrls.get("stage"), expectedStageUrl);
+                final String storageUrl = createdUrls.get("storage");
+                assertThat(storageUrl, matchesPattern("/v1/api/storage/key/rc/company1/org1/repo1/master/.*/1/1/api/htmlSample/html-samples/foo/index.html"));
+            }
+            {
+                StagePath stagePath = response.getStagePath();
+                System.out.println("stagePath: " + stagePath);
+                assertEquals("company1", stagePath.getCompany().getCompanyName());
+                assertEquals("org1", stagePath.getOrg().getOrgName());
+                assertEquals("repo1", stagePath.getRepo().getRepoName());
+                assertEquals("master", stagePath.getBranch().getBranchName());
+                assertJsonEquals("{\"host\": \"foocorp.jenkins.com\", \"pipeline\": \"foopipeline\", \"application\": \"fooapp\"}",
+                        stagePath.getJob().getJobInfo());
+                assertEquals("runReference1", stagePath.getRun().getRunReference());
+                assertEquals("api", stagePath.getStage().getStageName());
+                assertEquals(expectedStageUrl, stagePath.getUrl());
+            }
 
-            StagePath stagePath = stagePathStorage.getStagePath();
-            StoragePojo storage = stagePathStorage.getStorage();
+            {
+                StoragePojo storage = response.getStorage();
+                assertNotNull(storage.getStorageId());
+                assertNotNull(storage.getLabel());
 
-            assertNotNull(storage.getStorageId());
-            assertNotNull(storage.getLabel());
 
-            System.out.println("stagePath: " + stagePath);
-            System.out.println("storage: " + storage);
+                System.out.println("storage: " + storage);
 
-            ListObjectsV2Response s3Objects = s3Service.listObjectsForBucket();
-            assertNotNull(s3Objects.contents());
-            assertThat(s3Objects.contents().size(), is(greaterThanOrEqualTo(3)));
-            System.out.println(s3Objects);
+                ListObjectsV2Response s3Objects = s3Service.listObjectsForBucket();
+                assertNotNull(s3Objects.contents());
+                assertThat(s3Objects.contents().size(), is(greaterThanOrEqualTo(3)));
+                System.out.println(s3Objects);
+            }
+
+
         } finally {
             if (tempTarGz != null) {
                 Files.delete(tempTarGz);

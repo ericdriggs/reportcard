@@ -15,7 +15,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 @Builder
@@ -28,13 +27,13 @@ public class ResponseDetails {
     String problemType;
     String problemInstance;
     String stackTrace;
-    List<String> createdUrls;
+    Map<String,String> createdUrls;
 
     public static ResponseDetails ok() {
         return ResponseDetails.builder().httpStatus(200).build();
     }
 
-    public static ResponseDetails created(List<String> createdUrls) {
+    public static ResponseDetails created(Map<String,String> createdUrls) {
         return ResponseDetails.builder()
                 .httpStatus(201)
                 .createdUrls(createdUrls)

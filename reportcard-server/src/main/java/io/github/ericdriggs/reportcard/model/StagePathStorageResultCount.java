@@ -10,6 +10,7 @@ import lombok.Value;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Value
 @Builder
@@ -43,7 +44,7 @@ public class StagePathStorageResultCount {
         this.resultCount = stagePathTestResult.getTestResult().getResultCount();
     }
 
-    public List<String> getUrls() {
+    public Map<String,String> getUrls() {
         return StagePathStorage.getUrls(stagePath, storage);
     }
 }

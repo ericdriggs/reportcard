@@ -165,10 +165,10 @@ public class CompanyOrgRepoBranchJobRunStageDTO {
                 builder.org(stagePath.getOrg().getOrgName());
 
                 if (stagePath.getRepo() != null && stagePath.getRepo().getRepoName() != null) {
-                    builder.org(stagePath.getRepo().getRepoName());
+                    builder.repo(stagePath.getRepo().getRepoName());
 
                     if (stagePath.getBranch() != null && stagePath.getBranch().getBranchName() != null) {
-                        builder.org(stagePath.getBranch().getBranchName());
+                        builder.branch(stagePath.getBranch().getBranchName());
 
                         if (stagePath.getJob() != null && stagePath.getJob().getJobId() != null) {
                             builder.jobId(stagePath.getJob().getJobId());
@@ -178,14 +178,12 @@ public class CompanyOrgRepoBranchJobRunStageDTO {
 
                                 if (stagePath.getStage() != null && stagePath.getStage().getStageName() != null) {
                                     builder.stageName(stagePath.getStage().getStageName());
-
                                 }
                             }
                         }
                     }
                 }
             }
-
         }
         return builder.build();
     }

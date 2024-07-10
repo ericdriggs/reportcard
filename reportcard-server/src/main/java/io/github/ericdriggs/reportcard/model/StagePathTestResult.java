@@ -7,6 +7,7 @@ import lombok.extern.jackson.Jacksonized;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @Builder
 @Jacksonized
@@ -16,10 +17,10 @@ public class StagePathTestResult {
     TestResultModel testResult;
 
     @JsonIgnore
-    public List<String> getUrls() {
+    public Map<String,String> getUrls() {
         if (stagePath == null) {
-            Collections.emptyList();
+            Collections.emptyMap();
         }
-        return List.of(stagePath.getUrl());
+        return Collections.singletonMap("stage", stagePath.getUrl());
     }
 }
