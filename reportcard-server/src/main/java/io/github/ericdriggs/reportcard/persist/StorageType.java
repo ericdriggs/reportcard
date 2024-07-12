@@ -9,6 +9,7 @@ public enum StorageType {
     TAR_GZ(5),
     XML(6),
     ZIP(7),
+    JUNIT(8),
     ;
 
 

@@ -30,6 +30,7 @@ import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 
 import static net.javacrumbs.jsonunit.JsonAssert.assertJsonEquals;
@@ -65,7 +66,7 @@ public class StorageControllerTest {
     //only used for troubleshooting manually
     @Disabled
     @Test
-    void postStorageOnlyTest() throws IOException {
+    void postStorageOnlyTest() {
 
         final String prefix = "abcd1234";
         MultipartFile file = TestResultPersistServiceTest.getMockJunitMultipartFile(resourceReader, "classpath:format-samples/sample-junit-small.xml");
@@ -89,7 +90,7 @@ public class StorageControllerTest {
         MultipartFile[] files = TestResultPersistServiceTest.getMockMultipartFilesFromPathStrings(TestResultPersistServiceTest.htmlPaths, resourceReader);
         String indexFile = TestResultPersistServiceTest.htmlIndexFile;
         Long stageId = 1L;
-        final String label = "htmlSample";
+        final String label = "cucumber_html";
 
         Path tempTarGz = null;
         try {
@@ -115,8 +116,10 @@ public class StorageControllerTest {
                 final Map<String, String> createdUrls = responseDetails.getCreatedUrls();
                 assertEquals(2, createdUrls.size());
                 assertEquals(createdUrls.get("stage"), expectedStageUrl);
-                final String storageUrl = createdUrls.get("storage");
-                assertThat(storageUrl, matchesPattern("/v1/api/storage/key/rc/company1/org1/repo1/master/.*/1/1/api/htmlSample/html-samples/foo/index.html"));
+                {
+                    final String htmlUrl = createdUrls.get("cucumber_html");
+                    assertThat(htmlUrl, matchesPattern("/v1/api/storage/key/rc/company1/org1/repo1/master/.*/1/1/api/cucumber_html/html-samples/foo/index.html"));
+                }
             }
             {
                 StagePath stagePath = response.getStagePath();
@@ -133,17 +136,18 @@ public class StorageControllerTest {
             }
 
             {
-                StoragePojo storage = response.getStorage();
-                assertNotNull(storage.getStorageId());
-                assertNotNull(storage.getLabel());
+                List<StoragePojo> storages = response.getStorages();
+                for (StoragePojo storage : storages) {
+                    assertNotNull(storage.getStorageId());
+                    assertNotNull(storage.getLabel());
 
+                    System.out.println("storage: " + storage);
 
-                System.out.println("storage: " + storage);
-
-                ListObjectsV2Response s3Objects = s3Service.listObjectsForBucket();
-                assertNotNull(s3Objects.contents());
-                assertThat(s3Objects.contents().size(), is(greaterThanOrEqualTo(3)));
-                System.out.println(s3Objects);
+                    ListObjectsV2Response s3Objects = s3Service.listObjectsForBucket();
+                    assertNotNull(s3Objects.contents());
+                    assertThat(s3Objects.contents().size(), is(greaterThanOrEqualTo(3)));
+                    System.out.println(s3Objects);
+                }
             }
 
 

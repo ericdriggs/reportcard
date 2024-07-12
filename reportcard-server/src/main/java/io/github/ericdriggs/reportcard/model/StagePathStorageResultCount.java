@@ -1,14 +1,12 @@
 //TODO: move from model to pojo
 package io.github.ericdriggs.reportcard.model;
 
-import io.github.ericdriggs.reportcard.controller.html.StorageHtmlHelper;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.StoragePojo;
 import io.github.ericdriggs.reportcard.xml.ResultCount;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -17,34 +15,31 @@ import java.util.Map;
 @AllArgsConstructor
 public class StagePathStorageResultCount {
     StagePath stagePath;
-    StoragePojo storage;
+    List<StoragePojo> storages;
     ResultCount resultCount;
 
-    public StagePathStorageResultCount(StagePathStorage stagePathStorage, StagePathTestResult stagePathTestResult) {
-        if (stagePathStorage == null) {
-            throw new NullPointerException("stagePathStorage");
+    public StagePathStorageResultCount(StagePath stagePath, List<StoragePojo> storages, StagePathTestResult stagePathTestResult) {
+        if (stagePath == null) {
+            throw new NullPointerException("stagePath");
+        }
+        if (storages == null) {
+            throw new NullPointerException("storages");
         }
         if (stagePathTestResult == null) {
             throw new NullPointerException("stagePathTestResult");
         }
 
-        if (stagePathStorage.getStagePath() == null) {
-            throw new IllegalStateException("stagePathStorage.getStagePath() == null");
-        }
-        if (stagePathTestResult.getStagePath() == null) {
-            throw new IllegalStateException("stagePathTestResult.getStagePath() == null");
+
+        if (stagePath.compareTo(stagePathTestResult.getStagePath()) != 0) {
+            throw new IllegalStateException("stagePath: " + stagePath + " != stagePathTestResult.getStagePath(): " + stagePathTestResult.getStagePath());
         }
 
-        if (stagePathStorage.getStagePath().compareTo(stagePathTestResult.getStagePath()) != 0) {
-            throw new IllegalStateException("stagePathStorage.getStagePath(): " + stagePathStorage.getStagePath() + " != stagePathTestResult.getStagePath(): " + stagePathTestResult.getStagePath());
-        }
-
-        this.stagePath = stagePathStorage.getStagePath();
-        this.storage = stagePathStorage.getStorage();
+        this.stagePath = stagePath;
+        this.storages = storages;
         this.resultCount = stagePathTestResult.getTestResult().getResultCount();
     }
 
     public Map<String,String> getUrls() {
-        return StagePathStorage.getUrls(stagePath, storage);
+        return StagePathStorages.getUrls(stagePath, storages);
     }
 }

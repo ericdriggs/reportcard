@@ -11,19 +11,21 @@ import lombok.extern.jackson.Jacksonized;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
+
 @Builder
 @Jacksonized
 @Value
 public class StagePathStorageResultCountResponse {
     StagePath stagePath;
-    StoragePojo storage;
+    List<StoragePojo> storages;
     ResultCount resultCount;
     ResponseDetails responseDetails;
 
     public static StagePathStorageResultCountResponse ok(StagePathStorageResultCount s) {
         return StagePathStorageResultCountResponse.builder()
                 .stagePath(s.getStagePath())
-                .storage(s.getStorage())
+                .storages(s.getStorages())
                 .resultCount(s.getResultCount())
                 .responseDetails(ResponseDetails.ok())
                 .build();
@@ -32,7 +34,7 @@ public class StagePathStorageResultCountResponse {
     public static StagePathStorageResultCountResponse created(StagePathStorageResultCount s) {
         return StagePathStorageResultCountResponse.builder()
                 .stagePath(s.getStagePath())
-                .storage(s.getStorage())
+                .storages(s.getStorages())
                 .resultCount(s.getResultCount())
                 .responseDetails(ResponseDetails.created(s.getUrls()))
                 .build();
