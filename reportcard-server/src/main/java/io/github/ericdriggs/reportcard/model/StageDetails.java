@@ -64,6 +64,7 @@ public class StageDetails {
             addErrorIfMissing(errors, sha, "sha");
             addErrorIfMissing(errors, stage, "stage");
             jobInfo = lower(jobInfo);
+            branch = branch.replace("/","_");
             if (!errors.isEmpty()) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                         "errors - " + Arrays.toString(errors.entrySet().toArray()));

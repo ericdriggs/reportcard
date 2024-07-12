@@ -154,17 +154,13 @@ public class JunitController {
             @RequestParam("stage")
             String stage,
 
-            @Parameter(description = "Label for storage. Labels are unique per stage.")
+            @Parameter(description = "Label for storage html. Labels are unique per stage.")
             @PathVariable("label")
             String label,
 
             @Parameter(description = "Index file for html storage. Default: null")
             @RequestParam(value = "indexFile", required = false)
             String indexFile,
-
-            @Parameter(description = "Storage type. Default: HTML")
-            @RequestParam(value = "storageType", required = false)
-            StorageType storageType,
 
             @Parameter(description = "Optional comma separated key=value links for the stage.", example="build=https://jenkins.mycorp.com/job/myorg/job/myrepo/job/main/123")
             @RequestParam(value = "externalLinks", required = false)
@@ -178,13 +174,7 @@ public class JunitController {
             @Parameter(description = "Files and folders to store in s3. Usually combination of html/css/js.")
             @RequestPart("storage.tar.gz")
             MultipartFile reports
-
-    ) throws IOException {
-
-        if (storageType == null) {
-            storageType = StorageType.HTML;
-        }
-
+    ) {
         StageDetails stageDetails = StageDetails.builder()
                 .company(company)
                 .org(org)
@@ -196,6 +186,16 @@ public class JunitController {
                 .runReference(runReference)
                 .externalLinks(StringMapUtil.stringToMap(externalLinks))
                 .build();
+        return doPostStageJunitStorageTarGZ(stageDetails, label, indexFile, junitXmls, reports);
+    }
+
+    public ResponseEntity<StagePathStorageResultCountResponse> doPostStageJunitStorageTarGZ(
+           StageDetails stageDetails,
+           String label,
+           String indexFile,
+           MultipartFile junitXmls,
+           MultipartFile reports
+    )  {
         try {
             List<String> testXmlContents = TestXmlTarGzUtil.getFileContentsFromTarGz(junitXmls);
             TestResultModel testResultModel = JunitSurefireXmlParseUtil.parseTestXml(testXmlContents);
@@ -203,9 +203,16 @@ public class JunitController {
             StagePathTestResult stagePathTestResult = testResultPersistService.insertTestResult(stageDetails, testResultModel);
             StagePath stagePath = stagePathTestResult.getStagePath();
             final Long stageId = stagePath.getStage().getStageId();
-            StagePathStorage stagePathStorage = doPostStageStorageTarGZ(stageId, label, reports, indexFile, storageType);
 
-            StagePathStorageResultCount stagePathStorageResultCount = new StagePathStorageResultCount(stagePathStorage, stagePathTestResult);
+            StagePathStorages stagePathStorages;
+            {
+                StagePathStorages junitStorage = storeJunit(stageId, junitXmls);
+                StagePathStorages htmlStorage = storeHtml(stageId, label, reports, indexFile);
+                stagePathStorages = StagePathStorages.merge(junitStorage, htmlStorage);
+            }
+
+
+            StagePathStorageResultCount stagePathStorageResultCount = new StagePathStorageResultCount(stagePathStorages.getStagePath(), stagePathStorages.getStorages(), stagePathTestResult);
             final StagePathStorageResultCountResponse response = StagePathStorageResultCountResponse.created(stagePathStorageResultCount);
             return new ResponseEntity<>(response, HttpStatus.valueOf(response.getHttpStatusCode()));
         } catch (Exception ex) {
@@ -214,22 +221,33 @@ public class JunitController {
         }
     }
 
-    @SuppressWarnings("ReassignedVariable")
-
-    protected StagePathStorage doPostStageStorageTarGZ(
+    protected StagePathStorages storeHtml(
             @PathVariable("stageId") Long stageId,
             @PathVariable("label") String label,
             @RequestPart("storage.tar.gz") MultipartFile file,
-            @RequestParam(value = "indexFile", required = false) String indexFile,
-            @RequestParam(value = "storageType", required = false) StorageType storageType) {
-        if (storageType == null) {
-            storageType = StorageType.HTML;
-        }
+            @RequestParam(value = "indexFile", required = false) String indexFile) {
+
+        StorageType storageType = StorageType.HTML;
+
         final StagePath stagePath = storagePersistService.getStagePath(stageId);
         final String prefix = new StoragePath(stagePath, label).getPrefix();
 
         s3Service.uploadTarGZ(file, prefix);
         return storagePersistService.persistStoragePath(indexFile, label, prefix, stageId, storageType);
+    }
+
+    protected StagePathStorages storeJunit(
+            @PathVariable("stageId") Long stageId,
+            @RequestPart("junit.tar.gz") MultipartFile junitXmls) {
+
+        final String label = "junit";
+        StorageType storageType = StorageType.JUNIT;
+
+        final StagePath stagePath = storagePersistService.getStagePath(stageId);
+        final String prefix = new StoragePath(stagePath, label).getPrefix();
+
+        s3Service.uploadTarGZ(junitXmls, prefix);
+        return storagePersistService.persistStoragePath(null, label, prefix, stageId, storageType);
     }
 
 }

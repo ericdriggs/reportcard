@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TestResultPersistServiceTest {
 
-    public static String xmlPath = "classpath:format-samples/sample-junit-small.xml";
+    public static String junitXmlPath = "classpath:format-samples/sample-junit-small.xml";
     public static final String htmlIndexFile = "html-samples/foo/index.html";
     public static List<String> htmlPaths = List.of("classpath:html-samples/foo/index.html", "classpath:html-samples/foo/other.html", "classpath:html-samples/foo/nested/nested.html");
 
@@ -38,7 +38,7 @@ public class TestResultPersistServiceTest {
     public TestResultPersistServiceTest(ResourceReaderComponent resourceReader, TestResultPersistService testResultPersistService) {
         this.testResultPersistService = testResultPersistService;
 
-        this.xmlJunit = resourceReader.resourceAsString(xmlPath);
+        this.xmlJunit = resourceReader.resourceAsString(junitXmlPath);
         this.mulipartFile = getMockJunitMultipartFile(resourceReader,"classpath:format-samples/sample-junit-small.xml");
     }
 
@@ -53,9 +53,6 @@ public class TestResultPersistServiceTest {
         );
     }
 
-    public static MultipartFile getMockMultipartFilesFromPathString(String resourceClasspath, ResourceReaderComponent resourceReader) {
-        return getMockMultipartFile(resourceClasspath, resourceReader);
-    }
 
     public static MultipartFile[] getMockMultipartFilesFromPathStrings(List<String> resourceClasspaths, ResourceReaderComponent resourceReader) {
         List<MultipartFile> multipartFiles = new ArrayList<>();

@@ -182,15 +182,15 @@ public class GraphService extends AbstractPersistService {
         tableConditionMap.put(ORG, ORG.ORG_NAME.eq(orgName));
 
         //tableConditionMap.put(BRANCH, BRANCH.BRANCH_NAME.in("main", "master"));//FIXME: revert to in branch names
-        //tableConditionMap.put(BRANCH, BRANCH.BRANCH_NAME.in(branchNames));
-        tableConditionMap.put(BRANCH, BRANCH.BRANCH_NAME.in("dev", "develop", "qa", "staging", "main", "master", "staging", "test"));
+        if (shouldIncludeDefaultBranches) {
+            branchNames.addAll(defaultBranchNames);
+        }
+        tableConditionMap.put(BRANCH, BRANCH.BRANCH_NAME.in(branchNames));
+        //tableConditionMap.put(BRANCH, BRANCH.BRANCH_NAME.in("dev", "develop", "qa", "staging", "main", "master", "staging", "test"));
 
         //Only need test result summary, not the suites or cases
         tableConditionMap.put(TEST_SUITE, TEST_SUITE.TEST_SUITE_ID.isNull());
 
-        if (shouldIncludeDefaultBranches) {
-            branchNames.addAll(defaultBranchNames);
-        }
         Condition runCondition =
                 RUN.RUN_ID.in(
                         //latest run

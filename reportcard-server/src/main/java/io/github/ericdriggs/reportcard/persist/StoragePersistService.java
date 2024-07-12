@@ -3,12 +3,14 @@ package io.github.ericdriggs.reportcard.persist;
 import io.github.ericdriggs.reportcard.gen.db.tables.daos.StorageDao;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.StoragePojo;
 import io.github.ericdriggs.reportcard.model.StagePath;
-import io.github.ericdriggs.reportcard.model.StagePathStorage;
+import io.github.ericdriggs.reportcard.model.StagePathStorages;
 import org.jooq.DSLContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * Main db service class.
@@ -30,14 +32,14 @@ public class StoragePersistService extends StagePathPersistService {
         storageDao = new StorageDao(dsl.configuration());
     }
 
-    public StagePathStorage persistStoragePath(String indexFile, String label, String prefix, Long stageId, String storagePath, StorageType storageType) {
+    public StagePathStorages persistStoragePath(String indexFile, String label, String prefix, Long stageId, String storagePath, StorageType storageType) {
         return persistStoragePath(indexFile, label, prefix, stageId, storageType);
     }
 
-    public StagePathStorage persistStoragePath(String indexFile, String label, String prefix, Long stageFk, StorageType storageType) {
+    public StagePathStorages persistStoragePath(String indexFile, String label, String prefix, Long stageFk, StorageType storageType) {
         final StagePath stagePath = getStagePath(stageFk);
         final StoragePojo storage = insertStorage(indexFile, label, prefix, stageFk, storageType);
-        return StagePathStorage.builder().stagePath(stagePath).storage(storage).build();
+        return StagePathStorages.builder().stagePath(stagePath).storages(List.of(storage)).build();
     }
 
     protected StoragePojo insertStorage(String indexFile, String label, String prefix, Long stageFk, StorageType storageType) {

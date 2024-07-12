@@ -135,14 +135,14 @@ public class StorageController {
 
     ) {
         try {
-            final StagePathStorage stagePathStorage = doPostStageStorageTarGZ(stageId, label, file, indexFile, storageType);
+            final StagePathStorages stagePathStorage = doPostStageStorageTarGZ(stageId, label, file, indexFile, storageType);
             return StagePathStorageResponse.created(stagePathStorage).toResponseEntity();
         } catch (Exception ex) {
             return StagePathStorageResponse.fromException(ex).toResponseEntity();
         }
     }
 
-    protected StagePathStorage doPostStageStorageTarGZ(
+    protected StagePathStorages doPostStageStorageTarGZ(
             @PathVariable("stageId") Long stageId,
             @PathVariable("label") String label,
             @RequestPart("storage.tar.gz") MultipartFile file,
