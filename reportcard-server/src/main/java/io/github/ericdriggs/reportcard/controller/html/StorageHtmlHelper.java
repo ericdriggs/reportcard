@@ -28,10 +28,19 @@ public class StorageHtmlHelper extends BrowseHtmlHelper {
         TreeSet<CommonPrefix> folders = new TreeSet<>(CommonPrefixDescendingComparator.INSTANCE);
         folders.addAll(response.commonPrefixes());
         for (CommonPrefix folder : folders) {
-            final String prefix = folder.prefix();// .replaceAll("/$", "");
+            String prefix = folder.prefix();// .replaceAll("/$", "");
+            //hack because s3 ListObject isn't returning junit.tar.gz
+            if (prefix.endsWith("junit/")) {
+                prefix = prefix + "junit.tar.gz";
+            }
 
             final String[] parts = prefix.split("/");
-            final String folderName = parts[parts.length - 1];
+            String folderName = parts[parts.length - 1];
+            //hack because s3 ListObject isn't returning junit.tar.gz
+            if (folderName.endsWith("junit/")) {
+                folderName = folderName + "junit.tar.gz";
+            }
+
             //final String folderName = StringUtils.substringAfterLast(prefix, "/" );
             sb.append("<li>");
             sb.append("<a href=\"" + getPrefixUrl(prefix) + "\">");

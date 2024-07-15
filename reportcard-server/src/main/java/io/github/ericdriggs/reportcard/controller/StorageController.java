@@ -102,10 +102,17 @@ public class StorageController {
         final byte[] responseBody = responseBytes.asByteArray();
         List<String> contentTypeList = sdkHttpResponse.headers().get("Content-Type");
         String contentType = contentTypeList.stream().findFirst().orElse("unknown");
-        return ResponseEntity
+        ResponseEntity.BodyBuilder response =  ResponseEntity
                 .status(sdkHttpResponse.statusCode())
-                .header("Content-type", contentType)
-                .body(responseBody);
+                .header("Content-type", contentType);
+
+        if (contentType.contains("application/gzip")) {
+            final String[] parts = prefix.split("/");
+            final String fileName = parts[parts.length - 1];
+            response.header("Content-Disposition", " attachment; filename=\"" + fileName + "\"");
+        }
+
+        return response.body(responseBody);
     }
 
     protected ResponseEntity<String> browseS3(String prefix, ListObjectsV2Response listResponse) {
