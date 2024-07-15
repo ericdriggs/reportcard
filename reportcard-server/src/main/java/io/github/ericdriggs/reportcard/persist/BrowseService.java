@@ -8,6 +8,7 @@ import io.github.ericdriggs.reportcard.model.StageTestResultModel;
 import io.github.ericdriggs.reportcard.model.StageTestResultPojo;
 import io.github.ericdriggs.reportcard.model.TestResultModel;
 import io.github.ericdriggs.reportcard.util.JsonCompare;
+import io.github.ericdriggs.reportcard.util.db.JobUtil;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.Result;
@@ -405,6 +406,29 @@ public class BrowseService extends AbstractPersistService {
                                          .leftJoin(TEST_RESULT).on(TEST_RESULT.STAGE_FK.eq(STAGE.STAGE_ID))
                                          .where(COMPANY.COMPANY_NAME.eq(companyName))
                                          .fetch();
+
+        return doGetStageViewForBranch(recordResult);
+    }
+
+    public BranchStageViewResponse getStageViewForJobInfo(String companyName, String orgName, String repoName, String branchName, Map<String,String> jobInfo) {
+
+        //final String jobInfoJson = StringMapUtil.toJson(jobInfo);
+        Result<Record> recordResult = dsl.select()
+                .from(COMPANY)
+                .join(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID)
+                        .and(ORG.ORG_NAME.eq(orgName)))
+                .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
+                        .and(REPO.REPO_NAME.eq(repoName)))
+                .join(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
+                        .and(BRANCH.BRANCH_NAME.eq(branchName)))
+                .join(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID)
+                        .and(JobUtil.getJobInfoSqlClause(jobInfo)))
+                .join(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID))
+                .join(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID))
+                .leftJoin(STORAGE).on(STORAGE.STAGE_FK.eq(STAGE.STAGE_ID))
+                .leftJoin(TEST_RESULT).on(TEST_RESULT.STAGE_FK.eq(STAGE.STAGE_ID))
+                .where(COMPANY.COMPANY_NAME.eq(companyName))
+                .fetch();
 
         return doGetStageViewForBranch(recordResult);
     }

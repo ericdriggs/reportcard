@@ -1,5 +1,6 @@
 package io.github.ericdriggs.reportcard.cache.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.*;
 import io.github.ericdriggs.reportcard.model.StageTestResultPojo;
 import io.github.ericdriggs.reportcard.model.graph.*;
@@ -76,5 +77,21 @@ public class BranchStageViewResponse {
                 .companyOrgRepoBranch(companyOrgRepoBranch)
                 .jobRun_StageTestResult_StoragesMap(jobRun_StageTestResult_StoragesMap)
                 .build();
+    }
+
+    @JsonIgnore
+    public Set<Long> getJobIds() {
+        Set<Long> jobIds = new TreeSet<>();
+        for (JobRun jobRun : jobRun_StageTestResult_StoragesMap.keySet()) {
+            final JobPojo job = jobRun.getJob();
+            if (job != null) {
+                final Long jobId = job.getJobId();
+                if (jobId != null) {
+                    jobIds.add(jobId);
+                }
+            }
+
+        }
+        return jobIds;
     }
 }

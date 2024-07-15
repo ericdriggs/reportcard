@@ -3,6 +3,7 @@ package io.github.ericdriggs.reportcard.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.ericdriggs.reportcard.util.db.JobUtil;
 import lombok.*;
 
 import lombok.extern.jackson.Jacksonized;
@@ -95,10 +96,7 @@ public class StageDetails {
 
     @JsonIgnore
     public String getJobInfoSqlClause() {
-        if (ObjectUtils.isEmpty(jobInfo)) {
-            return "true";
-        }
-        return " job_info = CAST('" + getJobInfoJson() + "' AS JSON ) ";
+        return JobUtil.getJobInfoSqlClause(getJobInfoJson());
     }
 
     @JsonIgnore

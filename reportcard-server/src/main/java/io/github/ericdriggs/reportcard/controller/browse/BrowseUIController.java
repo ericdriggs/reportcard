@@ -6,12 +6,14 @@ import io.github.ericdriggs.reportcard.model.StageTestResultModel;
 import io.github.ericdriggs.reportcard.model.branch.BranchJobLatestRunMap;
 import io.github.ericdriggs.reportcard.persist.BrowseService;
 import io.github.ericdriggs.reportcard.persist.GraphService;
+import io.github.ericdriggs.reportcard.util.StringMapUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.Set;
 
 @RestController
 @RequestMapping("")
@@ -67,7 +69,7 @@ public class BrowseUIController {
 
     @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}",
             "company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run"}, produces = "text/html;charset=UTF-8")
-    public ResponseEntity<String> getRunStages(
+    public ResponseEntity<String> getRunStagesFromJobId(
             @PathVariable String company,
             @PathVariable String org,
             @PathVariable String repo,
@@ -75,6 +77,26 @@ public class BrowseUIController {
             @PathVariable Long jobId) {
         BranchStageViewResponse branchStageViewResponse  = browseService.getStageViewForJob(company, org, repo, branch, jobId);
         return new ResponseEntity<>(BrowseHtmlHelper.getJobHtml(company, org, repo, branch, jobId, branchStageViewResponse), HttpStatus.OK);
+    }
+
+    @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}/branch/{branch}/jobinfo/{jobInfo}",
+            "company/{company}/org/{org}/repo/{repo}/branch/{branch}/jobinfo/{jobInfo}/run"}, produces = "text/html;charset=UTF-8")
+    public ResponseEntity<String> getRunStagesFromJobInfo(
+            @PathVariable String company,
+            @PathVariable String org,
+            @PathVariable String repo,
+            @PathVariable String branch,
+            @PathVariable String jobInfo) {
+        Map<String,String> jobInfoMap = StringMapUtil.stringToMap(jobInfo);
+        BranchStageViewResponse branchStageViewResponse  = browseService.getStageViewForJobInfo(company, org, repo, branch, jobInfoMap);
+        final Set<Long> jobIds = branchStageViewResponse.getJobIds();
+        if (jobIds.isEmpty()) {
+            throw new IllegalArgumentException("no job found matching: " + jobInfo);
+        }
+        if (jobIds.size() > 1) {
+            throw new IllegalArgumentException("multiple jobIds: " + jobIds + "  found matching: " + jobInfo);
+        }
+        return new ResponseEntity<>(BrowseHtmlHelper.getJobHtml(company, org, repo, branch, jobIds.iterator().next(), branchStageViewResponse), HttpStatus.OK);
     }
 
     @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/{runId}",
