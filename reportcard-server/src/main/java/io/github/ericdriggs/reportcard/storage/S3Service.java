@@ -101,8 +101,16 @@ public class S3Service {
         return getS3Client().getObjectAsBytes(getObjectRequest);
     }
 
-    @SneakyThrows(IOException.class)
-    public DirectoryUploadResponse uploadTarGZ(MultipartFile tarGz, String prefix) {
+    public DirectoryUploadResponse uploadTarGz(String prefix, boolean shouldExpand, MultipartFile tarGz) {
+        if (shouldExpand) {
+            return uploadTarGZExpanded(prefix, tarGz);
+        } else {
+            return uploadDirectory(prefix, tarGz);
+        }
+    }
+
+        @SneakyThrows(IOException.class)
+    protected DirectoryUploadResponse uploadTarGZExpanded(String prefix, MultipartFile tarGz) {
         Path tempDir = null;
         try {
             tempDir = Files.createTempDirectory("s3.");
@@ -110,7 +118,7 @@ public class S3Service {
             TarExtractorCommonsCompress tarExtractor = new TarExtractorCommonsCompress(inputStream, true, tempDir);
 
             tarExtractor.untar();
-            return uploadDirectory(tempDir, prefix);
+            return uploadDirectory(prefix, tempDir);
         } finally {
             if (tempDir != null) {
                 FileUtils.deleteDirectory(tempDir.toFile());
@@ -119,7 +127,7 @@ public class S3Service {
     }
 
     @SneakyThrows(IOException.class)
-    public DirectoryUploadResponse uploadDirectory(MultipartFile[] files, String prefix) {
+    public DirectoryUploadResponse uploadDirectory(String prefix, MultipartFile... files) {
         final Path tempDir = Files.createTempDirectory("s3.");
 
         try {
@@ -128,13 +136,13 @@ public class S3Service {
                 final Path filepath = Paths.get(tempDir.toString(), fileName);
                 file.transferTo(filepath);
             }
-            return uploadDirectory(tempDir, prefix);
+            return uploadDirectory(prefix, tempDir);
         } finally {
             FileUtils.deleteDirectory(tempDir.toFile());
         }
     }
 
-    public DirectoryUploadResponse uploadDirectory(Path path, String prefix) {
+    public DirectoryUploadResponse uploadDirectory(String prefix, Path path) {
 
         S3TransferManager s3TransferManager = getTransferManager();
 

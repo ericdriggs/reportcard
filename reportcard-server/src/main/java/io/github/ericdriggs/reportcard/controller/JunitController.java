@@ -222,23 +222,23 @@ public class JunitController {
     }
 
     protected StagePathStorages storeHtml(
-            @PathVariable("stageId") Long stageId,
-            @PathVariable("label") String label,
-            @RequestPart("storage.tar.gz") MultipartFile file,
-            @RequestParam(value = "indexFile", required = false) String indexFile) {
+            Long stageId,
+            String label,
+            MultipartFile tarGz,
+            String indexFile) {
 
         StorageType storageType = StorageType.HTML;
 
         final StagePath stagePath = storagePersistService.getStagePath(stageId);
         final String prefix = new StoragePath(stagePath, label).getPrefix();
 
-        s3Service.uploadTarGZ(file, prefix);
+        s3Service.uploadTarGz(prefix,  true, tarGz);
         return storagePersistService.persistStoragePath(indexFile, label, prefix, stageId, storageType);
     }
 
     protected StagePathStorages storeJunit(
-            @PathVariable("stageId") Long stageId,
-            @RequestPart("junit.tar.gz") MultipartFile junitXmls) {
+            Long stageId,
+            MultipartFile tarGz) {
 
         final String label = "junit";
         StorageType storageType = StorageType.JUNIT;
@@ -246,7 +246,7 @@ public class JunitController {
         final StagePath stagePath = storagePersistService.getStagePath(stageId);
         final String prefix = new StoragePath(stagePath, label).getPrefix();
 
-        s3Service.uploadTarGZ(junitXmls, prefix);
+        s3Service.uploadTarGz(prefix, false, tarGz);
         return storagePersistService.persistStoragePath(null, label, prefix, stageId, storageType);
     }
 

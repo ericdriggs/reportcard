@@ -53,7 +53,7 @@ public class StorageController {
             @RequestParam("storagePrefix") String storagePrefix,
             @RequestPart("files") MultipartFile[] files
     ) {
-        return new ResponseEntity<>(s3Service.uploadDirectory(files, storagePrefix), HttpStatus.OK);
+        return new ResponseEntity<>(s3Service.uploadDirectory(storagePrefix, files), HttpStatus.OK);
     }
 
     @Operation(summary = "Retrieves s3 object or folder for path. Folders are browsable")
@@ -130,12 +130,13 @@ public class StorageController {
             @RequestParam(value = "storageType", required = false)
             StorageType storageType,
 
+            @RequestParam(required = false, defaultValue = "true") boolean shouldExpand,
+
             @Parameter(description = "Files and folders to store. Usually combination of html/css/js.")
             @RequestPart("storage.tar.gz") MultipartFile file
-
     ) {
         try {
-            final StagePathStorages stagePathStorage = doPostStageStorageTarGZ(stageId, label, file, indexFile, storageType);
+            final StagePathStorages stagePathStorage = doPostStageStorageTarGZ(stageId, label, file, indexFile, storageType, shouldExpand);
             return StagePathStorageResponse.created(stagePathStorage).toResponseEntity();
         } catch (Exception ex) {
             return StagePathStorageResponse.fromException(ex).toResponseEntity();
@@ -147,14 +148,18 @@ public class StorageController {
             @PathVariable("label") String label,
             @RequestPart("storage.tar.gz") MultipartFile file,
             @RequestParam(value = "indexFile", required = false) String indexFile,
-            @RequestParam(value = "storageType", required = false) StorageType storageType) {
+            @RequestParam(value = "storageType", required = false) StorageType storageType,
+            @RequestParam(required = false, defaultValue = "true") boolean shouldExpand
+    )
+
+    {
         if (storageType == null) {
             storageType = StorageType.HTML;
         }
         final StagePath stagePath = storagePersistService.getStagePath(stageId);
         final String prefix = new StoragePath(stagePath, label).getPrefix();
 
-        s3Service.uploadTarGZ(file, prefix);
+        s3Service.uploadTarGz(prefix, shouldExpand, file);
         return storagePersistService.persistStoragePath(indexFile, label, prefix, stageId, storageType);
     }
 

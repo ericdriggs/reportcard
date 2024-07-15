@@ -25,6 +25,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.multipart.MultipartFile;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
+import software.amazon.awssdk.services.s3.model.S3Object;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -169,10 +170,40 @@ public class JunitControllerTest {
 
                     System.out.println("storage: " + storage);
 
+                }
+
+                {
                     ListObjectsV2Response s3Objects = s3Service.listObjectsForBucket();
+
                     assertNotNull(s3Objects.contents());
                     assertThat(s3Objects.contents().size(), is(greaterThanOrEqualTo(3)));
                     System.out.println(s3Objects);
+
+                    assertNotNull(s3Objects.contents());
+                    assertThat(s3Objects.contents().size(), is(greaterThanOrEqualTo(3)));
+                    System.out.println(s3Objects);
+
+                    {
+                        List<String> s3Keys = s3Objects.contents().stream().map(S3Object::key).toList();
+                        Integer cucumberCount = 0;
+                        Integer junitCount = 0;
+                        for (String s3Key : s3Keys) {
+                            if (s3Key.contains("cucumber_html")) {
+                                cucumberCount++;
+                            }
+                            if (s3Key.contains("junit.tar.gz")) {
+                                junitCount++;
+                            }
+
+                        }
+
+                        final Integer expectedJunitCount = 1;
+                        final Integer expectedCucumberCount = 3;
+
+                        assertEquals(expectedCucumberCount, cucumberCount);
+                        assertEquals(expectedJunitCount, junitCount);
+                    }
+
                 }
             }
 

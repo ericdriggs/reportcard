@@ -62,9 +62,6 @@ public class StorageControllerTest {
 
     private final static ObjectMapper mappper = new ObjectMapper();
 
-
-    //only used for troubleshooting manually
-    @Disabled
     @Test
     void postStorageOnlyTest() {
 
@@ -101,7 +98,7 @@ public class StorageControllerTest {
                     MediaType.ALL_VALUE,
                     Files.newInputStream(tempTarGz)
             );
-            ResponseEntity<StagePathStorageResponse> responseEntity = storageController.postStageStorageTarGZ(stageId, label,  indexFile, StorageType.HTML, junitTarGz);
+            ResponseEntity<StagePathStorageResponse> responseEntity = storageController.postStageStorageTarGZ(stageId, label,  indexFile, StorageType.HTML, true, junitTarGz);
             assertNotNull(responseEntity);
             StagePathStorageResponse response = responseEntity.getBody();
 
