@@ -2,9 +2,9 @@ package io.github.ericdriggs.reportcard.util.badge;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.github.ericdriggs.reportcard.cache.dto.CompanyOrgRepoBranchJobRunStageDTO;
-import io.github.ericdriggs.reportcard.controller.browse.BrowseHtmlHelper;
 import io.github.ericdriggs.reportcard.controller.graph.TrendHtmlHelper;
 import io.github.ericdriggs.reportcard.model.graph.StageGraph;
+import io.github.ericdriggs.reportcard.persist.StorageType;
 import io.github.ericdriggs.reportcard.util.CompareUtil;
 import lombok.Builder;
 import lombok.Value;
@@ -23,9 +23,10 @@ public class StageBadgesDTO implements Comparable<StageBadgesDTO> {
     BadgeStatus badgeStatus;
     URI stageUri;
     URI trendUri;
+    StorageType storageType;
 
     @Builder.Default
-    TreeSet<StorageUri> storageUris = new TreeSet<>();
+    TreeSet<StorageTypeUriLabel> storageUris = new TreeSet<>();
 
     @Override
     public int compareTo(StageBadgesDTO that) {
@@ -39,7 +40,7 @@ public class StageBadgesDTO implements Comparable<StageBadgesDTO> {
         );
     }
 
-    public static StageBadgesDTO fromStageGraph(StageGraph stageGraph, CompanyOrgRepoBranchJobRunStageDTO path, TreeSet<StorageUri> storageUris) {
+    public static StageBadgesDTO fromStageGraph(StageGraph stageGraph, CompanyOrgRepoBranchJobRunStageDTO path, TreeSet<StorageTypeUriLabel> storageUris) {
         final String stageUriString =  path.toUrlPath();
         final URI trendUri = TrendHtmlHelper.getTrendURI(path);
         return StageBadgesDTO
@@ -54,10 +55,11 @@ public class StageBadgesDTO implements Comparable<StageBadgesDTO> {
     }
 
     @JsonIgnore
-    public BadgeStatusUri toBadgeStatusUri() {
-        return BadgeStatusUri.builder()
-                             .badgeStatus(badgeStatus)
-                             .uri(stageUri)
-                             .build();
+    public BadgeStatusUriStorageType toBadgeStatusUri() {
+        return BadgeStatusUriStorageType.builder()
+                .badgeStatus(badgeStatus)
+                .uri(stageUri)
+                .storageType(storageType)
+                .build();
     }
 }

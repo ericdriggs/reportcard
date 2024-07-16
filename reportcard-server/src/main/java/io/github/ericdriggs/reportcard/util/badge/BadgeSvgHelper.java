@@ -1,7 +1,7 @@
 package io.github.ericdriggs.reportcard.util.badge;
 
+import io.github.ericdriggs.reportcard.persist.StorageType;
 import io.github.ericdriggs.reportcard.util.badge.dto.RunBadgeDTO;
-import software.amazon.awssdk.crt.io.Uri;
 
 import java.net.URI;
 import java.time.Instant;
@@ -16,9 +16,27 @@ public enum BadgeSvgHelper {
     private static final String PATTERN_FORMAT = "yyyy-MM-dd";
     private static final DateTimeFormatter ymdFormat = DateTimeFormatter.ofPattern(PATTERN_FORMAT).withZone(ZoneOffset.UTC);
 
-    public static String htmlAnchor(StorageUri s) {
+    public static String storageBadge(StorageTypeUriLabel s) {
+        if (StorageType.JUNIT.equals(s.getStorageType())) {
+            return xmlBadge(s);
+        }
+        else if (StorageType.XML.equals(s.getStorageType())) {
+            return xmlBadge(s);
+        }
+        return htmlBadge(s);
+    }
+
+    public static String htmlBadge(StorageTypeUriLabel s) {
         return wrapObject(
                 htmlAnchorBase
+                        .replace("{uri}", s.getUri())
+                        .replace("{label}", s.getLabel())
+        );
+    }
+
+    public static String xmlBadge(StorageTypeUriLabel s) {
+        return wrapObject(
+                xmlBase
                         .replace("{uri}", s.getUri())
                         .replace("{label}", s.getLabel())
         );
@@ -35,7 +53,7 @@ public enum BadgeSvgHelper {
         );
     }
 
-    public static String status(BadgeStatusUri b) {
+    public static String status(BadgeStatusUriStorageType b) {
         return wrapObject(
                 statusBase
                         .replace("{statusColor}", b.getBadgeStatus().getColor())
@@ -108,6 +126,26 @@ public enum BadgeSvgHelper {
             </svg>        
             """;
 
+    final static String xmlBase =
+            """
+             <?xml version="1.0"?>
+            <svg xmlns="http://www.w3.org/2000/svg" width="52" height="16">
+                <title>Status date sha</title>
+                       
+                <rect x="0" rx="3" width="52" height="16" fill="#444"/>
+                <a href="{uri}">
+                       
+                    <g fill="#fa0" text-anchor="middle" font-family="Arial Black, sans-serif" font-size="11" font-weight="bolder">
+                        <text x="15.5" y="11.5px">XML</text>
+                    </g>
+                       
+                    <g fill="#5c5" text-anchor="middle" font-family="arial" font-size="9px" font-weight="bold">
+                        <text x="77%" y="12px" style="inline-size: 8px">{label}</text>
+                    </g>
+                </a>
+            </svg>             
+              """;
+
     final static String statusBase =
             """
             <?xml version="1.0"?>
@@ -124,7 +162,7 @@ public enum BadgeSvgHelper {
                         
                 <g fill="#fff" text-anchor="middle" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="13" letter-spacing=".02em">
                     <a href="{uri}" style="fill:white;">
-                        <text x="18" y="13" fill="#000" fill-opacity=".3">Pass</text>
+                        <text x="18" y="13" fill="#000" fill-opacity=".3">{statusText}</text>
                         <text x="17" y="12">{statusText}</text>
                     </a>
                 </g>

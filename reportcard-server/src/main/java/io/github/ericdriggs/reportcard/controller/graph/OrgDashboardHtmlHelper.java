@@ -10,6 +10,7 @@ import io.github.ericdriggs.reportcard.mappers.SharedObjectMappers;
 import io.github.ericdriggs.reportcard.model.graph.*;
 import io.github.ericdriggs.reportcard.model.graph.comparator.GraphComparators;
 import io.github.ericdriggs.reportcard.model.orgdashboard.OrgDashboard;
+import io.github.ericdriggs.reportcard.persist.StorageType;
 import io.github.ericdriggs.reportcard.util.NumberStringUtil;
 import io.github.ericdriggs.reportcard.util.StringMapUtil;
 import io.github.ericdriggs.reportcard.util.badge.*;
@@ -109,10 +110,14 @@ public class OrgDashboardHtmlHelper extends BrowseHtmlHelper {
                         for (StageGraph stageGraph : emptyIfNull(runGraph.stages())) {
                             final CompanyOrgRepoBranchJobRunStageDTO stagePath = runPath.toBuilder().stageName(stageGraph.stageName()).build();
 
-                            TreeSet<StorageUri> storageUris = new TreeSet<>();
+                            TreeSet<StorageTypeUriLabel> storageUris = new TreeSet<>();
                             for (StorageGraph storageGraph : emptyIfNull(stageGraph.storages())) {
                                 final String storageUri = getStorageUrl(storageGraph.asStoragePojo());
-                                storageUris.add(StorageUri.builder().uri(storageUri).label(storageGraph.label()).build());
+                                storageUris.add(StorageTypeUriLabel.builder()
+                                        .uri(storageUri)
+                                        .label(storageGraph.label())
+                                        .storageType(StorageType.fromStorageTypeId(storageGraph.storageType()))
+                                        .build());
                             }
                             stageBadgesDTOS.add(StageBadgesDTO.fromStageGraph(stageGraph, stagePath, storageUris));
                         }
@@ -159,8 +164,8 @@ public class OrgDashboardHtmlHelper extends BrowseHtmlHelper {
         final String statusBadge = BadgeSvgHelper.status(stageBadgesDTO.toBadgeStatusUri());
         final String trendBadge = BadgeSvgHelper.trend(stageBadgesDTO.getTrendUri());
         final StringBuilder htmlLinks = new StringBuilder();
-        for (StorageUri storageUri : stageBadgesDTO.getStorageUris()) {
-            htmlLinks.append(BadgeSvgHelper.htmlAnchor(storageUri));
+        for (StorageTypeUriLabel storageUri : stageBadgesDTO.getStorageUris()) {
+            htmlLinks.append(BadgeSvgHelper.storageBadge(storageUri));
         }
 
         return stageBase
