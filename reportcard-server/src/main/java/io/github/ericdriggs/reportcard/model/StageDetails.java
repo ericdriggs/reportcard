@@ -7,9 +7,8 @@ import io.github.ericdriggs.reportcard.util.db.JobUtil;
 import lombok.*;
 
 import lombok.extern.jackson.Jacksonized;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
-import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
@@ -54,7 +53,7 @@ public class StageDetails {
         }
 
         public void validateAndSetDefaults() {
-            if (runReference == null) {
+            if (StringUtils.isEmpty(runReference) || runReference.trim().isEmpty()) {
                 runReference = UUID.randomUUID().toString();
             }
             Map<String, String> errors = new LinkedHashMap<>();
@@ -74,7 +73,7 @@ public class StageDetails {
 
         @JsonIgnore
         private void addErrorIfMissing(Map<String, String> errors, String val, String variableName) {
-            if (!StringUtils.hasText(val)) {
+            if (StringUtils.isEmpty(val)) {
                 errors.put(variableName, "missing required field");
             }
         }
