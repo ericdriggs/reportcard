@@ -237,6 +237,7 @@ CREATE TABLE IF NOT EXISTS `reportcard`.`test_result` (
   `has_skip` TINYINT(1) GENERATED ALWAYS AS ((`skipped` > 0)) VIRTUAL,
   PRIMARY KEY (`test_result_id`),
   INDEX `test_result_stage_fk_idx` (`stage_fk` ASC) VISIBLE,
+  UNIQUE INDEX `stage_fk_UNIQUE` (`stage_fk` ASC) VISIBLE,
   CONSTRAINT `test_result_stage_fk`
     FOREIGN KEY (`stage_fk`)
     REFERENCES `reportcard`.`stage` (`stage_id`))
