@@ -16,9 +16,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.time.Instant;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import static io.github.ericdriggs.reportcard.gen.db.Tables.*;
@@ -167,26 +169,38 @@ public class GraphService extends AbstractPersistService {
 
 
 
-    public OrgDashboard getOrgDashboard(String companyName, String orgName, List<String> branchNames, boolean shouldIncludeDefaultBranches) {
-        List<CompanyGraph> companyGraphs = getOrgDashboardCompanyGraphs(companyName, orgName, branchNames, shouldIncludeDefaultBranches);
+    public OrgDashboard getOrgDashboard(String companyName, String orgName, List<String> repoNames, List<String> branchNames, boolean shouldIncludeDefaultBranches, Integer days) {
+        List<CompanyGraph> companyGraphs = getOrgDashboardCompanyGraphs(companyName, orgName, repoNames, branchNames, shouldIncludeDefaultBranches,  days);
         return OrgDashboard.fromCompanyGraphs(companyGraphs);
     }
 
     List<CompanyGraph> getOrgDashboardCompanyGraphs(String companyName,
                                                     String orgName,
+                                                    List<String> repoNames,
                                                     List<String> branchNames,
-                                                    boolean shouldIncludeDefaultBranches) {
+                                                    boolean shouldIncludeDefaultBranches,
+                                                    Integer days) {
+
+
 
         TableConditionMap tableConditionMap = new TableConditionMap();
         tableConditionMap.put(COMPANY, COMPANY.COMPANY_NAME.eq(companyName));
         tableConditionMap.put(ORG, ORG.ORG_NAME.eq(orgName));
+
+        if (!CollectionUtils.isEmpty(repoNames)) {
+            tableConditionMap.put(REPO, REPO.REPO_NAME.in(repoNames));
+        }
 
         //tableConditionMap.put(BRANCH, BRANCH.BRANCH_NAME.in("main", "master"));//FIXME: revert to in branch names
         if (shouldIncludeDefaultBranches) {
             branchNames.addAll(defaultBranchNames);
         }
         tableConditionMap.put(BRANCH, BRANCH.BRANCH_NAME.in(branchNames));
-        //tableConditionMap.put(BRANCH, BRANCH.BRANCH_NAME.in("dev", "develop", "qa", "staging", "main", "master", "staging", "test"));
+
+        if (days != null) {
+            Instant cutoff = Instant.now().minus(days, ChronoUnit.DAYS);
+            tableConditionMap.put(JOB, JOB.LAST_RUN.ge(cutoff));
+        }
 
         //Only need test result summary, not the suites or cases
         tableConditionMap.put(TEST_SUITE, TEST_SUITE.TEST_SUITE_ID.isNull());

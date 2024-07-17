@@ -120,7 +120,7 @@ public class BrowseHtmlHelper {
                 </fieldset>
                 """
                         .replace("{orgName}", org)
-                        .replace("{dashboardLink}", getLink(org + " Dashboard 📊", path.toUrlPath() + "/dashboard"));
+                        .replace("{dashboardLink}", getLink(org + " Dashboard 📊", path.toUrlPath() + "/dashboard?days=30"));
 
         final String repos = baseFieldsetTable.replace(LEGEND, "Repos")
                 .replace(TABLE_HEADERS, nameCountLastUpdatedHeaders)

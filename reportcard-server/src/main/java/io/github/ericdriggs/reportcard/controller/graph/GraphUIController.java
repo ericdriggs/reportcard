@@ -44,10 +44,12 @@ public class GraphUIController {
     public ResponseEntity<String> getOrgDashbarod(
             @PathVariable String company,
             @PathVariable String org,
+            @RequestParam(required = false) List<String> repos,
             @RequestParam(required = false, defaultValue = "") List<String> branches,
-            @RequestParam(required = false, defaultValue = "true") boolean shouldIncludeDefaultBranches
+            @RequestParam(required = false, defaultValue = "true") boolean shouldIncludeDefaultBranches,
+            @RequestParam(required = false) Integer days
     ) {
-        final OrgDashboard orgDashboard = graphService.getOrgDashboard(company, org, branches, shouldIncludeDefaultBranches);
+        final OrgDashboard orgDashboard = graphService.getOrgDashboard(company, org, repos, branches, shouldIncludeDefaultBranches, days);
         final String dashboardHtml = OrgDashboardHtmlHelper.renderOrgDashboardHtml(orgDashboard);
         //TODO: add cache headers * browser side cache using header, e.g. Cache-Control: max-age=600 //10 mins
         return new ResponseEntity<>(dashboardHtml, HttpStatus.OK);
