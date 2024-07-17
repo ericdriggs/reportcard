@@ -98,6 +98,19 @@ public class BrowseHtmlHelper {
 
     //******************** org ********************//
 
+    public static String getOrgLinks(String org, CompanyOrgRepoBranchJobRunStageDTO path) {
+        final CompanyOrgRepoBranchJobRunStageDTO orgPath = CompanyOrgRepoBranchJobRunStageDTO.truncateOrg(path);
+        return
+                """
+                <fieldset>
+                <legend>{orgName} links</legend>
+                    {dashboardLink}
+                </fieldset>
+                """
+                        .replace("{orgName}", org)
+                        .replace("{dashboardLink}", getLink(org + " Dashboard 📊", orgPath.toUrlPath() + "/dashboard?days=30"));
+    }
+
     public static String getOrgHtml(String company, String org) {
 
         final CompanyOrgRepoBranchJobRunStageDTO path = CompanyOrgRepoBranchJobRunStageDTO.builder().company(company).org(org).build();
@@ -112,15 +125,7 @@ public class BrowseHtmlHelper {
 
         Map<RepoPojo, Set<BranchPojo>> repoBranchMap = orgRepoBranchMap.values().stream().findFirst().orElseThrow();
 
-        final String orgLinks =
-                """
-                <fieldset>
-                <legend>{orgName} links</legend>
-                    {dashboardLink}
-                </fieldset>
-                """
-                        .replace("{orgName}", org)
-                        .replace("{dashboardLink}", getLink(org + " Dashboard 📊", path.toUrlPath() + "/dashboard?days=30"));
+        final String orgLinks = getOrgLinks(org, path);
 
         final String repos = baseFieldsetTable.replace(LEGEND, "Repos")
                 .replace(TABLE_HEADERS, nameCountLastUpdatedHeaders)
@@ -251,7 +256,7 @@ public class BrowseHtmlHelper {
     }
     //******************** job ********************//
 
-    public static String getJobHtml(String company, String org, String repo, String branch, Long jobId, BranchStageViewResponse branchStageViewResponse) {
+    public static String getJobHtml(String company, String org, String repo, String branch, Long jobId, BranchStageViewResponse branchStageViewResponse, BranchJobLatestRunMap branchJobLatestRunMap) {
 
         final CompanyOrgRepoBranchJobRunStageDTO path = CompanyOrgRepoBranchJobRunStageDTO
                 .builder()
@@ -262,6 +267,8 @@ public class BrowseHtmlHelper {
                 .jobId(jobId)
                 .build();
 
+        final String jobStagesDiv = getJobStages(branchJobLatestRunMap);
+
         Map<JobPojo, Map<RunPojo, Set<StagePojo>>> jobRunStageMap = JobRunsStagesCacheMap.INSTANCE.getValue(new CompanyOrgRepoBranchJobDTO(company, org, repo, branch, jobId));
 
         if (jobRunStageMap == null || jobRunStageMap.isEmpty()) {
@@ -271,28 +278,10 @@ public class BrowseHtmlHelper {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "More than one entry found: " + path.toUrlPath());
         }
 
-        Map<RunPojo, Set<StagePojo>> runStageMap = jobRunStageMap.values().stream().findFirst().orElseThrow();
-        final String main = baseFieldsetTable.replace(LEGEND, "Runs")
-                .replace(TABLE_HEADERS, jobHeaders)
-                .replace(TABLE_ROWS, getRunStages(path, runStageMap));
-
         final String stagesMain = getBranchStageView(branchStageViewResponse);
+        final String orgLinks = getOrgLinks(org, path);
 
-        return getPage(main + stagesMain, getBreadCrumb(path));
-    }
-
-    protected static String getRunStages(CompanyOrgRepoBranchJobRunStageDTO path, Map<RunPojo, Set<StagePojo>> runStageMap) {
-
-        StringBuilder sb = new StringBuilder();
-        for (Map.Entry<RunPojo, Set<StagePojo>> entry : runStageMap.entrySet()) {
-            final RunPojo run = entry.getKey();
-            final Set<StagePojo> stages = entry.getValue();
-
-            final Instant lastRun = mostRecent(Set.of(run.getRunDate()));
-            final CompanyOrgRepoBranchJobRunStageDTO itemPath = path.toBuilder().runId(run.getRunId()).build();
-            sb.append(getItemRow(itemPath, Long.toString(run.getRunId()), stages.size(), lastRun));
-        }
-        return sb.toString();
+        return getPage("<div>" + orgLinks + "<br>" + jobStagesDiv + "</div>" + stagesMain, getBreadCrumb(path));
     }
 
     protected final static String branchHeaders =

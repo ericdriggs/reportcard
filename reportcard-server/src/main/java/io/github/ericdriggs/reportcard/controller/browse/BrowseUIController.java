@@ -76,7 +76,8 @@ public class BrowseUIController {
             @PathVariable String branch,
             @PathVariable Long jobId) {
         BranchStageViewResponse branchStageViewResponse  = browseService.getStageViewForJob(company, org, repo, branch, jobId);
-        return new ResponseEntity<>(BrowseHtmlHelper.getJobHtml(company, org, repo, branch, jobId, branchStageViewResponse), HttpStatus.OK);
+        BranchJobLatestRunMap branchJobLatestRunMap = graphService.getBranchJobLatestRunMap(company, org, repo, branch, jobId);
+        return new ResponseEntity<>(BrowseHtmlHelper.getJobHtml(company, org, repo, branch, jobId, branchStageViewResponse, branchJobLatestRunMap), HttpStatus.OK);
     }
 
     @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}/branch/{branch}/jobinfo/{jobInfo}",
@@ -96,7 +97,9 @@ public class BrowseUIController {
         if (jobIds.size() > 1) {
             throw new IllegalArgumentException("multiple jobIds: " + jobIds + "  found matching: " + jobInfo);
         }
-        return new ResponseEntity<>(BrowseHtmlHelper.getJobHtml(company, org, repo, branch, jobIds.iterator().next(), branchStageViewResponse), HttpStatus.OK);
+        final Long jobId = jobIds.iterator().next();
+        BranchJobLatestRunMap branchJobLatestRunMap = graphService.getBranchJobLatestRunMap(company, org, repo, branch, jobId);
+        return new ResponseEntity<>(BrowseHtmlHelper.getJobHtml(company, org, repo, branch, jobId, branchStageViewResponse, branchJobLatestRunMap), HttpStatus.OK);
     }
 
     @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/{runId}",
@@ -109,7 +112,8 @@ public class BrowseUIController {
             @PathVariable Long jobId,
             @PathVariable Long runId) {
         BranchStageViewResponse branchStageViewResponse = graphService.getRunBranchStageViewResponse(company, org, repo, branch, jobId, runId);
-        return new ResponseEntity<>(BrowseHtmlHelper.getJobHtml(company, org, repo, branch, jobId, branchStageViewResponse), HttpStatus.OK);
+        BranchJobLatestRunMap branchJobLatestRunMap = graphService.getBranchJobLatestRunMap(company, org, repo, branch, jobId);
+        return new ResponseEntity<>(BrowseHtmlHelper.getJobHtml(company, org, repo, branch, jobId, branchStageViewResponse, branchJobLatestRunMap), HttpStatus.OK);
     }
 
 

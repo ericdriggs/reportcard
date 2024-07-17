@@ -127,25 +127,38 @@ public class GraphService extends AbstractPersistService {
         return getCompanyGraphs(tableConditionMap);
     }
 
-
     public BranchJobLatestRunMap getBranchJobLatestRunMap(String companyName,
                                                           String orgName,
                                                           String repoName,
                                                           String branchName) {
-        List<CompanyGraph> companyGraphs = getLatestRunForBranchJobStages(companyName, orgName, repoName, branchName);
+        return getBranchJobLatestRunMap(companyName, orgName, repoName, branchName, null);
+    }
+
+
+    public BranchJobLatestRunMap getBranchJobLatestRunMap(String companyName,
+                                                          String orgName,
+                                                          String repoName,
+                                                          String branchName,
+                                                          Long jobId) {
+        List<CompanyGraph> companyGraphs = getLatestRunForBranchJobStages(companyName, orgName, repoName, branchName, jobId);
         return BranchJobLatestRunMap.fromCompanyGraphs(companyGraphs);
     }
 
     List<CompanyGraph> getLatestRunForBranchJobStages(String companyName,
                                                       String orgName,
                                                       String repoName,
-                                                      String branchName) {
+                                                      String branchName,
+                                                      Long jobId) {
 
         TableConditionMap tableConditionMap = new TableConditionMap();
         tableConditionMap.put(COMPANY, COMPANY.COMPANY_NAME.eq(companyName));
         tableConditionMap.put(ORG, ORG.ORG_NAME.eq(orgName));
         tableConditionMap.put(REPO, REPO.REPO_NAME.eq(repoName));
         tableConditionMap.put(BRANCH, BRANCH.BRANCH_NAME.eq(branchName));
+
+        if (jobId != null) {
+            tableConditionMap.put(JOB, JOB.JOB_ID.eq(jobId));
+        }
         //don't want the full test graph for this view
         tableConditionMap.put(TEST_RESULT, TEST_RESULT.TEST_RESULT_ID.isNull());
 
