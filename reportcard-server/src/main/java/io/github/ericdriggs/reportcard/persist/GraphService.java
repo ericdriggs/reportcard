@@ -55,7 +55,7 @@ public class GraphService extends AbstractPersistService {
                                                   Instant end,
                                                   Integer maxRuns) {
         List<CompanyGraph> companyGraphs = getJobTrendCompanyGraphs(companyName, orgName, repoName, branchName, jobId, stageName, start, end, maxRuns);
-        return JobStageTestTrend.fromCompanyGraphs(companyGraphs, 30);
+        return JobStageTestTrend.fromCompanyGraphs(companyGraphs, maxRuns);
     }
 
     List<CompanyGraph> getJobTrendCompanyGraphs(String companyName,

@@ -32,9 +32,10 @@ public class GraphUIController {
             @PathVariable Long jobId,
             @PathVariable String stage,
             @RequestParam(required = false) Instant start,
-            @RequestParam(required = false) Instant end
+            @RequestParam(required = false) Instant end,
+            @RequestParam(required = false, defaultValue = "30") Integer runs
     ) {
-        final JobStageTestTrend jobTestTrend = graphService.getJobStageTestTrend(company, org, repo, branch, jobId, stage, start, end, 30);
+        final JobStageTestTrend jobTestTrend = graphService.getJobStageTestTrend(company, org, repo, branch, jobId, stage, start, end, runs);
         final String trendHtml = TrendHtmlHelper.renderTrendHtml(jobTestTrend);
         //TODO: add cache headers * browser side cache using header, e.g. Cache-Control: max-age=600 //10 mins
         return new ResponseEntity<>(trendHtml, HttpStatus.OK);
