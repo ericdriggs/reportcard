@@ -93,12 +93,7 @@ public class OrgDashboardHtmlHelper extends BrowseHtmlHelper {
                             runGraph = runGraphs.first();
                         }
                     }
-                    if (lastSuccess != null) {
-                        final CompanyOrgRepoBranchJobRunStageDTO runPath = jobPath.toBuilder().runId(lastSuccess.runId()).build();
-                        final RunIdIDateShaUri rdsu = RunIdIDateShaUri.fromRunGraph(lastSuccess, runPath);
-                        str.append("<div class=\"last-success\">last success</div>").append(ls);
-                        str.append(BadgeSvgHelper.lastSuccessDateSha(rdsu)).append(ls);
-                    }
+
                     if (runGraph != null) {
                         final CompanyOrgRepoBranchJobRunStageDTO runPath = jobPath.toBuilder().runId(runGraph.runId()).build();
                         final RunBadgeDTO badgeStatusDateShaUri = RunBadgeDTO.fromRunGraph(runGraph, runPath);
@@ -131,6 +126,14 @@ public class OrgDashboardHtmlHelper extends BrowseHtmlHelper {
                         str.append(getStages(stageBadgesDTOS));
 
                         str.append("</fieldset><!--end-run-fieldset-->").append(ls);
+                    }
+                    if (lastSuccess != null) {
+                        final CompanyOrgRepoBranchJobRunStageDTO runPath = jobPath.toBuilder().runId(lastSuccess.runId()).build();
+                        final RunIdIDateShaUri rdsu = RunIdIDateShaUri.fromRunGraph(lastSuccess, runPath);
+                        str.append("<div class=\"last-success\">").append(ls);
+                        str.append("<div class=\"last-success-label\">last success</div>").append(ls);
+                        str.append(BadgeSvgHelper.lastSuccessDateSha(rdsu)).append(ls);
+                        str.append("</div>").append(ls);
                     }
                     str.append("</fieldset><!--end-job-fieldset-->").append(ls);
                 }
