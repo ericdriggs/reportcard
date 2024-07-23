@@ -200,8 +200,10 @@ public class GraphService extends AbstractPersistService {
         tableConditionMap.put(COMPANY, COMPANY.COMPANY_NAME.eq(companyName));
         tableConditionMap.put(ORG, ORG.ORG_NAME.eq(orgName));
 
+        Condition repoCondition = trueCondition();
         if (!CollectionUtils.isEmpty(repoNames)) {
-            tableConditionMap.put(REPO, REPO.REPO_NAME.in(repoNames));
+            repoCondition = REPO.REPO_NAME.likeRegex(String.join("|",repoNames));
+            tableConditionMap.put(REPO, repoCondition);
         }
 
         //tableConditionMap.put(BRANCH, BRANCH.BRANCH_NAME.in("main", "master"));//FIXME: revert to in branch names
@@ -224,7 +226,7 @@ public class GraphService extends AbstractPersistService {
                         select(max(RUN.RUN_ID))
                                 .from(COMPANY)
                                 .leftJoin(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID)).and(ORG.ORG_NAME.eq(orgName)).and(COMPANY.COMPANY_NAME.eq(companyName))
-                                .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID))
+                                .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)).and(repoCondition)
                                 .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID).and(BRANCH.BRANCH_NAME.in(branchNames)))
                                 .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
                                 .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID))
@@ -235,7 +237,7 @@ public class GraphService extends AbstractPersistService {
                                         select(max(RUN.RUN_ID))
                                                 .from(COMPANY)
                                                 .leftJoin(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID)).and(ORG.ORG_NAME.eq(orgName)).and(COMPANY.COMPANY_NAME.eq(companyName))
-                                                .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID))
+                                                .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)).and(repoCondition)
                                                 .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID).and(BRANCH.BRANCH_NAME.in(branchNames)))
                                                 .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
                                                 .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID).and(RUN.IS_SUCCESS))
