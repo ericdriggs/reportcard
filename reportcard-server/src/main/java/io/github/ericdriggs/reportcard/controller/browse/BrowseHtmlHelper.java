@@ -26,18 +26,6 @@ public class BrowseHtmlHelper {
 
     ;//static methods only
 
-    //******************** home ********************//
-    protected final static String homeMain =
-            """
-            <div class="flex-row" role="main" id="main">
-              <fieldset>
-                <legend>resources</legend>
-                <ul>
-                  <li><a href="/company">companies</a></li>
-                </ul>
-              </fieldset>
-            </div>
-            """;
 
     //******************** companies ********************//
 
@@ -290,13 +278,6 @@ public class BrowseHtmlHelper {
             <th>Runs</th>
             <th>Job Info</th>
             <th>Last Run</th>
-            """;
-
-    protected final static String jobHeaders =
-            """
-            <th>runId</th>
-            <th>stages</th>
-            <th>Last Updated</th>
             """;
 
     public static String getBranchStageView(BranchStageViewResponse branchStageViewResponse) {
@@ -612,10 +593,15 @@ public class BrowseHtmlHelper {
         return sb.toString();
     }
 
-    protected final static String ls = System.getProperty("line.separator");
+    protected final static String ls = System.lineSeparator();
 
     public static String getPage(String main, List<Pair<String, String>> breadCrumbs) {
+        return getPage(main, breadCrumbs, "flex-row");
+    }
+
+    public static String getPage(String main, List<Pair<String, String>> breadCrumbs, String mainClass) {
         return basePage
+                .replace("main-class", mainClass)
                 .replace("<!--bread-crumb-items-->", getBreadCrumbItems(breadCrumbs))
                 .replace("<!--main-->", main);
     }
@@ -709,7 +695,7 @@ public class BrowseHtmlHelper {
             </nav>
             <br/>
             <!--pre-main-->
-            <div class="flex-row" role="main" id="main">
+            <div class="main-class" role="main" id="main">
             <!--main-->
             </div><!-- end main -->
             </body>

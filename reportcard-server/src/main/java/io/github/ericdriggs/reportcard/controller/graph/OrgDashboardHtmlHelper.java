@@ -16,6 +16,7 @@ import io.github.ericdriggs.reportcard.util.StringMapUtil;
 import io.github.ericdriggs.reportcard.util.badge.*;
 import io.github.ericdriggs.reportcard.util.badge.dto.RunBadgeDTO;
 import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 
@@ -26,7 +27,8 @@ public class OrgDashboardHtmlHelper extends BrowseHtmlHelper {
 
     public static String renderOrgDashboardHtml(OrgDashboard orgDashboard) {
         final String main = getOrgDashboardMainDiv(orgDashboard);
-        return getPage(main, getOrgDashboardBreadCrumb(orgDashboard.getCompanyPojo(), orgDashboard.getOrgPojo()))
+        final List<Pair<String, String>> breadCrumbs = getOrgDashboardBreadCrumb(orgDashboard.getCompanyPojo(), orgDashboard.getOrgPojo());
+        return getPage(main, breadCrumbs, "dashboard-columns")
                 .replace("<!--additionalLinks-->", "<link rel=\"stylesheet\" href=\"/css/dashboard.css\">" + ls);
     }
 
@@ -39,8 +41,8 @@ public class OrgDashboardHtmlHelper extends BrowseHtmlHelper {
         for (RepoGraph repoGraph : emptyIfNull(orgDashboard.getRepoGraphs())) {
             final CompanyOrgRepoBranchJobRunStageDTO repoPath = orgPath.toBuilder().repo(repoGraph.repoName()).build();
             final String repoUrl = getUrl(repoPath);
-            str.append("<div><fieldset class=\"fieldset-group\">").append(ls);
-            str.append("  <legend>repo: <a href=\"{repoUrl}\">{repoName}</a></legend>"
+            str.append("<fieldset class=\"repo-fieldset fieldset-group\">").append(ls);
+            str.append("  <legend class='repo-legend'>repo: <a href=\"{repoUrl}\">{repoName}</a></legend>"
                     .replace("{repoUrl}", repoUrl)
                     .replace("{repoName}", repoGraph.repoName())
             ).append(ls);
@@ -48,7 +50,12 @@ public class OrgDashboardHtmlHelper extends BrowseHtmlHelper {
             for (BranchGraph branchGraph : emptyIfNull(repoGraph.branches())) {
                 final CompanyOrgRepoBranchJobRunStageDTO branchPath = repoPath.toBuilder().branch(branchGraph.branchName()).build();
                 final String branchUrl = getUrl(branchPath);
-                str.append("<fieldset class=\"fieldset-group\">").append(ls);
+
+                //Don't render branches without jobs
+                if (CollectionUtils.isEmpty(branchGraph.jobs())) {
+                    continue;
+                }
+                str.append("<fieldset class=\"branch-fieldset fieldset-group\">").append(ls);
                 str.append("  <legend>branch: <a href=\"{branchUrl}\">{branchName}</a></legend>"
                         .replace("{branchUrl}", branchUrl)
                         .replace("{branchName}", branchGraph.branchName())
@@ -57,7 +64,7 @@ public class OrgDashboardHtmlHelper extends BrowseHtmlHelper {
                 for (JobGraph jobGraph : emptyIfNull(branchGraph.jobs())) {
                     final CompanyOrgRepoBranchJobRunStageDTO jobPath = branchPath.toBuilder().jobId(jobGraph.jobId()).build();
                     final String jobUrl = getUrl(jobPath);
-                    str.append("<fieldset class=\"fieldset-group\">").append(ls);
+                    str.append("<fieldset class=\"job-fieldset fieldset-group\">").append(ls);
                     str.append("  <legend>job: <a href=\"{jobUrl}\">{jobInfo}</a></legend>"
                             .replace("{jobUrl}", jobUrl)
                             .replace("{jobInfo}", StringMapUtil.valuesOnlyColonSeparated(jobGraph.jobInfo()))
@@ -98,7 +105,7 @@ public class OrgDashboardHtmlHelper extends BrowseHtmlHelper {
 
                         final String runUrl = getUrl(runPath);
 
-                        str.append("<fieldset class=\"fieldset-group\">").append(ls);
+                        str.append("<fieldset class=\"run-fieldset fieldset-group\">").append(ls);
                         str.append("  <legend>run: <a href=\"{runUrl}\">{runCount}</a></legend>"
                                 .replace("{runUrl}", runUrl)
                                 .replace("{runCount}", NumberStringUtil.toString(runGraph.jobRunCount()))
@@ -129,7 +136,7 @@ public class OrgDashboardHtmlHelper extends BrowseHtmlHelper {
                 }
                 str.append("</fieldset><!--end-branch-fieldset-->").append(ls);
             }
-            str.append("</fieldset></div><!--end-repo-fieldset-->").append(ls);
+            str.append("</fieldset><!--end-repo-fieldset-->").append(ls);
         }
         return str.toString();
     }
