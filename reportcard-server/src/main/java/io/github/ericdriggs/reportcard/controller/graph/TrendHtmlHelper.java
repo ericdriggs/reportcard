@@ -193,9 +193,9 @@ public class TrendHtmlHelper extends BrowseHtmlHelper {
     }
 
     static String renderFailSince(Instant failSince) {
+        //use a hidden value so when sort failSince in ascending order the empty values will be at the bottom
         if (failSince == null) {
-            //zero-width space so can sort descending by failing the longest
-            return "\u200B";
+            return "<span style=\"opacity: 0\">z</span>";
         }
         return failSince.truncatedTo(ChronoUnit.SECONDS).toString();
     }
