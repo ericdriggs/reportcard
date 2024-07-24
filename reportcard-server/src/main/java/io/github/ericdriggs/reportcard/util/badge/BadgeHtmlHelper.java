@@ -24,7 +24,7 @@ public enum BadgeHtmlHelper {
         return wrapLink(badgeObject, badgeStatusUri.getUri());
     }
 
-    public static String statusDateShaBadge(RunBadgeDTO r) {
+    public static String statusDateSha(RunBadgeDTO r) {
         final String badgeObject = objectData(statusDateShaPath(r.getBadgeStatus(), r.getRunDate(), r.getSha()));
         return wrapLink(badgeObject, r.getUri());
     }
@@ -83,7 +83,7 @@ public enum BadgeHtmlHelper {
 
     static String wrapLink(String content, String url) {
         return """
-                <a href="{url}">{content}</a>
+                <a target="_blank" href="{url}">{content}</a>
                 """.replace("{content}", content)
                 .replace("{url}", url);
     }

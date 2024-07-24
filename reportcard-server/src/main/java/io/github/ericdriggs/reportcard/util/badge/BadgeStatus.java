@@ -11,11 +11,11 @@ import java.util.TreeMap;
 
 @Slf4j
 public enum BadgeStatus {
-    PASS("#4c1", "PASS"),
-    FAIL("#f43", "FAIL"),
-    SKIP("#cb3", "SKIP"),
+    PASS("#4c1", "Pass"),
+    FAIL("#f43", "Fail"),
+    SKIP("#cb3", "Skip"),
     UNKNOWN("#e80", "???"),
-    LAST_SUCCESS("#454", "LAST_SUCCESS");
+    LAST_SUCCESS("#454", "Last Success");
 
     private final String color;
     private final String text;

@@ -18,13 +18,13 @@ public class BadgeController {
     public ResponseEntity<String> status(
             @PathVariable String badgeStatus
     ) {
-        final String statusBadge = BadgeSvgHelper.status(BadgeStatus.fromText(badgeStatus));
+        final String statusBadge = BadgeSvgHelper.badgeStatus(BadgeStatus.fromText(badgeStatus));
         return new ResponseEntity<>(statusBadge, HttpStatus.OK);
     }
 
     @GetMapping(path = "trend", produces = "image/svg+xml;charset=UTF-8")
     public ResponseEntity<String> trend() {
-        final String statusBadge = BadgeSvgHelper.trend();
+        final String statusBadge = BadgeSvgHelper.badgeTrend();
         return new ResponseEntity<>(statusBadge, HttpStatus.OK);
     }
 
@@ -32,7 +32,7 @@ public class BadgeController {
     public ResponseEntity<String> html(
             @PathVariable String label
     ) {
-        final String statusBadge = BadgeSvgHelper.htmlBadge(label);
+        final String statusBadge = BadgeSvgHelper.badgeHtml(label);
         return new ResponseEntity<>(statusBadge, HttpStatus.OK);
     }
 
@@ -42,7 +42,7 @@ public class BadgeController {
             @RequestParam Instant date,
             @RequestParam String sha
     ) {
-        final String statusBadge = BadgeSvgHelper.lastSuccessDateSha(runCount, date, sha);
+        final String statusBadge = BadgeSvgHelper.badgeLastSuccessDateSha(runCount, date, sha);
         return new ResponseEntity<>(statusBadge, HttpStatus.OK);
     }
 
@@ -50,7 +50,7 @@ public class BadgeController {
     public ResponseEntity<String> xml(
             @PathVariable String label
     ) {
-        final String statusBadge = BadgeSvgHelper.xmlBadge(label);
+        final String statusBadge = BadgeSvgHelper.badgeXml(label);
         return new ResponseEntity<>(statusBadge, HttpStatus.OK);
     }
 
@@ -60,7 +60,7 @@ public class BadgeController {
             @RequestParam Instant date,
             @RequestParam String sha
     ) {
-        final String statusBadge = BadgeSvgHelper.statusDateSha(badgeStatus, date, sha);
+        final String statusBadge = BadgeSvgHelper.badgeStatusDateSha(badgeStatus, date, sha);
         return new ResponseEntity<>(statusBadge, HttpStatus.OK);
     }
 

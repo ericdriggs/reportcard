@@ -669,6 +669,7 @@ public class BrowseHtmlHelper {
 
     protected final static String basePage =
             """
+            <!DOCTYPE html>
             <html lang="en">
             <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
             <head>
@@ -680,7 +681,7 @@ public class BrowseHtmlHelper {
             </head>
             <body>
             <header>
-              <img alt="reportcard logo" src="/image/clipboard-check.svg" width="40px" height="40px" style="vertical-align: middle"> <span class="logo-text">ReportCard</span>
+              <img alt="reportcard logo" src="/image/clipboard-check.svg" width="40" height="40" style="vertical-align: middle"> <span class="logo-text">ReportCard</span>
               <span>
                 &nbsp;&nbsp;&nbsp;
                 <a href="/swagger-ui/index.html">swagger</a>&nbsp;&nbsp;&nbsp;

@@ -70,7 +70,7 @@ public class TrendHtmlHelper extends BrowseHtmlHelper {
         StringBuilder builder = new StringBuilder();
 
         for (TestRunHeader testRunHeader : testRunHeaders) {
-            builder.append("<th title=\"" + testRunHeader.getRunDate().toString() + "\"><a class=\"run-link\" href=\"" + testRunHeader.getRunUri() + "\">" + testRunHeader.getJobRunCount() + "</a></th>");
+            builder.append("<th title=\"" + testRunHeader.getRunDate().toString() + "\"><a class=\"run-link\" target=\"_blank\" href=\"" + testRunHeader.getRunUri() + "\">" + testRunHeader.getJobRunCount() + "</a></th>");
         }
         return builder.toString();
     }

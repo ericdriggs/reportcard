@@ -43,7 +43,7 @@ public class OrgDashboardHtmlHelper extends BrowseHtmlHelper {
             final CompanyOrgRepoBranchJobRunStageDTO repoPath = orgPath.toBuilder().repo(repoGraph.repoName()).build();
             final String repoUrl = getUrl(repoPath);
             str.append("<fieldset class=\"repo-fieldset fieldset-group\">").append(ls);
-            str.append("  <legend class='repo-legend'>repo: <a href=\"{repoUrl}\">{repoName}</a></legend>"
+            str.append("  <legend class='repo-legend'>repo: <a target=\"_blank\" href=\"{repoUrl}\">{repoName}</a></legend>"
                     .replace("{repoUrl}", repoUrl)
                     .replace("{repoName}", repoGraph.repoName())
             ).append(ls);
@@ -57,7 +57,7 @@ public class OrgDashboardHtmlHelper extends BrowseHtmlHelper {
                     continue;
                 }
                 str.append("<fieldset class=\"branch-fieldset fieldset-group\">").append(ls);
-                str.append("  <legend>branch: <a href=\"{branchUrl}\">{branchName}</a></legend>"
+                str.append("  <legend>branch: <a target=\"_blank\" href=\"{branchUrl}\">{branchName}</a></legend>"
                         .replace("{branchUrl}", branchUrl)
                         .replace("{branchName}", branchGraph.branchName())
                 ).append(ls);
@@ -66,7 +66,7 @@ public class OrgDashboardHtmlHelper extends BrowseHtmlHelper {
                     final CompanyOrgRepoBranchJobRunStageDTO jobPath = branchPath.toBuilder().jobId(jobGraph.jobId()).build();
                     final String jobUrl = getUrl(jobPath);
                     str.append("<fieldset class=\"job-fieldset fieldset-group\">").append(ls);
-                    str.append("  <legend>job: <a href=\"{jobUrl}\">{jobInfo}</a></legend>"
+                    str.append("  <legend>job: <a target=\"_blank\" href=\"{jobUrl}\">{jobInfo}</a></legend>"
                             .replace("{jobUrl}", jobUrl)
                             .replace("{jobInfo}", StringMapUtil.valuesOnlyColonSeparated(jobGraph.jobInfo()))
                     ).append(ls);
@@ -102,12 +102,12 @@ public class OrgDashboardHtmlHelper extends BrowseHtmlHelper {
                         final String runUrl = getUrl(runPath);
 
                         str.append("<fieldset class=\"run-fieldset fieldset-group\">").append(ls);
-                        str.append("  <legend>run: <a href=\"{runUrl}\">{runCount}</a></legend>"
+                        str.append("  <legend>run: <a target=\"_blank\" href=\"{runUrl}\">{runCount}</a></legend>"
                                 .replace("{runUrl}", runUrl)
                                 .replace("{runCount}", NumberStringUtil.toString(runGraph.jobRunCount()))
                         ).append(ls);
 
-                        str.append(BadgeHtmlHelper.statusDateShaBadge(badgeStatusDateShaUri)).append(ls);
+                        str.append(BadgeSvgHelper.statusDateSha(badgeStatusDateShaUri)).append(ls);
 
                         TreeSet<StageBadgesDTO> stageBadgesDTOS = new TreeSet<>();
                         for (StageGraph stageGraph : emptyIfNull(runGraph.stages())) {
@@ -133,7 +133,7 @@ public class OrgDashboardHtmlHelper extends BrowseHtmlHelper {
                         final RunIdIDateShaUri rdsu = RunIdIDateShaUri.fromRunGraph(lastSuccess, runPath);
                         str.append("<div class=\"last-success\">").append(ls);
                         str.append("<div class=\"last-success-label\">last success</div>").append(ls);
-                        str.append(BadgeHtmlHelper.lastSuccess(rdsu)).append(ls);
+                        str.append(BadgeSvgHelper.lastSuccess(rdsu)).append(ls);
                         str.append("</div>").append(ls);
                     }
                     str.append("</fieldset><!--end-job-fieldset-->").append(ls);
@@ -165,18 +165,18 @@ public class OrgDashboardHtmlHelper extends BrowseHtmlHelper {
         final String stageBase =
                 """
                         <tr>
-                          <th class="job-info"><a href="{stageUri}">{stageName}</a></th>
+                          <th class="job-info"><a target="_blank" href="{stageUri}">{stageName}</a></th>
                           <td><!--statusBadge--></td>
                           <td><!--trendBadge--></td>
                           <td><!--htmlLinks--></td>
                         </tr>
                         """;
 
-        final String statusBadge = BadgeHtmlHelper.status(stageBadgesDTO.toBadgeStatusUri());
-        final String trendBadge = BadgeHtmlHelper.trend(stageBadgesDTO.getTrendUri());
+        final String statusBadge = BadgeSvgHelper.status(stageBadgesDTO.toBadgeStatusUri());
+        final String trendBadge = BadgeSvgHelper.trend(stageBadgesDTO.getTrendUri());
         final StringBuilder htmlLinks = new StringBuilder();
         for (StorageTypeUriLabel storageUri : stageBadgesDTO.getStorageUris()) {
-            htmlLinks.append(BadgeHtmlHelper.storage(storageUri));
+            htmlLinks.append(BadgeSvgHelper.storage(storageUri));
         }
 
         return stageBase

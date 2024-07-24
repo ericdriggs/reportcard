@@ -25,6 +25,7 @@ public enum TestResultHtmlHelper {
 
         final String baseTestResultHtml =
                 """
+                <!DOCTYPE html>
                 <html>
                 <head>
                     <link rel="stylesheet" href="/css/sortable.min.css"/>
