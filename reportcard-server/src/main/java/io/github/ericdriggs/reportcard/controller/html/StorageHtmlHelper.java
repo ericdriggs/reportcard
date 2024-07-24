@@ -12,6 +12,7 @@ import software.amazon.awssdk.services.s3.model.CommonPrefix;
 import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
 import software.amazon.awssdk.services.s3.model.S3Object;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
@@ -70,14 +71,14 @@ public class StorageHtmlHelper extends BrowseHtmlHelper {
         return getPage(sb.toString(), getBreadCrumbForKey(requestKey));
     }
 
-    public static String getStorageUrl(StoragePojo storage) {
+    public static URI getStorageURI(StoragePojo storage) {
         StringBuilder sb = new StringBuilder();
         sb.append(StorageController.storageKeyPath );
         sb.append("/" + storage.getPrefix());
         if (storage.getIndexFile() != null) {
             sb.append("/" + storage.getIndexFile());
         }
-        return sb.toString();
+        return URI.create(sb.toString());
     }
 
     static String getPrefixUrl(String prefix) {

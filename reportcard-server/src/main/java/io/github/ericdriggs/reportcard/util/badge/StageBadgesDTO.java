@@ -55,11 +55,10 @@ public class StageBadgesDTO implements Comparable<StageBadgesDTO> {
     }
 
     @JsonIgnore
-    public BadgeStatusUriStorageType toBadgeStatusUri() {
-        return BadgeStatusUriStorageType.builder()
+    public BadgeStatusUri toBadgeStatusUri() {
+        return BadgeStatusUri.builder()
                 .badgeStatus(badgeStatus)
                 .uri(stageUri)
-                .storageType(storageType)
                 .build();
     }
 }

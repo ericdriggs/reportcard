@@ -6,20 +6,23 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Map;
+import java.util.TreeMap;
+
 @Slf4j
 public enum BadgeStatus {
-    PASS("#4c1"),
-    FAIL("#f43"),
-    SKIP("#cb3"),
-    UNKNOWN("#f40"),
-    LAST_SUCCESS("#454");
+    PASS("#4c1", "PASS"),
+    FAIL("#f43", "FAIL"),
+    SKIP("#cb3", "SKIP"),
+    UNKNOWN("#e80", "???"),
+    LAST_SUCCESS("#454", "LAST_SUCCESS");
 
-    private final String text;
     private final String color;
+    private final String text;
 
-    BadgeStatus(String color) {
+    BadgeStatus(String color, String text) {
         this.color = color;
-        this.text = StringUtils.capitalize(this.name().toLowerCase());
+        this.text = text;
     }
 
     public String getColor() {
@@ -45,6 +48,22 @@ public enum BadgeStatus {
             }
         }
         return BadgeStatus.PASS;
+    }
+
+    static TreeMap<String, BadgeStatus> textStatusMap = new TreeMap(String.CASE_INSENSITIVE_ORDER);
+
+    static {
+        for (BadgeStatus badgeStatus : BadgeStatus.values()) {
+            textStatusMap.put(badgeStatus.text, badgeStatus);
+        }
+    }
+
+    public static BadgeStatus fromText(String text) {
+        final BadgeStatus badgeStatus = textStatusMap.get(text);
+        if (badgeStatus == null) {
+            return BadgeStatus.UNKNOWN;
+        }
+        return badgeStatus;
     }
 
 }

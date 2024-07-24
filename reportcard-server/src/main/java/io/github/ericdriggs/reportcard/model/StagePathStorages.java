@@ -2,7 +2,6 @@
 package io.github.ericdriggs.reportcard.model;
 
 import io.github.ericdriggs.reportcard.controller.html.StorageHtmlHelper;
-import io.github.ericdriggs.reportcard.controller.model.StagePathStorageResponse;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.StoragePojo;
 import lombok.Builder;
 import lombok.Value;
@@ -33,7 +32,7 @@ public class StagePathStorages {
         }
         if (!CollectionUtils.isEmpty(storages)) {
             for (StoragePojo storage : storages) {
-                urls.put(storage.getLabel(), StorageHtmlHelper.getStorageUrl(storage));
+                urls.put(storage.getLabel(), StorageHtmlHelper.getStorageURI(storage).toString());
             }
 
         }

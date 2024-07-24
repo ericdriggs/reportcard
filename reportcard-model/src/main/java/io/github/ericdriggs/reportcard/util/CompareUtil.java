@@ -45,4 +45,11 @@ public enum CompareUtil {
         }
         return Long.compare(val1, val2);
     }
+
+    public static int compareURI(URI val1, URI val2) {
+        if (val1 == null || val2 == null) {
+            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+        }
+        return val1.toString().compareTo(val2.toString());
+    }
 }
