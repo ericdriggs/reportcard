@@ -29,12 +29,12 @@ public class TestTrendTable {
 
         List<TestCaseTrendRow> testCaseTrendRows = new ArrayList<>();
         boolean isFirst = true;
-        Instant failSince = null;
+
         for (Map.Entry<TestPackageSuiteCase, TreeMap<RunPojo, TestCaseModel>> testSuiteEntry : testCaseTrends.entrySet()) {
-            final TestPackageSuiteCase testSuiteNameTestCaseName = testSuiteEntry.getKey();
-            final String testPackageName = testSuiteNameTestCaseName.getTestPackageName();
-            final String testSuiteName = testSuiteNameTestCaseName.getTestSuiteName();
-            final String testCaseName = testSuiteNameTestCaseName.getTestCaseName();
+            final TestPackageSuiteCase testPackageSuiteCase = testSuiteEntry.getKey();
+            final String testPackageName = testPackageSuiteCase.getTestPackageName();
+            final String testSuiteName = testPackageSuiteCase.getTestSuiteName();
+            final String testCaseName = testPackageSuiteCase.getTestCaseName();
 
             final TreeMap<RunPojo, TestCaseModel> runTestCaseMap = testSuiteEntry.getValue();
 
@@ -46,6 +46,10 @@ public class TestTrendTable {
                 FailureMessageIndexMap failureMessageIndexMap = FailureMessageIndexMap.builder().build();
                 TreeSet<TestCaseRunGroupedState> testRunGroupedStates = new TreeSet<>();
                 boolean hasSkip = false;
+                Map<TestPackageSuiteCase,Instant> testCaseFailSinceMap = new HashMap<>();
+                Instant maxPass = null;
+                Instant maxFail = null;
+
                 for (Map.Entry<RunPojo, TestCaseModel> runEntry : runTestCaseMap.entrySet()) {
                     final RunPojo runPojo = runEntry.getKey();
                     final TestCaseModel testCaseModel = runEntry.getValue();
@@ -69,14 +73,27 @@ public class TestTrendTable {
                         success30.incrementTotalCount();
                     }
 
-
-                    if (testStatus.isErrorOrFailure() && failSince == null) {
-                        failSince = runPojo.getRunDate();
+                    if (testStatus.isErrorOrFailure() ) {
+                        if (maxFail == null || maxFail.isBefore(runPojo.getRunDate())) {
+                            maxFail = runPojo.getRunDate();
+                        }
+                    } else {
+                        if (maxPass == null || maxPass.isBefore(runPojo.getRunDate())) {
+                            maxPass = runPojo.getRunDate();
+                        }
                     }
 
                     final String failureMessage = getTruncatedFailureMessage(testCaseModel.getTestCaseFaults());
                     testRunGroupedStates.add(TestCaseRunGroupedState.factory(runPojo.getRunId(), testStatus, failureMessageIndexMap, failureMessage));
                 }
+
+                Instant failSince = null;
+                if (maxFail != null) {
+                    if (maxPass == null || maxPass.isBefore(maxFail)) {
+                        failSince = maxFail;
+                    }
+                }
+
                 isFirst = false;
 
                 testCaseTrendRows.add(TestCaseTrendRow

@@ -280,7 +280,7 @@ public class TrendHtmlHelper extends BrowseHtmlHelper {
                         <th>Test Suite</th>
                         <th style="min-width:300px">Test Case</th>
                         <th>Fail Messages</th>
-                        <th>Fail Since</th>
+                        <th style="min-width:131px">Fail Since</th>
                         <th>Success Avg(30)</th>
                         <!--jobRunHeaders-->
                     </tr>
