@@ -47,9 +47,9 @@ public class TestTrendTable {
                 TreeSet<TestCaseRunGroupedState> testRunGroupedStates = new TreeSet<>();
                 boolean hasSkip = false;
                 Map<TestPackageSuiteCase,Instant> testCaseFailSinceMap = new HashMap<>();
-                Instant maxPass = null;
-                Instant maxFail = null;
 
+                Instant failSince = null;
+                boolean hasPassed = false;
                 for (Map.Entry<RunPojo, TestCaseModel> runEntry : runTestCaseMap.entrySet()) {
                     final RunPojo runPojo = runEntry.getKey();
                     final TestCaseModel testCaseModel = runEntry.getValue();
@@ -61,10 +61,10 @@ public class TestTrendTable {
                     successTotal.incrementTotalCount();
                     if (testStatus.isSuccess()) {
                         successTotal.incrementSuccessCount();
+                        hasPassed = true;
                     } else if (testStatus.isSkipped()) {
                         hasSkip = true;
                     }
-
 
                     if (success30.getTotalCount() < success30.getMaxCount()) {
                         if (testStatus.isSuccess()) {
@@ -74,24 +74,14 @@ public class TestTrendTable {
                     }
 
                     if (testStatus.isErrorOrFailure() ) {
-                        if (maxFail == null || maxFail.isBefore(runPojo.getRunDate())) {
-                            maxFail = runPojo.getRunDate();
-                        }
-                    } else {
-                        if (maxPass == null || maxPass.isBefore(runPojo.getRunDate())) {
-                            maxPass = runPojo.getRunDate();
+                        //runs are in descending order so failSince should only be updated until hasPassed
+                        if (!hasPassed) {
+                            failSince = runPojo.getRunDate();
                         }
                     }
 
                     final String failureMessage = getTruncatedFailureMessage(testCaseModel.getTestCaseFaults());
                     testRunGroupedStates.add(TestCaseRunGroupedState.factory(runPojo.getRunId(), testStatus, failureMessageIndexMap, failureMessage));
-                }
-
-                Instant failSince = null;
-                if (maxFail != null) {
-                    if (maxPass == null || maxPass.isBefore(maxFail)) {
-                        failSince = maxFail;
-                    }
                 }
 
                 isFirst = false;

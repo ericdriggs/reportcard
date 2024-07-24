@@ -194,7 +194,8 @@ public class TrendHtmlHelper extends BrowseHtmlHelper {
 
     static String renderFailSince(Instant failSince) {
         if (failSince == null) {
-            return "-";
+            //zero-width space so can sort descending by failing the longest
+            return "\u200B";
         }
         return failSince.truncatedTo(ChronoUnit.SECONDS).toString();
     }
