@@ -12,7 +12,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.core.ResponseBytes;
-import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -46,6 +45,8 @@ public class S3Service {
     private final String bucketName;
 
     private final URI endpointOverride;
+
+    private final int uploadRetryCount = 3;
 
     @Autowired
     public S3Service(Environment environment) {
@@ -112,34 +113,47 @@ public class S3Service {
         @SneakyThrows(IOException.class)
     protected DirectoryUploadResponse uploadTarGZExpanded(String prefix, MultipartFile tarGz) {
         Path tempDir = null;
-        try {
-            tempDir = Files.createTempDirectory("s3.");
-            InputStream inputStream = tarGz.getInputStream();
-            TarExtractorCommonsCompress tarExtractor = new TarExtractorCommonsCompress(inputStream, true, tempDir);
+        Exception ex = null;
+        for (int i = 1; i<= uploadRetryCount; i++) {
+            try {
+                tempDir = Files.createTempDirectory("s3.");
+                InputStream inputStream = tarGz.getInputStream();
+                TarExtractorCommonsCompress tarExtractor = new TarExtractorCommonsCompress(inputStream, true, tempDir);
 
-            tarExtractor.untar();
-            return uploadDirectory(prefix, tempDir);
-        } finally {
-            if (tempDir != null) {
-                FileUtils.deleteDirectory(tempDir.toFile());
+                tarExtractor.untar();
+                return uploadDirectory(prefix, tempDir);
+            }
+            catch (Exception e) {
+                ex = e;
+            }
+            finally {
+                if (tempDir != null) {
+                    FileUtils.deleteDirectory(tempDir.toFile());
+                }
             }
         }
+        throw new IllegalStateException("upload failed", ex);
     }
 
     @SneakyThrows(IOException.class)
     public DirectoryUploadResponse uploadDirectory(String prefix, MultipartFile... files) {
         final Path tempDir = Files.createTempDirectory("s3.");
-
-        try {
-            for (MultipartFile file : files) {
-                final String fileName = file.getName();
-                final Path filepath = Paths.get(tempDir.toString(), fileName);
-                file.transferTo(filepath);
+        Exception ex = null;
+        for (int i = 1; i<= uploadRetryCount; i++) {
+            try {
+                for (MultipartFile file : files) {
+                    final String fileName = file.getName();
+                    final Path filepath = Paths.get(tempDir.toString(), fileName);
+                    file.transferTo(filepath);
+                }
+                return uploadDirectory(prefix, tempDir);
+            } catch (Exception e) {
+                ex = e;
+            }finally {
+                FileUtils.deleteDirectory(tempDir.toFile());
             }
-            return uploadDirectory(prefix, tempDir);
-        } finally {
-            FileUtils.deleteDirectory(tempDir.toFile());
         }
+        throw new IllegalStateException("upload failed", ex);
     }
 
     public DirectoryUploadResponse uploadDirectory(String prefix, Path path) {
@@ -152,6 +166,7 @@ public class S3Service {
                         .source(path)
                         .bucket(bucketName)
                         .s3Prefix(prefix)
+
                         .uploadFileRequestTransformer(ufr -> ufr.putObjectRequest(
                                 PutObjectRequest.builder()
                                         .checksumAlgorithm(CHECKSUM_ALGORITHM)
