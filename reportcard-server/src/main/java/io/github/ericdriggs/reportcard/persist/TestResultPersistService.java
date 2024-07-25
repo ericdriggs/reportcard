@@ -8,6 +8,7 @@ import io.github.ericdriggs.reportcard.model.*;
 import io.github.ericdriggs.reportcard.model.converter.JunitSurefireXmlParseUtil;
 import io.github.ericdriggs.reportcard.model.StagePathTestResult;
 import io.github.ericdriggs.reportcard.util.truncate.TruncateUtils;
+import io.github.ericdriggs.reportcard.xml.ResultCount;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
@@ -215,6 +216,22 @@ public class TestResultPersistService extends StagePathPersistService {
 
         if (testResult.getStageFk() == null) {
             throw new NullPointerException("testResult.getStageFk()");
+        }
+
+        Set<TestResultModel> dbTestResults = getTestResults(testResult.getStageFk());
+        if (!dbTestResults.isEmpty()) {
+            for (TestResultModel dbTestResult : dbTestResults) {
+                if (dbTestResult.getResultCount().compareTo(testResult.getResultCount()) == 0) {
+                    log.info("testResult matches dbTestResult. Returning dbTestResult");
+                    return dbTestResult;
+                } else {
+                    final String diffs = String.join(", ", ResultCount.diff(testResult.getResultCount(), dbTestResult.getResultCount()));
+                    final String errorString = "Test result already inserted does not match request. diffs: {}" + diffs;
+                    //noinspection LoggingPlaceholderCountMatchesArgumentCount //false positive
+                    log.error(errorString);
+                    throw new IllegalArgumentException(errorString);
+                }
+            }
         }
 
         if (testResult.getTestResultId() == null) {

@@ -76,6 +76,24 @@ public class InsertTestResultTest extends AbstractTestResultPersistTest {
         assertValues(testResultBefore);
 
         final TestResultModel testResultInsert = testResultPersistService.insertTestResult(testResultBefore);
+        assertInsertedTestResult(testResultBefore, testResultInsert);
+    }
+
+    @Test
+    public void givenInsertedTestResult_WhenReinsert_ThenIdempotentSuccess() {
+
+        final TestResultModel testResultBefore = getInsertableTestResult();
+        assertValues(testResultBefore);
+
+        final TestResultModel testResultInsert = testResultPersistService.insertTestResult(testResultBefore);
+        final TestResultModel testResultInsert2 = testResultPersistService.insertTestResult(testResultBefore);
+        assertInsertedTestResult(testResultBefore, testResultInsert);
+        assertInsertedTestResult(testResultInsert, testResultInsert2);
+    }
+
+
+
+    void assertInsertedTestResult(TestResultModel testResultBefore, TestResultModel testResultInsert) {
         assertValues(testResultInsert);
         assertIdsAndFks(testResultInsert);
         assertExternalLinks(testResultInsert);

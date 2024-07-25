@@ -3,10 +3,8 @@ package io.github.ericdriggs.reportcard.util.badge;
 import io.github.ericdriggs.reportcard.model.graph.StageGraph;
 import io.github.ericdriggs.reportcard.model.graph.TestResultGraph;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Map;
 import java.util.TreeMap;
 
 @Slf4j
@@ -50,7 +48,7 @@ public enum BadgeStatus {
         return BadgeStatus.PASS;
     }
 
-    static TreeMap<String, BadgeStatus> textStatusMap = new TreeMap(String.CASE_INSENSITIVE_ORDER);
+    static TreeMap<String, BadgeStatus> textStatusMap = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
     static {
         for (BadgeStatus badgeStatus : BadgeStatus.values()) {

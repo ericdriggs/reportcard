@@ -2,6 +2,8 @@ package io.github.ericdriggs.reportcard.util;
 
 import org.apache.commons.lang3.ObjectUtils;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.net.URI;
 
 public enum CompareUtil {
@@ -51,5 +53,14 @@ public enum CompareUtil {
             return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
         }
         return val1.toString().compareTo(val2.toString());
+    }
+
+    public static int compareBigDecimalAsBigInteger(BigDecimal val1, BigDecimal val2) {
+        if (val1 == null || val2 == null) {
+            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+        }
+        BigInteger b1 = val1.toBigInteger();
+        BigInteger b2 = val2.toBigInteger();
+        return b1.compareTo(b2);
     }
 }

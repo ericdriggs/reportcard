@@ -1,13 +1,16 @@
 package io.github.ericdriggs.reportcard.xml;
 
 import io.github.ericdriggs.reportcard.model.TestStatus;
-import io.github.ericdriggs.reportcard.xml.testng.suite.Exclude;
+import io.github.ericdriggs.reportcard.util.CompareUtil;
 import lombok.Builder;
 import lombok.Value;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import static io.github.ericdriggs.reportcard.util.CompareUtil.chainCompare;
 
@@ -167,7 +170,47 @@ public class ResultCount implements Comparable<ResultCount> {
                 skipped.compareTo(that.skipped),
                 successes.compareTo(that.successes),
                 tests.compareTo(that.tests),
-                time.compareTo(that.time)
+                //round time for comparison since precision may change after persist/read
+                CompareUtil.compareBigDecimalAsBigInteger(this.time, that.time)
         );
     }
+
+    public static List<String> diff(ResultCount o1, ResultCount o2) {
+        if (o1 == null && o2 == null) {
+            return Collections.emptyList();
+        } else if (o1 == null) {
+            return Collections.singletonList("o1 is NULL, o2 is not NULL");
+        } else if (o2 == null) {
+            return Collections.singletonList("o1 is not NULL, o2 is NULL");
+        }
+
+        List<String> diffs = new ArrayList<>();
+        if (!Objects.equals(o1.errors, o2.errors)) {
+            diffs.add("o1.errors: " + o1.errors + " != o2.errors: " + o2.errors);
+        }
+
+        if (!Objects.equals(o1.failures, o2.failures)) {
+            diffs.add("o1.errors: " + o1.failures + " != o2.failures: " + o2.failures);
+        }
+
+        if (!Objects.equals(o1.skipped, o2.skipped)) {
+            diffs.add("o1.skipped: " + o1.skipped + " != o2.skipped: " + o2.skipped);
+        }
+
+        if (!Objects.equals(o1.tests, o2.tests)) {
+            diffs.add("o1.tests: " + o1.tests + " != o2.tests: " + o2.tests);
+        }
+
+        if (!Objects.equals(o1.tests, o2.tests)) {
+            diffs.add("o1.tests: " + o1.tests + " != o2.tests: " + o2.tests);
+        }
+
+        //round time for comparison since precision may change after persist/read
+        if (CompareUtil.compareBigDecimalAsBigInteger(o1.time, o2.time) != 0) {
+            diffs.add("o1.time: " + o1.time + " != o2.time: " + o2.time);
+        }
+        return diffs;
+    }
+
+
 }

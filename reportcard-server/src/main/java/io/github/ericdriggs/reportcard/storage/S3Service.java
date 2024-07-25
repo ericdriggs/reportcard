@@ -110,29 +110,26 @@ public class S3Service {
         }
     }
 
-        @SneakyThrows(IOException.class)
-    protected DirectoryUploadResponse uploadTarGZExpanded(String prefix, MultipartFile tarGz) {
+    @SneakyThrows(IOException.class)
+    public DirectoryUploadResponse uploadTarGZExpanded(String prefix, MultipartFile tarGz) {
         Path tempDir = null;
-        Exception ex = null;
-        for (int i = 1; i<= uploadRetryCount; i++) {
-            try {
-                tempDir = Files.createTempDirectory("s3.");
-                InputStream inputStream = tarGz.getInputStream();
-                TarExtractorCommonsCompress tarExtractor = new TarExtractorCommonsCompress(inputStream, true, tempDir);
+        try {
+            tempDir = Files.createTempDirectory("s3.");
+            InputStream inputStream = tarGz.getInputStream();
+            TarExtractorCommonsCompress tarExtractor = new TarExtractorCommonsCompress(inputStream, true, tempDir);
 
-                tarExtractor.untar();
-                return uploadDirectory(prefix, tempDir);
-            }
-            catch (Exception e) {
-                ex = e;
-            }
-            finally {
-                if (tempDir != null) {
-                    FileUtils.deleteDirectory(tempDir.toFile());
-                }
+            tarExtractor.untar();
+            return uploadDirectory(prefix, tempDir);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            log.error("uploadTarGZ failed for prefix: {}", prefix, ex);
+            throw ex;
+        }
+        finally {
+            if (tempDir != null) {
+                FileUtils.deleteDirectory(tempDir.toFile());
             }
         }
-        throw new IllegalStateException("upload failed", ex);
     }
 
     @SneakyThrows(IOException.class)
@@ -148,15 +145,19 @@ public class S3Service {
                 }
                 return uploadDirectory(prefix, tempDir);
             } catch (Exception e) {
+                log.warn("uploadTarGZExpanded upload failed. prefix: {}, attempt: {}", prefix, i, e);
                 ex = e;
             }finally {
                 FileUtils.deleteDirectory(tempDir.toFile());
             }
         }
+        if (ex != null) {
+            ex.printStackTrace();
+        }
         throw new IllegalStateException("upload failed", ex);
     }
 
-    public DirectoryUploadResponse uploadDirectory(String prefix, Path path) {
+    private DirectoryUploadResponse uploadDirectory(String prefix, Path path) {
 
         S3TransferManager s3TransferManager = getTransferManager();
 
