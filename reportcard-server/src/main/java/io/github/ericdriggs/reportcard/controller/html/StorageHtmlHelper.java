@@ -44,7 +44,7 @@ public class StorageHtmlHelper extends BrowseHtmlHelper {
 
             //final String folderName = StringUtils.substringAfterLast(prefix, "/" );
             sb.append("<li>");
-            sb.append("<a target=\"_blank\" href=\"" + getPrefixUrl(prefix) + "\">");
+            sb.append("<a href=\"" + getPrefixUrl(prefix) + "\">");
             sb.append("<img alt=\"" + folderName + "\" src=\"/image/folder.svg\" class=\"report-img\" style='width:22px'>");
             sb.append(folderName);
             sb.append("</a>");
@@ -58,7 +58,7 @@ public class StorageHtmlHelper extends BrowseHtmlHelper {
             final String fileName = StringUtils.substringAfterLast(key, "/");
             final String extension = StringUtils.substringAfterLast(key, ".");
             sb.append("<li>");
-            sb.append("<a target=\"_blank\" href=\"" + getPrefixUrl(key) + "\">");
+            sb.append("<a href=\"" + getPrefixUrl(key) + "\">");
             sb.append("<img alt=\"" + fileName + "\" src=\"" + ExtensionImage.getImageForExtension(extension) + "\" class=\"report-img\" >");
             sb.append(fileName);
             sb.append("</a>");
