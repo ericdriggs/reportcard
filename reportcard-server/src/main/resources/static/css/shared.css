@@ -192,10 +192,10 @@ ul.breadcrumb li + li:before {
     font-weight: bold;
 }
 
-a:hover.info {
-    color: #0af !important;
+.tiny_info {
+    font-size: 7pt;
+    font-weight: bold;
 }
-
 
 .report-img {
     margin-bottom: 5px;

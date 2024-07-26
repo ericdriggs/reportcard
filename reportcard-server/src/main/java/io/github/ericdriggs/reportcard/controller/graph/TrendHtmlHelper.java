@@ -38,13 +38,14 @@ public class TrendHtmlHelper extends BrowseHtmlHelper {
 
         TestTrendTable testTrendTable = TestTrendTable.fromJob(jobStageTestTrend);
         return trendMainDiv.replace("<!--companyName-->", companyOrgRepoBranchJobStageName.getCompanyPojo().getCompanyName())
-                           .replace("<!--orgName-->", companyOrgRepoBranchJobStageName.getOrgPojo().getOrgName())
-                           .replace("<!--repoName-->", companyOrgRepoBranchJobStageName.getRepoPojo().getRepoName())
-                           .replace("<!--branchName-->", companyOrgRepoBranchJobStageName.getBranchPojo().getBranchName())
-                           .replace("<!--jobInfo-->", renderJobInfo(companyOrgRepoBranchJobStageName.getJobPojo().getJobInfo()))
-                           .replace("<!--stageName-->", companyOrgRepoBranchJobStageName.getStageName())
-                           .replace("<!--jobRunHeaders-->", renderJobRunHeaders(testTrendTable.getTestRunHeaders()))
-                           .replace("<!--jobRunTestRows-->", renderJobRunTestRows(testTrendTable.getTestCaseTrendRows()))
+                .replace("<!--orgName-->", companyOrgRepoBranchJobStageName.getOrgPojo().getOrgName())
+                .replace("<!--repoName-->", companyOrgRepoBranchJobStageName.getRepoPojo().getRepoName())
+                .replace("<!--branchName-->", companyOrgRepoBranchJobStageName.getBranchPojo().getBranchName())
+                .replace("<!--jobInfo-->", renderJobInfo(companyOrgRepoBranchJobStageName.getJobPojo().getJobInfo()))
+                .replace("<!--stageName-->", companyOrgRepoBranchJobStageName.getStageName())
+                .replace("<!--jobRunHeaders-->", renderJobRunHeaders(testTrendTable.getTestRunHeaders()))
+                .replace("<!--jobRunTestRows-->", renderJobRunTestRows(testTrendTable.getTestCaseTrendRows()))
+                .replace("{runCount}", Integer.toString(testTrendTable.getTestRunHeaders().size()))
                 ;
     }
 
@@ -282,7 +283,7 @@ public class TrendHtmlHelper extends BrowseHtmlHelper {
                         <th style="min-width:300px">Test Case</th>
                         <th>Fail Messages</th>
                         <th style="min-width:131px">Fail Since</th>
-                        <th>Success Avg(30)</th>
+                        <th>Success Avg({runCount})</th>
                         <!--jobRunHeaders-->
                     </tr>
                     </thead>

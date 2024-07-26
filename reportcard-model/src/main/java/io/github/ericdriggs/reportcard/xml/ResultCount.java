@@ -190,15 +190,11 @@ public class ResultCount implements Comparable<ResultCount> {
         }
 
         if (!Objects.equals(o1.failures, o2.failures)) {
-            diffs.add("o1.errors: " + o1.failures + " != o2.failures: " + o2.failures);
+            diffs.add("o1.failures: " + o1.failures + " != o2.failures: " + o2.failures);
         }
 
         if (!Objects.equals(o1.skipped, o2.skipped)) {
             diffs.add("o1.skipped: " + o1.skipped + " != o2.skipped: " + o2.skipped);
-        }
-
-        if (!Objects.equals(o1.tests, o2.tests)) {
-            diffs.add("o1.tests: " + o1.tests + " != o2.tests: " + o2.tests);
         }
 
         if (!Objects.equals(o1.tests, o2.tests)) {

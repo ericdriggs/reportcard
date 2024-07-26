@@ -168,7 +168,7 @@ public class OrgDashboardHtmlHelper extends BrowseHtmlHelper {
                           <th class="job-info"><a target="_blank" href="{stageUri}">{stageName}</a></th>
                           <td><!--statusBadge--></td>
                           <td><!--trendBadge--></td>
-                          <td><!--htmlLinks--></td>
+                          <!--htmlLinks-->
                         </tr>
                         """;
 
@@ -176,7 +176,7 @@ public class OrgDashboardHtmlHelper extends BrowseHtmlHelper {
         final String trendBadge = BadgeSvgHelper.trend(stageBadgesDTO.getTrendUri());
         final StringBuilder htmlLinks = new StringBuilder();
         for (StorageTypeUriLabel storageUri : stageBadgesDTO.getStorageUris()) {
-            htmlLinks.append(BadgeSvgHelper.storage(storageUri));
+            htmlLinks.append("<td>"+BadgeSvgHelper.storage(storageUri)+"</td>");
         }
 
         return stageBase

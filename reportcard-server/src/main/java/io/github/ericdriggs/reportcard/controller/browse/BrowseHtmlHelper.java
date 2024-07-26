@@ -21,6 +21,8 @@ import java.time.ZoneOffset;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static io.github.ericdriggs.reportcard.util.badge.BadgeSvgHelper.truncatedSha;
+
 @SuppressWarnings("StringConcatenationInsideStringBufferAppend")
 public class BrowseHtmlHelper {
 
@@ -337,6 +339,7 @@ public class BrowseHtmlHelper {
                     .replace("{jobUrl}", getUrl(jobPath))
                     .replace("{runCount}", NumberStringUtil.toString(run.getJobRunCount()))
                     .replace("{runDate}", run.getRunDate().toString())
+                    .replace("{sha}", truncatedSha(run.getSha()))
                     .replace("{runId}", Long.toString(run.getRunId()))
                     .replace("{runUrl}", getUrl(runPath))
                     .replace("<!--stages-->", stagesHtml);
@@ -382,8 +385,10 @@ public class BrowseHtmlHelper {
                   <legend id="run-{runId}-job-{jobId}">
                     <span class="dot {dotClass}"></span>
                     <a class="info" title='{jobInfo}' href="{jobUrl}">jobId: {jobId}</a>
-                    <a href="{runUrl}">run #{runCount}</a>
-                    &nbsp;<span class="info">{runDate}</span>
+                    <a href="{runUrl}">run #{runCount}
+                      <span class="tiny_info">{sha}</span>
+                      <span class="tiny_info">{runDate}</span>
+                    </a>
                   </legend>
                   <div class="flex-row" style="text-align:left">
                     <!--stages-->

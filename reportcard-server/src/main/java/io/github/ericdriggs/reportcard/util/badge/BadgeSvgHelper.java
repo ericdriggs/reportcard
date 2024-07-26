@@ -104,7 +104,7 @@ public enum BadgeSvgHelper {
         return trendBase;
     }
 
-    static String truncatedSha(String sha) {
+    public static String truncatedSha(String sha) {
         if (sha == null) {
             return "null";
         }
