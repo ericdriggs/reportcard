@@ -32,4 +32,7 @@ public abstract class AbstractPersistService {
         this.dsl = dsl;
     }
 
+    public DSLContext getDsl() {
+        return dsl;
+    }
 }
