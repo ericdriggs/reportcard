@@ -16,8 +16,8 @@ public class TestCaseTrendRow {
     TestPackageSuiteCase testPackageSuiteCase;
     FailureMessageIndexMap failureMessageIndexMap;
     Instant failSince;
-    BigDecimal avg30;
-    BigDecimal avgTotal;
+    BigDecimal successPercent;
+    BigDecimal averageDurationSeconds;
     boolean hasSkip;
     TreeSet<TestCaseRunGroupedState> testRunGroupedStates;
 }

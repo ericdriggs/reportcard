@@ -9,6 +9,7 @@ import io.github.ericdriggs.reportcard.model.TestCaseModel;
 import io.github.ericdriggs.reportcard.model.trend.CompanyOrgRepoBranchJobStageName;
 import io.github.ericdriggs.reportcard.model.trend.JobStageTestTrend;
 import io.github.ericdriggs.reportcard.model.trend.TestPackageSuiteCase;
+import io.github.ericdriggs.reportcard.util.NumberStringUtil;
 import io.github.ericdriggs.reportcard.util.StringMapUtil;
 
 import org.apache.commons.lang3.StringUtils;
@@ -21,6 +22,8 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
 import java.util.*;
+
+import static io.github.ericdriggs.reportcard.util.NumberStringUtil.zeroPaddedSecond;
 
 public class TrendHtmlHelper extends BrowseHtmlHelper {
 
@@ -45,7 +48,6 @@ public class TrendHtmlHelper extends BrowseHtmlHelper {
                 .replace("<!--stageName-->", companyOrgRepoBranchJobStageName.getStageName())
                 .replace("<!--jobRunHeaders-->", renderJobRunHeaders(testTrendTable.getTestRunHeaders()))
                 .replace("<!--jobRunTestRows-->", renderJobRunTestRows(testTrendTable.getTestCaseTrendRows()))
-                .replace("{runCount}", Integer.toString(testTrendTable.getTestRunHeaders().size()))
                 ;
     }
 
@@ -111,7 +113,8 @@ public class TrendHtmlHelper extends BrowseHtmlHelper {
                     <td><!--testCaseName--></td>
                     <td class="fail-messages"><!--failMessages--></td>
                     <td class="fail-since"><!--failSince--></td>
-                    <!--avg30-->
+                    <td><!--averageDuration--></td>
+                    <!--passPercent-->
                     <!--runStates-->
                 </tr>
                 """;
@@ -136,7 +139,8 @@ public class TrendHtmlHelper extends BrowseHtmlHelper {
                             .replace("<!--testCaseName-->", TestPackageSuiteCase.getTestCaseName(testCaseTrendRow.getTestPackageSuiteCase()))
                             .replace("<!--failMessages-->", renderFailMessages(testCaseTrendRow.getFailureMessageIndexMap()))
                             .replace("<!--failSince-->", renderFailSince(testCaseTrendRow.getFailSince()))
-                            .replace("<!--avg30-->", renderSuccessPercent(testCaseTrendRow.getAvg30()))
+                            .replace("<!--passPercent-->", renderSuccessPercent(testCaseTrendRow.getSuccessPercent()))
+                            .replace("<!--averageDuration-->", zeroPaddedSecond(testCaseTrendRow.getAverageDurationSeconds()))
                             .replace("<!--runStates-->", runStatesBuilder.toString())
                             .replace("test-case-class", getTestCaseClass(hasFail, hasSkip))
             );
@@ -283,7 +287,8 @@ public class TrendHtmlHelper extends BrowseHtmlHelper {
                         <th style="min-width:300px">Test Case</th>
                         <th>Fail Messages</th>
                         <th style="min-width:131px">Fail Since</th>
-                        <th>Success Avg({runCount})</th>
+                        <th>Avg Duration</th>
+                        <th>Pass %</th>
                         <!--jobRunHeaders-->
                     </tr>
                     </thead>

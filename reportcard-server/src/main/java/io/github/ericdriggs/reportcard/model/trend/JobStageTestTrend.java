@@ -134,15 +134,17 @@ public class JobStageTestTrend {
         final JobGraph jobGraph = branchGraph.jobs().get(0);
 
         String stageName = null;
-        for (RunGraph run : jobGraph.runs()) {
-            for (StageGraph stage : run.stages()) {
-                if (stage.stageName() != null) {
-                    if (stageName == null) {
-                        stageName = stage.stageName();
-                    }
+        if (!CollectionUtils.isEmpty(jobGraph.runs())) {
+            for (RunGraph run : jobGraph.runs()) {
+                for (StageGraph stage : run.stages()) {
+                    if (stage.stageName() != null) {
+                        if (stageName == null) {
+                            stageName = stage.stageName();
+                        }
 
-                    if (!stageName.equals(stage.stageName())) {
-                        throw new IllegalStateException("different stage detected. stageName: " + stageName + " != stage.getStageMame: " + stage.stageName());
+                        if (!stageName.equals(stage.stageName())) {
+                            throw new IllegalStateException("different stage detected. stageName: " + stageName + " != stage.getStageMame: " + stage.stageName());
+                        }
                     }
                 }
             }

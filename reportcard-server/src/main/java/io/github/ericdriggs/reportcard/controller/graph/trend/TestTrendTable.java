@@ -12,6 +12,8 @@ import lombok.extern.jackson.Jacksonized;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Instant;
 import java.util.*;
 
@@ -50,6 +52,7 @@ public class TestTrendTable {
 
                 Instant failSince = null;
                 boolean hasPassed = false;
+                BigDecimal totalDuration = BigDecimal.ZERO;
                 for (Map.Entry<RunPojo, TestCaseModel> runEntry : runTestCaseMap.entrySet()) {
                     final RunPojo runPojo = runEntry.getKey();
                     final TestCaseModel testCaseModel = runEntry.getValue();
@@ -80,16 +83,21 @@ public class TestTrendTable {
                         }
                     }
 
+                    final BigDecimal testRunDuration = testCaseModel.getTime() == null ? BigDecimal.ZERO : testCaseModel.getTime();
+                    totalDuration = totalDuration.add(testRunDuration);
+
                     final String failureMessage = getTruncatedFailureMessage(testCaseModel.getTestCaseFaults());
                     testRunGroupedStates.add(TestCaseRunGroupedState.factory(runPojo.getRunId(), testStatus, failureMessageIndexMap, failureMessage));
                 }
+
+                final BigDecimal averageDurationSeconds = runTestCaseMap.isEmpty() ? BigDecimal.ZERO : totalDuration.divide(new BigDecimal(runTestCaseMap.size()), RoundingMode.HALF_UP).setScale(0, RoundingMode.HALF_UP);
 
                 isFirst = false;
 
                 testCaseTrendRows.add(TestCaseTrendRow
                         .builder()
-                        .avg30(success30.successPercent())
-                        .avgTotal(successTotal.successPercent())
+                        .successPercent(successTotal.successPercent())
+                        .averageDurationSeconds(averageDurationSeconds)
                         .hasSkip(hasSkip)
                         .failureMessageIndexMap(failureMessageIndexMap)
                         .testPackageSuiteCase(TestPackageSuiteCase.builder().testPackageName(testPackageName).testSuiteName(testSuiteName).testCaseName(testCaseName).build())
