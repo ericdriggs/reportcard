@@ -146,6 +146,7 @@ public class StorageController {
             final StagePathStorages stagePathStorage = doPostStageStorageTarGZ(stageId, label, file, indexFile, storageType, shouldExpand);
             return StagePathStorageResponse.created(stagePathStorage).toResponseEntity();
         } catch (Exception ex) {
+            log.error("postStageStorageTarGZ failed for stageId: {}, label: {}, indexFile:{}, storageType: {}", stageId, label, indexFile, storageType, ex);
             return StagePathStorageResponse.fromException(ex).toResponseEntity();
         }
     }

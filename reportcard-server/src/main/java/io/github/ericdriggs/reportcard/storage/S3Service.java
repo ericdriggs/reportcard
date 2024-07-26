@@ -145,13 +145,14 @@ public class S3Service {
                 }
                 return uploadDirectory(prefix, tempDir);
             } catch (Exception e) {
-                log.warn("uploadTarGZExpanded upload failed. prefix: {}, attempt: {}", prefix, i, e);
+                log.warn("uploadTarGZExpanded upload attempt failed. prefix: {}, attempt: {}", prefix, i, e);
                 ex = e;
             }finally {
                 FileUtils.deleteDirectory(tempDir.toFile());
             }
         }
         if (ex != null) {
+            log.error("uploadTarGZExpanded upload failed. prefix: {}", prefix, ex);
             ex.printStackTrace();
         }
         throw new IllegalStateException("upload failed", ex);

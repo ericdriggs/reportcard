@@ -217,7 +217,7 @@ public class JunitController {
             final StagePathStorageResultCountResponse response = StagePathStorageResultCountResponse.created(stagePathStorageResultCount);
             return new ResponseEntity<>(response, HttpStatus.valueOf(response.getHttpStatusCode()));
         } catch (Exception ex) {
-            log.error("postJunitXml - stageDetails: {}", stageDetails, ex);
+            log.error("postJunitXml - stageDetails: {}, label: {}", stageDetails, label, ex);
             return StagePathStorageResultCountResponse.fromException(ex).toResponseEntity();
         }
     }
