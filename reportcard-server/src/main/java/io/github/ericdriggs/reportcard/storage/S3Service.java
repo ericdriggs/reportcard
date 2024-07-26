@@ -114,11 +114,26 @@ public class S3Service {
     public DirectoryUploadResponse uploadTarGZExpanded(String prefix, MultipartFile tarGz) {
         Path tempDir = null;
         try {
-            tempDir = Files.createTempDirectory("s3.");
-            InputStream inputStream = tarGz.getInputStream();
-            TarExtractorCommonsCompress tarExtractor = new TarExtractorCommonsCompress(inputStream, true, tempDir);
 
-            tarExtractor.untar();
+            for (int i=0; i<uploadRetryCount; i++) {
+                try {
+                    tempDir = Files.createTempDirectory("s3.");
+                    InputStream inputStream = tarGz.getInputStream();
+                    TarExtractorCommonsCompress tarExtractor = new TarExtractorCommonsCompress(inputStream, true, tempDir);
+                    tarExtractor.untar();
+                } catch(Exception ex) {
+                    log.warn("exception extracting tar file, attempt: {}", i, ex);
+                    if (tempDir != null) {
+                        FileUtils.deleteDirectory(tempDir.toFile());
+                    }
+                    tempDir = null;
+                }
+            }
+
+            if (tempDir == null) {
+                throw new NullPointerException("uploadTarGZExpanded - failed to extract file for prefix: " + prefix);
+            }
+
             return uploadDirectory(prefix, tempDir);
         } catch (Exception ex) {
             ex.printStackTrace();
