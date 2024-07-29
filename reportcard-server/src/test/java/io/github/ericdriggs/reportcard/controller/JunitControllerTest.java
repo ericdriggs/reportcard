@@ -169,6 +169,7 @@ public class JunitControllerTest {
                     assertNotNull(storage.getLabel());
 
                     System.out.println("storage: " + storage);
+                    assertTrue(storage.getIsUploadComplete());
 
                 }
 

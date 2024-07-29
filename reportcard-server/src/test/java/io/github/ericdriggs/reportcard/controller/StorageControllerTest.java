@@ -139,6 +139,7 @@ public class StorageControllerTest {
                     assertNotNull(s3Objects.contents());
                     assertThat(s3Objects.contents().size(), is(greaterThanOrEqualTo(3)));
                     System.out.println(s3Objects);
+                    assertTrue(storage.getIsUploadComplete());
                 }
             }
 

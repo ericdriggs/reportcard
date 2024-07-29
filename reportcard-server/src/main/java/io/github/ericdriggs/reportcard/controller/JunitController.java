@@ -232,8 +232,14 @@ public class JunitController {
         final StagePath stagePath = storagePersistService.getStagePath(stageId);
         final String prefix = new StoragePath(stagePath, label).getPrefix();
 
-        s3Service.uploadTarGz(prefix,  true, tarGz);
-        return storagePersistService.upsertStoragePath(indexFile, label, prefix, stageId, storageType);
+        StagePathStorages stagePathStorages = storagePersistService.upsertStoragePath(indexFile, label, prefix, stageId, storageType);
+        if (!stagePathStorages.isComplete())
+        {
+            s3Service.uploadTarGz(prefix,  true, tarGz);
+            storagePersistService.setUploadCompleted(indexFile, label, prefix, stageId);
+            stagePathStorages.setComplete();
+        }
+        return stagePathStorages;
     }
 
     protected StagePathStorages storeJunit(
@@ -246,8 +252,14 @@ public class JunitController {
         final StagePath stagePath = storagePersistService.getStagePath(stageId);
         final String prefix = new StoragePath(stagePath, label).getPrefix();
 
-        s3Service.uploadTarGz(prefix, false, tarGz);
-        return storagePersistService.upsertStoragePath(null, label, prefix, stageId, storageType);
+        StagePathStorages stagePathStorages = storagePersistService.upsertStoragePath(null, label, prefix, stageId, storageType);
+        if (!stagePathStorages.isComplete()) {
+            s3Service.uploadTarGz(prefix, false, tarGz);
+            storagePersistService.setUploadCompleted(null, label, prefix, stageId);
+            stagePathStorages.setComplete();
+        }
+
+        return stagePathStorages;
     }
 
 }
