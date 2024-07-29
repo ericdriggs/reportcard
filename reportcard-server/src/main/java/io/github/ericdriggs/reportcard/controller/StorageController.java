@@ -43,7 +43,7 @@ public class StorageController {
         this.s3Service = s3Service;
     }
 
-    private final StoragePersistService storagePersistService;
+    final StoragePersistService storagePersistService;
 
     private final TestResultPersistService testResultPersistService;
     private final S3Service s3Service;

@@ -18,6 +18,9 @@ public class DirectoryUploadResponse {
     @NonNull
     List<FailedFileUploadResponse> failedFileUploadResponses = Collections.emptyList();
 
+    @Builder.Default
+    boolean alreadyUploaded = false;
+
     @SneakyThrows(JsonProcessingException.class)
     public String toJson() {
         return SharedObjectMappers.simpleObjectMapper.writeValueAsString(this);

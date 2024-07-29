@@ -3,6 +3,8 @@ package io.github.ericdriggs.reportcard.storage;
 import io.github.ericdriggs.reportcard.util.tar.TarExtractorCommonsCompress;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -28,10 +30,14 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @Slf4j
@@ -173,9 +179,122 @@ public class S3Service {
         throw new IllegalStateException("upload failed", ex);
     }
 
-    private DirectoryUploadResponse uploadDirectory(String prefix, Path path) {
+    /**
+     * Filters out files which are already on s3
+     * @param prefix the s3 prefix
+     * @param path the local directory path containing files to upload
+     * @return the number of files remaining to upload
+     */
+    int filterFilesAlreadyOnS3(String prefix, Path path) {
+        final ListObjectsV2Response listObjectsV2Response = listObjectsForPrefixNoDelimiter(prefix);
+
+        Map<String,S3Object> s3RelativeKeyObjectMap = new TreeMap<>();
+        if (!listObjectsV2Response.contents().isEmpty()) {
+            final String prefixSubstring = prefix + "/";
+            for (S3Object s3Object : listObjectsV2Response.contents()) {
+                String key = s3Object.key();
+                final String relativeKey = StringUtils.substringAfter(key, prefixSubstring);
+                s3RelativeKeyObjectMap.put(relativeKey, s3Object);
+            }
+        }
+
+        final Set<Path> localFilePaths = getLocalDirectoryContents(path);
+        for (Path localFilePath : localFilePaths) {
+
+            if (s3RelativeKeyObjectMap.containsKey(localFilePath.toString())) {
+                final Path absoluteFilePath = Paths.get(path.toString(), localFilePath.toString());
+                final S3Object s3Object = s3RelativeKeyObjectMap.get(localFilePath.toString());
+
+                final String s3Etag = s3Object.eTag();
+                final String localMd5 = getLocalMd5(absoluteFilePath);
+                /*
+                 * The ETag may or may not be an MD5 digest of the object data.
+                 * Also, it wraps the Etag with quotes, so contains is used instead of equality
+                 * @see https://docs.aws.amazon.com/AmazonS3/latest/API/API_Object.html#AmazonS3-Type-Object-ETag
+                 */
+                if (s3Etag.contains(localMd5)) {
+                    try {
+                        Files.delete(absoluteFilePath);
+                        log.info("skipping file which already exists on s3. prefix: {}, file: {}", prefix, localFilePath);
+                        localFilePaths.remove(localFilePath);
+                    } catch (IOException e) {
+                        log.warn("skip failed for file already existing on s3. prefix: {}, file: {}", prefix, localFilePath, e);
+                    }
+                } else {
+                    log.info("re-uploading prefix: {}, file: {} since localMd5: {} != s3Etag: {}", prefix, localFilePath, localMd5, s3Etag);
+                }
+            }
+        }
+        return localFilePaths.size();
+    }
+
+    protected String getLocalMd5(Path path) {
+
+        try (InputStream inputStream  = Files.newInputStream(path)) {
+            return DigestUtils.md5Hex(inputStream);
+        } catch (Exception ex) {
+            log.error("Failed to get md5 for path: {}", path, ex);
+        }
+        return "";
+    }
+
+    protected String getSha1Base64(Path folder, Path file) {
+        Path path = Paths.get(folder.toString(), file.toString());
+        try (InputStream inputStream  = Files.newInputStream(path)) {
+            byte[] sha1DigestUtils =  DigestUtils.sha1(inputStream);
+            final String base64DigestUtils = Base64.getEncoder().encodeToString(sha1DigestUtils);
+            byte[] sha1Digest = getSha1Digest(path);
+            final String base64Digest = Base64.getEncoder().encodeToString(sha1DigestUtils);
+            return base64Digest;
+        } catch (Exception ex) {
+            log.error("Failed to get sha for path: {}", path, ex);
+        }
+        return "";
+    }
+
+    protected byte[] getSha1Digest(Path path) throws NoSuchAlgorithmException {
+        MessageDigest md = MessageDigest.getInstance("SHA-1");
+        try (InputStream inputStream  = Files.newInputStream(path)) {
+            md.update(inputStream.readAllBytes());
+        } catch (Exception ex) {
+            log.error("getSha1Digest for path: {}", path, ex);
+        }
+
+        return md.digest();
+    }
+
+    /**
+     * Recursively get all files as relative paths for provided path directory
+     * @param path the root path directory to walk
+     * @return a set of all nested files files from path directory
+     */
+    Set<Path> getLocalDirectoryContents(Path path) {
+        Set<Path> filePaths = new ConcurrentSkipListSet<>();
+
+        if (path != null) {
+            try (Stream<Path> stream = Files.walk(path)) {
+
+                filePaths = stream.filter(Files::isRegularFile).map(path::relativize).collect(Collectors.toCollection(ConcurrentSkipListSet::new));
+            } catch (Exception ex) {
+                log.error("getLocalDirectoryContents failed to list files", ex);
+            }
+        }
+        return filePaths;
+    }
+
+
+
+    DirectoryUploadResponse uploadDirectory(String prefix, Path path) {
 
         S3TransferManager s3TransferManager = getTransferManager();
+        int fileCountToUpload = filterFilesAlreadyOnS3(prefix, path);
+
+        if (fileCountToUpload == 0) {
+            return DirectoryUploadResponse.builder()
+                    .failedFileUploadResponses(Collections.emptyList())
+                    .alreadyUploaded(true)
+                    .build();
+        }
 
         //UploadFileRequest.builder();
         DirectoryUpload directoryUpload =
@@ -216,6 +335,22 @@ public class S3Service {
         S3AsyncClient client =  getS3AsyncClient();
         ListObjectsV2Request listObjectsV2Request = ListObjectsV2Request.builder()
                 .bucket(bucketName)
+                .build();
+        CompletableFuture<ListObjectsV2Response> futureResponse = client.listObjectsV2(listObjectsV2Request);
+        return futureResponse.get();
+    }
+
+    /**
+     * Localstack contents are empty when use delimiter so need method which works locally and remotely
+     * @param prefix
+     * @return
+     */
+    @SneakyThrows({ExecutionException.class, InterruptedException.class})
+    public ListObjectsV2Response listObjectsForPrefixNoDelimiter(String prefix) {
+        S3AsyncClient client =  getS3AsyncClient();
+        ListObjectsV2Request listObjectsV2Request = ListObjectsV2Request.builder()
+                .bucket(bucketName)
+                .prefix(prefix)
                 .build();
         CompletableFuture<ListObjectsV2Response> futureResponse = client.listObjectsV2(listObjectsV2Request);
         return futureResponse.get();

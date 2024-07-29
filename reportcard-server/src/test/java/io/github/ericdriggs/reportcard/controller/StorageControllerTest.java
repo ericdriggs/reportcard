@@ -7,7 +7,6 @@ import io.github.ericdriggs.reportcard.controller.model.StagePathStorageResponse
 import io.github.ericdriggs.reportcard.controller.util.TestXmlTarGzUtil;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.StoragePojo;
 import io.github.ericdriggs.reportcard.model.StagePath;
-import io.github.ericdriggs.reportcard.persist.BrowseService;
 import io.github.ericdriggs.reportcard.persist.StorageType;
 import io.github.ericdriggs.reportcard.persist.test_result.TestResultPersistServiceTest;
 import io.github.ericdriggs.reportcard.storage.DirectoryUploadResponse;
@@ -52,9 +51,6 @@ public class StorageControllerTest {
 
     @Autowired
     ResourceReaderComponent resourceReader;
-
-    @Autowired
-    BrowseService browseService;
 
     @Autowired
     S3Service s3Service;
