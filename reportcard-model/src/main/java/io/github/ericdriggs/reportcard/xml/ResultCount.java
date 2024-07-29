@@ -201,6 +201,10 @@ public class ResultCount implements Comparable<ResultCount> {
             diffs.add("o1.tests: " + o1.tests + " != o2.tests: " + o2.tests);
         }
 
+        if (!Objects.equals(o1.successes, o2.successes)) {
+            diffs.add("o1.successes: " + o1.successes + " != o2.successes: " + o2.successes);
+        }
+
         //round time for comparison since precision may change after persist/read
         if (CompareUtil.compareBigDecimalAsBigInteger(o1.time, o2.time) != 0) {
             diffs.add("o1.time: " + o1.time + " != o2.time: " + o2.time);

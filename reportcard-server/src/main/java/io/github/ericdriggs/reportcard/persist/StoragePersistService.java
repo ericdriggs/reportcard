@@ -80,7 +80,7 @@ public class StoragePersistService extends StagePathPersistService {
             diffs.add("indexFile: " + indexFile + " != storagePojo.getIndexFile(): " + storagePojo.getIndexFile());
         }
         if (ObjectUtils.compare(prefix, storagePojo.getPrefix()) != 0) {
-            diffs.add("prefix: " + indexFile + " != storagePojo.getPrefix(): " + storagePojo.getPrefix());
+            diffs.add("prefix: " + prefix + " != storagePojo.getPrefix(): " + storagePojo.getPrefix());
         }
         if (StorageType.compare(storageType, storagePojo.getStorageType()) != 0) {
             diffs.add("storageType: " + storageType + " != storagePojo.getStorageType(): " + storagePojo.getStorageType());
@@ -108,7 +108,7 @@ public class StoragePersistService extends StagePathPersistService {
         return storage;
     }
 
-    public void setUploadCompleted(String indexFile, String label, String prefix, Long stageId, StorageType storageType) {
+    public void setUploadCompleted(String indexFile, String label, String prefix, Long stageId) {
         final int rowsEffected =  dsl.update(STORAGE)
                 .set(STORAGE.IS_UPLOAD_COMPLETE,true)
                 .where(STORAGE.STAGE_FK.eq(stageId).and(STORAGE.LABEL.eq(label))).execute();
