@@ -1,6 +1,7 @@
 //TODO: move from model to pojo
 package io.github.ericdriggs.reportcard.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.github.ericdriggs.reportcard.controller.html.StorageHtmlHelper;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.StoragePojo;
 import lombok.Builder;
@@ -37,6 +38,30 @@ public class StagePathStorages {
 
         }
         return urls;
+    }
+
+    @JsonIgnore
+    public boolean isComplete() {
+        if (CollectionUtils.isEmpty(storages)) {
+            return false;
+        }
+        boolean isComplete = true;
+        for (StoragePojo storage : storages) {
+            if (!storage.getIsUploadComplete() ) {
+                isComplete = false;
+            }
+        }
+        return isComplete;
+    }
+
+    @JsonIgnore
+    public void setComplete() {
+        if (CollectionUtils.isEmpty(storages)) {
+            return;
+        }
+        for (StoragePojo storage : storages) {
+            storage.setIsUploadComplete(true);
+        }
     }
 
     public static StagePathStorages merge(StagePathStorages s1, StagePathStorages s2) {

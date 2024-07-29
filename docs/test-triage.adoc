@@ -15,13 +15,27 @@ Tools which help answer triage questions help testers more efficiently categoriz
 |===
 |*Failure Type* |*Definition* |*False Positive* |*True Positive* |*Deterministic* |*Remediation*
 
-|*Valid** |deterministically fails on a valid assertion |*-* |*Y* , always |*Y* |Fix bug in software under test
-|*Invalid* (broken)* |deterministically fails on an assertion no longer valid |*Y* , always |*-* |*Y* |Update test assertion to valid and passing
+|*Valid**
+|deterministically fails on a valid assertion
+|*-*
+|*Y* , always
+|*Y* |Fix bug in software under test
 
-| *Flaky* | sometimes but not always fails. | *Y* , sometimes | - | *N* | Address underlying race condition
+|*Invalid* (broken)*
+|deterministically fails on an assertion no longer valid
+|*Y* , always
+|*-*
+|*Y*
+|Update test assertion to valid and passing
+
+| *Flaky* | sometimes but not always fails.
+| *Y* , sometimes
+| -
+| *N*
+| Address underlying race condition
 OR
-Exclude/remove test until race condition has been addressed |
+Exclude/remove test until race condition has been addressed
 
-* Investigation still required to distinguishing between invalid and valid failing tests
+(Investigation still required to distinguishing between invalid and valid failing tests)P
 
 |===

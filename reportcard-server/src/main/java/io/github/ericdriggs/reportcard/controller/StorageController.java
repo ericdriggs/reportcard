@@ -166,9 +166,15 @@ public class StorageController {
         }
         final StagePath stagePath = storagePersistService.getStagePath(stageId);
         final String prefix = new StoragePath(stagePath, label).getPrefix();
+        final StagePathStorages stagePathStorages = storagePersistService.upsertStoragePath(indexFile, label, prefix, stageId, storageType);
 
-        s3Service.uploadTarGz(prefix, shouldExpand, file);
-        return storagePersistService.persistStoragePath(indexFile, label, prefix, stageId, storageType);
+        if (!stagePathStorages.isComplete()) {
+            s3Service.uploadTarGz(prefix, shouldExpand, file);
+            storagePersistService.setUploadCompleted(indexFile, label, prefix, stageId, storageType);
+            stagePathStorages.setComplete();
+        }
+        //TOMAYBE: else inspect contents on s3 and throw if different. Probability seems low, so defer until actually an issue.
+        return stagePathStorages;
     }
 
 }
