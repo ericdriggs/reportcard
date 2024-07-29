@@ -146,4 +146,19 @@ public class StorageDao extends DAOImpl<StorageRecord, StoragePojo, Long> {
     public List<StoragePojo> fetchByStorageTypeTable(Integer... values) {
         return fetch(StorageTable.STORAGE.STORAGE_TYPE, values);
     }
+
+    /**
+     * Fetch records that have <code>is_upload_complete BETWEEN lowerInclusive
+     * AND upperInclusive</code>
+     */
+    public List<StoragePojo> fetchRangeOfIsUploadCompleteTable(Boolean lowerInclusive, Boolean upperInclusive) {
+        return fetchRange(StorageTable.STORAGE.IS_UPLOAD_COMPLETE, lowerInclusive, upperInclusive);
+    }
+
+    /**
+     * Fetch records that have <code>is_upload_complete IN (values)</code>
+     */
+    public List<StoragePojo> fetchByIsUploadCompleteTable(Boolean... values) {
+        return fetch(StorageTable.STORAGE.IS_UPLOAD_COMPLETE, values);
+    }
 }

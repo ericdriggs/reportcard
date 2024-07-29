@@ -11,8 +11,8 @@ import lombok.Generated;
 
 import org.jooq.Field;
 import org.jooq.Record1;
-import org.jooq.Record6;
-import org.jooq.Row6;
+import org.jooq.Record7;
+import org.jooq.Row7;
 import org.jooq.impl.UpdatableRecordImpl;
 
 
@@ -21,9 +21,9 @@ import org.jooq.impl.UpdatableRecordImpl;
  */
 @Generated
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements Record6<Long, Long, String, String, String, Integer> {
+public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements Record7<Long, Long, String, String, String, Integer, Boolean> {
 
-    private static final long serialVersionUID = 1508217905;
+    private static final long serialVersionUID = -1891041776;
 
     /**
      * Setter for <code>reportcard.storage.storage_id</code>.
@@ -115,6 +115,21 @@ public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements
         return (Integer) get(5);
     }
 
+    /**
+     * Setter for <code>reportcard.storage.is_upload_complete</code>.
+     */
+    public StorageRecord setIsUploadComplete(Boolean value) {
+        set(6, value);
+        return this;
+    }
+
+    /**
+     * Getter for <code>reportcard.storage.is_upload_complete</code>.
+     */
+    public Boolean getIsUploadComplete() {
+        return (Boolean) get(6);
+    }
+
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
@@ -125,17 +140,17 @@ public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements
     }
 
     // -------------------------------------------------------------------------
-    // Record6 type implementation
+    // Record7 type implementation
     // -------------------------------------------------------------------------
 
     @Override
-    public Row6<Long, Long, String, String, String, Integer> fieldsRow() {
-        return (Row6) super.fieldsRow();
+    public Row7<Long, Long, String, String, String, Integer, Boolean> fieldsRow() {
+        return (Row7) super.fieldsRow();
     }
 
     @Override
-    public Row6<Long, Long, String, String, String, Integer> valuesRow() {
-        return (Row6) super.valuesRow();
+    public Row7<Long, Long, String, String, String, Integer, Boolean> valuesRow() {
+        return (Row7) super.valuesRow();
     }
 
     @Override
@@ -169,6 +184,11 @@ public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements
     }
 
     @Override
+    public Field<Boolean> field7() {
+        return StorageTable.STORAGE.IS_UPLOAD_COMPLETE;
+    }
+
+    @Override
     public Long component1() {
         return getStorageId();
     }
@@ -199,6 +219,11 @@ public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements
     }
 
     @Override
+    public Boolean component7() {
+        return getIsUploadComplete();
+    }
+
+    @Override
     public Long value1() {
         return getStorageId();
     }
@@ -226,6 +251,11 @@ public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements
     @Override
     public Integer value6() {
         return getStorageType();
+    }
+
+    @Override
+    public Boolean value7() {
+        return getIsUploadComplete();
     }
 
     @Override
@@ -265,13 +295,20 @@ public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements
     }
 
     @Override
-    public StorageRecord values(Long value1, Long value2, String value3, String value4, String value5, Integer value6) {
+    public StorageRecord value7(Boolean value) {
+        setIsUploadComplete(value);
+        return this;
+    }
+
+    @Override
+    public StorageRecord values(Long value1, Long value2, String value3, String value4, String value5, Integer value6, Boolean value7) {
         value1(value1);
         value2(value2);
         value3(value3);
         value4(value4);
         value5(value5);
         value6(value6);
+        value7(value7);
         return this;
     }
 
@@ -289,7 +326,7 @@ public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements
     /**
      * Create a detached, initialised StorageRecord
      */
-    public StorageRecord(Long storageId, Long stageFk, String label, String prefix, String indexFile, Integer storageType) {
+    public StorageRecord(Long storageId, Long stageFk, String label, String prefix, String indexFile, Integer storageType, Boolean isUploadComplete) {
         super(StorageTable.STORAGE);
 
         setStorageId(storageId);
@@ -298,6 +335,7 @@ public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements
         setPrefix(prefix);
         setIndexFile(indexFile);
         setStorageType(storageType);
+        setIsUploadComplete(isUploadComplete);
     }
 
     /**
@@ -313,6 +351,7 @@ public class StorageRecord extends UpdatableRecordImpl<StorageRecord> implements
             setPrefix(value.getPrefix());
             setIndexFile(value.getIndexFile());
             setStorageType(value.getStorageType());
+            setIsUploadComplete(value.getIsUploadComplete());
         }
     }
 }

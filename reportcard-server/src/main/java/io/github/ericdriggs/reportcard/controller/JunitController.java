@@ -21,7 +21,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 
 @Slf4j
@@ -234,7 +233,7 @@ public class JunitController {
         final String prefix = new StoragePath(stagePath, label).getPrefix();
 
         s3Service.uploadTarGz(prefix,  true, tarGz);
-        return storagePersistService.persistStoragePath(indexFile, label, prefix, stageId, storageType);
+        return storagePersistService.upsertStoragePath(indexFile, label, prefix, stageId, storageType);
     }
 
     protected StagePathStorages storeJunit(
@@ -248,7 +247,7 @@ public class JunitController {
         final String prefix = new StoragePath(stagePath, label).getPrefix();
 
         s3Service.uploadTarGz(prefix, false, tarGz);
-        return storagePersistService.persistStoragePath(null, label, prefix, stageId, storageType);
+        return storagePersistService.upsertStoragePath(null, label, prefix, stageId, storageType);
     }
 
 }

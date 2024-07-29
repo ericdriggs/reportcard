@@ -1,5 +1,7 @@
 package io.github.ericdriggs.reportcard.persist;
 
+import org.apache.commons.lang3.ObjectUtils;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,6 +37,13 @@ public enum StorageType {
 
     public static StorageType fromStorageTypeId(int storageTypeId) {
         return idStorageTypeMap.get(storageTypeId);
+    }
+
+    public static int compare(StorageType o1, Integer o2) {
+        if (o1 == null || o2 == null ) {
+            return ObjectUtils.compare(ObjectUtils.isEmpty(o1), ObjectUtils.isEmpty(o2));
+        }
+        return ObjectUtils.compare(o1.storageTypeId, o2);
     }
 
 }

@@ -17,13 +17,13 @@ import lombok.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
-import org.jooq.Function6;
+import org.jooq.Function7;
 import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
-import org.jooq.Row6;
+import org.jooq.Row7;
 import org.jooq.Schema;
 import org.jooq.SelectField;
 import org.jooq.Table;
@@ -42,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class StorageTable extends TableImpl<StorageRecord> {
 
-    private static final long serialVersionUID = -112693055;
+    private static final long serialVersionUID = 1727936031;
 
     /**
      * The reference instance of <code>reportcard.storage</code>
@@ -86,6 +86,11 @@ public class StorageTable extends TableImpl<StorageRecord> {
      * The column <code>reportcard.storage.storage_type</code>.
      */
     public final TableField<StorageRecord, Integer> STORAGE_TYPE = createField(DSL.name("storage_type"), SQLDataType.INTEGER, this, "");
+
+    /**
+     * The column <code>reportcard.storage.is_upload_complete</code>.
+     */
+    public final TableField<StorageRecord, Boolean> IS_UPLOAD_COMPLETE = createField(DSL.name("is_upload_complete"), SQLDataType.BOOLEAN.nullable(false).defaultValue(DSL.inline("0", SQLDataType.BOOLEAN)), this, "");
 
     private StorageTable(Name alias, Table<StorageRecord> aliased) {
         this(alias, aliased, null);
@@ -214,18 +219,18 @@ public class StorageTable extends TableImpl<StorageRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row6 type methods
+    // Row7 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row6<Long, Long, String, String, String, Integer> fieldsRow() {
-        return (Row6) super.fieldsRow();
+    public Row7<Long, Long, String, String, String, Integer, Boolean> fieldsRow() {
+        return (Row7) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function6<? super Long, ? super Long, ? super String, ? super String, ? super String, ? super Integer, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function7<? super Long, ? super Long, ? super String, ? super String, ? super String, ? super Integer, ? super Boolean, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
@@ -233,7 +238,7 @@ public class StorageTable extends TableImpl<StorageRecord> {
      * Convenience mapping calling {@link SelectField#convertFrom(Class,
      * Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function6<? super Long, ? super Long, ? super String, ? super String, ? super String, ? super Integer, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function7<? super Long, ? super Long, ? super String, ? super String, ? super String, ? super Integer, ? super Boolean, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

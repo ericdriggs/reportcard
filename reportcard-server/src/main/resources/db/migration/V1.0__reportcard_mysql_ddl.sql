@@ -194,6 +194,7 @@ CREATE TABLE IF NOT EXISTS `reportcard`.`storage` (
   `prefix` varchar(1024) NOT NULL,
   `index_file` varchar(1024) DEFAULT NULL,
   `storage_type` tinyint DEFAULT NULL,
+  `is_upload_complete` TINYINT(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`storage_id`),
   UNIQUE KEY `UQ_STABLE_LABEL` (`stage_fk`,`label`),
   KEY `stage_fk_idx` (`stage_fk`),

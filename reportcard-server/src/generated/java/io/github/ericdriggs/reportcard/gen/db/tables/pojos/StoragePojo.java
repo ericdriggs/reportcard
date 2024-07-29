@@ -20,7 +20,7 @@ import lombok.Generated;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class StoragePojo implements Serializable {
 
-    private static final long serialVersionUID = 109389994;
+    private static final long serialVersionUID = 1234528530;
 
     private Long storageId;
     private Long stageFk;
@@ -28,4 +28,5 @@ public class StoragePojo implements Serializable {
     private String prefix;
     private String indexFile;
     private Integer storageType;
+    private Boolean isUploadComplete;
 }

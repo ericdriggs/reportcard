@@ -58,9 +58,7 @@ Typical Spinnaker Test Data Lifecycle
 |Sha |$GIT_COMMIT  | Sha*
 |Job |jobInfo: { "host" : …} |jobInfo : { "host" : …, "application": …., "pipeline": ….}
 |Run |Build |Run
-|Stage |parameter
-|String (e.g. unit) |parameter
-|String (e.g. api)
+|Stage |parameter |String (e.g. unit)
 |===
 
 _* Not native to Kubernetes model. Environment variable would need to be set as part of pipeline definition or defined when building docker image_
@@ -165,8 +163,7 @@ test_suite_fk, class_name, and name
 | Test Status
 | *test_status_id:* auto_number +
   *test_status_name:* string
-| test_status_id +
-test_status_name |
+| test_status_id + test_status_name
 |===
 
 
