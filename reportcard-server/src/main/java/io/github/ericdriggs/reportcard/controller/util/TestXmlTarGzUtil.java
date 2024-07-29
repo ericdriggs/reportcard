@@ -70,13 +70,13 @@ public enum TestXmlTarGzUtil {
      * @return the temporary tar.gz for testing
      */
     @SneakyThrows(IOException.class)
-    public static Path createTarGzipFilesForTesting(MultipartFile[] files) {
+    public static Path createTarGzipFilesForTesting(MultipartFile[] files ) {
 
         Path tmpDir = Files.createTempDirectory("tar-gz");
         try {
             List<Path> filePaths = new ArrayList<>();
             for (MultipartFile file : files) {
-                Path localPath = Files.createTempFile(tmpDir, file.getName(), "");
+                Path localPath = Path.of(tmpDir.toAbsolutePath().toString(), file.getName());
                 file.transferTo(localPath);
                 filePaths.add(localPath);
             }

@@ -54,9 +54,6 @@ public class StorageControllerTest {
     ResourceReaderComponent resourceReader;
 
     @Autowired
-    BrowseService browseService;
-
-    @Autowired
     S3Service s3Service;
 
     private final static ObjectMapper mappper = new ObjectMapper();

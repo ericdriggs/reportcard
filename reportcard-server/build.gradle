@@ -83,6 +83,7 @@ dependencies {
 
     //compress/decompress files
     implementation 'org.apache.commons:commons-compress:1.26.0'
+    implementation 'commons-codec:commons-codec:1.17.1'
 
     //util
     implementation 'org.apache.commons:commons-lang3:3.14.0'
@@ -95,10 +96,10 @@ dependencies {
     implementation("software.amazon.awssdk.crt:aws-crt:${awsCrtVersion}")
 
     //AWS Test
-    testImplementation('org.testcontainers:localstack:1.19.3')
+    testImplementation('org.testcontainers:localstack:1.20.0')
 
     //DB Test
-    implementation platform('org.testcontainers:testcontainers-bom:1.19.3')
+    implementation platform('org.testcontainers:testcontainers-bom:1.20.0')
     testImplementation ("org.testcontainers:junit-jupiter")
     testImplementation('org.testcontainers:mysql')
 
