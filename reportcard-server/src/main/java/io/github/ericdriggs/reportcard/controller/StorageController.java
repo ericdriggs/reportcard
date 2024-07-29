@@ -170,7 +170,7 @@ public class StorageController {
 
         if (!stagePathStorages.isComplete()) {
             s3Service.uploadTarGz(prefix, shouldExpand, file);
-            storagePersistService.setUploadCompleted(indexFile, label, prefix, stageId, storageType);
+            storagePersistService.setUploadCompleted(indexFile, label, prefix, stageId);
             stagePathStorages.setComplete();
         }
         //TOMAYBE: else inspect contents on s3 and throw if different. Probability seems low, so defer until actually an issue.

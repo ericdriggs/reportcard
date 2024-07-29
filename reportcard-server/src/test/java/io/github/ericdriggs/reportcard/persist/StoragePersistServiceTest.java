@@ -53,7 +53,7 @@ public class StoragePersistServiceTest {
         final StorageType storageType = StorageType.HTML;
 
         final StagePathStorages stagePathStorages = storagePersistService.upsertStoragePath(indexFile, label, prefix, stageId, storageType);
-        storagePersistService.setUploadCompleted(indexFile, label, prefix, stageId, storageType);
+        storagePersistService.setUploadCompleted(indexFile, label, prefix, stageId);
         final StagePathStorages stagePathStorages2 =     storagePersistService.upsertStoragePath(indexFile, label, prefix, stageId, storageType);
         assertEquals(stagePathStorages, stagePathStorages2);
     }
@@ -69,7 +69,7 @@ public class StoragePersistServiceTest {
         final StorageType storageType = StorageType.HTML;
 
         storagePersistService.upsertStoragePath(indexFile, label, prefix, stageId, storageType);
-        storagePersistService.setUploadCompleted(indexFile, label, prefix, stageId, storageType);
+        storagePersistService.setUploadCompleted(indexFile, label, prefix, stageId);
 
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
             storagePersistService.upsertStoragePath(indexFile + "a", label, prefix, stageId, storageType);

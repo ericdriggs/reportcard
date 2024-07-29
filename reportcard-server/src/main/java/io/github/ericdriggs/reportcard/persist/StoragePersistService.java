@@ -108,7 +108,7 @@ public class StoragePersistService extends StagePathPersistService {
         return storage;
     }
 
-    public void setUploadCompleted(String indexFile, String label, String prefix, Long stageId, StorageType storageType) {
+    public void setUploadCompleted(String indexFile, String label, String prefix, Long stageId) {
         final int rowsEffected =  dsl.update(STORAGE)
                 .set(STORAGE.IS_UPLOAD_COMPLETE,true)
                 .where(STORAGE.STAGE_FK.eq(stageId).and(STORAGE.LABEL.eq(label))).execute();
