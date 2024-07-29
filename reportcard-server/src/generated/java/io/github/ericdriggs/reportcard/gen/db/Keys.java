@@ -78,6 +78,7 @@ public class Keys {
     public static final UniqueKey<TestCaseRecord> KEY_TEST_CASE_PRIMARY = Internal.createUniqueKey(TestCaseTable.TEST_CASE, DSL.name("KEY_test_case_PRIMARY"), new TableField[] { TestCaseTable.TEST_CASE.TEST_CASE_ID }, true);
     public static final UniqueKey<TestCaseFaultRecord> KEY_TEST_CASE_FAULT_PRIMARY = Internal.createUniqueKey(TestCaseFaultTable.TEST_CASE_FAULT, DSL.name("KEY_test_case_fault_PRIMARY"), new TableField[] { TestCaseFaultTable.TEST_CASE_FAULT.TEST_CASE_FAULT_ID }, true);
     public static final UniqueKey<TestResultRecord> KEY_TEST_RESULT_PRIMARY = Internal.createUniqueKey(TestResultTable.TEST_RESULT, DSL.name("KEY_test_result_PRIMARY"), new TableField[] { TestResultTable.TEST_RESULT.TEST_RESULT_ID }, true);
+    public static final UniqueKey<TestResultRecord> KEY_TEST_RESULT_STAGE_FK_UNIQUE = Internal.createUniqueKey(TestResultTable.TEST_RESULT, DSL.name("KEY_test_result_stage_fk_UNIQUE"), new TableField[] { TestResultTable.TEST_RESULT.STAGE_FK }, true);
     public static final UniqueKey<TestStatusRecord> KEY_TEST_STATUS_PRIMARY = Internal.createUniqueKey(TestStatusTable.TEST_STATUS, DSL.name("KEY_test_status_PRIMARY"), new TableField[] { TestStatusTable.TEST_STATUS.TEST_STATUS_ID }, true);
     public static final UniqueKey<TestSuiteRecord> KEY_TEST_SUITE_PRIMARY = Internal.createUniqueKey(TestSuiteTable.TEST_SUITE, DSL.name("KEY_test_suite_PRIMARY"), new TableField[] { TestSuiteTable.TEST_SUITE.TEST_SUITE_ID }, true);
 

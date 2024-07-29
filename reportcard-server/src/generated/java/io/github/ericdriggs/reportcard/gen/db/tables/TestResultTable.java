@@ -44,7 +44,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestResultTable extends TableImpl<TestResultRecord> {
 
-    private static final long serialVersionUID = 1408455505;
+    private static final long serialVersionUID = -508454083;
 
     /**
      * The reference instance of <code>reportcard.test_result</code>
@@ -165,6 +165,11 @@ public class TestResultTable extends TableImpl<TestResultRecord> {
     @Override
     public UniqueKey<TestResultRecord> getPrimaryKey() {
         return Keys.KEY_TEST_RESULT_PRIMARY;
+    }
+
+    @Override
+    public List<UniqueKey<TestResultRecord>> getUniqueKeys() {
+        return Arrays.asList(Keys.KEY_TEST_RESULT_STAGE_FK_UNIQUE);
     }
 
     @Override

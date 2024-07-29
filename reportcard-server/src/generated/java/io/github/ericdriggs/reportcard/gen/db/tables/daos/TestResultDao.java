@@ -90,6 +90,20 @@ public class TestResultDao extends DAOImpl<TestResultRecord, TestResultPojo, Lon
     }
 
     /**
+     * Fetch a unique record that has <code>stage_fk = value</code>
+     */
+    public TestResultPojo fetchOneByStageFkTable(Long value) {
+        return fetchOne(TestResultTable.TEST_RESULT.STAGE_FK, value);
+    }
+
+    /**
+     * Fetch a unique record that has <code>stage_fk = value</code>
+     */
+    public Optional<TestResultPojo> fetchOptionalByStageFkTable(Long value) {
+        return fetchOptional(TestResultTable.TEST_RESULT.STAGE_FK, value);
+    }
+
+    /**
      * Fetch records that have <code>tests BETWEEN lowerInclusive AND
      * upperInclusive</code>
      */
