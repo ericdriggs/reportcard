@@ -80,7 +80,7 @@ public class StoragePersistService extends StagePathPersistService {
             diffs.add("indexFile: " + indexFile + " != storagePojo.getIndexFile(): " + storagePojo.getIndexFile());
         }
         if (ObjectUtils.compare(prefix, storagePojo.getPrefix()) != 0) {
-            diffs.add("prefix: " + indexFile + " != storagePojo.getPrefix(): " + storagePojo.getPrefix());
+            diffs.add("prefix: " + prefix + " != storagePojo.getPrefix(): " + storagePojo.getPrefix());
         }
         if (StorageType.compare(storageType, storagePojo.getStorageType()) != 0) {
             diffs.add("storageType: " + storageType + " != storagePojo.getStorageType(): " + storagePojo.getStorageType());

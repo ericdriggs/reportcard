@@ -180,7 +180,8 @@ public class S3Service {
     }
 
     /**
-     * Filters out files which are already on s3
+     * Filters out files which are already on s3 from local temporary directory by deleting those files.
+     *
      * @param prefix the s3 prefix
      * @param path the local directory path containing files to upload
      * @return the number of files remaining to upload
