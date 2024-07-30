@@ -1,7 +1,7 @@
 package io.github.ericdriggs.reportcard.persist;
 
 import io.github.ericdriggs.reportcard.ReportcardApplication;
-import io.github.ericdriggs.reportcard.lock.BlockedDatabaseLockResultCallable;
+import io.github.ericdriggs.reportcard.lock.BlockedDatabaseLockCallable;
 import io.github.ericdriggs.reportcard.lock.LockService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -31,8 +31,8 @@ public class LockServiceTest extends AbstractLockServiceTest {
     void waitingForLockTest() throws Exception {
         UUID uuid = UUID.randomUUID();
         final String expectedResult = "result-" + uuid;
-        BlockedDatabaseLockResultCallable callable1 = new BlockedDatabaseLockResultCallable(lockService.dsl.configuration(), uuid, 1);
-        BlockedDatabaseLockResultCallable callable2 = new BlockedDatabaseLockResultCallable(lockService.dsl.configuration(), uuid, 2);
+        BlockedDatabaseLockCallable callable1 = new BlockedDatabaseLockCallable(lockService.dsl.configuration(), uuid, 1);
+        BlockedDatabaseLockCallable callable2 = new BlockedDatabaseLockCallable(lockService.dsl.configuration(), uuid, 2);
 
         //callable 1 grabs the lock first and is blocked so it holds the lock
         ExecutorService executor = Executors.newFixedThreadPool(2);
@@ -62,8 +62,8 @@ public class LockServiceTest extends AbstractLockServiceTest {
     void notWaitingForLockTest() throws InterruptedException, ExecutionException {
         UUID uuid = UUID.randomUUID();
         final String expectedResult = "result-" + uuid;
-        BlockedDatabaseLockResultCallable callable1 = new BlockedDatabaseLockResultCallable(lockService.dsl.configuration(), uuid, 1);
-        BlockedDatabaseLockResultCallable callable2 = new BlockedDatabaseLockResultCallable(lockService.dsl.configuration(), uuid, 2);
+        BlockedDatabaseLockCallable callable1 = new BlockedDatabaseLockCallable(lockService.dsl.configuration(), uuid, 1);
+        BlockedDatabaseLockCallable callable2 = new BlockedDatabaseLockCallable(lockService.dsl.configuration(), uuid, 2);
 
         //callable 1 grabs the lock first and is blocked so it holds the lock
         ExecutorService executor = Executors.newFixedThreadPool(2);

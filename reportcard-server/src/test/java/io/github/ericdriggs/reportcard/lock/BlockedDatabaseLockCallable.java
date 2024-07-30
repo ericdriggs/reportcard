@@ -8,8 +8,11 @@ import java.time.Instant;
 import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 
+/**
+ * Database lock callable which starts blocked so can test lock contention / critical section.
+ */
 @Slf4j
-public class BlockedDatabaseLockResultCallable extends AbstractDatabaseLockCallable<String> {
+public class BlockedDatabaseLockCallable extends AbstractDatabaseLockCallable<String> {
     private boolean isBlocked = true;
     private final int threadId;
     private final static long blockedSleepMillis = 50;
@@ -28,7 +31,7 @@ public class BlockedDatabaseLockResultCallable extends AbstractDatabaseLockCalla
         return isBlocked;
     }
 
-    public BlockedDatabaseLockResultCallable(Configuration outerConfiguration, UUID uuid, int threadId) {
+    public BlockedDatabaseLockCallable(Configuration outerConfiguration, UUID uuid, int threadId) {
         super(outerConfiguration, pollTimeoutDuration, getLockTimeoutSeconds, pollSleepMillis, uuid);
         this.threadId = threadId;
     }
