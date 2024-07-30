@@ -13,11 +13,11 @@ import java.util.function.Function;
 public class BlockedDatabaseLockResultCallable extends AbstractDatabaseLockResultCallable<String> {
     private boolean isBlocked = true;
     private final int threadId;
-    private final static long blockedSleepMillis = 10;
+    private final static long blockedSleepMillis = 50;
     private final static Duration blockedTimeoutDuration = Duration.ofSeconds(5);
     private final static Duration pollTimeoutDuration = Duration.ofSeconds(10);
     private final static int getLockTimeoutSeconds = 1;
-    private final static long pollSleepMillis = 30;
+    private final static long pollSleepMillis = 50;
 
     public void unblock() {
         this.isBlocked = false;
@@ -33,7 +33,7 @@ public class BlockedDatabaseLockResultCallable extends AbstractDatabaseLockResul
     }
 
     @Override
-    public String doCall() throws Exception {
+    public synchronized String doCall() throws Exception {
         Instant timeout = Instant.now().plus(blockedTimeoutDuration);
         int count = 0;
         while (isBlocked) {

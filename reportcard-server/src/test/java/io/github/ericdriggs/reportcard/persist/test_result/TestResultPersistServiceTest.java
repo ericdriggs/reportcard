@@ -170,7 +170,7 @@ public class TestResultPersistServiceTest {
                         .branch("branch" + randLong)
                         .sha("sha" + randLong)
                         .jobInfo(TestData.jobInfo)
-                        .runReference("runReference" + randLong)
+                        .runReference(UUID.randomUUID())
                         .stage("stage" + randLong)
                         .build();
         return request;
@@ -185,7 +185,7 @@ public class TestResultPersistServiceTest {
 
         JsonAssert.assertJsonEquals(reportMetaData.getJobInfo(), stagePath.getJob().getJobInfo());
 
-        Assertions.assertEquals(reportMetaData.getRunReference(), stagePath.getRun().getRunReference());
+        Assertions.assertEquals(reportMetaData.getRunReference().toString(), stagePath.getRun().getRunReference());
         Assertions.assertEquals(reportMetaData.getStage(), stagePath.getStage().getStageName());
     }
 

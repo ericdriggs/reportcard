@@ -20,10 +20,10 @@
     <!--        </encoder>-->
     <!--    </appender>-->
 
-    <appender name="async" class="ch.qos.logback.classic.AsyncAppender">
-        <appender-ref ref="stdout" />
-        <queueSize>1024</queueSize>
-    </appender>
+<!--    <appender name="async" class="ch.qos.logback.classic.AsyncAppender">-->
+<!--        <appender-ref ref="stdout" />-->
+<!--        <queueSize>1024</queueSize>-->
+<!--    </appender>-->
 
 
     <appender name="file" class="ch.qos.logback.core.FileAppender">
@@ -36,7 +36,7 @@
     <root level="INFO"> <!-- set to info to reduce logs dramatically -->
         <appender-ref ref="stdout"/>
         <appender-ref ref="file"/>
-        <appender-ref ref="async"/>
+<!--        <appender-ref ref="async"/>-->
     </root>
 
     <logger name="org.jooq.tools.LoggerListener" level="DEBUG"/>

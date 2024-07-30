@@ -5,6 +5,7 @@ import io.github.ericdriggs.reportcard.config.LocalStackConfig;
 import io.github.ericdriggs.reportcard.controller.model.ResponseDetails;
 import io.github.ericdriggs.reportcard.controller.model.StagePathStorageResponse;
 import io.github.ericdriggs.reportcard.controller.util.TestXmlTarGzUtil;
+import io.github.ericdriggs.reportcard.gen.db.TestData;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.StoragePojo;
 import io.github.ericdriggs.reportcard.model.StagePath;
 import io.github.ericdriggs.reportcard.persist.StorageType;
@@ -122,7 +123,7 @@ public class StorageControllerTest {
                 assertEquals("master", stagePath.getBranch().getBranchName());
                 assertJsonEquals("{\"host\": \"foocorp.jenkins.com\", \"pipeline\": \"foopipeline\", \"application\": \"fooapp\"}",
                         stagePath.getJob().getJobInfo());
-                assertEquals("runReference1", stagePath.getRun().getRunReference());
+                assertEquals(TestData.runReference.toString(), stagePath.getRun().getRunReference());
                 assertEquals("api", stagePath.getStage().getStageName());
                 assertEquals(expectedStageUrl, stagePath.getUrl());
             }

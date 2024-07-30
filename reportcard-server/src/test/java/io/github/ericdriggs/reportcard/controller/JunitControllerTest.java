@@ -2,6 +2,7 @@ package io.github.ericdriggs.reportcard.controller;
 
 import io.github.ericdriggs.reportcard.ReportcardApplication;
 import io.github.ericdriggs.reportcard.config.LocalStackConfig;
+import io.github.ericdriggs.reportcard.controller.model.JunitHtmlPostRequest;
 import io.github.ericdriggs.reportcard.controller.model.ResponseDetails;
 import io.github.ericdriggs.reportcard.controller.model.StagePathStorageResultCountResponse;
 import io.github.ericdriggs.reportcard.controller.util.TestXmlTarGzUtil;
@@ -18,7 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
@@ -124,9 +125,17 @@ public class JunitControllerTest {
             final MultipartFile junitTarGz = getJunitTarGz(resourceReader);
             final MultipartFile htmlTarGz = getHtmlTarGz(resourceReader);
 
-            ResponseEntity<StagePathStorageResultCountResponse> responseEntity = junitController.doPostStageJunitStorageTarGZ(stageDetails, label, indexFile, junitTarGz, htmlTarGz);
-            assertNotNull(responseEntity);
-            StagePathStorageResultCountResponse response = responseEntity.getBody();
+            final JunitHtmlPostRequest req =
+                    JunitHtmlPostRequest.builder()
+                            .stageDetails(stageDetails)
+                            .label(label)
+                            .indexFile(indexFile)
+                            .junitXmls(junitTarGz)
+                            .reports(htmlTarGz)
+                            .build();
+            StagePathStorageResultCountResponse response = junitController.doPostStageJunitStorageTarGZ(req);
+            assertNotNull(response);
+
 
             final String expectedStageUrl = "/company/company1/org/org1/repo/repo1/branch/master/job/1/run/1/stage/apiTest";
             {
@@ -157,7 +166,7 @@ public class JunitControllerTest {
                 assertEquals("master", stagePath.getBranch().getBranchName());
                 assertJsonEquals("{\"host\": \"foocorp.jenkins.com\", \"pipeline\": \"foopipeline\", \"application\": \"fooapp\"}",
                         stagePath.getJob().getJobInfo());
-                assertEquals("runReference1", stagePath.getRun().getRunReference());
+                assertEquals(TestData.runReference.toString(), stagePath.getRun().getRunReference());
                 assertEquals(stageName, stagePath.getStage().getStageName());
                 assertEquals(expectedStageUrl, stagePath.getUrl());
             }
@@ -249,7 +258,7 @@ public class JunitControllerTest {
         assertEquals(stageDetails.getRepo(), stagePath.getRepo().getRepoName());
         assertEquals(stageDetails.getBranch(), stagePath.getBranch().getBranchName());
         assertEquals(stageDetails.getJobInfoJson(), stagePath.getJob().getJobInfo());
-        assertEquals(stageDetails.getRunReference(), stagePath.getRun().getRunReference());
+        assertEquals(stageDetails.getRunReference().toString(), stagePath.getRun().getRunReference());
         assertEquals(stageDetails.getStage(), stagePath.getStage().getStageName());
     }
 

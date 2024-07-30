@@ -583,7 +583,7 @@ public class BrowseService extends AbstractPersistService {
         return Collections.singletonMap(branch, jobRunMap);
     }
 
-    public RunPojo getRunFromReference(String companyName, String orgName, String repoName, String branchName, String sha, String runReference) {
+    public RunPojo getRunFromReference(String companyName, String orgName, String repoName, String branchName, String sha, UUID runReference) {
 
         RunPojo ret = dsl.select(RUN.fields())
                 .from(COMPANY)
@@ -596,7 +596,7 @@ public class BrowseService extends AbstractPersistService {
                 .join(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
                 .join(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID)
                         .and(RUN.SHA.eq(sha))
-                        .and(RUN.RUN_REFERENCE.eq(runReference)))
+                        .and(RUN.RUN_REFERENCE.eq(runReference.toString())))
                 .where(COMPANY.COMPANY_NAME.eq(companyName))
                 .fetchOne()
                 .into(RunPojo.class);
@@ -716,7 +716,7 @@ public class BrowseService extends AbstractPersistService {
         return testCaseFault;
     }
 
-    public StagePojo getStage(String companyName, String orgName, String repoName, String branchName, String sha, String runReference, String stageName) {
+    public StagePojo getStage(String companyName, String orgName, String repoName, String branchName, String sha, UUID runReference, String stageName) {
         StagePojo ret = dsl.select(STAGE.fields())
                 .from(ORG)
                 .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
@@ -727,7 +727,7 @@ public class BrowseService extends AbstractPersistService {
                 .join(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
                 .join(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID)
                         .and(RUN.SHA.eq(sha))
-                        .and(RUN.RUN_REFERENCE.eq(runReference)))
+                        .and(RUN.RUN_REFERENCE.eq(runReference.toString())))
                 .join(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID)
                         .and(STAGE.STAGE_NAME.eq(stageName)))
                 .fetchOne()

@@ -30,7 +30,7 @@ INSERT INTO `reportcard`.`run`
  `job_run_count`,
  `is_success`
  )
-VALUES (1, "runReference1", 1, 'bdd15b6fae26738ca58f0b300fc43f5872b429bf', 1, 1 );
+VALUES (1, 'aaaaaaaa-2222-bbbb-cccc-dddddddddddd', 1, 'bdd15b6fae26738ca58f0b300fc43f5872b429bf', 1, 1 );
 
 INSERT INTO `reportcard`.`stage`
 (`stage_id`,

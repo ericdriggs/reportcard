@@ -25,8 +25,7 @@ public class LockServiceTest extends AbstractLockServiceTest {
         super(lockService);
     }
 
-    final static long shortSleep = 100L;
-    final static long longSleep = 200L;
+    final static long waitToAcquireLockSleepDuration = 200L;
 
     @Test
     void waitingForLockTest() throws Exception {
@@ -38,9 +37,7 @@ public class LockServiceTest extends AbstractLockServiceTest {
         //callable 1 grabs the lock first and is blocked so it holds the lock
         ExecutorService executor = Executors.newFixedThreadPool(2);
         Future<String> future1 = executor.submit(callable1);
-//        new Thread(callable1.call()).start();
-        Thread.sleep(shortSleep);
-//        new Thread(callable2.call()).start();
+        Thread.sleep(waitToAcquireLockSleepDuration);
         Future<String> future2 = executor.submit(callable2);
 
         //Both callables start blocked
@@ -62,7 +59,7 @@ public class LockServiceTest extends AbstractLockServiceTest {
     }
 
     @Test
-    void notWaitingForLockTest() throws TimeoutException, InterruptedException {
+    void notWaitingForLockTest() throws InterruptedException, ExecutionException {
         UUID uuid = UUID.randomUUID();
         final String expectedResult = "result-" + uuid;
         BlockedDatabaseLockResultCallable callable1 = new BlockedDatabaseLockResultCallable(lockService.dsl.configuration(), uuid, 1);
@@ -70,9 +67,9 @@ public class LockServiceTest extends AbstractLockServiceTest {
 
         //callable 1 grabs the lock first and is blocked so it holds the lock
         ExecutorService executor = Executors.newFixedThreadPool(2);
-        executor.submit(callable1);
-        Thread.sleep(shortSleep);
-        executor.submit(callable2);
+        Future<String> future1 = executor.submit(callable1);
+        Thread.sleep(waitToAcquireLockSleepDuration);
+        Future<String> future2 = executor.submit(callable2);
 
         //Both callables start blocked
         assertTrue(callable1.getIsBlocked());
@@ -81,12 +78,11 @@ public class LockServiceTest extends AbstractLockServiceTest {
         //unblocking the first callable allows it to complete and releases lock
         callable1.unblock();
         assertFalse(callable1.getIsBlocked());
-        Thread.sleep(shortSleep);
-        assertEquals(expectedResult, callable1.getResult());
+        assertEquals(expectedResult, future1.get());
 
         //unblocking the second callable allows it to complete
         callable2.unblock();
-        Thread.sleep(shortSleep);
-        assertEquals(expectedResult, callable2.getResult());
+
+        assertEquals(expectedResult, future2.get());
     }
 }

@@ -5,7 +5,7 @@ import io.github.ericdriggs.reportcard.gen.db.tables.pojos.*;
 import io.github.ericdriggs.reportcard.model.StageTestResultModel;
 import io.github.ericdriggs.reportcard.model.TestResultModel;
 import io.github.ericdriggs.reportcard.model.TestSuiteModel;
-import io.github.ericdriggs.reportcard.persist.BrowseService;;
+import io.github.ericdriggs.reportcard.persist.BrowseService;
 import io.github.ericdriggs.reportcard.util.JsonCompare;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +29,7 @@ public class BrowseServiceTest extends AbstractBrowseServiceTest {
         assertFalse(companyOrgs.isEmpty());
 
         boolean companyWasFound = false;
-        for (Map.Entry<CompanyPojo, Set<OrgPojo>> entry: companyOrgs.entrySet()){
+        for (Map.Entry<CompanyPojo, Set<OrgPojo>> entry : companyOrgs.entrySet()) {
             final CompanyPojo company = entry.getKey();
             final Set<OrgPojo> orgs = entry.getValue();
             assertNotNull(orgs);
@@ -191,8 +191,6 @@ public class BrowseServiceTest extends AbstractBrowseServiceTest {
         validateTestRun(run);
     }
 
-
-
     @Test
     void getRunStagesTestResultsTest() {
         Map<RunPojo, Map<StagePojo, Set<TestResultPojo>>> runStageResults = browseService.getRunStagesTestResults(TestData.company, TestData.org, TestData.repo, TestData.branch, 1l, 1l);
@@ -273,7 +271,7 @@ public class BrowseServiceTest extends AbstractBrowseServiceTest {
         return t.stream().flatMap(Collection::stream).collect(Collectors.toList());
     }
 
-    static JobPojo getTestJob(Collection<JobPojo> jobs, final Map<String,String> expectedJobInfo) {
+    static JobPojo getTestJob(Collection<JobPojo> jobs, final Map<String, String> expectedJobInfo) {
 
         JobPojo job = null;
         for (JobPojo j : jobs) {
@@ -286,11 +284,11 @@ public class BrowseServiceTest extends AbstractBrowseServiceTest {
         return job;
     }
 
-    static RunPojo getTestRun(Collection<RunPojo> runs, String expectedRunReference) {
+    static RunPojo getTestRun(Collection<RunPojo> runs, UUID expectedRunReference) {
 
         RunPojo run = null;
         for (RunPojo r : runs) {
-            if (r.getRunReference().equals(expectedRunReference)) {
+            if (expectedRunReference.toString().equals(r.getRunReference())) {
                 run = r;
                 break;
             }
@@ -362,13 +360,13 @@ public class BrowseServiceTest extends AbstractBrowseServiceTest {
     }
 
     private void validateTestRun(RunPojo run) {
-        assertEquals(TestData.runReference, run.getRunReference());
+        assertEquals(TestData.runReference.toString(), run.getRunReference());
         assertEquals(1, run.getRunId());
         assertEquals(1, run.getJobFk());
         assertEquals(1, run.getJobRunCount());
         assertEquals(TestData.sha, run.getSha());
         assertNotNull(run.getRunDate());
-        assertNotNull(run.getRunDate());
+
     }
 
     private void validateTestStage(StagePojo stage) {
