@@ -6,7 +6,7 @@ import java.time.Duration;
 import java.util.UUID;
 import java.util.function.Function;
 
-public class FunctionDatabaseLockResultCallable<T, R> extends AbstractDatabaseLockResultCallable<R> {
+public class FunctionDatabaseLockResultCallable<T, R> extends AbstractDatabaseLockCallable<R> {
 
     final Function<T, R> function;
     final T t;

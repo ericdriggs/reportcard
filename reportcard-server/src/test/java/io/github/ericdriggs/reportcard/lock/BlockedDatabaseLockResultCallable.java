@@ -7,10 +7,9 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
 import java.util.concurrent.TimeoutException;
-import java.util.function.Function;
 
 @Slf4j
-public class BlockedDatabaseLockResultCallable extends AbstractDatabaseLockResultCallable<String> {
+public class BlockedDatabaseLockResultCallable extends AbstractDatabaseLockCallable<String> {
     private boolean isBlocked = true;
     private final int threadId;
     private final static long blockedSleepMillis = 50;
@@ -18,6 +17,8 @@ public class BlockedDatabaseLockResultCallable extends AbstractDatabaseLockResul
     private final static Duration pollTimeoutDuration = Duration.ofSeconds(10);
     private final static int getLockTimeoutSeconds = 1;
     private final static long pollSleepMillis = 50;
+
+    private String result;
 
     public void unblock() {
         this.isBlocked = false;
@@ -50,7 +51,11 @@ public class BlockedDatabaseLockResultCallable extends AbstractDatabaseLockResul
             }
         }
         log.info("threadId: {} unblocked", threadId);
-        return "result-" + uuid;
+        this.result = "result-" + uuid;
+        return result;
     }
 
+    public String getResult() {
+        return result;
+    }
 }

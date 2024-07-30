@@ -1,16 +1,21 @@
 package io.github.ericdriggs.reportcard.lock;
 
-import com.mysql.cj.MysqlConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.UUID;
 
-public enum DatabaseLockUtil {
+/**
+ * Methods for performing lock operations
+ */
+public enum MysqlDatabaseLockUtil {
     ;//static methods only
 
-    private final static Logger log = LoggerFactory.getLogger(DatabaseLockUtil.class);
+    private final static Logger log = LoggerFactory.getLogger(MysqlDatabaseLockUtil.class);
 
     public static boolean getLockOrFalse(final UUID uuid, final Connection conn, final int getLockTimeoutSeconds) throws SQLException {
         final String operationName = "getLockOrFalse";
@@ -81,27 +86,11 @@ public enum DatabaseLockUtil {
             }
         }
         return null;
-//        if (!rs.next()) {
-//            throw new IllegalStateException("empty resultSet");
-//        }
-//        if (rs.getFetchSize() != 1) {
-//            throw new IllegalStateException("expected single result set, got " + rs.getFetchSize());
-//        }
-//        ResultSetMetaData rsmd = rs.getMetaData();
-//        int cols = rsmd.getColumnCount();
-//        if (cols != 1) {
-//            throw new IllegalStateException("expected single column, got " + cols);
-//        }
-//        final int type = rsmd.getColumnType(1);
-//        if (type != Types.INTEGER) {
-//            throw new IllegalStateException("expected integer column, got " + type);
-//        }
-//        return rs.getInt(1);
 
     }
 
     public static void logOperation(String operationName, Integer result, UUID uuid) throws SQLException {
-        log.info("operation: {}, result: {}, uuid: {}", operationName, result, uuid);
+        log.trace("operation: {}, result: {}, uuid: {}", operationName, result, uuid);
     }
 
 }

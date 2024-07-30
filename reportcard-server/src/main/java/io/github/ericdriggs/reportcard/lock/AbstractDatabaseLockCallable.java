@@ -9,14 +9,14 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.Callable;
 
 /**
  * A callable which only performs its operation if able to obtain a database lock.
  * If the operation is performed, the result is stored and can be retrieved later using getResult()
- *
  */
 @Slf4j
-public abstract class AbstractDatabaseLockResultCallable<V> extends AbstractResultCallable<V> {
+public abstract class AbstractDatabaseLockCallable<V> implements Callable<V> {
 
     final int randomId = new Random().nextInt();
     final Configuration configuration;
@@ -25,7 +25,7 @@ public abstract class AbstractDatabaseLockResultCallable<V> extends AbstractResu
     final long pollSleepMillis;
     final UUID uuid;
 
-    public AbstractDatabaseLockResultCallable(
+    public AbstractDatabaseLockCallable(
             final Configuration configuration,
             final Duration pollTimeoutDuration,
             final int getLockTimeoutSeconds,
@@ -41,9 +41,11 @@ public abstract class AbstractDatabaseLockResultCallable<V> extends AbstractResu
     }
 
     @Override
-    public V call() throws Exception {
+    public final V call() throws Exception {
         return pollCriticalSectionCall();
     }
+
+    public abstract V doCall() throws Exception;
 
     /**
      * Performs operation if able to obtain lock.
@@ -77,19 +79,18 @@ public abstract class AbstractDatabaseLockResultCallable<V> extends AbstractResu
      * @throws LockNotAvailableException if unable to obtain lock for critical section within getLockTimeoutSeconds
      */
     synchronized V criticalSectionCall() throws Exception {
+
         try (Connection connection = configuration.connectionProvider().acquire()) {
-            ;
-            //outerConfiguration.dsl().transaction((Configuration trx) -> {
-            boolean haveLock = DatabaseLockUtil.getLockOrFalse(uuid, connection, getLockTimeoutSeconds);
+            boolean haveLock = MysqlDatabaseLockUtil.getLockOrFalse(uuid, connection, getLockTimeoutSeconds);
             if (!haveLock) {
                 throw new LockNotAvailableException(uuid);
             }
-            result = doCall();
-            DatabaseLockUtil.releaseLock(uuid, connection);
+            V result = doCall();
+            MysqlDatabaseLockUtil.releaseLock(uuid, connection);
+            return result;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return result;
     }
 
 }
