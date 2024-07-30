@@ -1,22 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+
+    <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <!--    <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">-->
+    <!--        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">-->
+    <!--            <layout class="ch.qos.logback.contrib.json.classic.JsonLayout">-->
+    <!--                <timestampFormat>yyyy-MM-dd'T'HH:mm:ss</timestampFormat>-->
+    <!--                <timestampFormatTimezoneId>Etc/UTC</timestampFormatTimezoneId>-->
+    <!--                <jsonFormatter class="ch.qos.logback.contrib.jackson.JacksonJsonFormatter">-->
+    <!--                    <prettyPrint>false</prettyPrint>-->
+    <!--                </jsonFormatter>-->
+    <!--                <appendLineSeparator>true</appendLineSeparator>-->
+    <!--            </layout>-->
+    <!--        </encoder>-->
+    <!--    </appender>-->
+
+    <appender name="async" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="stdout" />
+        <queueSize>1024</queueSize>
+    </appender>
+
+
+    <appender name="file" class="ch.qos.logback.core.FileAppender">
+        <file>target/target.log</file>
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
-        <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-            <file>target/target.log</file>
-            <encoder>
-                <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
-            </encoder>
-        </appender>
-
     <root level="INFO"> <!-- set to info to reduce logs dramatically -->
-        <appender-ref ref="STDOUT" />
-        <appender-ref ref="FILE" />
+        <appender-ref ref="stdout"/>
+        <appender-ref ref="file"/>
+        <appender-ref ref="async"/>
     </root>
 
     <logger name="org.jooq.tools.LoggerListener" level="DEBUG"/>
