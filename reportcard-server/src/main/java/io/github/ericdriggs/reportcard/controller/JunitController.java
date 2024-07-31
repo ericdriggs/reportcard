@@ -1,8 +1,10 @@
 package io.github.ericdriggs.reportcard.controller;
 
+import io.github.ericdriggs.reportcard.controller.model.JunitHtmlPostRequest;
 import io.github.ericdriggs.reportcard.controller.model.StagePathStorageResultCountResponse;
 import io.github.ericdriggs.reportcard.controller.model.StagePathTestResultResponse;
 import io.github.ericdriggs.reportcard.controller.util.TestXmlTarGzUtil;
+import io.github.ericdriggs.reportcard.lock.LockService;
 import io.github.ericdriggs.reportcard.model.*;
 import io.github.ericdriggs.reportcard.model.converter.JunitSurefireXmlParseUtil;
 import io.github.ericdriggs.reportcard.persist.StoragePersistService;
@@ -22,6 +24,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.UUID;
+import java.util.function.Function;
 
 @Slf4j
 @RestController
@@ -32,17 +36,18 @@ public class JunitController {
     public static String storageKeyPath = "/v1/api/storage/key";
 
     @Autowired
-    public JunitController(StoragePersistService storagePersistService, TestResultPersistService testResultPersistService, S3Service s3Service) {
+    public JunitController(StoragePersistService storagePersistService, TestResultPersistService testResultPersistService, S3Service s3Service, LockService lockService) {
         this.storagePersistService = storagePersistService;
         this.testResultPersistService = testResultPersistService;
+        this.lockService = lockService;
         this.s3Service = s3Service;
     }
 
     private final StoragePersistService storagePersistService;
+    private final LockService lockService;
 
     private final TestResultPersistService testResultPersistService;
     private final S3Service s3Service;
-
 
     @Operation(summary = "Post junit/surefire xmls for specified job stage")
     @PostMapping(path = "tar.gz", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = "application/json")
@@ -63,13 +68,13 @@ public class JunitController {
             @RequestParam("branch")
             String branch,
 
-            @Parameter(description = "Comma separated key=value. Order does not matter. Trailing commas ignored. Each combination of job_info is a different job. Jobs have runs. Default: null", example="application=foo-app,pipeline=staging")
+            @Parameter(description = "Comma separated key=value. Order does not matter. Trailing commas ignored. Each combination of job_info is a different job. Jobs have runs. Default: null", example = "application=foo-app,pipeline=staging")
             @RequestParam(value = "jobInfo", required = false)
             String jobInfo,
 
-            @Parameter(description = "Optional unique identifier for a run. Runs have stages.")
+            @Parameter(description = "Optional UUID for a run. Runs have stages. Will be generated if missing.")
             @RequestParam(value = "runReference", required = false)
-            String runReference,
+            UUID runReference,
 
             @Parameter(description = "Sha for the run.")
             @RequestParam("sha")
@@ -79,7 +84,7 @@ public class JunitController {
             @RequestParam("stage")
             String stage,
 
-            @Parameter(description = "Optional comma separated key=value links for the stage.", example="build=https://jenkins.mycorp.com/job/myorg/job/myrepo/job/main/123")
+            @Parameter(description = "Optional comma separated key=value links for the stage.", example = "build=https://jenkins.mycorp.com/job/myorg/job/myrepo/job/main/123")
             @RequestParam(value = "externalLinks", required = false)
             String externalLinks,
 
@@ -138,13 +143,13 @@ public class JunitController {
             @RequestParam("branch")
             String branch,
 
-            @Parameter(description = "Comma separated key=value. Order does not matter. Trailing commas ignored. Each combination of job_info is a different job. Jobs have runs. Default: null", example="application=foo-app,pipeline=staging")
+            @Parameter(description = "Comma separated key=value. Order does not matter. Trailing commas ignored. Each combination of job_info is a different job. Jobs have runs. Default: null", example = "application=foo-app,pipeline=staging")
             @RequestParam(value = "jobInfo", required = false)
             String jobInfo,
 
-            @Parameter(description = "Optional unique identifier for a run. Runs have stages. Default: generated UUID")
+            @Parameter(description = "Optional UUID for a run. Runs have stages. Default: generated UUID")
             @RequestParam(value = "runReference", required = false)
-            String runReference,
+            UUID runReference,
 
             @Parameter(description = "Sha for the run.")
             @RequestParam("sha")
@@ -162,7 +167,7 @@ public class JunitController {
             @RequestParam(value = "indexFile", required = false)
             String indexFile,
 
-            @Parameter(description = "Optional comma separated key=value links for the stage.", example="build=https://jenkins.mycorp.com/job/myorg/job/myrepo/job/main/123")
+            @Parameter(description = "Optional comma separated key=value links for the stage.", example = "build=https://jenkins.mycorp.com/job/myorg/job/myrepo/job/main/123")
             @RequestParam(value = "externalLinks", required = false)
             String externalLinks,
 
@@ -186,39 +191,42 @@ public class JunitController {
                 .runReference(runReference)
                 .externalLinks(StringMapUtil.stringToMap(externalLinks))
                 .build();
-        return doPostStageJunitStorageTarGZ(stageDetails, label, indexFile, junitXmls, reports);
-    }
 
-    public ResponseEntity<StagePathStorageResultCountResponse> doPostStageJunitStorageTarGZ(
-           StageDetails stageDetails,
-           String label,
-           String indexFile,
-           MultipartFile junitXmls,
-           MultipartFile reports
-    )  {
+        JunitHtmlPostRequest req = JunitHtmlPostRequest.builder()
+                .stageDetails(stageDetails)
+                .label(label)
+                .indexFile(indexFile)
+                .junitXmls(junitXmls)
+                .reports(reports)
+                .build();
         try {
-            List<String> testXmlContents = TestXmlTarGzUtil.getFileContentsFromTarGz(junitXmls);
-            TestResultModel testResultModel = JunitSurefireXmlParseUtil.parseTestXml(testXmlContents);
-
-            StagePathTestResult stagePathTestResult = testResultPersistService.insertTestResult(stageDetails, testResultModel);
-            StagePath stagePath = stagePathTestResult.getStagePath();
-            final Long stageId = stagePath.getStage().getStageId();
-
-            StagePathStorages stagePathStorages;
-            {
-                StagePathStorages junitStorage = storeJunit(stageId, junitXmls);
-                StagePathStorages htmlStorage = storeHtml(stageId, label, reports, indexFile);
-                stagePathStorages = StagePathStorages.merge(junitStorage, htmlStorage);
-            }
-
-
-            StagePathStorageResultCount stagePathStorageResultCount = new StagePathStorageResultCount(stagePathStorages.getStagePath(), stagePathStorages.getStorages(), stagePathTestResult);
-            final StagePathStorageResultCountResponse response = StagePathStorageResultCountResponse.created(stagePathStorageResultCount);
+            StagePathStorageResultCountResponse response = lockService.criticalSectionCallable(this::doPostStageJunitStorageTarGZ, req, req.getStageDetails().getRunReference());
             return new ResponseEntity<>(response, HttpStatus.valueOf(response.getHttpStatusCode()));
         } catch (Exception ex) {
-            log.error("postJunitXml - stageDetails: {}, label: {}", stageDetails, label, ex);
+            log.error("postJunitXml - stageDetails: {}, label: {}", req.getStageDetails(), req.getLabel(), ex);
             return StagePathStorageResultCountResponse.fromException(ex).toResponseEntity();
         }
+    }
+
+    public StagePathStorageResultCountResponse doPostStageJunitStorageTarGZ(JunitHtmlPostRequest req) {
+
+        List<String> testXmlContents = TestXmlTarGzUtil.getFileContentsFromTarGz(req.getJunitXmls());
+        TestResultModel testResultModel = JunitSurefireXmlParseUtil.parseTestXml(testXmlContents);
+
+        StagePathTestResult stagePathTestResult = testResultPersistService.insertTestResult(req.getStageDetails(), testResultModel);
+        StagePath stagePath = stagePathTestResult.getStagePath();
+        final Long stageId = stagePath.getStage().getStageId();
+
+        StagePathStorages stagePathStorages;
+        {
+            StagePathStorages junitStorage = storeJunit(stageId, req.getJunitXmls());
+            StagePathStorages htmlStorage = storeHtml(stageId, req.getLabel(), req.getReports(), req.getIndexFile());
+            stagePathStorages = StagePathStorages.merge(junitStorage, htmlStorage);
+        }
+
+        StagePathStorageResultCount stagePathStorageResultCount = new StagePathStorageResultCount(stagePathStorages.getStagePath(), stagePathStorages.getStorages(), stagePathTestResult);
+        return StagePathStorageResultCountResponse.created(stagePathStorageResultCount);
+
     }
 
     protected StagePathStorages storeHtml(
@@ -233,9 +241,8 @@ public class JunitController {
         final String prefix = new StoragePath(stagePath, label).getPrefix();
 
         StagePathStorages stagePathStorages = storagePersistService.upsertStoragePath(indexFile, label, prefix, stageId, storageType);
-        if (!stagePathStorages.isComplete())
-        {
-            s3Service.uploadTarGz(prefix,  true, tarGz);
+        if (!stagePathStorages.isComplete()) {
+            s3Service.uploadTarGz(prefix, true, tarGz);
             storagePersistService.setUploadCompleted(indexFile, label, prefix, stageId);
             stagePathStorages.setComplete();
         }

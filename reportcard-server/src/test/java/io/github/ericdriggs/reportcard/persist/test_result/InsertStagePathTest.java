@@ -16,6 +16,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -38,7 +39,7 @@ public class InsertStagePathTest extends AbstractTestResultPersistTest {
                         .branch("newBranch")
                         .sha("newSha")
                         .jobInfo(TestData.jobInfo)
-                        .runReference("64bb0231-9a2e-4492-bbd1-e0aeba24c982")
+                        .runReference(UUID.fromString("64bb0231-9a2e-4492-bbd1-e0aeba24c982"))
                         .stage("newStage")
                         .build();
 
@@ -61,7 +62,7 @@ public class InsertStagePathTest extends AbstractTestResultPersistTest {
         Assertions.assertEquals(request.getBranch(), stagePath.getBranch().getBranchName());
         Assertions.assertEquals(request.getSha(), stagePath.getRun().getSha());
         JsonAssert.assertJsonEquals(request.getJobInfo(), stagePath.getJob().getJobInfo());
-        Assertions.assertEquals(request.getRunReference(), stagePath.getRun().getRunReference());
+        Assertions.assertEquals(request.getRunReference().toString(), stagePath.getRun().getRunReference());
         Assertions.assertEquals(request.getStage(), stagePath.getStage().getStageName());
         assertNotNull(stagePath.getStage().getStageId());
 

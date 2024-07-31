@@ -32,7 +32,7 @@ public class StageDetails {
     String branch;
     String sha;
     TreeMap<String, String> jobInfo;
-    String runReference;
+    UUID runReference;
     String stage;
     Map<String, String> externalLinks;
 
@@ -43,7 +43,7 @@ public class StageDetails {
         String branch;
         String sha;
         TreeMap<String, String> jobInfo;
-        String runReference;
+        UUID runReference;
         String stage;
         Map<String, String> externalLinks;
 
@@ -53,8 +53,8 @@ public class StageDetails {
         }
 
         public void validateAndSetDefaults() {
-            if (StringUtils.isEmpty(runReference) || runReference.trim().isEmpty()) {
-                runReference = UUID.randomUUID().toString();
+            if (runReference == null) {
+                runReference = UUID.randomUUID();
             }
             Map<String, String> errors = new LinkedHashMap<>();
             addErrorIfMissing(errors, company, "company");
@@ -64,7 +64,7 @@ public class StageDetails {
             addErrorIfMissing(errors, sha, "sha");
             addErrorIfMissing(errors, stage, "stage");
             jobInfo = lower(jobInfo);
-            branch = branch.replace("/","_");
+            branch = branch.replace("/", "_");
             if (!errors.isEmpty()) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                         "errors - " + Arrays.toString(errors.entrySet().toArray()));
@@ -87,7 +87,7 @@ public class StageDetails {
 
         try {
             return mapper.writerWithDefaultPrettyPrinter()
-                         .writeValueAsString(externalLinks);
+                    .writeValueAsString(externalLinks);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -103,4 +103,13 @@ public class StageDetails {
     public String getJobInfoJson() {
         return mapper.writeValueAsString(jobInfo);
     }
+
+    @JsonIgnore
+    public String getRunReferenceString() {
+        if (runReference == null) {
+            return null;
+        }
+        return runReference.toString();
+    }
+
 }

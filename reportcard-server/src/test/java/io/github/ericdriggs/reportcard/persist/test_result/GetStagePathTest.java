@@ -11,6 +11,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @Profile("test")
@@ -38,21 +40,22 @@ public class GetStagePathTest extends AbstractTestResultPersistTest {
         StagePath stagePath = testResultPersistService.getStagePath(request);
         assertTrue(stagePath.isComplete(), stagePath.validate().toString());
 
-        Assertions.assertEquals(stagePath.getCompany().getCompanyName(), request.getCompany());
-        Assertions.assertEquals(stagePath.getOrg().getOrgName(), request.getOrg());
-        Assertions.assertEquals(stagePath.getRepo().getRepoName(), request.getRepo());
-        Assertions.assertEquals(stagePath.getBranch().getBranchName(), request.getBranch());
-        Assertions.assertEquals(stagePath.getRun().getSha(), request.getSha());
+        Assertions.assertEquals(request.getCompany(), stagePath.getCompany().getCompanyName());
+        Assertions.assertEquals(request.getOrg(), stagePath.getOrg().getOrgName());
+        Assertions.assertEquals(request.getRepo(), stagePath.getRepo().getRepoName());
+        Assertions.assertEquals(request.getBranch(), stagePath.getBranch().getBranchName());
+        Assertions.assertEquals(request.getSha(), stagePath.getRun().getSha());
 
         JsonAssert.assertJsonEquals(request.getJobInfo(), stagePath.getJob().getJobInfo());
 
-        Assertions.assertEquals(stagePath.getRun().getRunReference(), request.getRunReference());
-        Assertions.assertEquals(stagePath.getStage().getStageName(), request.getStage());
+        Assertions.assertEquals(request.getRunReference().toString(), stagePath.getRun().getRunReference());
+        Assertions.assertEquals(request.getStage(), stagePath.getStage().getStageName());
         assertNotNull(stagePath.getStage().getStageId());
     }
 
     @Test
     public void getStagePath_Missing_build() {
+        final UUID missingUUID = UUID.fromString("76751676-edba-48fc-b29b-ac47ec413a1f");
         StageDetails request =
                 StageDetails.builder()
                         .company(TestData.company)
@@ -61,7 +64,7 @@ public class GetStagePathTest extends AbstractTestResultPersistTest {
                         .branch(TestData.branch)
                         .sha(TestData.sha)
                         .jobInfo(TestData.jobInfo)
-                        .runReference("not_found")
+                        .runReference(missingUUID)
                         .stage(TestData.stage)
                         .build();
 
@@ -75,14 +78,14 @@ public class GetStagePathTest extends AbstractTestResultPersistTest {
         assertNull(stagePath.getRun());
         assertNull(stagePath.getStage());
 
-        Assertions.assertEquals(stagePath.getOrg().getOrgName(), request.getOrg());
-        Assertions.assertEquals(stagePath.getRepo().getRepoName(), request.getRepo());
-        Assertions.assertEquals(stagePath.getBranch().getBranchName(), request.getBranch());
-        JsonAssert.assertJsonEquals(stagePath.getJob().getJobInfo(), request.getJobInfo());
+        Assertions.assertEquals(request.getOrg(), stagePath.getOrg().getOrgName());
+        Assertions.assertEquals(request.getRepo(), stagePath.getRepo().getRepoName());
+        Assertions.assertEquals(request.getBranch(), stagePath.getBranch().getBranchName());
+        JsonAssert.assertJsonEquals(request.getJobInfo(), stagePath.getJob().getJobInfo());
 
         //downstream of not found
         assertNull(stagePath.getRun());
-        Assertions.assertNull( stagePath.getStage());
+        Assertions.assertNull(stagePath.getStage());
     }
 
 }

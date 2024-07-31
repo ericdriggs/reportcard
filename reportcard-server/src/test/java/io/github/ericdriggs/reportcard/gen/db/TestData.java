@@ -3,6 +3,7 @@ package io.github.ericdriggs.reportcard.gen.db;
 import io.github.ericdriggs.reportcard.model.StageDetails;
 
 import java.util.TreeMap;
+import java.util.UUID;
 
 public enum TestData {
     ;
@@ -13,7 +14,7 @@ public enum TestData {
     public final static String sha = "bdd15b6fae26738ca58f0b300fc43f5872b429bf";
     public static final Long testResultId = 1L;
     public static final Long testSuiteId = 1L;
-
+    public static final UUID runReference = UUID.fromString("aaaaaaaa-2222-bbbb-cccc-dddddddddddd");
     public final static Long jobId = 1l;
     public final static TreeMap<String, String> jobInfo = new TreeMap<>();
 
@@ -23,7 +24,6 @@ public enum TestData {
         jobInfo.put("pipeline", "foopipeline");
     }
 
-    public final static String runReference = "runReference1";
     public final static String stage = "api";
 
     public final static Integer testResultTestModelCount = 2;

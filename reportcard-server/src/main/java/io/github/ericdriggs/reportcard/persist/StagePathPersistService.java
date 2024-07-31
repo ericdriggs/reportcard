@@ -115,7 +115,7 @@ public class StagePathPersistService extends AbstractPersistService {
                         .and(condition(request.getJobInfoSqlClause())))
                 .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID)
                         .and(RUN.SHA.eq(request.getSha()))
-                        .and(RUN.RUN_REFERENCE.eq(request.getRunReference())))
+                        .and(RUN.RUN_REFERENCE.eq(request.getRunReferenceString())))
                 .leftJoin(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID)
                         .and(STAGE.STAGE_NAME.eq(request.getStage())))
                 .where(COMPANY.COMPANY_NAME.eq(request.getCompany()));
@@ -314,7 +314,7 @@ public class StagePathPersistService extends AbstractPersistService {
             int runCount = 1 + dsl.fetchCount(selectFrom(RUN).where(RUN.JOB_FK.eq(stagePath.getJob().getJobId())));
 
             RunPojo run = new RunPojo()
-                    .setRunReference(request.getRunReference())
+                    .setRunReference(request.getRunReferenceString())
                     .setSha(request.getSha())
                     .setJobFk(stagePath.getJob().getJobId())
                     .setJobRunCount(runCount)

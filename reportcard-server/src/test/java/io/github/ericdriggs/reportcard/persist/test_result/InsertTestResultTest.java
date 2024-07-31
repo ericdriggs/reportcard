@@ -29,7 +29,7 @@ public class InsertTestResultTest extends AbstractTestResultPersistTest {
     final static String branch = "branch10";
     final static String sha = "a5493474-274c-44bd-93a1-82e9df1c15d4";
     final static TreeMap<String, String> metadata = TestData.jobInfo;
-    final static String runReference = "run23";
+    final UUID runReference = UUID.randomUUID();
     final static String stage = "stage10";
 
     final static int testResultErrorCount = 0;
@@ -91,8 +91,6 @@ public class InsertTestResultTest extends AbstractTestResultPersistTest {
         assertInsertedTestResult(testResultInsert, testResultInsert2);
     }
 
-
-
     void assertInsertedTestResult(TestResultModel testResultBefore, TestResultModel testResultInsert) {
         assertValues(testResultInsert);
         assertIdsAndFks(testResultInsert);
@@ -115,7 +113,6 @@ public class InsertTestResultTest extends AbstractTestResultPersistTest {
         }
     }
 
-
     private void assertValues(TestResultModel testResult) {
 
         List<TestSuiteModel> testSuites = testResult.getTestSuites();
@@ -137,27 +134,27 @@ public class InsertTestResultTest extends AbstractTestResultPersistTest {
         assertEquals(testResultFailureCount, testResult.getFailure());
         assertEquals(testResultSkippedCount, testResult.getSkipped());
         assertEquals(testResultTestCount, testResult.getTests());
-        assertThat(testResultTime,  Matchers.comparesEqualTo(testResult.getTime()));
+        assertThat(testResultTime, Matchers.comparesEqualTo(testResult.getTime()));
 
         assertEquals(testSuiteErrorCount, testSuite.getError());
         assertEquals(testSuiteFailureCount, testSuite.getFailure());
         assertEquals(testSuiteSkippedCount, testSuite.getSkipped());
         assertEquals(testSuiteName, testSuite.getName());
         assertEquals(testSuiteTestCount, testSuite.getTests());
-        assertThat(testSuiteTime,  Matchers.comparesEqualTo(testSuite.getTime()));
+        assertThat(testSuiteTime, Matchers.comparesEqualTo(testSuite.getTime()));
         assertEquals(testSuitePackage, testSuite.getPackageName());
 
         assertEquals(testCaseClassName, testCase.getClassName());
         assertEquals(testCaseName, testCase.getName());
         assertEquals(testCaseStatus, testCase.getTestStatus());
         assertEquals(testCaseStatus.getStatusId(), testCase.getTestStatusFk());
-        assertThat(testCaseTime,  Matchers.comparesEqualTo(testCase.getTime()));
+        assertThat(testCaseTime, Matchers.comparesEqualTo(testCase.getTime()));
 
         assertEquals(testCaseFaultContext.getFaultContextId(), testCaseFault.getFaultContextFk());
         assertEquals(testCaseFaultMessage, testCaseFault.getMessage());
         assertEquals(testCaseFaultType, testCaseFault.getType());
         assertEquals(testCaseFaultValue, testCaseFault.getValue());
-    }   
+    }
 
     private void assertIdsAndFks(TestResultModel testResult) {
 

@@ -98,7 +98,7 @@ public class GraphServiceTest extends AbstractGraphServiceTest {
         {
             assertFalse(CollectionUtils.isEmpty(companyGraph.orgs().get(0).repos().get(0).branches().get(0).jobs().get(0).runs()));
             final RunGraph graph = companyGraph.orgs().get(0).repos().get(0).branches().get(0).jobs().get(0).runs().get(0);
-            assertEquals(TestData.runReference, graph.runReference());
+            assertEquals(TestData.runReference.toString(), graph.runReference());
             assertEquals(1, graph.stages().size());
         }
         {

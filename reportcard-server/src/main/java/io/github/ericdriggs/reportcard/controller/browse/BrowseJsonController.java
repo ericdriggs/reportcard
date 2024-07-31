@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 //TODO: add reports endpoint after stages
 @RestController
@@ -107,7 +108,7 @@ public class BrowseJsonController {
             @PathVariable String repo,
             @PathVariable String branch,
             @PathVariable String sha,
-            @PathVariable String runReference,
+            @PathVariable UUID runReference,
             @RequestParam(required = false) Map<String, String> metadataFilters) {
         return new ResponseEntity<>(browseService.getRunFromReference(company, org, repo, branch, sha, runReference), HttpStatus.OK);
     }

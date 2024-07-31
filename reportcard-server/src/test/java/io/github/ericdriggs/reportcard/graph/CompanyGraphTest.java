@@ -2,6 +2,7 @@ package io.github.ericdriggs.reportcard.graph;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.ericdriggs.reportcard.gen.db.TestData;
 import io.github.ericdriggs.reportcard.mappers.SharedObjectMappers;
 import io.github.ericdriggs.reportcard.model.FaultContextType;
 import io.github.ericdriggs.reportcard.model.TestStatus;
@@ -98,7 +99,7 @@ public class CompanyGraphTest {
                 .jobRunCount(1)
                 .runDate(now)
                 .runId(1L)
-                .runReference("runReference1")
+                .runReference(TestData.runReference.toString())
                 .sha("sha1")
                 .stages(List.of(stage))
                 .build();
