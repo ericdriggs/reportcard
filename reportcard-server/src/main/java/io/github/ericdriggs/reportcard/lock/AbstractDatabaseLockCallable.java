@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.jooq.Configuration;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Random;
