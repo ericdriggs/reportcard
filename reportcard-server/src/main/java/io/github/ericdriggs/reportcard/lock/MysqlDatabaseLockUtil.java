@@ -11,8 +11,8 @@ import java.util.UUID;
 
 /**
  * Methods for performing lock operations
- * @see <a href="https://dev.mysql.com/doc/refman/8.4/en/locking-functions.html>https://dev.mysql.com/doc/refman/8.4/en/locking-functions.html</a>
- * @see <a href="https://dev.mysql.com/doc/refman/8.4/en/locking-service.html>https://dev.mysql.com/doc/refman/8.4/en/locking-service.html</a>
+ * @see <a href="https://dev.mysql.com/doc/refman/8.4/en/locking-functions.html">https://dev.mysql.com/doc/refman/8.4/en/locking-functions.html</a>
+ * @see <a href="https://dev.mysql.com/doc/refman/8.4/en/locking-service.html">https://dev.mysql.com/doc/refman/8.4/en/locking-service.html</a>
  */
 public enum MysqlDatabaseLockUtil {
     ;//static methods only

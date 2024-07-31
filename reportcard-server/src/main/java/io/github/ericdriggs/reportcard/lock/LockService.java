@@ -15,7 +15,7 @@ import java.util.function.Function;
  * Main db service class.
  * For every method which returns a single object, if <code>NULL</code> will throw
  * <code>ResponseStatusException(HttpStatus.NOT_FOUND)</code>
- * @see <a href="https://dev.mysql.com/doc/refman/8.4/en/locking-service.html>https://dev.mysql.com/doc/refman/8.4/en/locking-service.html</a>
+ * @see <a href="https://dev.mysql.com/doc/refman/8.4/en/locking-service.html">https://dev.mysql.com/doc/refman/8.4/en/locking-service.html</a>
  */
 
 @Service
