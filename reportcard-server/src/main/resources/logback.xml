@@ -18,7 +18,6 @@
     <root level="INFO"> <!-- set to info to reduce logs dramatically -->
         <appender-ref ref="stdout"/>
         <appender-ref ref="file"/>
-<!--        <appender-ref ref="async"/>-->
     </root>
 
     <logger name="org.jooq.tools.LoggerListener" level="DEBUG"/>
