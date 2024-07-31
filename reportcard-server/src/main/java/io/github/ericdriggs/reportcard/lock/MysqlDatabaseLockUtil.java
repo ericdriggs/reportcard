@@ -27,14 +27,10 @@ public enum MysqlDatabaseLockUtil {
         return selectGetLock(uuid, conn, getLockTimeoutSeconds);
     }
 
-    public static void releaseLock(final UUID uuid, final Connection conn) throws SQLException {
-        final String operationName = "releaseLock";
-        final boolean releasedLock = selectReleaseLock(uuid, conn);
-        if (!releasedLock) {
-            logOperation(operationName, 0, uuid);
-            throw new IllegalStateException("releaseLock failed to release lock: " + uuid);
-        }
-        logOperation(operationName, 1, uuid);
+    public static boolean isLockFree(final UUID uuid, final Connection conn) throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement("SELECT IS_FREE_LOCK(?)");
+        stmt.setString(1, uuid.toString());
+        return doSelectIntegerResultOne("isLockFree", stmt, conn, uuid);
     }
 
     //requiring UUID for lock prevents possibility of injection
@@ -45,19 +41,7 @@ public enum MysqlDatabaseLockUtil {
         return doSelectIntegerResultOne("selectGetLock", stmt, conn, uuid);
     }
 
-    public static boolean isLockFree(final UUID uuid, final Connection conn) throws SQLException {
-        PreparedStatement stmt = conn.prepareStatement("SELECT IS_FREE_LOCK(?)");
-        stmt.setString(1, uuid.toString());
-        return doSelectIntegerResultOne("isLockFree", stmt, conn, uuid);
-    }
-
-    public static boolean isLockUsed(final UUID uuid, final Connection conn) throws SQLException {
-        PreparedStatement stmt = conn.prepareStatement("SELECT IS_USED_LOCK(?)");
-        stmt.setString(1, uuid.toString());
-        return doSelectIntegerResultNotZero("isLockUsed", stmt, conn, uuid);
-    }
-
-    static boolean selectReleaseLock(final UUID uuid, final Connection conn) throws SQLException {
+    static boolean releaseLock(final UUID uuid, final Connection conn) throws SQLException {
         PreparedStatement stmt = conn.prepareStatement("SELECT RELEASE_LOCK(?)");
         stmt.setString(1, uuid.toString());
         return doSelectIntegerResultOne("selectReleaseLock", stmt, conn, uuid);
@@ -69,14 +53,7 @@ public enum MysqlDatabaseLockUtil {
         return Integer.valueOf(1).equals(result);
     }
 
-    static boolean doSelectIntegerResultNotZero(String operationName, PreparedStatement stmt, Connection conn, UUID uuid) throws SQLException {
-        final Integer result = executeQueryReturnInteger(stmt);
-        logOperation(operationName, result, uuid);
-        return !Integer.valueOf(0).equals(result);
-    }
-
     static Integer executeQueryReturnInteger(final PreparedStatement stmt) throws SQLException {
-
         ResultSet rs = stmt.executeQuery();
         if (rs.next()) {
             try {
@@ -86,11 +63,9 @@ public enum MysqlDatabaseLockUtil {
             }
         }
         return null;
-
     }
 
     public static void logOperation(String operationName, Integer result, UUID uuid) throws SQLException {
         log.trace("operation: {}, result: {}, uuid: {}", operationName, result, uuid);
     }
-
 }

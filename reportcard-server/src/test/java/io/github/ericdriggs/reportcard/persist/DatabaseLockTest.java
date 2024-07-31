@@ -4,6 +4,7 @@ import io.github.ericdriggs.reportcard.ReportcardApplication;
 import io.github.ericdriggs.reportcard.lock.BlockedDatabaseLockCallable;
 import io.github.ericdriggs.reportcard.lock.LockService;
 import lombok.extern.slf4j.Slf4j;
+import org.jooq.Configuration;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,7 +12,10 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 
 import java.util.UUID;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -19,9 +23,9 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:application-test.properties")
 @Slf4j
-public class LockServiceTest extends AbstractLockServiceTest {
+public class DatabaseLockTest extends AbstractLockServiceTest {
     @Autowired
-    public LockServiceTest(LockService lockService) {
+    public DatabaseLockTest(LockService lockService) {
         super(lockService);
     }
 
@@ -29,10 +33,11 @@ public class LockServiceTest extends AbstractLockServiceTest {
 
     @Test
     void waitingForLockTest() throws Exception {
+        final Configuration configuration = lockService.dsl.configuration();
         UUID uuid = UUID.randomUUID();
         final String expectedResult = "result-" + uuid;
-        BlockedDatabaseLockCallable callable1 = new BlockedDatabaseLockCallable(lockService.dsl.configuration(), uuid, 1);
-        BlockedDatabaseLockCallable callable2 = new BlockedDatabaseLockCallable(lockService.dsl.configuration(), uuid, 2);
+        BlockedDatabaseLockCallable callable1 = new BlockedDatabaseLockCallable(configuration, uuid, 1);
+        BlockedDatabaseLockCallable callable2 = new BlockedDatabaseLockCallable(configuration, uuid, 2);
 
         //callable 1 grabs the lock first and is blocked so it holds the lock
         ExecutorService executor = Executors.newFixedThreadPool(2);
@@ -49,7 +54,7 @@ public class LockServiceTest extends AbstractLockServiceTest {
 
         //Callable 2 is waiting for the lock so it cannot complete
         callable2.unblock();
-        Thread.sleep(100);
+        Thread.sleep(200);
         assertNull(callable2.getResult());
 
         //After callable 1 is unblocked, both are able to complete
@@ -60,10 +65,11 @@ public class LockServiceTest extends AbstractLockServiceTest {
 
     @Test
     void notWaitingForLockTest() throws InterruptedException, ExecutionException {
+        final Configuration configuration = lockService.dsl.configuration();
         UUID uuid = UUID.randomUUID();
         final String expectedResult = "result-" + uuid;
-        BlockedDatabaseLockCallable callable1 = new BlockedDatabaseLockCallable(lockService.dsl.configuration(), uuid, 1);
-        BlockedDatabaseLockCallable callable2 = new BlockedDatabaseLockCallable(lockService.dsl.configuration(), uuid, 2);
+        BlockedDatabaseLockCallable callable1 = new BlockedDatabaseLockCallable(configuration, uuid, 1);
+        BlockedDatabaseLockCallable callable2 = new BlockedDatabaseLockCallable(configuration, uuid, 2);
 
         //callable 1 grabs the lock first and is blocked so it holds the lock
         ExecutorService executor = Executors.newFixedThreadPool(2);

@@ -45,6 +45,11 @@ public abstract class AbstractDatabaseLockCallable<V> implements Callable<V> {
         return pollCriticalSectionCall();
     }
 
+    /**
+     * the implementation of the operation to perform inside of the critical section
+     * @return V
+     * @throws Exception if operation throws exception
+     */
     public abstract V doCall() throws Exception;
 
     /**
@@ -62,7 +67,7 @@ public abstract class AbstractDatabaseLockCallable<V> implements Callable<V> {
             } catch (LockNotAvailableException e) {
                 try {
                     //noinspection BusyWait
-                    log.info("waiting on critical section for uuid: " + uuid + ", randomId: " + randomId);
+                    log.trace("waiting on critical section for uuid: " + uuid + ", randomId: " + randomId);
                     Thread.sleep(pollSleepMillis);
                 } catch (InterruptedException interruptedException) {
                     //NO-OP
@@ -88,8 +93,6 @@ public abstract class AbstractDatabaseLockCallable<V> implements Callable<V> {
             V result = doCall();
             MysqlDatabaseLockUtil.releaseLock(uuid, connection);
             return result;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
 
