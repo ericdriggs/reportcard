@@ -4,6 +4,7 @@ import io.github.ericdriggs.reportcard.gen.db.TestData;
 import io.github.ericdriggs.reportcard.model.*;
 import io.github.ericdriggs.reportcard.persist.TestResultPersistService;
 import io.github.ericdriggs.reportcard.xml.ResultCount;
+import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.jsonunit.JsonAssert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -21,6 +22,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Profile("test")
+@Slf4j
 public class InsertStagePathTest extends AbstractTestResultPersistTest {
 
     private final static Random random = new Random();
@@ -65,6 +67,12 @@ public class InsertStagePathTest extends AbstractTestResultPersistTest {
         Assertions.assertEquals(request.getRunReference().toString(), stagePath.getRun().getRunReference());
         Assertions.assertEquals(request.getStage(), stagePath.getStage().getStageName());
         assertNotNull(stagePath.getStage().getStageId());
+        {
+            final String testResultJson = stagePath.getStage().getTestResultJson();
+            assertNotNull(testResultJson);
+            assertNotEquals("{}", testResultJson);
+            log.info("testResultJson: " + testResultJson);
+        }
 
         //use coarse assertion of within a few seconds since side effect updates last run
         assertTrue(Duration.between(
@@ -75,7 +83,7 @@ public class InsertStagePathTest extends AbstractTestResultPersistTest {
 
 
         //duplicate request should be idempotent
-        StagePath stagePath2 = testResultPersistService.getUpsertedStagePath(request);
+        StagePath stagePath2 = testResultPersistService.getUpsertedStagePath(request, testResultModel);
         assertEquals(stagePath, stagePath2);
     }
 

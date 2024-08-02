@@ -8,7 +8,6 @@ import io.github.ericdriggs.reportcard.gen.db.TestData;
 import io.github.ericdriggs.reportcard.model.*;
 import io.github.ericdriggs.reportcard.persist.TestResultPersistService;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -204,21 +203,21 @@ public class InsertTestResultTest extends AbstractTestResultPersistTest {
 
     private TestResultModel getInsertableTestResult() {
 
-        StagePath stagePath;
-        {
-            StageDetails stageDetails = getStageDetails();
-            stagePath = testResultPersistService.getUpsertedStagePath(stageDetails);
-            assertTrue(stagePath.isComplete());
-        }
-
         TestResultModel testResult = new TestResultModel();
-        testResult.setStageFk(stagePath.getStage().getStageId());
         testResult.setError(testResultErrorCount);
         testResult.setFailure(testResultFailureCount);
         testResult.setSkipped(testResultSkippedCount);
         testResult.setTests(testResultTestCount);
         testResult.setTime(testResultTime);
         testResult.setExternalLinksMap(externalLinksMap);
+
+        StagePath stagePath;
+        {
+            StageDetails stageDetails = getStageDetails();
+            stagePath = testResultPersistService.getUpsertedStagePath(stageDetails, testResult);
+            assertTrue(stagePath.isComplete());
+        }
+        testResult.setStageFk(stagePath.getStage().getStageId());
 
         List<TestSuiteModel> testSuites = new ArrayList<>();
         {//TestSuite

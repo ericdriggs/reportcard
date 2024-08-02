@@ -1,19 +1,24 @@
 package io.github.ericdriggs.reportcard.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.ericdriggs.reportcard.xml.IsEmptyUtil;
 import io.github.ericdriggs.reportcard.xml.ResultCount;
 
 import java.util.*;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class TestSuiteModel extends io.github.ericdriggs.reportcard.dto.TestSuite {
 
     private List<TestCaseModel> testCases = new ArrayList<>();
 
+    @JsonProperty("testCases")
     public List<TestCaseModel> getTestCases() {
         return testCases;
     }
 
+    @JsonProperty("testCases")
     public TestSuiteModel setTestCases(List<TestCaseModel> testCases) {
         this.testCases = testCases;
         return this;

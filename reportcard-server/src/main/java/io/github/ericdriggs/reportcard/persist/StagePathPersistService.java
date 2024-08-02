@@ -215,8 +215,8 @@ public class StagePathPersistService extends AbstractPersistService {
      * @param request a BuildStagePathRequest with the fields to match on
      * @return the RunStagePath for the provided report metadata.
      */
-    public StagePath getUpsertedStagePath(StageDetails request) {
-        return getUpsertedStagePath(request, null);
+    public StagePath getUpsertedStagePath(StageDetails request, TestResultModel testResultModel) {
+        return getUpsertedStagePath(request, testResultModel, null);
     }
 
     /*
@@ -247,7 +247,7 @@ public class StagePathPersistService extends AbstractPersistService {
      * @return the RunStagePath for the provided report metadata.
      */
     @SuppressWarnings("resource")
-    public StagePath getUpsertedStagePath(StageDetails request, StagePath stagePath) {
+    public StagePath getUpsertedStagePath(StageDetails request, TestResultModel testResultModel, StagePath stagePath) {
 
         Instant nowUTC = Instant.now();
         //.truncatedTo(ChronoUnit.SECONDS);
@@ -327,7 +327,8 @@ public class StagePathPersistService extends AbstractPersistService {
         if (stagePath.getStage() == null) {
             StagePojo stage = new StagePojo()
                     .setStageName(request.getStage())
-                    .setRunFk(stagePath.getRun().getRunId());
+                    .setRunFk(stagePath.getRun().getRunId())
+                    .setTestResultJson(TestResultModel.asJson(testResultModel));
             stageDao.insert(stage);
             stagePath.setStage(stage);
         }

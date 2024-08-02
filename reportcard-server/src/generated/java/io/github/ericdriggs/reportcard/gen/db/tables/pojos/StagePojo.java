@@ -20,9 +20,10 @@ import lombok.Generated;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class StagePojo implements Serializable {
 
-    private static final long serialVersionUID = -1172036821;
+    private static final long serialVersionUID = -235934937;
 
     private Long stageId;
     private String stageName;
     private Long runFk;
+    private String testResultJson;
 }

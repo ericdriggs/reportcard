@@ -35,8 +35,14 @@ VALUES (1, 'aaaaaaaa-2222-bbbb-cccc-dddddddddddd', 1, 'bdd15b6fae26738ca58f0b300
 INSERT INTO `reportcard`.`stage`
 (`stage_id`,
  `stage_name`,
- `run_fk`)
-VALUES (1, 'api', 1);
+ `run_fk`,
+ `test_result_json`
+)
+VALUES (1,
+        'api',
+        1,
+        '{"tests":70,"skipped":30,"error":10,"failure":20,"time":3.30,"testSuites":[{"name":"testSuiteName1","tests":8,"skipped":7,"error":6,"failure":0,"time":1.010,"packageName":"com.foo.baz","testCases":[{"name":"testCaseName1","className":"testCaseClassName1","time":0.500,"testStatusFk":1,"testCaseFaults":[{"faultContextFk":2,"type":"fooType","message":"fooMessage","value":"fooMessage","faultContext":"FAILURE"}]}]}]}'
+        );
 
 
 

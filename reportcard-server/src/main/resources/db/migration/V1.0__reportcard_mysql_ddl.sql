@@ -156,6 +156,7 @@ CREATE TABLE IF NOT EXISTS `reportcard`.`stage` (
   `stage_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `stage_name` VARCHAR(255) NOT NULL,
   `run_fk` BIGINT UNSIGNED NOT NULL,
+  `test_result_json` JSON NULL,
   PRIMARY KEY (`stage_id`),
   UNIQUE INDEX `stage_id_unique` (`stage_id` ASC) VISIBLE,
   UNIQUE INDEX `uq_run_stage_name` (`stage_name` ASC, `run_fk` ASC) VISIBLE,

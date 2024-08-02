@@ -1,44 +1,79 @@
 package io.github.ericdriggs.reportcard.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import io.github.ericdriggs.reportcard.mappers.SharedObjectMappers;
 import io.github.ericdriggs.reportcard.xml.IsEmptyUtil;
 import io.github.ericdriggs.reportcard.xml.ResultCount;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class TestResultModel extends io.github.ericdriggs.reportcard.dto.TestResult {
+
 
     private List<TestSuiteModel> testSuites = new ArrayList<>();
 
+    @JsonProperty("testSuites")
     public List<TestSuiteModel> getTestSuites() {
         return testSuites;
     }
 
+    @JsonProperty("testCases")
     public TestResultModel setTestSuites(List<TestSuiteModel> testSuites) {
         this.testSuites = testSuites;
         this.updateTotalsFromTestSuites();
         return this;
     }
 
+    @JsonIgnore
+    public static String asJson(TestResultModel testResultModel) {
+        if(testResultModel == null) {
+            return null;
+        }
+        try {
+            return mapper.writeValueAsString(testResultModel);
+        } catch (JsonProcessingException e) {
+            log.error("failed to parse json for testResultModel: {}", testResultModel, e);
+        }
+        return null;
+    }
+
+    @JsonIgnore
+    final static Logger log = LoggerFactory.getLogger(TestResultModel.class);
+    @JsonIgnore
+    final static ObjectMapper mapper = SharedObjectMappers.ignoreUnknownObjectMapper;
+
+
+
+    @JsonIgnore
     public TestResultModel addTestSuite(TestSuiteModel testSuite) {
         this.testSuites.add(testSuite);
         return this;
     }
 
+    @JsonIgnore
     public TestResultModel() {
     }
 
+    @JsonIgnore
     public TestResultModel(List<TestSuiteModel> from) {
         this.testSuites = new ArrayList<>(from);
         this.updateTotalsFromTestSuites();
     }
 
+    @JsonIgnore
     public TestResultModel copy() {
         return new TestResultModel(this.getTestSuites());
     }
 
+    @JsonIgnore
     public void updateTotalsFromTestSuites() {
         ResultCount resultCount = getResultCount();
         this.setError(resultCount.getErrors());
@@ -50,6 +85,7 @@ public class TestResultModel extends io.github.ericdriggs.reportcard.dto.TestRes
         this.setIsSuccess(resultCount.getErrors() == 0 && resultCount.getFailures() == 0 );
     }
 
+    @JsonIgnore
     public TestResultModel setExternalLinksMap(Map<String,String> externalLinksMap) {
         this.setExternalLinks(getExternalLinksJson(externalLinksMap));
         return this;
@@ -61,6 +97,7 @@ public class TestResultModel extends io.github.ericdriggs.reportcard.dto.TestRes
      * @return whether was successful
      */
     @Override
+    @JsonIgnore
     public Boolean getIsSuccess() {
         if (super.getIsSuccess() != null) {
             return super.getIsSuccess();
@@ -78,6 +115,7 @@ public class TestResultModel extends io.github.ericdriggs.reportcard.dto.TestRes
      * @return whether has skip
      */
     @Override
+    @JsonIgnore
     public Boolean getHasSkip() {
         if (super.getHasSkip() != null) {
             return super.getHasSkip();
@@ -87,7 +125,7 @@ public class TestResultModel extends io.github.ericdriggs.reportcard.dto.TestRes
         }
     }
 
-    final static ObjectMapper mapper = new ObjectMapper();
+    @JsonIgnore
     protected String getExternalLinksJson(Map<String,String> externalLinksMap) {
         if (externalLinksMap == null)  {
             return null;
@@ -101,6 +139,7 @@ public class TestResultModel extends io.github.ericdriggs.reportcard.dto.TestRes
         }
     }
 
+    @JsonIgnore
     public ResultCount getResultCount() {
         ResultCount resultCount = ResultCount.builder().build();
         for (TestSuiteModel testSuite : testSuites) {
@@ -110,6 +149,7 @@ public class TestResultModel extends io.github.ericdriggs.reportcard.dto.TestRes
         return resultCount;
     }
 
+    @JsonIgnore
     public TestResultModel add(TestResultModel that) {
         if (that == null ) {
             throw new NullPointerException("that");
@@ -124,6 +164,7 @@ public class TestResultModel extends io.github.ericdriggs.reportcard.dto.TestRes
 
         return new TestResultModel(combined);
     }
+
     @JsonIgnore
     public Map<TestSuiteModel, List<TestCaseModel>> getTestCasesSkipped() {
         Map<TestSuiteModel, List<TestCaseModel>> matched = new TreeMap<>(ModelComparators.TEST_SUITE_CASE_INSENSITIVE_ORDER);

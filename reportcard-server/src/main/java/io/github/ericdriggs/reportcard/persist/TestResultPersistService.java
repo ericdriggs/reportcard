@@ -87,7 +87,7 @@ public class TestResultPersistService extends StagePathPersistService {
     }
 
     public StagePathTestResult insertTestResult(StageDetails reportMetaData, TestResultModel testResult) {
-        StagePath stagePath = getUpsertedStagePath(reportMetaData);
+        StagePath stagePath = getUpsertedStagePath(reportMetaData, testResult);
         return insertTestResult(stagePath, testResult);
     }
 
