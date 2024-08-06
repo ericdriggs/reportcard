@@ -39,30 +39,33 @@ public class BrowseUIController {
         return new ResponseEntity<>(BrowseHtmlHelper.getCompanyHtml(company), HttpStatus.OK);
     }
 
-    @GetMapping(path = {"company/{company}/org/{org}", "org/{org}/repo"}, produces = "text/html;charset=UTF-8")
-    public ResponseEntity<String> getRepoBranches(
+    @GetMapping(path = {"company/{company}/org/{org}", "company/org/{org}/repo"}, produces = "text/html;charset=UTF-8")
+    public ResponseEntity<String> getOrgRepos(
             @PathVariable String company,
             @PathVariable String org) {
         return new ResponseEntity<>(BrowseHtmlHelper.getOrgHtml(company, org), HttpStatus.OK);
     }
 
-    @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}", "org/{org}/repo/{repo}/branch"}, produces = "text/html;charset=UTF-8")
-    public ResponseEntity<String> getBranchJobs(
+    @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}", "company/org/{org}/repo/{repo}/branch"}, produces = "text/html;charset=UTF-8")
+    public ResponseEntity<String> getRepoBranches(
             @PathVariable String company,
             @PathVariable String org,
-            @PathVariable String repo) {
+            @PathVariable String repo)
+    {
         return new ResponseEntity<>(BrowseHtmlHelper.getRepoHtml(company, org, repo), HttpStatus.OK);
     }
 
     @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}/branch/{branch}",
             "company/{company}/org/{org}/repo/{repo}/branch/{branch}/job"}, produces = "text/html;charset=UTF-8")
-    public ResponseEntity<String> getJobRuns(
+    public ResponseEntity<String> getBranchJobRuns(
             @PathVariable String company,
             @PathVariable String org,
             @PathVariable String repo,
             @PathVariable String branch,
+            @RequestParam(required = false, defaultValue = "60") Integer runs,
             @RequestParam(required = false) Map<String, String> jobInfoFilters) {
-        BranchStageViewResponse branchStageViewResponse  = browseService.getStageViewForBranch(company, org, repo, branch);
+        runs = validateRuns(runs);
+        BranchStageViewResponse branchStageViewResponse  = browseService.getStageViewForBranch(company, org, repo, branch, runs);
         BranchJobLatestRunMap branchJobLatestRunMap = graphService.getBranchJobLatestRunMap(company, org, repo, branch);
         return new ResponseEntity<>(BrowseHtmlHelper.getBranchHtml(company, org, repo, branch, branchStageViewResponse, branchJobLatestRunMap), HttpStatus.OK);
     }
@@ -74,8 +77,11 @@ public class BrowseUIController {
             @PathVariable String org,
             @PathVariable String repo,
             @PathVariable String branch,
-            @PathVariable Long jobId) {
-        BranchStageViewResponse branchStageViewResponse  = browseService.getStageViewForJob(company, org, repo, branch, jobId);
+            @PathVariable Long jobId,
+            @RequestParam(required = false, defaultValue = "60") Integer runs
+            ) {
+        runs = validateRuns(runs);
+        BranchStageViewResponse branchStageViewResponse  = browseService.getStageViewForJob(company, org, repo, branch, jobId, runs);
         BranchJobLatestRunMap branchJobLatestRunMap = graphService.getBranchJobLatestRunMap(company, org, repo, branch, jobId);
         return new ResponseEntity<>(BrowseHtmlHelper.getJobHtml(company, org, repo, branch, jobId, branchStageViewResponse, branchJobLatestRunMap), HttpStatus.OK);
     }
@@ -131,4 +137,11 @@ public class BrowseUIController {
         return new ResponseEntity<>(TestResultHtmlHelper.getTestResult(stageTestResultModel.getTestResult()), HttpStatus.OK);
     }
 
+
+    Integer validateRuns(int runs) {
+        if (runs < 1) {
+            return 60;
+        }
+        return runs;
+    }
 }

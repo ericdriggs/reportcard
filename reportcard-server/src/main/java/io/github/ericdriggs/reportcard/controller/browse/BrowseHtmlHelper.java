@@ -28,7 +28,6 @@ public class BrowseHtmlHelper {
 
     ;//static methods only
 
-
     //******************** companies ********************//
 
     public static String getCompaniesHtml() {
@@ -181,7 +180,7 @@ public class BrowseHtmlHelper {
             final Set<JobPojo> jobs = entry.getValue();
             final Instant lastRun = mostRecent(jobs.stream().map(JobPojo::getLastRun).collect(Collectors.toSet()));
             final CompanyOrgRepoBranchJobRunStageDTO itemPath = path.toBuilder().branch(branch.getBranchName()).build();
-            sb.append(getItemRow(itemPath, branch.getBranchName(), jobs.size(), lastRun));
+            sb.append(getItemRow(itemPath, branch.getBranchName(), jobs.size(), lastRun, null, Map.of("runs", "60")));
         }
         return sb.toString();
     }
@@ -236,10 +235,14 @@ public class BrowseHtmlHelper {
         for (Map.Entry<JobPojo, Set<RunPojo>> entry : jobRunMap.entrySet()) {
             final JobPojo job = entry.getKey();
             final Set<RunPojo> runs = entry.getValue();
+            Integer maxRunCount = 0;
+            for (RunPojo runPojo : runs) {
+                maxRunCount = Integer.max(maxRunCount, runPojo.getJobRunCount());
+            }
             final Instant lastRun = mostRecent(runs.stream().map(RunPojo::getRunDate).collect(Collectors.toSet()));
             final CompanyOrgRepoBranchJobRunStageDTO itemPath = path.toBuilder().jobId(job.getJobId()).build();
             final String jobInfo = "<pre>" + PrettyPrintUtil.sortedPrettyPrint(job.getJobInfo()) + "\n</pre>";
-            sb.append(getItemRow(itemPath, Long.toString(job.getJobId()), runs.size(), jobInfo, lastRun));
+            sb.append(getItemRow(itemPath, Long.toString(job.getJobId()), maxRunCount, lastRun, jobInfo, Map.of("runs", "60")));
 
         }
         return sb.toString();
@@ -271,7 +274,7 @@ public class BrowseHtmlHelper {
         final String stagesMain = getBranchStageView(branchStageViewResponse);
         final String orgLinks = getOrgLinks(org, path);
 
-        return getPage("<div>" + orgLinks + "<br>" + jobStagesDiv + "</div>" + stagesMain, getBreadCrumb(path));
+        return getPage("<div>" + orgLinks + "<br>" + jobStagesDiv + "</div>" + stagesMain, getBreadCrumb(path, "runs=60"));
     }
 
     protected final static String branchHeaders =
@@ -333,6 +336,7 @@ public class BrowseHtmlHelper {
                 stagesHtml.append(stageHtml);
             }
             final String runRowHtml = runRowHtmlBase
+                    .replace("{runRowId", "run_" + jobRun.getRun().getRunId())
                     .replace("{dotClass}", jobRun.isSuccess() ? "dot-pass" : "dot-fail")
                     .replace("{jobId}", Long.toString(job.getJobId()))
                     .replace("{jobInfo}", job.getJobInfo())
@@ -379,7 +383,7 @@ public class BrowseHtmlHelper {
 
     protected final static String runRowHtmlBase =
             """
-            <tr>
+            <tr id='{runRowId}'>
               <td>
                 <fieldset class="stage">
                   <legend id="run-{runId}-job-{jobId}">
@@ -528,12 +532,14 @@ public class BrowseHtmlHelper {
                                 getUrl(CompanyOrgRepoBranchJobRunStageDTO.truncateRepo(path))));
 
                         if (!StringUtils.isEmpty(path.getBranch())) {
+                            final Map<String,String> branchQueryParams = path.getJobId() != null ? Collections.emptyMap() : Map.of("runs", "60");
                             breadCrumbs.add(Pair.of(path.getBranch(),
-                                    getUrl(CompanyOrgRepoBranchJobRunStageDTO.truncateBranch(path))));
+                                    getUrl(CompanyOrgRepoBranchJobRunStageDTO.truncateBranch(path), branchQueryParams)));
 
                             if (path.getJobId() != null) {
+                                final Map<String,String> runQueryParams = path.getRunId() != null ? Collections.emptyMap() : Map.of("runs", "60");
                                 breadCrumbs.add(Pair.of(("jobId: " + path.getJobId()),
-                                        getUrl(CompanyOrgRepoBranchJobRunStageDTO.truncateJob(path))));
+                                        getUrl(CompanyOrgRepoBranchJobRunStageDTO.truncateJob(path), runQueryParams)));
 
                                 if (path.getRunId() != null) {
                                     breadCrumbs.add(Pair.of(("runId: " + path.getRunId()),
@@ -557,14 +563,14 @@ public class BrowseHtmlHelper {
     }
 
     protected static String getItemRow(CompanyOrgRepoBranchJobRunStageDTO path, String name, int count, Instant date) {
-        return getItemRow(path, name, count, null, date);
+        return getItemRow(path, name, count, date, null, Collections.emptyMap());
     }
 
-    protected static String getItemRow(CompanyOrgRepoBranchJobRunStageDTO path, String name, int count, String info, Instant date) {
+    protected static String getItemRow(CompanyOrgRepoBranchJobRunStageDTO path, String name, int count, Instant date, String info, Map<String, String> queryParams) {
         StringBuilder sb = new StringBuilder();
 
         sb.append("<tr>").append(ls)
-                .append("  <td><a href=\"" + getUrl(path) + "\">" + name + "</a></td>").append(ls)
+                .append("  <td><a href=\"" + getUrl(path, queryParams) + "\">" + name + "</a></td>").append(ls)
                 .append("  <td class=\"count\">" + count + "</td>").append(ls);
         if (info != null) {
             sb.append("  <td class=\"info\">" + info + "</td>").append(ls);
@@ -588,14 +594,15 @@ public class BrowseHtmlHelper {
     }
 
     protected static String getUrl(CompanyOrgRepoBranchJobRunStageDTO path) {
-        StringBuilder sb = new StringBuilder();
+        return getUrl(path, Collections.emptyMap());
+    }
 
-        if (path != null) {
-            sb.append(path.toUrlPath());
+    protected static String getUrl(CompanyOrgRepoBranchJobRunStageDTO path, Map<String, String> queryParams) {
+        if (path == null) {
+            return "/";
         } else {
-            sb.append("/");
+            return path.toUrlPath() + StringMapUtil.toQueryParams(queryParams);
         }
-        return sb.toString();
     }
 
     protected final static String ls = System.lineSeparator();

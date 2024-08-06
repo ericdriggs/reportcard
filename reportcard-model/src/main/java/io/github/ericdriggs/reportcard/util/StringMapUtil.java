@@ -76,4 +76,15 @@ public enum StringMapUtil {
         }
         return ret;
     }
+
+    public static String toQueryParams(Map<String, String> paramMap) {
+        if (paramMap == null || paramMap.isEmpty()) {
+            return "";
+        }
+        List<String> params = new ArrayList<>();
+        for(Map.Entry<String,String> entry : paramMap.entrySet()) {
+            params.add(entry.getKey() + "=" + entry.getValue());
+        }
+        return "?" + String.join(",", params);
+    }
 }
