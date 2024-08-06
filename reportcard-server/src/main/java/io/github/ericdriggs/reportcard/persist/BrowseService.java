@@ -9,9 +9,8 @@ import io.github.ericdriggs.reportcard.model.StageTestResultPojo;
 import io.github.ericdriggs.reportcard.model.TestResultModel;
 import io.github.ericdriggs.reportcard.util.JsonCompare;
 import io.github.ericdriggs.reportcard.util.db.JobUtil;
-import org.jooq.DSLContext;
+import org.jooq.*;
 import org.jooq.Record;
-import org.jooq.Result;
 import org.jooq.exception.NoDataFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +35,29 @@ import static io.github.ericdriggs.reportcard.gen.db.Tables.*;
 public class BrowseService extends AbstractPersistService {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
+
+    //Boilerplate to avoid loading TEST_RESULT.test_result_json by default -- the json is only needed for trend analysis and loading for browsing wastes memory
+    static List<SelectFieldOrAsterisk> combine(List<SelectFieldOrAsterisk> l1, List<SelectFieldOrAsterisk> l2) {
+        List<SelectFieldOrAsterisk> list = new ArrayList<>(l1);
+        list.addAll(l2);
+        return list;
+    }
+
+
+    static List<SelectFieldOrAsterisk> combine(List<SelectFieldOrAsterisk> l, SelectFieldOrAsterisk item) {
+        List<SelectFieldOrAsterisk> list = new ArrayList<>(l);
+        list.add(item);
+        return list;
+    }
+
+    final static List<SelectFieldOrAsterisk> COMPANY_ORG_REPO_BRANCH_JOB_RUN_FIELDS = List.of(COMPANY.asterisk(), ORG.asterisk(), REPO.asterisk(), BRANCH.asterisk(), JOB.asterisk(), RUN.asterisk());
+    final static List<SelectFieldOrAsterisk> STAGE_ONLY_FIELDS =  List.of(STAGE.STAGE_ID, STAGE.STAGE_NAME, STAGE.RUN_FK);
+    final static List<SelectFieldOrAsterisk> COMPANY_ORG_REPO_BRANCH_JOB_RUN_STAGE_FIELDS =  combine(COMPANY_ORG_REPO_BRANCH_JOB_RUN_FIELDS, STAGE_ONLY_FIELDS);
+    final static List<SelectFieldOrAsterisk> COMPANY_ORG_REPO_BRANCH_JOB_RUN_STAGE_TEST_RESULT_FIELDS = combine(COMPANY_ORG_REPO_BRANCH_JOB_RUN_STAGE_FIELDS, TEST_RESULT.asterisk());
+
+
+
+
 
     @Autowired
     public BrowseService(DSLContext dsl) {
@@ -298,7 +320,7 @@ public class BrowseService extends AbstractPersistService {
 
     public Map<JobPojo, Map<RunPojo, Set<StagePojo>>> getJobRunsStages(String companyName, String orgName, String repoName, String branchName, Long jobId) {
 
-        Result<Record> recordResult = dsl.select()
+        Result<Record> recordResult = dsl.select(COMPANY_ORG_REPO_BRANCH_JOB_RUN_STAGE_FIELDS)
                 .from(COMPANY)
                 .leftJoin(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID)
                         .and(ORG.ORG_NAME.eq(orgName)))
@@ -333,7 +355,7 @@ public class BrowseService extends AbstractPersistService {
 
     public Map<RunPojo, Map<StagePojo, Set<TestResultPojo>>> getRunStagesTestResults(String companyName, String orgName, String repoName, String branchName, Long jobId, Long runId) {
 
-        Result<Record> recordResult = dsl.select()
+        Result<Record> recordResult = dsl.select(COMPANY_ORG_REPO_BRANCH_JOB_RUN_STAGE_TEST_RESULT_FIELDS)
                 .from(COMPANY)
                 .leftJoin(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID)
                         .and(ORG.ORG_NAME.eq(orgName)))
@@ -384,7 +406,7 @@ public class BrowseService extends AbstractPersistService {
                 .limit(runs)
                 .fetchArray(RUN.RUN_ID, Long.class);
 
-        Result<Record> recordResult = dsl.select()
+        Result<Record> recordResult = dsl.select(COMPANY_ORG_REPO_BRANCH_JOB_RUN_STAGE_TEST_RESULT_FIELDS)
                 .from(COMPANY)
                 .join(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID)
                         .and(ORG.ORG_NAME.eq(orgName)))
@@ -422,7 +444,7 @@ public class BrowseService extends AbstractPersistService {
                 .fetchArray(RUN.RUN_ID, Long.class);
 
 
-        Result<Record> recordResult = dsl.select()
+        Result<Record> recordResult = dsl.select(COMPANY_ORG_REPO_BRANCH_JOB_RUN_STAGE_TEST_RESULT_FIELDS)
                 .from(COMPANY)
                 .join(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID)
                         .and(ORG.ORG_NAME.eq(orgName)))
@@ -447,7 +469,7 @@ public class BrowseService extends AbstractPersistService {
     public BranchStageViewResponse getStageViewForJobInfo(String companyName, String orgName, String repoName, String branchName, Map<String,String> jobInfo) {
 
         //final String jobInfoJson = StringMapUtil.toJson(jobInfo);
-        Result<Record> recordResult = dsl.select()
+        Result<Record> recordResult = dsl.select(COMPANY_ORG_REPO_BRANCH_JOB_RUN_STAGE_TEST_RESULT_FIELDS)
                 .from(COMPANY)
                 .join(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID)
                         .and(ORG.ORG_NAME.eq(orgName)))
@@ -748,28 +770,6 @@ public class BrowseService extends AbstractPersistService {
         testCaseFault.setMessage(record.get(TEST_CASE_FAULT.MESSAGE));
         testCaseFault.setValue(record.get(TEST_CASE_FAULT.VALUE));
         return testCaseFault;
-    }
-
-    public StagePojo getStage(String companyName, String orgName, String repoName, String branchName, String sha, UUID runReference, String stageName) {
-        StagePojo ret = dsl.select(STAGE.fields())
-                .from(ORG)
-                .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
-                        .and(ORG.ORG_NAME.eq(orgName))
-                        .and(REPO.REPO_NAME.eq(repoName)))
-                .join(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
-                        .and(BRANCH.BRANCH_NAME.eq(branchName)))
-                .join(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
-                .join(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID)
-                        .and(RUN.SHA.eq(sha))
-                        .and(RUN.RUN_REFERENCE.eq(runReference.toString())))
-                .join(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID)
-                        .and(STAGE.STAGE_NAME.eq(stageName)))
-                .fetchOne()
-                .into(StagePojo.class);
-        if (ret == null) {
-            throwNotFound("company: " + companyName + ", org: " + orgName, "repo: " + repoName, "branch: " + branchName, "sha: " + sha, "runReference: " + runReference, "stage: " + stageName);
-        }
-        return ret;
     }
 
     public List<TestStatusPojo> getAllTestStatuses() {
