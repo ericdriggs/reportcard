@@ -35,14 +35,11 @@ VALUES (1, 'aaaaaaaa-2222-bbbb-cccc-dddddddddddd', 1, 'bdd15b6fae26738ca58f0b300
 INSERT INTO `reportcard`.`stage`
 (`stage_id`,
  `stage_name`,
- `run_fk`,
- `test_result_json`
+ `run_fk`
 )
 VALUES (1,
         'api',
-        1,
-        '{"tests":70,"skipped":30,"error":10,"failure":20,"time":3.30,"testSuites":[{"name":"testSuiteName1","tests":8,"skipped":7,"error":6,"failure":0,"time":1.010,"packageName":"com.foo.baz","testCases":[{"name":"testCaseName1","className":"testCaseClassName1","time":0.500,"testStatusFk":1,"testCaseFaults":[{"faultContextFk":2,"type":"fooType","message":"fooMessage","value":"fooMessage","faultContext":"FAILURE"}]}]}]}'
-        );
+        1);
 
 
 
@@ -53,14 +50,19 @@ INSERT INTO `reportcard`.`test_result`
  `skipped`,
  `error`,
  `failure`,
- `time`)
+ `time`,
+ `test_suites_json`
+
+)
 VALUES (1, --       <{test_result_id: }>
         1, --       <{stage_fk: }>
         70, --       <{tests: }>
         30, --       <{skipped: }>,
         10, --       <{error: }>,
         20, --       <{failure: }>,
-        3.300); --   <{time: }>,
+        3.300, --   <{time: }>,
+        '[{"name":"testSuiteName1","tests":8,"skipped":7,"error":6,"failure":0,"time":1.010,"packageName":"com.foo.baz","testCases":[{"name":"testCaseName1","className":"testCaseClassName1","time":0.500,"testStatusFk":1,"testCaseFaults":[{"faultContextFk":2,"type":"fooType","message":"fooMessage","value":"fooMessage","faultContext":"FAILURE"}]}]}]'
+       );
 
 INSERT INTO `reportcard`.`test_suite`
 (`test_suite_id`,

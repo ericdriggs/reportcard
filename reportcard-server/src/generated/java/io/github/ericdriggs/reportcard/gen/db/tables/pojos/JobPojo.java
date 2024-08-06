@@ -21,11 +21,11 @@ import lombok.Generated;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class JobPojo implements Serializable {
 
-    private static final long serialVersionUID = 752525929;
+    private static final long serialVersionUID = -31466233;
 
     private Long jobId;
     private String jobInfo;
     private Integer branchFk;
-    private String jobInfoStr;
     private Instant lastRun;
+    private String jobInfoStr;
 }

@@ -173,11 +173,6 @@ public class BrowseServiceTest extends AbstractBrowseServiceTest {
         validateTestStage(stage);
     }
 
-    @Test
-    void getStageTest() {
-        StagePojo stage = browseService.getStage(TestData.company, TestData.org, TestData.repo, TestData.branch, TestData.sha, TestData.runReference, TestData.stage);
-        validateTestStage(stage);
-    }
 
     @Test
     void getRunTest() {

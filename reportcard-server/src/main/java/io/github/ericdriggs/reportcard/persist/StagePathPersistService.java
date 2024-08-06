@@ -47,9 +47,6 @@ public class StagePathPersistService extends AbstractPersistService {
     final protected JobDao jobDao;
     final protected RunDao runDao;
     final protected StageDao stageDao;
-    final protected TestResultDao testResultDao;
-    final protected TestSuiteDao testSuiteDao;
-    final protected TestCaseDao testCaseDao;
 
     @Autowired
     public StagePathPersistService(DSLContext dsl) {
@@ -62,10 +59,6 @@ public class StagePathPersistService extends AbstractPersistService {
         jobDao = new JobDao(dsl.configuration());
         runDao = new RunDao(dsl.configuration());
         stageDao = new StageDao(dsl.configuration());
-
-        testResultDao = new TestResultDao(dsl.configuration());
-        testSuiteDao = new TestSuiteDao(dsl.configuration());
-        testCaseDao = new TestCaseDao(dsl.configuration());
     }
 
     public StagePath getStagePath(Long runId, String stageName) {
@@ -327,8 +320,7 @@ public class StagePathPersistService extends AbstractPersistService {
         if (stagePath.getStage() == null) {
             StagePojo stage = new StagePojo()
                     .setStageName(request.getStage())
-                    .setRunFk(stagePath.getRun().getRunId())
-                    .setTestResultJson(TestResultModel.asJson(testResultModel));
+                    .setRunFk(stagePath.getRun().getRunId());
             stageDao.insert(stage);
             stagePath.setStage(stage);
         }

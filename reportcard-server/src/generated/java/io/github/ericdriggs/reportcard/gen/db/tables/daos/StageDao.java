@@ -101,19 +101,4 @@ public class StageDao extends DAOImpl<StageRecord, StagePojo, Long> {
     public List<StagePojo> fetchByRunFkTable(Long... values) {
         return fetch(StageTable.STAGE.RUN_FK, values);
     }
-
-    /**
-     * Fetch records that have <code>test_result_json BETWEEN lowerInclusive AND
-     * upperInclusive</code>
-     */
-    public List<StagePojo> fetchRangeOfTestResultJsonTable(String lowerInclusive, String upperInclusive) {
-        return fetchRange(StageTable.STAGE.TEST_RESULT_JSON, lowerInclusive, upperInclusive);
-    }
-
-    /**
-     * Fetch records that have <code>test_result_json IN (values)</code>
-     */
-    public List<StagePojo> fetchByTestResultJsonTable(String... values) {
-        return fetch(StageTable.STAGE.TEST_RESULT_JSON, values);
-    }
 }

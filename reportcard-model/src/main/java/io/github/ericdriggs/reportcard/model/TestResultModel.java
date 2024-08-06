@@ -32,6 +32,7 @@ public class TestResultModel extends io.github.ericdriggs.reportcard.dto.TestRes
         return this;
     }
 
+
     @JsonIgnore
     public static String asJson(TestResultModel testResultModel) {
         if(testResultModel == null) {

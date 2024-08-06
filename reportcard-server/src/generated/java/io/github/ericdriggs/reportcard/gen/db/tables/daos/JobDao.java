@@ -104,21 +104,6 @@ public class JobDao extends DAOImpl<JobRecord, JobPojo, Long> {
     }
 
     /**
-     * Fetch records that have <code>job_info_str BETWEEN lowerInclusive AND
-     * upperInclusive</code>
-     */
-    public List<JobPojo> fetchRangeOfJobInfoStrTable(String lowerInclusive, String upperInclusive) {
-        return fetchRange(JobTable.JOB.JOB_INFO_STR, lowerInclusive, upperInclusive);
-    }
-
-    /**
-     * Fetch records that have <code>job_info_str IN (values)</code>
-     */
-    public List<JobPojo> fetchByJobInfoStrTable(String... values) {
-        return fetch(JobTable.JOB.JOB_INFO_STR, values);
-    }
-
-    /**
      * Fetch records that have <code>last_run BETWEEN lowerInclusive AND
      * upperInclusive</code>
      */
@@ -131,5 +116,20 @@ public class JobDao extends DAOImpl<JobRecord, JobPojo, Long> {
      */
     public List<JobPojo> fetchByLastRunTable(Instant... values) {
         return fetch(JobTable.JOB.LAST_RUN, values);
+    }
+
+    /**
+     * Fetch records that have <code>job_info_str BETWEEN lowerInclusive AND
+     * upperInclusive</code>
+     */
+    public List<JobPojo> fetchRangeOfJobInfoStrTable(String lowerInclusive, String upperInclusive) {
+        return fetchRange(JobTable.JOB.JOB_INFO_STR, lowerInclusive, upperInclusive);
+    }
+
+    /**
+     * Fetch records that have <code>job_info_str IN (values)</code>
+     */
+    public List<JobPojo> fetchByJobInfoStrTable(String... values) {
+        return fetch(JobTable.JOB.JOB_INFO_STR, values);
     }
 }

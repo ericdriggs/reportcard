@@ -9,9 +9,8 @@ import io.github.ericdriggs.reportcard.model.StageTestResultPojo;
 import io.github.ericdriggs.reportcard.model.TestResultModel;
 import io.github.ericdriggs.reportcard.util.JsonCompare;
 import io.github.ericdriggs.reportcard.util.db.JobUtil;
-import org.jooq.DSLContext;
+import org.jooq.*;
 import org.jooq.Record;
-import org.jooq.Result;
 import org.jooq.exception.NoDataFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -685,7 +684,6 @@ public class BrowseService extends AbstractPersistService {
 
 
 
-
 //    import io.github.ericdriggs.reportcard.model.TestSuitePojo;
 //import io.github.ericdriggs.reportcard.model.TestResultPojo;
 //import io.github.ericdriggs.reportcard.model.TestCasePojo;
@@ -706,6 +704,7 @@ public class BrowseService extends AbstractPersistService {
         testResult.setTime(record.get(TEST_RESULT.TIME));
         testResult.setIsSuccess(record.get(TEST_RESULT.IS_SUCCESS));
         testResult.setHasSkip(record.get(TEST_RESULT.HAS_SKIP));
+        testResult.setTestSuitesJson(record.get(TEST_RESULT.TEST_SUITES_JSON));
         return testResult;
     }
 
@@ -748,28 +747,6 @@ public class BrowseService extends AbstractPersistService {
         testCaseFault.setMessage(record.get(TEST_CASE_FAULT.MESSAGE));
         testCaseFault.setValue(record.get(TEST_CASE_FAULT.VALUE));
         return testCaseFault;
-    }
-
-    public StagePojo getStage(String companyName, String orgName, String repoName, String branchName, String sha, UUID runReference, String stageName) {
-        StagePojo ret = dsl.select(STAGE.fields())
-                .from(ORG)
-                .join(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
-                        .and(ORG.ORG_NAME.eq(orgName))
-                        .and(REPO.REPO_NAME.eq(repoName)))
-                .join(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
-                        .and(BRANCH.BRANCH_NAME.eq(branchName)))
-                .join(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
-                .join(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID)
-                        .and(RUN.SHA.eq(sha))
-                        .and(RUN.RUN_REFERENCE.eq(runReference.toString())))
-                .join(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID)
-                        .and(STAGE.STAGE_NAME.eq(stageName)))
-                .fetchOne()
-                .into(StagePojo.class);
-        if (ret == null) {
-            throwNotFound("company: " + companyName + ", org: " + orgName, "repo: " + repoName, "branch: " + branchName, "sha: " + sha, "runReference: " + runReference, "stage: " + stageName);
-        }
-        return ret;
     }
 
     public List<TestStatusPojo> getAllTestStatuses() {

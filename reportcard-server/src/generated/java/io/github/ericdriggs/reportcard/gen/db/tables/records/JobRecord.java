@@ -23,9 +23,9 @@ import org.jooq.impl.UpdatableRecordImpl;
  */
 @Generated
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class JobRecord extends UpdatableRecordImpl<JobRecord> implements Record5<Long, String, Integer, String, Instant> {
+public class JobRecord extends UpdatableRecordImpl<JobRecord> implements Record5<Long, String, Integer, Instant, String> {
 
-    private static final long serialVersionUID = -708847940;
+    private static final long serialVersionUID = -842130380;
 
     /**
      * Setter for <code>reportcard.job.job_id</code>.
@@ -73,25 +73,10 @@ public class JobRecord extends UpdatableRecordImpl<JobRecord> implements Record5
     }
 
     /**
-     * Setter for <code>reportcard.job.job_info_str</code>.
-     */
-    public JobRecord setJobInfoStr(String value) {
-        set(3, value);
-        return this;
-    }
-
-    /**
-     * Getter for <code>reportcard.job.job_info_str</code>.
-     */
-    public String getJobInfoStr() {
-        return (String) get(3);
-    }
-
-    /**
      * Setter for <code>reportcard.job.last_run</code>.
      */
     public JobRecord setLastRun(Instant value) {
-        set(4, value);
+        set(3, value);
         return this;
     }
 
@@ -99,7 +84,22 @@ public class JobRecord extends UpdatableRecordImpl<JobRecord> implements Record5
      * Getter for <code>reportcard.job.last_run</code>.
      */
     public Instant getLastRun() {
-        return (Instant) get(4);
+        return (Instant) get(3);
+    }
+
+    /**
+     * Setter for <code>reportcard.job.job_info_str</code>.
+     */
+    public JobRecord setJobInfoStr(String value) {
+        set(4, value);
+        return this;
+    }
+
+    /**
+     * Getter for <code>reportcard.job.job_info_str</code>.
+     */
+    public String getJobInfoStr() {
+        return (String) get(4);
     }
 
     // -------------------------------------------------------------------------
@@ -116,12 +116,12 @@ public class JobRecord extends UpdatableRecordImpl<JobRecord> implements Record5
     // -------------------------------------------------------------------------
 
     @Override
-    public Row5<Long, String, Integer, String, Instant> fieldsRow() {
+    public Row5<Long, String, Integer, Instant, String> fieldsRow() {
         return (Row5) super.fieldsRow();
     }
 
     @Override
-    public Row5<Long, String, Integer, String, Instant> valuesRow() {
+    public Row5<Long, String, Integer, Instant, String> valuesRow() {
         return (Row5) super.valuesRow();
     }
 
@@ -141,13 +141,13 @@ public class JobRecord extends UpdatableRecordImpl<JobRecord> implements Record5
     }
 
     @Override
-    public Field<String> field4() {
-        return JobTable.JOB.JOB_INFO_STR;
+    public Field<Instant> field4() {
+        return JobTable.JOB.LAST_RUN;
     }
 
     @Override
-    public Field<Instant> field5() {
-        return JobTable.JOB.LAST_RUN;
+    public Field<String> field5() {
+        return JobTable.JOB.JOB_INFO_STR;
     }
 
     @Override
@@ -166,13 +166,13 @@ public class JobRecord extends UpdatableRecordImpl<JobRecord> implements Record5
     }
 
     @Override
-    public String component4() {
-        return getJobInfoStr();
+    public Instant component4() {
+        return getLastRun();
     }
 
     @Override
-    public Instant component5() {
-        return getLastRun();
+    public String component5() {
+        return getJobInfoStr();
     }
 
     @Override
@@ -191,13 +191,13 @@ public class JobRecord extends UpdatableRecordImpl<JobRecord> implements Record5
     }
 
     @Override
-    public String value4() {
-        return getJobInfoStr();
+    public Instant value4() {
+        return getLastRun();
     }
 
     @Override
-    public Instant value5() {
-        return getLastRun();
+    public String value5() {
+        return getJobInfoStr();
     }
 
     @Override
@@ -219,19 +219,19 @@ public class JobRecord extends UpdatableRecordImpl<JobRecord> implements Record5
     }
 
     @Override
-    public JobRecord value4(String value) {
-        setJobInfoStr(value);
-        return this;
-    }
-
-    @Override
-    public JobRecord value5(Instant value) {
+    public JobRecord value4(Instant value) {
         setLastRun(value);
         return this;
     }
 
     @Override
-    public JobRecord values(Long value1, String value2, Integer value3, String value4, Instant value5) {
+    public JobRecord value5(String value) {
+        setJobInfoStr(value);
+        return this;
+    }
+
+    @Override
+    public JobRecord values(Long value1, String value2, Integer value3, Instant value4, String value5) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -254,14 +254,14 @@ public class JobRecord extends UpdatableRecordImpl<JobRecord> implements Record5
     /**
      * Create a detached, initialised JobRecord
      */
-    public JobRecord(Long jobId, String jobInfo, Integer branchFk, String jobInfoStr, Instant lastRun) {
+    public JobRecord(Long jobId, String jobInfo, Integer branchFk, Instant lastRun, String jobInfoStr) {
         super(JobTable.JOB);
 
         setJobId(jobId);
         setJobInfo(jobInfo);
         setBranchFk(branchFk);
-        setJobInfoStr(jobInfoStr);
         setLastRun(lastRun);
+        setJobInfoStr(jobInfoStr);
     }
 
     /**
@@ -274,8 +274,8 @@ public class JobRecord extends UpdatableRecordImpl<JobRecord> implements Record5
             setJobId(value.getJobId());
             setJobInfo(value.getJobInfo());
             setBranchFk(value.getBranchFk());
-            setJobInfoStr(value.getJobInfoStr());
             setLastRun(value.getLastRun());
+            setJobInfoStr(value.getJobInfoStr());
         }
     }
 }

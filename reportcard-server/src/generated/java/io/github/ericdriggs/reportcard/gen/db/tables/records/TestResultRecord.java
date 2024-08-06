@@ -14,8 +14,8 @@ import lombok.Generated;
 
 import org.jooq.Field;
 import org.jooq.Record1;
-import org.jooq.Record11;
-import org.jooq.Row11;
+import org.jooq.Record12;
+import org.jooq.Row12;
 import org.jooq.impl.UpdatableRecordImpl;
 
 
@@ -24,9 +24,9 @@ import org.jooq.impl.UpdatableRecordImpl;
  */
 @Generated
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> implements Record11<Long, Long, Integer, Integer, Integer, Integer, BigDecimal, Instant, String, Boolean, Boolean> {
+public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> implements Record12<Long, Long, Integer, Integer, Integer, Integer, BigDecimal, Instant, String, Boolean, Boolean, String> {
 
-    private static final long serialVersionUID = 330872369;
+    private static final long serialVersionUID = 1279309682;
 
     /**
      * Setter for <code>reportcard.test_result.test_result_id</code>.
@@ -193,6 +193,21 @@ public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> impl
         return (Boolean) get(10);
     }
 
+    /**
+     * Setter for <code>reportcard.test_result.test_suites_json</code>.
+     */
+    public TestResultRecord setTestSuitesJson(String value) {
+        set(11, value);
+        return this;
+    }
+
+    /**
+     * Getter for <code>reportcard.test_result.test_suites_json</code>.
+     */
+    public String getTestSuitesJson() {
+        return (String) get(11);
+    }
+
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
@@ -203,17 +218,17 @@ public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> impl
     }
 
     // -------------------------------------------------------------------------
-    // Record11 type implementation
+    // Record12 type implementation
     // -------------------------------------------------------------------------
 
     @Override
-    public Row11<Long, Long, Integer, Integer, Integer, Integer, BigDecimal, Instant, String, Boolean, Boolean> fieldsRow() {
-        return (Row11) super.fieldsRow();
+    public Row12<Long, Long, Integer, Integer, Integer, Integer, BigDecimal, Instant, String, Boolean, Boolean, String> fieldsRow() {
+        return (Row12) super.fieldsRow();
     }
 
     @Override
-    public Row11<Long, Long, Integer, Integer, Integer, Integer, BigDecimal, Instant, String, Boolean, Boolean> valuesRow() {
-        return (Row11) super.valuesRow();
+    public Row12<Long, Long, Integer, Integer, Integer, Integer, BigDecimal, Instant, String, Boolean, Boolean, String> valuesRow() {
+        return (Row12) super.valuesRow();
     }
 
     @Override
@@ -272,6 +287,11 @@ public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> impl
     }
 
     @Override
+    public Field<String> field12() {
+        return TestResultTable.TEST_RESULT.TEST_SUITES_JSON;
+    }
+
+    @Override
     public Long component1() {
         return getTestResultId();
     }
@@ -327,6 +347,11 @@ public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> impl
     }
 
     @Override
+    public String component12() {
+        return getTestSuitesJson();
+    }
+
+    @Override
     public Long value1() {
         return getTestResultId();
     }
@@ -379,6 +404,11 @@ public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> impl
     @Override
     public Boolean value11() {
         return getHasSkip();
+    }
+
+    @Override
+    public String value12() {
+        return getTestSuitesJson();
     }
 
     @Override
@@ -448,7 +478,13 @@ public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> impl
     }
 
     @Override
-    public TestResultRecord values(Long value1, Long value2, Integer value3, Integer value4, Integer value5, Integer value6, BigDecimal value7, Instant value8, String value9, Boolean value10, Boolean value11) {
+    public TestResultRecord value12(String value) {
+        setTestSuitesJson(value);
+        return this;
+    }
+
+    @Override
+    public TestResultRecord values(Long value1, Long value2, Integer value3, Integer value4, Integer value5, Integer value6, BigDecimal value7, Instant value8, String value9, Boolean value10, Boolean value11, String value12) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -460,6 +496,7 @@ public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> impl
         value9(value9);
         value10(value10);
         value11(value11);
+        value12(value12);
         return this;
     }
 
@@ -477,7 +514,7 @@ public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> impl
     /**
      * Create a detached, initialised TestResultRecord
      */
-    public TestResultRecord(Long testResultId, Long stageFk, Integer tests, Integer skipped, Integer error, Integer failure, BigDecimal time, Instant testResultCreated, String externalLinks, Boolean isSuccess, Boolean hasSkip) {
+    public TestResultRecord(Long testResultId, Long stageFk, Integer tests, Integer skipped, Integer error, Integer failure, BigDecimal time, Instant testResultCreated, String externalLinks, Boolean isSuccess, Boolean hasSkip, String testSuitesJson) {
         super(TestResultTable.TEST_RESULT);
 
         setTestResultId(testResultId);
@@ -491,6 +528,7 @@ public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> impl
         setExternalLinks(externalLinks);
         setIsSuccess(isSuccess);
         setHasSkip(hasSkip);
+        setTestSuitesJson(testSuitesJson);
     }
 
     /**
@@ -511,6 +549,7 @@ public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> impl
             setExternalLinks(value.getExternalLinks());
             setIsSuccess(value.getIsSuccess());
             setHasSkip(value.getHasSkip());
+            setTestSuitesJson(value.getTestSuitesJson());
         }
     }
 }

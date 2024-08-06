@@ -67,13 +67,6 @@ public class InsertStagePathTest extends AbstractTestResultPersistTest {
         Assertions.assertEquals(request.getRunReference().toString(), stagePath.getRun().getRunReference());
         Assertions.assertEquals(request.getStage(), stagePath.getStage().getStageName());
         assertNotNull(stagePath.getStage().getStageId());
-        {
-            final String testResultJson = stagePath.getStage().getTestResultJson();
-            assertNotNull(testResultJson);
-            assertNotEquals("{}", testResultJson);
-            log.info("testResultJson: " + testResultJson);
-        }
-
         //use coarse assertion of within a few seconds since side effect updates last run
         assertTrue(Duration.between(
                                    stagePath.getRun().getRunDate(),

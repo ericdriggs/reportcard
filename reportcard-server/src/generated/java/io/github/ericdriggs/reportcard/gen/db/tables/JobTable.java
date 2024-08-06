@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class JobTable extends TableImpl<JobRecord> {
 
-    private static final long serialVersionUID = 935871350;
+    private static final long serialVersionUID = 1680103534;
 
     /**
      * The reference instance of <code>reportcard.job</code>
@@ -72,14 +72,14 @@ public class JobTable extends TableImpl<JobRecord> {
     public final TableField<JobRecord, Integer> BRANCH_FK = createField(DSL.name("branch_fk"), SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
-     * The column <code>reportcard.job.job_info_str</code>.
-     */
-    public final TableField<JobRecord, String> JOB_INFO_STR = createField(DSL.name("job_info_str"), SQLDataType.VARCHAR(512), this, "");
-
-    /**
      * The column <code>reportcard.job.last_run</code>.
      */
     public final TableField<JobRecord, Instant> LAST_RUN = createField(DSL.name("last_run"), SQLDataType.INSTANT.defaultValue(DSL.inline("utc_timestamp()", SQLDataType.INSTANT)), this, "");
+
+    /**
+     * The column <code>reportcard.job.job_info_str</code>.
+     */
+    public final TableField<JobRecord, String> JOB_INFO_STR = createField(DSL.name("job_info_str"), SQLDataType.VARCHAR(512), this, "");
 
     private JobTable(Name alias, Table<JobRecord> aliased) {
         this(alias, aliased, null);
@@ -195,14 +195,14 @@ public class JobTable extends TableImpl<JobRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row5<Long, String, Integer, String, Instant> fieldsRow() {
+    public Row5<Long, String, Integer, Instant, String> fieldsRow() {
         return (Row5) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function5<? super Long, ? super String, ? super Integer, ? super String, ? super Instant, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function5<? super Long, ? super String, ? super Integer, ? super Instant, ? super String, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
@@ -210,7 +210,7 @@ public class JobTable extends TableImpl<JobRecord> {
      * Convenience mapping calling {@link SelectField#convertFrom(Class,
      * Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function5<? super Long, ? super String, ? super Integer, ? super String, ? super Instant, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function5<? super Long, ? super String, ? super Integer, ? super Instant, ? super String, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }
