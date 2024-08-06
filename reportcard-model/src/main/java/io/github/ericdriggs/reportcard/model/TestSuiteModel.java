@@ -3,13 +3,23 @@ package io.github.ericdriggs.reportcard.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.ericdriggs.reportcard.mappers.SharedObjectMappers;
 import io.github.ericdriggs.reportcard.xml.IsEmptyUtil;
 import io.github.ericdriggs.reportcard.xml.ResultCount;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class TestSuiteModel extends io.github.ericdriggs.reportcard.dto.TestSuite {
+
+    @JsonIgnore
+    final static Logger log = LoggerFactory.getLogger(TestResultModel.class);
+    @JsonIgnore
+    final static ObjectMapper mapper = SharedObjectMappers.ignoreUnknownObjectMapper;
 
     private List<TestCaseModel> testCases = new ArrayList<>();
 
@@ -69,7 +79,6 @@ public class TestSuiteModel extends io.github.ericdriggs.reportcard.dto.TestSuit
         return matched;
     }
 
-
     @JsonIgnore
     public List<TestCaseModel> getTestCasesWithFaults() {
         List<TestCaseModel> matched = new ArrayList<>();
@@ -85,15 +94,28 @@ public class TestSuiteModel extends io.github.ericdriggs.reportcard.dto.TestSuit
     public TestStatus getTestStatus() {
         if (getError() > 0) {
             return TestStatus.ERROR;
-        }
-        else if (getFailure() > 0) {
+        } else if (getFailure() > 0) {
             return TestStatus.FAILURE;
-        }
-        else if (getIsSuccess()) {
+        } else if (getIsSuccess()) {
             return TestStatus.SUCCESS;
         }
         return TestStatus.SKIPPED;
     }
 
+    @JsonIgnore
+    public static String asJson(List<TestSuiteModel> testSuiteModels) {
+        if (testSuiteModels == null) {
+            return null;
+        }
+        if (testSuiteModels.isEmpty()) {
+            return "[]";
+        }
+        try {
+            return mapper.writeValueAsString(testSuiteModels);
+        } catch (JsonProcessingException e) {
+            log.error("failed to parse json for testResultModel: {}", testSuiteModels, e);
+        }
+        return null;
+    }
 
 }

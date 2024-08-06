@@ -237,6 +237,7 @@ CREATE TABLE IF NOT EXISTS `reportcard`.`test_result` (
   `external_links` JSON NULL DEFAULT NULL,
   `is_success` TINYINT(1) GENERATED ALWAYS AS (((`failure` + `error`) = 0)) VIRTUAL,
   `has_skip` TINYINT(1) GENERATED ALWAYS AS ((`skipped` > 0)) VIRTUAL,
+  `test_suites_json` JSON DEFAULT NULL,
   PRIMARY KEY (`test_result_id`),
   INDEX `test_result_stage_fk_idx` (`stage_fk` ASC) VISIBLE,
   UNIQUE INDEX `stage_fk_UNIQUE` (`stage_fk` ASC) VISIBLE,

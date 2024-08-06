@@ -11,8 +11,8 @@ import lombok.Generated;
 
 import org.jooq.Field;
 import org.jooq.Record1;
-import org.jooq.Record4;
-import org.jooq.Row4;
+import org.jooq.Record3;
+import org.jooq.Row3;
 import org.jooq.impl.UpdatableRecordImpl;
 
 
@@ -21,9 +21,9 @@ import org.jooq.impl.UpdatableRecordImpl;
  */
 @Generated
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class StageRecord extends UpdatableRecordImpl<StageRecord> implements Record4<Long, String, Long, String> {
+public class StageRecord extends UpdatableRecordImpl<StageRecord> implements Record3<Long, String, Long> {
 
-    private static final long serialVersionUID = -1419455212;
+    private static final long serialVersionUID = 1359282229;
 
     /**
      * Setter for <code>reportcard.stage.stage_id</code>.
@@ -70,21 +70,6 @@ public class StageRecord extends UpdatableRecordImpl<StageRecord> implements Rec
         return (Long) get(2);
     }
 
-    /**
-     * Setter for <code>reportcard.stage.test_result_json</code>.
-     */
-    public StageRecord setTestResultJson(String value) {
-        set(3, value);
-        return this;
-    }
-
-    /**
-     * Getter for <code>reportcard.stage.test_result_json</code>.
-     */
-    public String getTestResultJson() {
-        return (String) get(3);
-    }
-
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
@@ -95,17 +80,17 @@ public class StageRecord extends UpdatableRecordImpl<StageRecord> implements Rec
     }
 
     // -------------------------------------------------------------------------
-    // Record4 type implementation
+    // Record3 type implementation
     // -------------------------------------------------------------------------
 
     @Override
-    public Row4<Long, String, Long, String> fieldsRow() {
-        return (Row4) super.fieldsRow();
+    public Row3<Long, String, Long> fieldsRow() {
+        return (Row3) super.fieldsRow();
     }
 
     @Override
-    public Row4<Long, String, Long, String> valuesRow() {
-        return (Row4) super.valuesRow();
+    public Row3<Long, String, Long> valuesRow() {
+        return (Row3) super.valuesRow();
     }
 
     @Override
@@ -124,11 +109,6 @@ public class StageRecord extends UpdatableRecordImpl<StageRecord> implements Rec
     }
 
     @Override
-    public Field<String> field4() {
-        return StageTable.STAGE.TEST_RESULT_JSON;
-    }
-
-    @Override
     public Long component1() {
         return getStageId();
     }
@@ -144,11 +124,6 @@ public class StageRecord extends UpdatableRecordImpl<StageRecord> implements Rec
     }
 
     @Override
-    public String component4() {
-        return getTestResultJson();
-    }
-
-    @Override
     public Long value1() {
         return getStageId();
     }
@@ -161,11 +136,6 @@ public class StageRecord extends UpdatableRecordImpl<StageRecord> implements Rec
     @Override
     public Long value3() {
         return getRunFk();
-    }
-
-    @Override
-    public String value4() {
-        return getTestResultJson();
     }
 
     @Override
@@ -187,17 +157,10 @@ public class StageRecord extends UpdatableRecordImpl<StageRecord> implements Rec
     }
 
     @Override
-    public StageRecord value4(String value) {
-        setTestResultJson(value);
-        return this;
-    }
-
-    @Override
-    public StageRecord values(Long value1, String value2, Long value3, String value4) {
+    public StageRecord values(Long value1, String value2, Long value3) {
         value1(value1);
         value2(value2);
         value3(value3);
-        value4(value4);
         return this;
     }
 
@@ -215,13 +178,12 @@ public class StageRecord extends UpdatableRecordImpl<StageRecord> implements Rec
     /**
      * Create a detached, initialised StageRecord
      */
-    public StageRecord(Long stageId, String stageName, Long runFk, String testResultJson) {
+    public StageRecord(Long stageId, String stageName, Long runFk) {
         super(StageTable.STAGE);
 
         setStageId(stageId);
         setStageName(stageName);
         setRunFk(runFk);
-        setTestResultJson(testResultJson);
     }
 
     /**
@@ -234,7 +196,6 @@ public class StageRecord extends UpdatableRecordImpl<StageRecord> implements Rec
             setStageId(value.getStageId());
             setStageName(value.getStageName());
             setRunFk(value.getRunFk());
-            setTestResultJson(value.getTestResultJson());
         }
     }
 }

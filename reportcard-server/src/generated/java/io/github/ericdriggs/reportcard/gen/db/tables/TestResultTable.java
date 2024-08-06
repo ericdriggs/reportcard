@@ -19,13 +19,13 @@ import lombok.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
-import org.jooq.Function11;
+import org.jooq.Function12;
 import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
-import org.jooq.Row11;
+import org.jooq.Row12;
 import org.jooq.Schema;
 import org.jooq.SelectField;
 import org.jooq.Table;
@@ -44,7 +44,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestResultTable extends TableImpl<TestResultRecord> {
 
-    private static final long serialVersionUID = -508454083;
+    private static final long serialVersionUID = 1868555271;
 
     /**
      * The reference instance of <code>reportcard.test_result</code>
@@ -113,6 +113,11 @@ public class TestResultTable extends TableImpl<TestResultRecord> {
      * The column <code>reportcard.test_result.has_skip</code>.
      */
     public final TableField<TestResultRecord, Boolean> HAS_SKIP = createField(DSL.name("has_skip"), SQLDataType.BOOLEAN, this, "");
+
+    /**
+     * The column <code>reportcard.test_result.test_suites_json</code>.
+     */
+    public final TableField<TestResultRecord, String> TEST_SUITES_JSON = createField(DSL.name("test_suites_json"), SQLDataType.VARCHAR, this, "");
 
     private TestResultTable(Name alias, Table<TestResultRecord> aliased) {
         this(alias, aliased, null);
@@ -229,18 +234,18 @@ public class TestResultTable extends TableImpl<TestResultRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row11 type methods
+    // Row12 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row11<Long, Long, Integer, Integer, Integer, Integer, BigDecimal, Instant, String, Boolean, Boolean> fieldsRow() {
-        return (Row11) super.fieldsRow();
+    public Row12<Long, Long, Integer, Integer, Integer, Integer, BigDecimal, Instant, String, Boolean, Boolean, String> fieldsRow() {
+        return (Row12) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function11<? super Long, ? super Long, ? super Integer, ? super Integer, ? super Integer, ? super Integer, ? super BigDecimal, ? super Instant, ? super String, ? super Boolean, ? super Boolean, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function12<? super Long, ? super Long, ? super Integer, ? super Integer, ? super Integer, ? super Integer, ? super BigDecimal, ? super Instant, ? super String, ? super Boolean, ? super Boolean, ? super String, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
@@ -248,7 +253,7 @@ public class TestResultTable extends TableImpl<TestResultRecord> {
      * Convenience mapping calling {@link SelectField#convertFrom(Class,
      * Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function11<? super Long, ? super Long, ? super Integer, ? super Integer, ? super Integer, ? super Integer, ? super BigDecimal, ? super Instant, ? super String, ? super Boolean, ? super Boolean, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function12<? super Long, ? super Long, ? super Integer, ? super Integer, ? super Integer, ? super Integer, ? super BigDecimal, ? super Instant, ? super String, ? super Boolean, ? super Boolean, ? super String, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

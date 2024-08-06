@@ -109,6 +109,8 @@ public class InsertTestResultTest extends AbstractTestResultPersistTest {
             assertValues(testResultGet);
             assertIdsAndFks(testResultGet);
             assertExternalLinks(testResultGet);
+            assertNotNull(testResultGet.getTestSuiteJson());
+            assertNotEquals("{}", testResultGet.getTestSuiteJson(), testResultInsert.getTestSuiteJson());
         }
     }
 

@@ -161,7 +161,10 @@ public class TestResultPersistService extends StagePathPersistService {
 
         for(Record record : recordResult) {
 
-            TestResultModel testResult = record.into(TestResultRecord.class).into(TestResultModel.class);
+            TestResultRecord testResultRecord = record.into(TestResultRecord.class);
+            TestResultModel testResult = testResultRecord.into(TestResultModel.class);
+            //TODO: why isn't this json field isn't being translated properly?
+            testResult.setTestSuiteJson(testResultRecord.getTestSuitesJson());
             TestSuiteModel testSuite = record.into(TestSuiteRecord.class).into(TestSuiteModel.class);
             TestCaseModel testCase = record.into(TestCaseRecord.class).into(TestCaseModel.class);
             TestCaseFaultModel testCaseFault = record.into(TestCaseFaultRecord.class).into(TestCaseFaultModel.class);
@@ -244,6 +247,7 @@ public class TestResultPersistService extends StagePathPersistService {
                     .setTests(testResult.getTests())
                     .setTime(testResult.getTime())
                     .setExternalLinks(testResult.getExternalLinks())
+                    .setTestSuitesJson(TestSuiteModel.asJson(testSuites))
                     .store();
 
             testResult = testResultRecord.into(TestResultModel.class);

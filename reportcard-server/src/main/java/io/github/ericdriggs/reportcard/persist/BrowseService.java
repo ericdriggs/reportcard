@@ -36,29 +36,6 @@ public class BrowseService extends AbstractPersistService {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    //Boilerplate to avoid loading TEST_RESULT.test_result_json by default -- the json is only needed for trend analysis and loading for browsing wastes memory
-    static List<SelectFieldOrAsterisk> combine(List<SelectFieldOrAsterisk> l1, List<SelectFieldOrAsterisk> l2) {
-        List<SelectFieldOrAsterisk> list = new ArrayList<>(l1);
-        list.addAll(l2);
-        return list;
-    }
-
-
-    static List<SelectFieldOrAsterisk> combine(List<SelectFieldOrAsterisk> l, SelectFieldOrAsterisk item) {
-        List<SelectFieldOrAsterisk> list = new ArrayList<>(l);
-        list.add(item);
-        return list;
-    }
-
-    final static List<SelectFieldOrAsterisk> COMPANY_ORG_REPO_BRANCH_JOB_RUN_FIELDS = List.of(COMPANY.asterisk(), ORG.asterisk(), REPO.asterisk(), BRANCH.asterisk(), JOB.asterisk(), RUN.asterisk());
-    final static List<SelectFieldOrAsterisk> STAGE_ONLY_FIELDS =  List.of(STAGE.STAGE_ID, STAGE.STAGE_NAME, STAGE.RUN_FK);
-    final static List<SelectFieldOrAsterisk> COMPANY_ORG_REPO_BRANCH_JOB_RUN_STAGE_FIELDS =  combine(COMPANY_ORG_REPO_BRANCH_JOB_RUN_FIELDS, STAGE_ONLY_FIELDS);
-    final static List<SelectFieldOrAsterisk> COMPANY_ORG_REPO_BRANCH_JOB_RUN_STAGE_TEST_RESULT_FIELDS = combine(COMPANY_ORG_REPO_BRANCH_JOB_RUN_STAGE_FIELDS, TEST_RESULT.asterisk());
-
-
-
-
-
     @Autowired
     public BrowseService(DSLContext dsl) {
         super(dsl);
@@ -320,7 +297,7 @@ public class BrowseService extends AbstractPersistService {
 
     public Map<JobPojo, Map<RunPojo, Set<StagePojo>>> getJobRunsStages(String companyName, String orgName, String repoName, String branchName, Long jobId) {
 
-        Result<Record> recordResult = dsl.select(COMPANY_ORG_REPO_BRANCH_JOB_RUN_STAGE_FIELDS)
+        Result<Record> recordResult = dsl.select()
                 .from(COMPANY)
                 .leftJoin(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID)
                         .and(ORG.ORG_NAME.eq(orgName)))
@@ -355,7 +332,7 @@ public class BrowseService extends AbstractPersistService {
 
     public Map<RunPojo, Map<StagePojo, Set<TestResultPojo>>> getRunStagesTestResults(String companyName, String orgName, String repoName, String branchName, Long jobId, Long runId) {
 
-        Result<Record> recordResult = dsl.select(COMPANY_ORG_REPO_BRANCH_JOB_RUN_STAGE_TEST_RESULT_FIELDS)
+        Result<Record> recordResult = dsl.select()
                 .from(COMPANY)
                 .leftJoin(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID)
                         .and(ORG.ORG_NAME.eq(orgName)))
@@ -406,7 +383,7 @@ public class BrowseService extends AbstractPersistService {
                 .limit(runs)
                 .fetchArray(RUN.RUN_ID, Long.class);
 
-        Result<Record> recordResult = dsl.select(COMPANY_ORG_REPO_BRANCH_JOB_RUN_STAGE_TEST_RESULT_FIELDS)
+        Result<Record> recordResult = dsl.select()
                 .from(COMPANY)
                 .join(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID)
                         .and(ORG.ORG_NAME.eq(orgName)))
@@ -444,7 +421,7 @@ public class BrowseService extends AbstractPersistService {
                 .fetchArray(RUN.RUN_ID, Long.class);
 
 
-        Result<Record> recordResult = dsl.select(COMPANY_ORG_REPO_BRANCH_JOB_RUN_STAGE_TEST_RESULT_FIELDS)
+        Result<Record> recordResult = dsl.select()
                 .from(COMPANY)
                 .join(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID)
                         .and(ORG.ORG_NAME.eq(orgName)))
@@ -469,7 +446,7 @@ public class BrowseService extends AbstractPersistService {
     public BranchStageViewResponse getStageViewForJobInfo(String companyName, String orgName, String repoName, String branchName, Map<String,String> jobInfo) {
 
         //final String jobInfoJson = StringMapUtil.toJson(jobInfo);
-        Result<Record> recordResult = dsl.select(COMPANY_ORG_REPO_BRANCH_JOB_RUN_STAGE_TEST_RESULT_FIELDS)
+        Result<Record> recordResult = dsl.select()
                 .from(COMPANY)
                 .join(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID)
                         .and(ORG.ORG_NAME.eq(orgName)))
@@ -707,7 +684,6 @@ public class BrowseService extends AbstractPersistService {
 
 
 
-
 //    import io.github.ericdriggs.reportcard.model.TestSuitePojo;
 //import io.github.ericdriggs.reportcard.model.TestResultPojo;
 //import io.github.ericdriggs.reportcard.model.TestCasePojo;
@@ -728,6 +704,7 @@ public class BrowseService extends AbstractPersistService {
         testResult.setTime(record.get(TEST_RESULT.TIME));
         testResult.setIsSuccess(record.get(TEST_RESULT.IS_SUCCESS));
         testResult.setHasSkip(record.get(TEST_RESULT.HAS_SKIP));
+        testResult.setTestSuitesJson(record.get(TEST_RESULT.TEST_SUITES_JSON));
         return testResult;
     }
 

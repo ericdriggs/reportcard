@@ -29,4 +29,5 @@ public class TestResult implements Serializable {
     private Boolean isSuccess;
     private Boolean hasSkip;
     private String externalLinks;
+    private String testSuiteJson;
 }

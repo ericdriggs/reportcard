@@ -237,4 +237,19 @@ public class TestResultDao extends DAOImpl<TestResultRecord, TestResultPojo, Lon
     public List<TestResultPojo> fetchByHasSkipTable(Boolean... values) {
         return fetch(TestResultTable.TEST_RESULT.HAS_SKIP, values);
     }
+
+    /**
+     * Fetch records that have <code>test_suites_json BETWEEN lowerInclusive AND
+     * upperInclusive</code>
+     */
+    public List<TestResultPojo> fetchRangeOfTestSuitesJsonTable(String lowerInclusive, String upperInclusive) {
+        return fetchRange(TestResultTable.TEST_RESULT.TEST_SUITES_JSON, lowerInclusive, upperInclusive);
+    }
+
+    /**
+     * Fetch records that have <code>test_suites_json IN (values)</code>
+     */
+    public List<TestResultPojo> fetchByTestSuitesJsonTable(String... values) {
+        return fetch(TestResultTable.TEST_RESULT.TEST_SUITES_JSON, values);
+    }
 }
