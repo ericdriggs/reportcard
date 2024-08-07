@@ -274,7 +274,7 @@ public class BrowseHtmlHelper {
         final String stagesMain = getBranchStageView(branchStageViewResponse);
         final String orgLinks = getOrgLinks(org, path);
 
-        return getPage("<div>" + orgLinks + "<br>" + jobStagesDiv + "</div>" + stagesMain, getBreadCrumb(path, "runs=60"));
+        return getPage("<div>" + orgLinks + "<br>" + jobStagesDiv + "</div>" + stagesMain, getBreadCrumb(path));
     }
 
     protected final static String branchHeaders =
