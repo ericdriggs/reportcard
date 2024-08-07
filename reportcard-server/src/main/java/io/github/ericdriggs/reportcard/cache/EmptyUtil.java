@@ -1,16 +1,24 @@
 package io.github.ericdriggs.reportcard.cache;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
-public class EmptyUtil {
+public enum EmptyUtil {
+    ;//static methods only
+
+    public static <T> List<T> nullListToEmpty(List<T> list) {
+        if (list == null) {
+            return Collections.emptyList();
+        }
+        return list;
+    }
 
     /**
      * @return if the cache does not have a value

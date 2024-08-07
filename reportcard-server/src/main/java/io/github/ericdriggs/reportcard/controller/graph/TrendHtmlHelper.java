@@ -3,13 +3,10 @@ package io.github.ericdriggs.reportcard.controller.graph;
 import io.github.ericdriggs.reportcard.cache.dto.CompanyOrgRepoBranchJobRunStageDTO;
 import io.github.ericdriggs.reportcard.controller.browse.BrowseHtmlHelper;
 import io.github.ericdriggs.reportcard.controller.graph.trend.*;
-import io.github.ericdriggs.reportcard.gen.db.tables.pojos.RunPojo;
-import io.github.ericdriggs.reportcard.model.TestCaseModel;
 
 import io.github.ericdriggs.reportcard.model.trend.CompanyOrgRepoBranchJobStageName;
 import io.github.ericdriggs.reportcard.model.trend.JobStageTestTrend;
 import io.github.ericdriggs.reportcard.model.trend.TestPackageSuiteCase;
-import io.github.ericdriggs.reportcard.util.NumberStringUtil;
 import io.github.ericdriggs.reportcard.util.StringMapUtil;
 
 import org.apache.commons.lang3.StringUtils;
@@ -37,7 +34,6 @@ public class TrendHtmlHelper extends BrowseHtmlHelper {
 
     public static String getTrendMainDiv(JobStageTestTrend jobStageTestTrend) {
         final CompanyOrgRepoBranchJobStageName companyOrgRepoBranchJobStageName = jobStageTestTrend.getCompanyOrgRepoBranchJobStageName();
-        final TreeMap<TestPackageSuiteCase, TreeMap<RunPojo, TestCaseModel>> testCaseTrends = jobStageTestTrend.getTestCaseTrends();
 
         TestTrendTable testTrendTable = TestTrendTable.fromJob(jobStageTestTrend);
         return trendMainDiv.replace("<!--companyName-->", companyOrgRepoBranchJobStageName.getCompanyPojo().getCompanyName())

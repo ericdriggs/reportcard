@@ -8,7 +8,7 @@ import io.github.ericdriggs.reportcard.model.StageTestResultModel;
 import io.github.ericdriggs.reportcard.model.StageTestResultPojo;
 import io.github.ericdriggs.reportcard.model.TestResultModel;
 import io.github.ericdriggs.reportcard.util.JsonCompare;
-import io.github.ericdriggs.reportcard.util.db.JobUtil;
+import io.github.ericdriggs.reportcard.util.db.SqlJsonUtil;
 import org.jooq.*;
 import org.jooq.Record;
 import org.jooq.exception.NoDataFoundException;
@@ -455,7 +455,7 @@ public class BrowseService extends AbstractPersistService {
                 .join(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
                         .and(BRANCH.BRANCH_NAME.eq(branchName)))
                 .join(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID)
-                        .and(JobUtil.getJobInfoSqlClause(jobInfo)))
+                        .and(SqlJsonUtil.jobInfoEqualsJson(jobInfo)))
                 .join(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID))
                 .join(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID))
                 .leftJoin(STORAGE).on(STORAGE.STAGE_FK.eq(STAGE.STAGE_ID))
@@ -658,9 +658,6 @@ public class BrowseService extends AbstractPersistService {
                    .leftJoin(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID)
                                                    .and(STAGE.STAGE_NAME.eq(stageName)))
                    .leftJoin(TEST_RESULT).on(TEST_RESULT.STAGE_FK.eq(STAGE.STAGE_ID))
-                   .leftJoin(TEST_SUITE).on(TEST_SUITE.TEST_RESULT_FK.eq(TEST_RESULT.TEST_RESULT_ID))
-                   .leftJoin(TEST_CASE).on(TEST_CASE.TEST_SUITE_FK.eq(TEST_SUITE.TEST_SUITE_ID))
-                   .leftJoin(TEST_CASE_FAULT).on(TEST_CASE_FAULT.TEST_CASE_FK.eq(TEST_CASE.TEST_CASE_ID))
                    .where(COMPANY.COMPANY_NAME.eq(companyName))
                    .fetch();
 
@@ -706,47 +703,6 @@ public class BrowseService extends AbstractPersistService {
         testResult.setHasSkip(record.get(TEST_RESULT.HAS_SKIP));
         testResult.setTestSuitesJson(record.get(TEST_RESULT.TEST_SUITES_JSON));
         return testResult;
-    }
-
-    /**
-     * Needed since ambiguous column names can be overwritten by another table if using record into
-     *
-     * @param record a record containing TestResultPojo fields
-     * @return TestResultPojo
-     */
-    protected static TestSuitePojo getTestSuiteFromRecord(Record record) {
-        TestSuitePojo testSuite = record.into(TestSuitePojo.class);
-        testSuite.setTests(record.get(TEST_SUITE.TESTS));
-        testSuite.setSkipped(record.get(TEST_SUITE.SKIPPED));
-        testSuite.setError(record.get(TEST_SUITE.ERROR));
-        testSuite.setFailure(record.get(TEST_SUITE.FAILURE));
-        testSuite.setTime(record.get(TEST_SUITE.TIME));
-        testSuite.setIsSuccess(record.get(TEST_SUITE.IS_SUCCESS));
-        testSuite.setHasSkip(record.get(TEST_SUITE.HAS_SKIP));
-        return testSuite;
-    }
-
-    /**
-     * Needed since ambiguous column names can be overwritten by another table if using record into
-     *
-     * @param record a record containing TestResultPojo fields
-     * @return TestResultPojo
-     */
-    protected static TestCasePojo getTestCaseFromRecord(Record record) {
-        TestCasePojo testCase = record.into(TestCasePojo.class);
-        testCase.setName(record.get(TEST_CASE.NAME));
-        testCase.setTime(record.get(TEST_CASE.TIME));
-        testCase.setSystemErr(record.get(TEST_CASE.SYSTEM_ERR));
-        testCase.setSystemOut(record.get(TEST_CASE.SYSTEM_OUT));
-        return testCase;
-    }
-
-    protected static TestCaseFaultPojo getTestCaseFaultFromRecord(Record record) {
-        TestCaseFaultPojo testCaseFault = record.into(TestCaseFaultPojo.class);
-        testCaseFault.setType(record.get(TEST_CASE_FAULT.TYPE));
-        testCaseFault.setMessage(record.get(TEST_CASE_FAULT.MESSAGE));
-        testCaseFault.setValue(record.get(TEST_CASE_FAULT.VALUE));
-        return testCaseFault;
     }
 
     public List<TestStatusPojo> getAllTestStatuses() {

@@ -118,4 +118,10 @@ public class TestSuiteModel extends io.github.ericdriggs.reportcard.dto.TestSuit
         return null;
     }
 
+    @JsonIgnore
+    public static List<TestSuiteModel> fromJson(String json) {
+        final TestSuiteModel[] testSuiteModels = SharedObjectMappers.readValueOrDefault(json, TestSuiteModel[].class, new TestSuiteModel[0]);
+        return Arrays.asList(testSuiteModels);
+    }
+
 }

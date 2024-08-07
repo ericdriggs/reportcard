@@ -11,6 +11,7 @@ import io.github.ericdriggs.reportcard.model.graph.TestSuiteGraphBuilder;
 import io.github.ericdriggs.reportcard.model.graph.condition.TableConditionMap;
 import io.github.ericdriggs.reportcard.model.orgdashboard.OrgDashboard;
 import io.github.ericdriggs.reportcard.model.trend.JobStageTestTrend;
+import io.github.ericdriggs.reportcard.util.db.SqlJsonUtil;
 import lombok.SneakyThrows;
 import org.jooq.*;
 import org.jooq.impl.DSL;
@@ -22,9 +23,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.time.Instant;
-import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 
 import static io.github.ericdriggs.reportcard.gen.db.Tables.*;
 import static org.jooq.impl.DSL.*;
@@ -77,6 +78,7 @@ public class GraphService extends AbstractPersistService {
         tableConditionMap.put(REPO, REPO.REPO_NAME.eq(repoName));
         tableConditionMap.put(BRANCH, BRANCH.BRANCH_NAME.eq(branchName));
         tableConditionMap.put(JOB, JOB.JOB_ID.eq(jobId));
+        tableConditionMap.put(TEST_RESULT, condition(SqlJsonUtil.fieldNotEqualsJson(TEST_RESULT.TEST_SUITES_JSON.getName(), "[]")));
 
         Condition runCondition = trueCondition();
         if (start != null) {
@@ -197,6 +199,8 @@ public class GraphService extends AbstractPersistService {
         TableConditionMap tableConditionMap = new TableConditionMap();
         tableConditionMap.put(COMPANY, COMPANY.COMPANY_NAME.eq(companyName));
         tableConditionMap.put(ORG, ORG.ORG_NAME.eq(orgName));
+        //Don't show runs without test data. Maybe should filter on test_suites_json but this for now
+        tableConditionMap.put(TEST_RESULT, TEST_RESULT.TEST_RESULT_ID.isNotNull());
 
         Condition repoCondition = trueCondition();
         if (!CollectionUtils.isEmpty(repoNames)) {
@@ -204,7 +208,6 @@ public class GraphService extends AbstractPersistService {
             tableConditionMap.put(REPO, repoCondition);
         }
 
-        //tableConditionMap.put(BRANCH, BRANCH.BRANCH_NAME.in("main", "master"));//FIXME: revert to in branch names
         if (shouldIncludeDefaultBranches) {
             branchNames.addAll(defaultBranchNames);
         }
@@ -214,9 +217,6 @@ public class GraphService extends AbstractPersistService {
             Instant cutoff = Instant.now().minus(days, ChronoUnit.DAYS);
             tableConditionMap.put(JOB, JOB.LAST_RUN.ge(cutoff));
         }
-
-        //Only need test result summary, not the suites or cases
-        tableConditionMap.put(TEST_SUITE, TEST_SUITE.TEST_SUITE_ID.isNull());
 
         Condition runCondition =
                 RUN.RUN_ID.in(
@@ -329,39 +329,7 @@ public class GraphService extends AbstractPersistService {
                                                                                 key("externalLinks").value(TEST_RESULT.EXTERNAL_LINKS),
                                                                                 key("isSuccess").value(TEST_RESULT.IS_SUCCESS),
                                                                                 key("hasSkip").value(TEST_RESULT.HAS_SKIP),
-                                                                                key("testSuites").value(dsl.select(jsonArrayAgg(jsonObject(
-                                                                                        key("testSuiteId").value(TEST_SUITE.TEST_SUITE_ID),
-                                                                                        key("testResultFk").value(TEST_SUITE.TEST_RESULT_FK),
-                                                                                        key("name").value(TEST_SUITE.NAME),
-                                                                                        key("tests").value(TEST_SUITE.TESTS),
-                                                                                        key("skipped").value(TEST_SUITE.SKIPPED),
-                                                                                        key("error").value(TEST_SUITE.ERROR),
-                                                                                        key("failure").value(TEST_SUITE.FAILURE),
-                                                                                        key("time").value(TEST_SUITE.TIME),
-                                                                                        key("packageName").value(TEST_SUITE.PACKAGE_NAME),
-                                                                                        key("group").value(TEST_SUITE.GROUP),
-                                                                                        key("properties").value(TEST_SUITE.PROPERTIES),
-                                                                                        key("isSuccess").value(TEST_SUITE.IS_SUCCESS),
-                                                                                        key("hasSkip").value(TEST_SUITE.HAS_SKIP),
-                                                                                        key("testCases").value(dsl.select(jsonArrayAgg(jsonObject(
-                                                                                                key("testCaseId").value(TEST_CASE.TEST_CASE_ID),
-                                                                                                key("testSuiteFk").value(TEST_CASE.TEST_SUITE_FK),
-                                                                                                key("testStatusFk").value(TEST_CASE.TEST_STATUS_FK),
-                                                                                                key("name").value(TEST_CASE.NAME),
-                                                                                                key("className").value(TEST_CASE.CLASS_NAME),
-                                                                                                key("time").value(TEST_CASE.TIME),
-                                                                                                key("systemErr").value(TEST_CASE.SYSTEM_ERR),
-                                                                                                key("systemOut").value(TEST_CASE.SYSTEM_OUT),
-                                                                                                key("assertions").value(TEST_CASE.ASSERTIONS),
-                                                                                                key("testCaseFaults").value(dsl.select(jsonArrayAgg(jsonObject(
-                                                                                                        key("testCaseFaultId").value(TEST_CASE_FAULT.TEST_CASE_FAULT_ID),
-                                                                                                        key("testCaseFk").value(TEST_CASE_FAULT.TEST_CASE_FK),
-                                                                                                        key("faultContextFk").value(TEST_CASE_FAULT.FAULT_CONTEXT_FK),
-                                                                                                        key("type").value(TEST_CASE_FAULT.TYPE),
-                                                                                                        key("message").value(TEST_CASE_FAULT.MESSAGE)
-                                                                                                ))).from(TEST_CASE_FAULT).where(TEST_CASE_FAULT.TEST_CASE_FK.eq(TEST_CASE.TEST_CASE_ID).and(tableConditionMap.getCondition(TEST_CASE_FAULT))))
-                                                                                        ))).from(TEST_CASE).where(TEST_CASE.TEST_SUITE_FK.eq(TEST_SUITE.TEST_SUITE_ID).and(tableConditionMap.getCondition(TEST_CASE))))
-                                                                                ))).from(TEST_SUITE).where(TEST_SUITE.TEST_RESULT_FK.eq(TEST_RESULT.TEST_RESULT_ID).and(tableConditionMap.getCondition(TEST_SUITE))))
+                                                                                key("testSuitesJson").value(TEST_RESULT.TEST_SUITES_JSON)
                                                                         ))).from(TEST_RESULT).where(TEST_RESULT.STAGE_FK.eq(STAGE.STAGE_ID).and(tableConditionMap.getCondition(TEST_RESULT))))
                                                                 ))).from(STAGE).where(STAGE.RUN_FK.eq(RUN.RUN_ID).and(tableConditionMap.getCondition(STAGE))))
                                                         ))).from(RUN).where(RUN.JOB_FK.eq(JOB.JOB_ID).and(tableConditionMap.getCondition(RUN))))
@@ -370,96 +338,6 @@ public class GraphService extends AbstractPersistService {
                                 ))).from(REPO).where(REPO.ORG_FK.eq(ORG.ORG_ID).and(tableConditionMap.getCondition(REPO))))
                         ))).from(ORG).where(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID).and(tableConditionMap.getCondition(ORG))))
                 )).from(COMPANY).where(tableConditionMap.getCondition(COMPANY))
-                .fetch();
-    }
-
-    public TreeSet<Long> getTestResultsWithoutSuiteJson(int maxCount) {
-        Long[] ids = dsl.selectDistinct(TEST_RESULT.TEST_RESULT_ID)
-                .from(TEST_RESULT)
-                .where(TEST_RESULT.TEST_SUITES_JSON.isNull())
-                .orderBy(TEST_RESULT.TEST_RESULT_ID.asc())
-                .limit(maxCount)
-                .fetchArray(TEST_RESULT.TEST_RESULT_ID, Long.class);
-        return new TreeSet<Long>(Arrays.stream(ids).toList());
-    }
-
-    private void updateTestResultJson(Long testResultId, String testSuiteJson) {
-        log.info("updating test result json for test result: {}, testSuiteJson: {}", testResultId, testSuiteJson);
-        int result = dsl.update(TEST_RESULT)
-                .set(TEST_RESULT.TEST_SUITES_JSON, testSuiteJson)
-                .where(TEST_RESULT.TEST_RESULT_ID.eq(testResultId).and(TEST_RESULT.TEST_SUITES_JSON.isNull()))
-                .execute();
-        if (result == 1) {
-            log.info("success updating testResultId: {}, testResultJson: {}", testResultId, testSuiteJson);
-        } else {
-            log.error("failed to update TEST_RESULT. update returned: {} for testResultId: {}", result, testResultId);
-        }
-    }
-
-    @SneakyThrows(JsonProcessingException.class)
-    @SuppressWarnings("rawtypes")
-    public List<TestSuiteGraph> getTestSuitesGraph(Long testResultId) {
-        Result result = getTestSuitesGraphResult(testResultId);
-        if (!result.isEmpty() && result.get(0) instanceof Record1 record1) {
-            String json = record1.formatJSON();
-            log.info("getTestSuitesGraph json: " + json);
-            return Arrays.asList(mapper.readValue(json, TestSuiteGraph[].class));
-        }
-        return List.of(TestSuiteGraphBuilder.builder().build());
-    }
-
-    @SuppressWarnings("rawtypes")
-    public String getTestSuitesGraphJson(Long testResultId) {
-        Result result = getTestSuitesGraphResult(testResultId);
-        if (!result.isEmpty() && result.get(0) instanceof Record1 record1) {
-            String json = record1.formatJSON();
-            log.info("getTestSuitesGraphJson json: " + json);
-            return json;
-        }
-        return "[]";
-    }
-
-    public void populateTestSuitesJson(Long testResultId) {
-        final String testResultJson = getTestSuitesGraphJson(testResultId);
-        updateTestResultJson(testResultId, testResultJson);
-    }
-
-    @SuppressWarnings("rawtypes")
-    protected Result getTestSuitesGraphResult(Long testResultId) {
-
-        return dsl.select(jsonObject(
-                        key("testSuiteId").value(TEST_SUITE.TEST_SUITE_ID),
-                        key("testResultFk").value(TEST_SUITE.TEST_RESULT_FK),
-                        key("name").value(TEST_SUITE.NAME),
-                        key("tests").value(TEST_SUITE.TESTS),
-                        key("skipped").value(TEST_SUITE.SKIPPED),
-                        key("error").value(TEST_SUITE.ERROR),
-                        key("failure").value(TEST_SUITE.FAILURE),
-                        key("time").value(TEST_SUITE.TIME),
-                        key("packageName").value(TEST_SUITE.PACKAGE_NAME),
-                        key("group").value(TEST_SUITE.GROUP),
-                        key("properties").value(TEST_SUITE.PROPERTIES),
-                        key("isSuccess").value(TEST_SUITE.IS_SUCCESS),
-                        key("hasSkip").value(TEST_SUITE.HAS_SKIP),
-                        key("testCases").value(dsl.select(jsonArrayAgg(jsonObject(
-                                key("testCaseId").value(TEST_CASE.TEST_CASE_ID),
-                                key("testSuiteFk").value(TEST_CASE.TEST_SUITE_FK),
-                                key("testStatusFk").value(TEST_CASE.TEST_STATUS_FK),
-                                key("name").value(TEST_CASE.NAME),
-                                key("className").value(TEST_CASE.CLASS_NAME),
-                                key("time").value(TEST_CASE.TIME),
-                                key("systemErr").value(TEST_CASE.SYSTEM_ERR),
-                                key("systemOut").value(TEST_CASE.SYSTEM_OUT),
-                                key("assertions").value(TEST_CASE.ASSERTIONS),
-                                key("testCaseFaults").value(dsl.select(jsonArrayAgg(jsonObject(
-                                        key("testCaseFaultId").value(TEST_CASE_FAULT.TEST_CASE_FAULT_ID),
-                                        key("testCaseFk").value(TEST_CASE_FAULT.TEST_CASE_FK),
-                                        key("faultContextFk").value(TEST_CASE_FAULT.FAULT_CONTEXT_FK),
-                                        key("type").value(TEST_CASE_FAULT.TYPE),
-                                        key("message").value(TEST_CASE_FAULT.MESSAGE)
-                                ))).from(TEST_CASE_FAULT).where(TEST_CASE_FAULT.TEST_CASE_FK.eq(TEST_CASE.TEST_CASE_ID)))
-                        ))).from(TEST_CASE).where(TEST_CASE.TEST_SUITE_FK.eq(TEST_SUITE.TEST_SUITE_ID)))
-                )).from(TEST_SUITE).where(TEST_SUITE.TEST_RESULT_FK.eq(testResultId))
                 .fetch();
     }
 
