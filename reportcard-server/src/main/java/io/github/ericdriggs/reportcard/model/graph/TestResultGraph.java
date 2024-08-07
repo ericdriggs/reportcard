@@ -1,6 +1,7 @@
 package io.github.ericdriggs.reportcard.model.graph;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestResultPojo;
 import io.soabase.recordbuilder.core.RecordBuilder;
 
@@ -23,6 +24,7 @@ public record TestResultGraph(
         String externalLinks,
         Boolean isSuccess,
         Boolean hasSkip,
+        @JsonProperty("testSuitesJson")
         List<TestSuiteGraph> testSuites
 ) {
     @JsonIgnore

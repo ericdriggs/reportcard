@@ -7,7 +7,6 @@ import io.github.ericdriggs.reportcard.model.TestSuiteModel;
 import io.github.ericdriggs.reportcard.model.*;
 import io.github.ericdriggs.reportcard.model.converter.JunitSurefireXmlParseUtil;
 import io.github.ericdriggs.reportcard.model.StagePathTestResult;
-import io.github.ericdriggs.reportcard.util.truncate.TruncateUtils;
 import io.github.ericdriggs.reportcard.xml.ResultCount;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -115,11 +114,7 @@ public class TestResultPersistService extends StagePathPersistService {
 
         Result<Record> recordResult = dsl.select()
                                          .from(TEST_RESULT)
-                                         .leftJoin(TEST_SUITE).on(TEST_SUITE.TEST_RESULT_FK.eq(TEST_RESULT.TEST_RESULT_ID))
-                                         .leftJoin(TEST_CASE).on(TEST_CASE.TEST_SUITE_FK.eq(TEST_SUITE.TEST_SUITE_ID))
-                                         .leftJoin(TEST_CASE_FAULT).on(TEST_CASE_FAULT.TEST_CASE_FK.eq(TEST_CASE.TEST_CASE_ID))
                                          .where(TEST_RESULT.TEST_RESULT_ID.eq(testResultId))
-                                         .orderBy(TEST_RESULT.TEST_RESULT_ID, TEST_SUITE.TEST_SUITE_ID, TEST_CASE.TEST_CASE_ID, TEST_CASE_FAULT.TEST_CASE_FAULT_ID)
                                          .fetch();
 
         return testResultFromRecords(recordResult);
@@ -130,11 +125,8 @@ public class TestResultPersistService extends StagePathPersistService {
 
         Result<Record> recordResult = dsl.select()
                                          .from(TEST_RESULT)
-                                         .leftJoin(TEST_SUITE).on(TEST_SUITE.TEST_RESULT_FK.eq(TEST_RESULT.TEST_RESULT_ID))
-                                         .leftJoin(TEST_CASE).on(TEST_CASE.TEST_SUITE_FK.eq(TEST_SUITE.TEST_SUITE_ID))
-                                         .leftJoin(TEST_CASE_FAULT).on(TEST_CASE_FAULT.TEST_CASE_FK.eq(TEST_CASE.TEST_CASE_ID))
                                          .where(TEST_RESULT.STAGE_FK.eq(stageId))
-                                         .orderBy(TEST_RESULT.TEST_RESULT_ID, TEST_SUITE.TEST_SUITE_ID, TEST_CASE.TEST_CASE_ID, TEST_CASE_FAULT.TEST_CASE_FAULT_ID)
+                                         .orderBy(TEST_RESULT.TEST_RESULT_ID.asc())
                                          .fetch();
 
         return testResultsFromRecords(recordResult);
@@ -166,47 +158,8 @@ public class TestResultPersistService extends StagePathPersistService {
             //TODO: why isn't this json field isn't being translated properly?
             testResult.setTestSuiteJson(testResultRecord.getTestSuitesJson());
             TestSuiteModel testSuite = record.into(TestSuiteRecord.class).into(TestSuiteModel.class);
-            TestCaseModel testCase = record.into(TestCaseRecord.class).into(TestCaseModel.class);
-            TestCaseFaultModel testCaseFault = record.into(TestCaseFaultRecord.class).into(TestCaseFaultModel.class);
-
-            if (testResult.getTestResultId() == null || testSuite.getTestSuiteId() == null || testCase.getTestCaseId() == null) {
-                log.warn("null ids skipping record testResult.getTestResultId(): {}, testCase.getTestCaseId() : {}, testCase.getTestCaseId(): {}",
-                        testResult.getTestResultId(), testCase.getTestCaseId(), testCase.getTestCaseId());
-                continue;
-            }
-
-            if (prevTestResult == null || !prevTestResult.getTestResultId().equals(testResult.getTestResultId())) {
-                testResults.add(testResult);
-                prevTestResult = testResult;
-            } else {
-                testResult = prevTestResult;
-            }
-
-            if (prevTestSuite == null || !prevTestSuite.getTestSuiteId().equals(testSuite.getTestSuiteId())) {
-                testResult.addTestSuite(testSuite);
-                prevTestSuite = testSuite;
-            } else {
-                testSuite = prevTestSuite;
-            }
-
-            //always add test case to current test suite
-            if (prevTestCase == null || !prevTestCase.getTestCaseId().equals(testCase.getTestCaseId())) {
-                testSuite.addTestCase(testCase);
-                prevTestCase = testCase;
-
-            } else {
-                testCase = prevTestCase;
-            }
-
-            if (testCaseFault.getTestCaseFaultId() != null) {
-                //always add test case to current test suite
-                if (prevTestCaseFault == null || !prevTestCaseFault.getTestCaseFaultId().equals(testCaseFault.getTestCaseFaultId())) {
-                    testCase.addTestCaseFault(testCaseFault);
-                    prevTestCaseFault = testCaseFault;
-                } else {
-                    testCaseFault = prevTestCaseFault;
-                }
-            }
+            List<TestSuiteModel> testSuiteModels = TestSuiteModel.fromJson(testResultRecord.getTestSuitesJson());
+            testResult.setTestSuites(testSuiteModels);
         }
 
         for (TestResultModel testResult : testResults) {
@@ -263,79 +216,6 @@ public class TestResultPersistService extends StagePathPersistService {
         if (testResult.getTestSuites().isEmpty()) {
             log.warn("testSuites.isEmpty()");
         }
-
-        List<TestSuiteModel> testSuites = new ArrayList<>();
-        for (TestSuiteModel testSuite : testResult.getTestSuites()) {
-            if (testSuite.getTestSuiteId() == null) {
-                List<TestCaseModel> testCases = testSuite.getTestCases();
-                TestSuiteRecord testSuiteRecord = dsl.newRecord(TEST_SUITE);
-                testSuiteRecord.setTestResultFk(testResult.getTestResultId())
-                        .setName(TruncateUtils.truncateBytes(testSuite.getName(), 1024))
-                        .setError(testSuite.getError())
-                        .setFailure(testSuite.getFailure())
-                        .setSkipped(testSuite.getSkipped())
-                        .setTests(testSuite.getTests())
-                        .setTime(testSuite.getTime())
-                        .setPackageName(TruncateUtils.truncateBytes(testSuite.getPackageName(), 1024))
-                        .setGroup(TruncateUtils.truncateBytes(testSuite.getGroup(), 1024))
-                        .store();
-
-                //need select for generated values
-                testSuite = dsl.select().from(TEST_SUITE)
-                        .where(TEST_SUITE.TEST_SUITE_ID.eq(testSuiteRecord.getTestSuiteId()))
-                        .fetchOne()
-                        .into(TestSuiteRecord.class).into(TestSuiteModel.class);
-
-                testSuite.setTestCases(testCases);
-                testSuites.add(testSuite);
-            }
-
-            if (testSuite.getTestCases().isEmpty()) {
-                log.warn("testCases.isEmpty()");
-            }
-
-            final List<TestCaseModel> testCases = new ArrayList<>();
-            for (TestCaseModel testCase : testSuite.getTestCases()) {
-                if (testCase.getTestCaseId() == null) {
-                    TestCaseRecord testCaseRecord = dsl.newRecord(TEST_CASE);
-                    testCaseRecord.setTestSuiteFk(testSuite.getTestSuiteId())
-                            .setTestStatusFk(testCase.getTestStatusFk())
-                            .setClassName(TruncateUtils.truncateBytes(testCase.getClassName(), 1024))
-                            .setName(TruncateUtils.truncateBytes(testCase.getName(), 1024))
-                            .setTime(testCase.getTime())
-                            .setTestCaseId(testCase.getTestCaseId()) //redundant? shouldn't store set the id?
-                            .store();
-
-                    List<TestCaseFaultModel> testCaseFaults = new ArrayList<>();
-                    for (TestCaseFaultModel testCaseFault : testCase.getTestCaseFaults()) {
-                        if (testCaseFault.getTestCaseFaultId() == null) {
-                            TestCaseFaultRecord testCaseFaultRecord = dsl.newRecord(TEST_CASE_FAULT);
-                            final String message = TruncateUtils.truncateBytes(testCaseFault.getMessage(), 1024);
-                            final String value;
-                            if (testCaseFault.getValue() == null) {
-                                value = testCaseFault.getMessage();
-                            } else {
-                                value = testCaseFault.getValue();
-                            }
-                            testCaseFaultRecord
-                                    .setMessage(message)
-                                    .setTestCaseFk(testCaseRecord.getTestCaseId())
-                                    .setType(TruncateUtils.truncateBytes(testCaseFault.getType(), 1024))
-                                    .setValue(value)
-                                    .setFaultContextFk(testCaseFault.getFaultContextFk())
-                                    .store();
-                            testCaseFault.setTestCaseFaultId(testCaseFaultRecord.getTestCaseFaultId());
-                            testCaseFaults.add(testCaseFaultRecord.into(TestCaseFaultModel.class));
-                        }
-                    }
-                    testCase = testCaseRecord.into(TestCaseModel.class);
-                    testCase.setTestCaseFaults(testCaseFaults);
-                    testCases.add(testCase);
-                }
-            }
-            testSuite.setTestCases(testCases);
-        }
-        testResult.setTestSuites(testSuites);
 
         return testResult;
     }
