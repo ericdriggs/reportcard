@@ -55,6 +55,7 @@ public enum SharedObjectMappers {
         try {//noinspection unchecked
             return (T) permissiveObjectMapper.readValue(json, clazz);
         } catch (JsonProcessingException e) {
+            log.warn("unable to parse json: {}, returning default: {}", json, tDefault, e);
             return tDefault;
         }
     }
