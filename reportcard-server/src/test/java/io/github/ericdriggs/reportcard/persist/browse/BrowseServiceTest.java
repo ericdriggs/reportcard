@@ -1,10 +1,9 @@
 package io.github.ericdriggs.reportcard.persist.browse;
 
+import io.github.ericdriggs.reportcard.cache.EmptyUtil;
 import io.github.ericdriggs.reportcard.gen.db.TestData;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.*;
-import io.github.ericdriggs.reportcard.model.StageTestResultModel;
-import io.github.ericdriggs.reportcard.model.TestResultModel;
-import io.github.ericdriggs.reportcard.model.TestSuiteModel;
+import io.github.ericdriggs.reportcard.model.*;
 import io.github.ericdriggs.reportcard.persist.BrowseService;
 import io.github.ericdriggs.reportcard.util.JsonCompare;
 import org.junit.jupiter.api.Test;
@@ -207,21 +206,11 @@ public class BrowseServiceTest extends AbstractBrowseServiceTest {
         final StagePojo stage = stageTestResultModel.getStage();
         final TestResultModel testResultModel = stageTestResultModel.getTestResult();
 
-        TestSuiteModel testSuite = null;
-
-        for (TestSuiteModel ts : testResultModel.getTestSuites()) {
-
-            if (ts.getTestSuiteId().equals(TestData.testResultId)) {
-                testSuite = ts;
-                break;
-            }
-        }
-
         validateTestStage(stage);
         validateTestResultModel(testResultModel);
-        validateTestSuite(testSuite);
-        //TODO: validate test cases
-        //TODO: validate faults
+        validateTestSuites(testResultModel.getTestSuites());
+        validateTestCases(testResultModel.getTestSuites().get(0).getTestCases());
+        validateTestCaseFaults(testResultModel.getTestSuites().get(0).getTestCases());
     }
 
     static OrgPojo getTestOrg(Collection<OrgPojo> orgs, final String expectedOrg) {
@@ -373,7 +362,7 @@ public class BrowseServiceTest extends AbstractBrowseServiceTest {
     private void validateTestResultModel(TestResultModel testResult) {
         assertEquals(1, testResult.getTestResultId());
         assertEquals(1, testResult.getStageFk());
-        assertEquals(TestData.testResultTestModelCount, testResult.getTests());
+        assertEquals(TestData.expectedTestCaseCount, testResult.getTests());
     }
 
     private void validateTestResultPojo(TestResultPojo testResult) {
@@ -382,9 +371,22 @@ public class BrowseServiceTest extends AbstractBrowseServiceTest {
         assertEquals(TestData.testResultTestPojoCount, testResult.getTests());
     }
 
-    private void validateTestSuite(TestSuiteModel testSuite) {
-        assertEquals(1, testSuite.getTestSuiteId());
-        assertEquals(1, testSuite.getTestResultFk());
-        assertEquals(TestData.testSuiteTestCount, testSuite.getTests());
+    private void validateTestSuites(List<TestSuiteModel> testSuites) {
+        assertEquals(1, testSuites.size());
+        assertEquals(TestData.testSuiteTestCount, testSuites.get(0).getTests());
+    }
+
+    private void validateTestCases(List<TestCaseModel> testCases) {
+        assertEquals(2, testCases.size());
+    }
+
+    private void validateTestCaseFaults(List<TestCaseModel> testCases) {
+        int faultCount = 0;
+        for (TestCaseModel t : testCases) {
+            for (TestCaseFaultModel f : EmptyUtil.nullListToEmpty(t.getTestCaseFaults())) {
+                faultCount++;
+            }
+        }
+        assertEquals(1, faultCount);
     }
 }

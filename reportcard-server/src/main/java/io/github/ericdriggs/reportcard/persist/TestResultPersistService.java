@@ -135,7 +135,7 @@ public class TestResultPersistService extends StagePathPersistService {
 
     public static TestResultModel testResultFromRecords(Result<Record> recordResult) {
         Set<TestResultModel> testResultModels = testResultsFromRecords(recordResult);
-        if (testResultModels.size() == 0) {
+        if (testResultModels.isEmpty()) {
             return null;
         } else if (testResultModels.size() == 1) {
             return testResultModels.iterator().next();
@@ -160,6 +160,7 @@ public class TestResultPersistService extends StagePathPersistService {
             TestSuiteModel testSuite = record.into(TestSuiteRecord.class).into(TestSuiteModel.class);
             List<TestSuiteModel> testSuiteModels = TestSuiteModel.fromJson(testResultRecord.getTestSuitesJson());
             testResult.setTestSuites(testSuiteModels);
+            testResults.add(testResult);
         }
 
         for (TestResultModel testResult : testResults) {

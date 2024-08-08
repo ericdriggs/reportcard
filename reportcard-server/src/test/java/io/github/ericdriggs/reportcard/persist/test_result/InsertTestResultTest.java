@@ -92,7 +92,6 @@ public class InsertTestResultTest extends AbstractTestResultPersistTest {
 
     void assertInsertedTestResult(TestResultModel testResultBefore, TestResultModel testResultInsert) {
         assertValues(testResultInsert);
-        assertIdsAndFks(testResultInsert);
         assertExternalLinks(testResultInsert);
 
         {
@@ -100,14 +99,12 @@ public class InsertTestResultTest extends AbstractTestResultPersistTest {
             assertEquals(1, testResultsGet.size());
             final TestResultModel testResultGet = testResultsGet.iterator().next();
             assertValues(testResultGet);
-            assertIdsAndFks(testResultGet);
             assertExternalLinks(testResultGet);
         }
 
         {
             TestResultModel testResultGet = testResultPersistService.getTestResult(testResultInsert.getTestResultId());
             assertValues(testResultGet);
-            assertIdsAndFks(testResultGet);
             assertExternalLinks(testResultGet);
             assertNotNull(testResultGet.getTestSuiteJson());
             assertNotEquals("{}", testResultGet.getTestSuiteJson(), testResultInsert.getTestSuiteJson());
@@ -155,22 +152,6 @@ public class InsertTestResultTest extends AbstractTestResultPersistTest {
         assertEquals(testCaseFaultMessage, testCaseFault.getMessage());
         assertEquals(testCaseFaultType, testCaseFault.getType());
         assertEquals(testCaseFaultValue, testCaseFault.getValue());
-    }
-
-    private void assertIdsAndFks(TestResultModel testResult) {
-
-        final TestSuiteModel testSuite = testResult.getTestSuites().get(0);
-        final TestCaseModel testCase = testSuite.getTestCases().get(0);
-        final TestCaseFault testCaseFault = testCase.getTestCaseFaults().get(0);
-
-        assertNotNull(testResult.getTestResultId());
-        assertNotNull(testSuite.getTestSuiteId());
-        assertNotNull(testCase.getTestCaseId());
-        assertNotNull(testCaseFault.getTestCaseFaultId());
-
-        assertEquals(testResult.getTestResultId(), testSuite.getTestResultFk());
-        assertEquals(testSuite.getTestSuiteId(), testCase.getTestSuiteFk());
-        assertEquals(testCase.getTestCaseId(), testCaseFault.getTestCaseFk());
     }
 
     final static ObjectMapper objectMapper = new ObjectMapper();

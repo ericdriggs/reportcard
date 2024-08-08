@@ -64,6 +64,14 @@ public enum TestStatus {
         return testStatus;
     }
 
+    public static String testStatusNameFromStatusId(byte statusId) {
+        try {
+            return TestStatus.fromStatusId(statusId).name();
+        } catch (Exception ex) {
+            return "" + statusId;
+        }
+    }
+
     public ResultCount getResultCount(BigDecimal time) {
         return this.getTestStatusType().getResultCount(time);
     }

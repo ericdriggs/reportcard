@@ -1,8 +1,9 @@
 package io.github.ericdriggs.reportcard.model.graph;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.ericdriggs.reportcard.model.TestCaseModel;
-import io.github.ericdriggs.reportcard.xml.testng.suite.Test;
+import io.github.ericdriggs.reportcard.model.TestStatus;
 import io.soabase.recordbuilder.core.RecordBuilder;
 
 import java.math.BigDecimal;
@@ -37,5 +38,10 @@ public record TestCaseGraph(
         testCaseModel.setAssertions(assertions);
         testCaseModel.setTestCaseFaults(TestCaseFaultGraph.toTestCaseModels(testCaseFaults));
         return testCaseModel;
+    }
+
+    @JsonProperty("testStatus")
+    public String getTestStatus() {
+        return TestStatus.testStatusNameFromStatusId(testStatusFk);
     }
 }
