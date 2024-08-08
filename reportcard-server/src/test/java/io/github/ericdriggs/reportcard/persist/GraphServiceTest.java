@@ -116,14 +116,12 @@ public class GraphServiceTest extends AbstractGraphServiceTest {
         {
             assertFalse(CollectionUtils.isEmpty(companyGraph.orgs().get(0).repos().get(0).branches().get(0).jobs().get(0).runs().get(0).stages().get(0).testResults().get(0).testSuites()));
             final TestSuiteGraph graph = companyGraph.orgs().get(0).repos().get(0).branches().get(0).jobs().get(0).runs().get(0).stages().get(0).testResults().get(0).testSuites().get(0);
-            assertEquals(TestData.testSuiteId, graph.testSuiteId());
             assertEquals(2, graph.testCases().size());
         }
         {
             assertFalse(CollectionUtils.isEmpty(companyGraph.orgs().get(0).repos().get(0).branches().get(0).jobs().get(0).runs().get(0).stages().get(0).testResults().get(0).testSuites().get(0).testCases()));
             final List<TestCaseGraph> testCases = companyGraph.orgs().get(0).repos().get(0).branches().get(0).jobs().get(0).runs().get(0).stages().get(0).testResults().get(0).testSuites().get(0).testCases();
-            final List<Long> testCaseIds = testCases.stream().map(t -> t.testCaseId()).toList();
-            assertEquals(List.of(1L, 2L), testCaseIds);
+            assertEquals(2, testCases.size());
         }
     }
 

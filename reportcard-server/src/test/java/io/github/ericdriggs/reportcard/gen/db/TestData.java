@@ -26,7 +26,7 @@ public enum TestData {
 
     public final static String stage = "api";
 
-    public final static Integer testResultTestModelCount = 2;
+    public final static Integer expectedTestCaseCount = 2;
     public final static Integer testResultTestPojoCount = 70;
     public final static Integer testSuiteTestCount = 8;
 

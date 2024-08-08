@@ -61,41 +61,8 @@ VALUES (1, --       <{test_result_id: }>
         10, --       <{error: }>,
         20, --       <{failure: }>,
         3.300, --   <{time: }>,
-        '[{"name":"testSuiteName1","tests":8,"skipped":7,"error":6,"failure":0,"time":1.010,"packageName":"com.foo.baz","testCases":[{"name":"testCaseName1","className":"testCaseClassName1","time":0.500,"testStatusFk":1,"testCaseFaults":[{"faultContextFk":2,"type":"fooType","message":"fooMessage","value":"fooMessage","faultContext":"FAILURE"}]}]}]'
+        '[{"name":"testSuiteName1","tests":8,"skipped":7,"error":6,"failure":0,"time":1.010,"packageName":"com.foo.baz","testCases":[{"name":"testCaseName1","className":"testCaseClassName1","time":0.500,"testStatusFk":1,"testStatus":"SUCCESS"},{"name":"testCaseName1","className":"testCaseClassName1","time":0.500,"testStatusFk":3,"testStatus":"FAILURE","testCaseFaults":[{"faultContextFk":2,"type":"fooType","message":"fooMessage","value":"fooMessage","faultContext":"FAILURE"}]}]}]'
        );
-
-INSERT INTO `reportcard`.`test_suite`
-(`test_suite_id`,
- `test_result_fk`,
- `name`,
- `tests`,
- `skipped`,
- `error`,
- `failure`,
- `time`,
- `package_name`,
- `group`,
- `properties`)
-VALUES (1, --                  <{test_suite_id: }>,
-        1, --                  <{test_result_fk: }>,
-        'testSuiteName1', --   <{name: }>,
-        8, --                  <{tests: }>,
-        7, --                  <{skipped: }>,
-        6, --                  <{error: }>,
-        0, --                  <{failure: }>,
-        1.010, --              <{time: }>,
-        'com.foo.baz', --      <{package_name: }>,
-        null, --               <{group: }>,
-        null --                <{properties: }>,
-       );
-
-INSERT `reportcard`.`test_case`
-    (`test_suite_fk`, `name`, `class_name`, `time`, `test_status_fk`)
-values (1, 'testCaseName1', 'testCaseClassName1', 0.500, 1);
-
-INSERT `reportcard`.`test_case`
-    (`test_suite_fk`, `name`, `class_name`, `time`, `test_status_fk`)
-values (1, 'testCaseName2', 'testCaseClassName2', 0.500, 3);
 
 insert into `reportcard`.`storage` (`stage_fk`, `label`, `prefix`, `index_file`)
 values (1, 'abcLabel', '/rc/company1/org1/repo1/master/2024-01-22/abcRSr4kRco5b8HqUhSUGg/1/abc15b6fae26738ca58f0b300fc43f5872b429bf/api', 'classpath:html-samples/foo/index.html')
