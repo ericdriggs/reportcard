@@ -164,20 +164,18 @@ public class GraphService extends AbstractPersistService {
         //don't want the full test graph for this view
         tableConditionMap.put(TEST_RESULT, TEST_RESULT.TEST_RESULT_ID.isNull());
 
-        Condition runCondition =
-                RUN.RUN_ID.in(
-                        select(max(RUN.RUN_ID))
-                                .from(COMPANY)
-                                .leftJoin(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID)).and(ORG.ORG_NAME.eq(orgName)).and(COMPANY.COMPANY_NAME.eq(companyName))
-                                .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID).and(REPO.REPO_NAME.eq(repoName)))
-                                .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID).and(BRANCH.BRANCH_NAME.eq(branchName)))
-                                .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
-                                .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID))
-                                .leftJoin(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID))
-                                .groupBy(JOB.JOB_ID, STAGE.STAGE_NAME)
-                );
+        Long[] runIds = dsl.select(max(RUN.RUN_ID).as("MAX_RUN_ID"))
+                .from(COMPANY)
+                .leftJoin(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID)).and(ORG.ORG_NAME.eq(orgName)).and(COMPANY.COMPANY_NAME.eq(companyName))
+                .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID).and(REPO.REPO_NAME.eq(repoName)))
+                .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID).and(BRANCH.BRANCH_NAME.eq(branchName)))
+                .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
+                .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID))
+                .leftJoin(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID))
+                .groupBy(JOB.JOB_ID, STAGE.STAGE_NAME)
+                .fetchArray("MAX_RUN_ID", Long.class);
 
-        tableConditionMap.put(RUN, runCondition);
+        tableConditionMap.put(RUN, RUN.RUN_ID.in(runIds));
         return getCompanyGraphs(tableConditionMap);
 
     }
@@ -220,33 +218,30 @@ public class GraphService extends AbstractPersistService {
             tableConditionMap.put(JOB, JOB.LAST_RUN.ge(cutoff));
         }
 
-        Condition runCondition =
-                RUN.RUN_ID.in(
-                        //latest run
+        Long[] runIds = dsl.select(max(RUN.RUN_ID).as("MAX_RUN_ID"))
+                .from(COMPANY)
+                .leftJoin(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID)).and(ORG.ORG_NAME.eq(orgName)).and(COMPANY.COMPANY_NAME.eq(companyName))
+                .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)).and(repoCondition)
+                .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID).and(BRANCH.BRANCH_NAME.in(branchNames)))
+                .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
+                .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID))
+                .leftJoin(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID))
+
+                .groupBy(JOB.JOB_ID, STAGE.STAGE_NAME)
+                .union(
+                        //latest successful run
                         select(max(RUN.RUN_ID))
                                 .from(COMPANY)
                                 .leftJoin(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID)).and(ORG.ORG_NAME.eq(orgName)).and(COMPANY.COMPANY_NAME.eq(companyName))
                                 .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)).and(repoCondition)
                                 .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID).and(BRANCH.BRANCH_NAME.in(branchNames)))
                                 .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
-                                .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID))
+                                .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID).and(RUN.IS_SUCCESS))
                                 .leftJoin(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID))
                                 .groupBy(JOB.JOB_ID, STAGE.STAGE_NAME)
-                                .union(
-                                        //latest successful run
-                                        select(max(RUN.RUN_ID))
-                                                .from(COMPANY)
-                                                .leftJoin(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID)).and(ORG.ORG_NAME.eq(orgName)).and(COMPANY.COMPANY_NAME.eq(companyName))
-                                                .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)).and(repoCondition)
-                                                .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID).and(BRANCH.BRANCH_NAME.in(branchNames)))
-                                                .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
-                                                .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID).and(RUN.IS_SUCCESS))
-                                                .leftJoin(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID))
-                                                .groupBy(JOB.JOB_ID, STAGE.STAGE_NAME)
-                                )
-                );
+                ).fetchArray("MAX_RUN_ID",Long.class);
 
-        tableConditionMap.put(RUN, runCondition);
+        tableConditionMap.put(RUN, RUN.RUN_ID.in(runIds));
         return getCompanyGraphs(tableConditionMap);
 
     }

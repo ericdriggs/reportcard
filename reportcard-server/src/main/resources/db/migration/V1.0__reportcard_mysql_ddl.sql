@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS `reportcard`.`org` (
   `org_name` VARCHAR(255) NOT NULL DEFAULT '''',
   `company_fk` int unsigned NOT NULL,
   PRIMARY KEY (`org_id`),
-  UNIQUE KEY `org_name_idx` (`org_name`),
+  UNIQUE KEY `org_name_idx` (`org_name` ASC, `company_fk` ASC),
   KEY `FK_COMPANY_ORG_idx` (`company_fk`),
   CONSTRAINT `FK_COMPANY_ORG` FOREIGN KEY (`company_fk`) REFERENCES `company` (`company_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -87,6 +87,7 @@ CREATE TABLE IF NOT EXISTS `reportcard`.`branch` (
   `last_run` datetime DEFAULT (utc_timestamp()),
   PRIMARY KEY (`branch_id`),
   INDEX `branch_repo_idx` (`repo_fk` ASC) VISIBLE,
+  UNIQUE INDEX `branch_name_uq` (`branch_name` ASC, `repo_fk` ASC) VISIBLE,
   CONSTRAINT `branch_repo_fk`
     FOREIGN KEY (`repo_fk`)
     REFERENCES `reportcard`.`repo` (`repo_id`)
