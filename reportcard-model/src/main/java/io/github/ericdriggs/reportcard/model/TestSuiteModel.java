@@ -36,6 +36,25 @@ public class TestSuiteModel extends io.github.ericdriggs.reportcard.dto.TestSuit
         return this;
     }
 
+    @JsonProperty("testStatus")
+    public TestStatus getTestStatus() {
+        if (getError() != null && getError() > 0) {
+            return TestStatus.ERROR;
+        } else if (getFailure() != null && getFailure() > 0) {
+            return TestStatus.FAILURE;
+        } else if (CompareUtil.compareInteger(getSkipped(), getTests()) == 0) {
+            return TestStatus.SKIPPED;
+        }
+        if (getIsSuccess() != null) {
+            if (getIsSuccess()) {
+                return TestStatus.SUCCESS;
+            } else {
+                return TestStatus.FAILURE;
+            }
+        }
+        return calculateTestStatus();
+    }
+
     public TestSuiteModel addTestCase(TestCaseModel testCase) {
         this.testCases.add(testCase);
         return this;
@@ -92,24 +111,7 @@ public class TestSuiteModel extends io.github.ericdriggs.reportcard.dto.TestSuit
         return matched;
     }
 
-    @JsonIgnore
-    public TestStatus getTestStatus() {
-        if (getError() != null && getError() > 0) {
-            return TestStatus.ERROR;
-        } else if (getFailure() != null && getFailure() > 0) {
-            return TestStatus.FAILURE;
-        } else if (CompareUtil.compareInteger(getSkipped(), getTests()) == 0) {
-            return TestStatus.SKIPPED;
-        }
-        if (getIsSuccess() != null) {
-            if (getIsSuccess()) {
-                return TestStatus.SUCCESS;
-            } else {
-                return TestStatus.FAILURE;
-            }
-        }
-        return calculateTestStatus();
-    }
+
 
     @JsonIgnore
     TestStatus calculateTestStatus() {
