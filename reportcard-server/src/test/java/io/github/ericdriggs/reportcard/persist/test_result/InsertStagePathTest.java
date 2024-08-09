@@ -76,7 +76,7 @@ public class InsertStagePathTest extends AbstractTestResultPersistTest {
 
 
         //duplicate request should be idempotent
-        StagePath stagePath2 = testResultPersistService.getUpsertedStagePath(request, testResultModel);
+        StagePath stagePath2 = testResultPersistService.getUpsertedStagePath(request);
         assertEquals(stagePath, stagePath2);
     }
 

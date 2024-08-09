@@ -88,20 +88,6 @@ public class OrgDao extends DAOImpl<OrgRecord, OrgPojo, Integer> {
     }
 
     /**
-     * Fetch a unique record that has <code>org_name = value</code>
-     */
-    public OrgPojo fetchOneByOrgNameTable(String value) {
-        return fetchOne(OrgTable.ORG.ORG_NAME, value);
-    }
-
-    /**
-     * Fetch a unique record that has <code>org_name = value</code>
-     */
-    public Optional<OrgPojo> fetchOptionalByOrgNameTable(String value) {
-        return fetchOptional(OrgTable.ORG.ORG_NAME, value);
-    }
-
-    /**
      * Fetch records that have <code>company_fk BETWEEN lowerInclusive AND
      * upperInclusive</code>
      */

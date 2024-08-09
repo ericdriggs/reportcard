@@ -23,7 +23,7 @@ public class ModelComparators {
 
     public static int compareTestResult(TestResultModel val1, TestResultModel val2) {
         if (val1 == null || val2 == null) {
-            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+            return ObjectUtils.compare(!ObjectUtils.isEmpty(val1), !ObjectUtils.isEmpty(val2));
         }
         return CompareUtil.chainCompare(
                 CompareUtil.compareLong(val1.getStageFk(), val2.getStageFk()),
@@ -33,7 +33,7 @@ public class ModelComparators {
 
     public static int compareTestSuiteModelByName(TestSuiteModel val1, TestSuiteModel val2) {
         if (val1 == null || val2 == null) {
-            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+            return ObjectUtils.compare(!ObjectUtils.isEmpty(val1), !ObjectUtils.isEmpty(val2));
         }
         return CompareUtil.chainCompare(
                 CompareUtil.compareLowerNullSafe(val1.getName(), val2.getName()),
@@ -45,7 +45,7 @@ public class ModelComparators {
 
     public static int compareTestResultModel(TestResultModel val1, TestResultModel val2) {
         if (val1 == null || val2 == null) {
-            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+            return ObjectUtils.compare(!ObjectUtils.isEmpty(val1), !ObjectUtils.isEmpty(val2));
         }
         return CompareUtil.chainCompare(
                 CompareUtil.compareLong(val1.getStageFk(), val2.getStageFk()),
@@ -55,7 +55,7 @@ public class ModelComparators {
 
     public static int compareTestSuite(TestSuiteModel val1, TestSuiteModel val2) {
         if (val1 == null || val2 == null) {
-            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+            return ObjectUtils.compare(!ObjectUtils.isEmpty(val1), !ObjectUtils.isEmpty(val2));
         }
         return CompareUtil.chainCompare(
                 CompareUtil.compareLong(val1.getTestSuiteId(), val2.getTestSuiteId()),
@@ -65,7 +65,7 @@ public class ModelComparators {
 
     public static int compareTestCase(TestCaseModel val1, TestCaseModel val2) {
         if (val1 == null || val2 == null) {
-            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+            return ObjectUtils.compare(!ObjectUtils.isEmpty(val1), !ObjectUtils.isEmpty(val2));
         }
         return CompareUtil.chainCompare(
                 CompareUtil.compareLowerNullSafe(val1.getName(), val2.getName()),
@@ -75,7 +75,7 @@ public class ModelComparators {
 
     public static int compareTestCaseFaultById(TestCaseFaultModel val1, TestCaseFaultModel val2) {
         if (val1 == null || val2 == null) {
-            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+            return ObjectUtils.compare(!ObjectUtils.isEmpty(val1), !ObjectUtils.isEmpty(val2));
         }
         return CompareUtil.chainCompare(
                 CompareUtil.compareLong(val1.getTestCaseFaultId(), val2.getTestCaseFaultId())

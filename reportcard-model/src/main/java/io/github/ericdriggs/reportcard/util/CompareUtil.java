@@ -41,23 +41,30 @@ public enum CompareUtil {
         }
     }
 
+    public static int compareInteger(Integer val1, Integer val2) {
+        if (val1 == null || val2 == null) {
+            return ObjectUtils.compare(!ObjectUtils.isEmpty(val1), !ObjectUtils.isEmpty(val2));
+        }
+        return Integer.compare(val1, val2);
+    }
+
     public static int compareLong(Long val1, Long val2) {
         if (val1 == null || val2 == null) {
-            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+            return ObjectUtils.compare(!ObjectUtils.isEmpty(val1), !ObjectUtils.isEmpty(val2));
         }
         return Long.compare(val1, val2);
     }
 
     public static int compareURI(URI val1, URI val2) {
         if (val1 == null || val2 == null) {
-            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+            return ObjectUtils.compare(!ObjectUtils.isEmpty(val1), !ObjectUtils.isEmpty(val2));
         }
         return val1.toString().compareTo(val2.toString());
     }
 
     public static int compareBigDecimalAsBigInteger(BigDecimal val1, BigDecimal val2) {
         if (val1 == null || val2 == null) {
-            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+            return ObjectUtils.compare(!ObjectUtils.isEmpty(val1), !ObjectUtils.isEmpty(val2));
         }
         BigInteger b1 = val1.toBigInteger();
         BigInteger b2 = val2.toBigInteger();

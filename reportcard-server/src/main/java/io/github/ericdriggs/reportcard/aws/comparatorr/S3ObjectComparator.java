@@ -18,7 +18,7 @@ public class S3ObjectComparator implements Comparator<S3Object> {
 
     public static int doCompare(S3Object val1, S3Object val2) {
         if (val1 == null | val2 == null) {
-            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+            return ObjectUtils.compare(!ObjectUtils.isEmpty(val1), !ObjectUtils.isEmpty(val2));
         }
         return chainCompare(
                 ObjectUtils.compare(val1.key(), val2.key()),

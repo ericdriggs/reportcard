@@ -18,7 +18,7 @@ public class CommonPrefixComparator implements Comparator<CommonPrefix> {
 
     public static int doCompare(CommonPrefix val1, CommonPrefix val2) {
         if (val1 == null | val2 == null) {
-            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+            return ObjectUtils.compare(!ObjectUtils.isEmpty(val1), !ObjectUtils.isEmpty(val2));
         }
         return chainCompare(
                 ObjectUtils.compare(val1.prefix(), val2.prefix())
