@@ -202,7 +202,7 @@ public class PojoComparators {
 
     public static int compareStageTestResultModelDateDescending(StageTestResultModel val1, StageTestResultModel val2) {
         if (val1 == null || val2 == null) {
-            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+            return ObjectUtils.compare(!ObjectUtils.isEmpty(val1), !ObjectUtils.isEmpty(val2));
         }
         return chainCompare(
                 compareTestResultModelDateDescending(val1.getTestResult(), val2.getTestResult()),
@@ -212,7 +212,7 @@ public class PojoComparators {
 
     public static int compareStageTestResultPojoDateDescending(StageTestResultPojo val1, StageTestResultPojo val2) {
         if (val1 == null || val2 == null) {
-            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+            return ObjectUtils.compare(!ObjectUtils.isEmpty(val1), !ObjectUtils.isEmpty(val2));
         }
         return chainCompare(
                 compareTestResultPojoDateDescending(val1.getTestResultPojo(), val2.getTestResultPojo()),
@@ -222,7 +222,7 @@ public class PojoComparators {
 
     public static int compareStageTestResultModel(StageTestResultModel val1, StageTestResultModel val2) {
         if (val1 == null || val2 == null) {
-            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+            return ObjectUtils.compare(!ObjectUtils.isEmpty(val1), !ObjectUtils.isEmpty(val2));
         }
         return chainCompare(
                 compareStage(val1.getStage(), val2.getStage()),
@@ -232,7 +232,7 @@ public class PojoComparators {
 
     public static int compareCompany(CompanyPojo val1, CompanyPojo val2) {
         if (val1 == null || val2 == null) {
-            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+            return ObjectUtils.compare(!ObjectUtils.isEmpty(val1), !ObjectUtils.isEmpty(val2));
         }
         return chainCompare(
                 compareLowerNullSafe(val1.getCompanyName(), val2.getCompanyName()),
@@ -243,7 +243,7 @@ public class PojoComparators {
 
     public static int compareOrg(OrgPojo val1, OrgPojo val2) {
         if (val1 == null || val2 == null) {
-            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+            return ObjectUtils.compare(!ObjectUtils.isEmpty(val1), !ObjectUtils.isEmpty(val2));
         }
         return chainCompare(
                 compareLowerNullSafe(val1.getOrgName(), val2.getOrgName()),
@@ -253,7 +253,7 @@ public class PojoComparators {
 
     public static int compareRepo(RepoPojo val1, RepoPojo val2) {
         if (val1 == null || val2 == null) {
-            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+            return ObjectUtils.compare(!ObjectUtils.isEmpty(val1), !ObjectUtils.isEmpty(val2));
         }
         return chainCompare(
                 compareIntegers(val1.getOrgFk(), val2.getOrgFk()),
@@ -264,7 +264,7 @@ public class PojoComparators {
 
     public static int compareBranch(BranchPojo val1, BranchPojo val2) {
         if (val1 == null || val2 == null) {
-            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+            return ObjectUtils.compare(!ObjectUtils.isEmpty(val1), !ObjectUtils.isEmpty(val2));
         }
         return chainCompare(
                 compareIntegers(val1.getRepoFk(), val2.getRepoFk()),
@@ -275,7 +275,7 @@ public class PojoComparators {
 
     public static int compareJob(JobPojo val1, JobPojo val2) {
         if (val1 == null || val2 == null) {
-            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+            return ObjectUtils.compare(!ObjectUtils.isEmpty(val1), !ObjectUtils.isEmpty(val2));
         }
         return chainCompare(
                 JsonCompare.compareTo(val1.getJobInfo(), val2.getJobInfo()),
@@ -285,7 +285,7 @@ public class PojoComparators {
 
     public static int compareJobDateDescending(JobPojo val1, JobPojo val2) {
         if (val1 == null || val2 == null) {
-            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+            return ObjectUtils.compare(!ObjectUtils.isEmpty(val1), !ObjectUtils.isEmpty(val2));
         }
         return chainCompare(
                 compareLocalDateTimeDescending(val1.getLastRun(), val2.getLastRun()),
@@ -295,7 +295,7 @@ public class PojoComparators {
 
     public static int compareJobRunDateDescending(JobRun val1, JobRun val2) {
         if (val1 == null || val2 == null) {
-            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+            return ObjectUtils.compare(!ObjectUtils.isEmpty(val1), !ObjectUtils.isEmpty(val2));
         }
         return chainCompare(
                 //compare run before job since it will be more recent
@@ -314,7 +314,7 @@ public class PojoComparators {
 
     public static int compareRun(RunPojo val1, RunPojo val2) {
         if (val1 == null || val2 == null) {
-            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+            return ObjectUtils.compare(!ObjectUtils.isEmpty(val1), !ObjectUtils.isEmpty(val2));
         }
         return chainCompare(
                 compareLong(val1.getJobFk(), val2.getJobFk()),
@@ -327,7 +327,7 @@ public class PojoComparators {
 
     public static int compareRunDescending(RunPojo val1, RunPojo val2) {
         if (val1 == null || val2 == null) {
-            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+            return ObjectUtils.compare(!ObjectUtils.isEmpty(val1), !ObjectUtils.isEmpty(val2));
         }
 
         //val2 then val 1 since descending
@@ -336,7 +336,7 @@ public class PojoComparators {
 
     public static int compareRunDateDescending(RunPojo val1, RunPojo val2) {
         if (val1 == null || val2 == null) {
-            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+            return ObjectUtils.compare(!ObjectUtils.isEmpty(val1), !ObjectUtils.isEmpty(val2));
         }
         return chainCompare(
                 compareLocalDateTimeDescending(val1.getRunDate(), val2.getRunDate()),
@@ -346,7 +346,7 @@ public class PojoComparators {
 
     public static int compareStage(StagePojo val1, StagePojo val2) {
         if (val1 == null || val2 == null) {
-            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+            return ObjectUtils.compare(!ObjectUtils.isEmpty(val1), !ObjectUtils.isEmpty(val2));
         }
         return chainCompare(
                 compareLong(val1.getRunFk(), val2.getRunFk()),
@@ -357,7 +357,7 @@ public class PojoComparators {
 
     public static int compareStageAscending(StagePojo val1, StagePojo val2) {
         if (val1 == null || val2 == null) {
-            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+            return ObjectUtils.compare(!ObjectUtils.isEmpty(val1), !ObjectUtils.isEmpty(val2));
         }
         return Long.compare(val1.getStageId(), val2.getStageId());
 
@@ -365,7 +365,7 @@ public class PojoComparators {
 
     public static int compareStorage(StoragePojo val1, StoragePojo val2) {
         if (val1 == null || val2 == null) {
-            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+            return ObjectUtils.compare(!ObjectUtils.isEmpty(val1), !ObjectUtils.isEmpty(val2));
         }
         return chainCompare(
                 compareLong(val1.getStageFk(), val2.getStageFk()),
@@ -387,7 +387,7 @@ public class PojoComparators {
 
     public static int compareTestResultModel(TestResultModel val1, TestResultModel val2) {
         if (val1 == null || val2 == null) {
-            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+            return ObjectUtils.compare(!ObjectUtils.isEmpty(val1), !ObjectUtils.isEmpty(val2));
         }
         return chainCompare(
                 compareLong(val1.getStageFk(), val2.getStageFk()),
@@ -397,7 +397,7 @@ public class PojoComparators {
 
     public static int compareTestResultPojo(TestResultPojo val1, TestResultPojo val2) {
         if (val1 == null || val2 == null) {
-            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+            return ObjectUtils.compare(!ObjectUtils.isEmpty(val1), !ObjectUtils.isEmpty(val2));
         }
         return chainCompare(
                 compareLong(val1.getStageFk(), val2.getStageFk()),
@@ -407,7 +407,7 @@ public class PojoComparators {
 
     public static int compareTestResultModelDateDescending(TestResultModel val1, TestResultModel val2) {
         if (val1 == null || val2 == null) {
-            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+            return ObjectUtils.compare(!ObjectUtils.isEmpty(val1), !ObjectUtils.isEmpty(val2));
         }
         return chainCompare(
                 compareLocalDateTimeDescending(val1.getTestResultCreated(), val2.getTestResultCreated()),
@@ -418,7 +418,7 @@ public class PojoComparators {
 
     public static int compareTestResultPojoDateDescending(TestResultPojo val1, TestResultPojo val2) {
         if (val1 == null || val2 == null) {
-            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+            return ObjectUtils.compare(!ObjectUtils.isEmpty(val1), !ObjectUtils.isEmpty(val2));
         }
         return chainCompare(
                 compareLocalDateTimeDescending(val1.getTestResultCreated(), val2.getTestResultCreated()),
@@ -429,7 +429,7 @@ public class PojoComparators {
 
     public static int compareTestSuite(TestSuitePojo val1, TestSuitePojo val2) {
         if (val1 == null || val2 == null) {
-            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+            return ObjectUtils.compare(!ObjectUtils.isEmpty(val1), !ObjectUtils.isEmpty(val2));
         }
         return chainCompare(
                 compareLong(val1.getTestSuiteId(), val2.getTestSuiteId()),
@@ -439,7 +439,7 @@ public class PojoComparators {
 
     public static int compareTestCase(TestCasePojo val1, TestCasePojo val2) {
         if (val1 == null || val2 == null) {
-            return ObjectUtils.compare(ObjectUtils.isEmpty(val1), ObjectUtils.isEmpty(val2));
+            return ObjectUtils.compare(!ObjectUtils.isEmpty(val1), !ObjectUtils.isEmpty(val2));
         }
         return chainCompare(
                 compareLong(val1.getTestCaseId(), val2.getTestCaseId()),

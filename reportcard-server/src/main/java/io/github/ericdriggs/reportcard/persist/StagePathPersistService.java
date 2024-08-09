@@ -204,13 +204,7 @@ public class StagePathPersistService extends AbstractPersistService {
 
     }
 
-    /**
-     * @param request a BuildStagePathRequest with the fields to match on
-     * @return the RunStagePath for the provided report metadata.
-     */
-    public StagePath getUpsertedStagePath(StageDetails request, TestResultModel testResultModel) {
-        return getUpsertedStagePath(request, testResultModel, null);
-    }
+
 
     /*
      * TODO: add test to simulate race condition on insert where buildstage path is missing data from db to ensure that
@@ -233,6 +227,14 @@ public class StagePathPersistService extends AbstractPersistService {
     }
 
     /**
+     * @param request a BuildStagePathRequest with the fields to match on
+     * @return the RunStagePath for the provided report metadata.
+     */
+    public StagePath getUpsertedStagePath(StageDetails request) {
+        return getUpsertedStagePath(request, null);
+    }
+
+    /**
      * prefer version which only accepts request. The ability to inject a stagePath is for testing purposes.
      *
      * @param request   a ReportMetaData
@@ -240,7 +242,7 @@ public class StagePathPersistService extends AbstractPersistService {
      * @return the RunStagePath for the provided report metadata.
      */
     @SuppressWarnings("resource")
-    public StagePath getUpsertedStagePath(StageDetails request, TestResultModel testResultModel, StagePath stagePath) {
+    public StagePath getUpsertedStagePath(StageDetails request, StagePath stagePath) {
 
         Instant nowUTC = Instant.now();
         //.truncatedTo(ChronoUnit.SECONDS);

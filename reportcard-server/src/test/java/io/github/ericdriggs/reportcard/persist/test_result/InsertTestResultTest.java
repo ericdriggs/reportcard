@@ -106,8 +106,8 @@ public class InsertTestResultTest extends AbstractTestResultPersistTest {
             TestResultModel testResultGet = testResultPersistService.getTestResult(testResultInsert.getTestResultId());
             assertValues(testResultGet);
             assertExternalLinks(testResultGet);
-            assertNotNull(testResultGet.getTestSuiteJson());
-            assertNotEquals("{}", testResultGet.getTestSuiteJson(), testResultInsert.getTestSuiteJson());
+            assertNotNull(testResultGet.getTestSuitesJson());
+            assertNotEquals("{}", testResultGet.getTestSuitesJson(), testResultInsert.getTestSuitesJson());
         }
     }
 
@@ -197,7 +197,7 @@ public class InsertTestResultTest extends AbstractTestResultPersistTest {
         StagePath stagePath;
         {
             StageDetails stageDetails = getStageDetails();
-            stagePath = testResultPersistService.getUpsertedStagePath(stageDetails, testResult);
+            stagePath = testResultPersistService.getUpsertedStagePath(stageDetails);
             assertTrue(stagePath.isComplete());
         }
         testResult.setStageFk(stagePath.getStage().getStageId());
