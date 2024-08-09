@@ -152,6 +152,7 @@ public class TestSuiteModel extends io.github.ericdriggs.reportcard.dto.TestSuit
     }
 
     //currently unused
+    @JsonIgnore
     private void updateTotals() {
         if (testCases == null) {
             return;
