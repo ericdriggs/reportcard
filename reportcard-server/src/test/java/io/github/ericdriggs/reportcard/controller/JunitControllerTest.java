@@ -10,6 +10,7 @@ import io.github.ericdriggs.reportcard.gen.db.TestData;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.StoragePojo;
 import io.github.ericdriggs.reportcard.model.*;
 import io.github.ericdriggs.reportcard.persist.BrowseService;
+import io.github.ericdriggs.reportcard.persist.TestResultPersistService;
 import io.github.ericdriggs.reportcard.persist.test_result.TestResultPersistServiceTest;
 import io.github.ericdriggs.reportcard.storage.S3Service;
 import io.github.ericdriggs.reportcard.xml.ResourceReader;
@@ -19,7 +20,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
@@ -33,12 +33,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static net.javacrumbs.jsonunit.JsonAssert.assertJsonEquals;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 @SpringBootTest(classes = {ReportcardApplication.class, LocalStackConfig.class},
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -61,6 +61,9 @@ public class JunitControllerTest {
     S3Service s3Service;
 
     private final static ObjectMapper mappper = new ObjectMapper();
+
+    @Autowired
+    private TestResultPersistService testResultPersistService;
 
     static StageDetails getStageDetails(String stageName) {
         return StageDetails.builder()
@@ -91,6 +94,8 @@ public class JunitControllerTest {
         TestResultModel testResult = stagePathTestResult.getTestResult();
         assertEquals(1, testResult.getTestSuites().size());
         final TestSuiteModel testSuite = testResult.getTestSuites().get(0);
+        assertTrue(testSuite.getHasSkip());
+        assertEquals(TestStatus.ERROR, testSuite.getTestStatus());
         assertEquals(5, testSuite.getTests());
         assertEquals(4, testSuite.getTestCasesWithFaults().size());
         assertTestCaseFaults(testSuite);
@@ -104,13 +109,26 @@ public class JunitControllerTest {
         TestResultModel testResult = stagePathTestResult.getTestResult();
         assertEquals(1, testResult.getTestSuites().size());
         final TestSuiteModel testSuite = testResult.getTestSuites().get(0);
+        assertTrue(testSuite.getHasSkip());
+        assertEquals(TestStatus.ERROR, testSuite.getTestStatus());
         assertEquals(4, testSuite.getTests());
         assertEquals(3, testSuite.getTestCasesWithFaults().size());
         assertTestCaseFaults(testSuite);
     }
 
     @Test
-    void postJunitHtmlTest() throws IOException {
+    void postJunitHtmlSurefireFormat() throws IOException {
+        final MultipartFile junitTarGz = getSurefireTarGz(resourceReader);
+        doPostHtmlTest(junitTarGz);
+    }
+
+    @Test
+    void postJunitHtmlJunitFormat() throws IOException {
+        final MultipartFile junitTarGz = getJunitTarGz(resourceReader);
+        doPostHtmlTest(junitTarGz);
+    }
+
+    void doPostHtmlTest(MultipartFile junitTarGz) throws IOException {
 
         final String stageName = "apiTest";
         MultipartFile[] files = TestResultPersistServiceTest.getMockMultipartFilesFromPathStrings(TestResultPersistServiceTest.htmlPaths, resourceReader);
@@ -122,7 +140,7 @@ public class JunitControllerTest {
             tempTarGz = TestXmlTarGzUtil.createTarGzipFilesForTesting(files);
 
             final StageDetails stageDetails = getStageDetails(stageName);
-            final MultipartFile junitTarGz = getJunitTarGz(resourceReader);
+
             final MultipartFile htmlTarGz = getHtmlTarGz(resourceReader);
 
             final JunitHtmlPostRequest req =
@@ -135,7 +153,6 @@ public class JunitControllerTest {
                             .build();
             StagePathStorageResultCountResponse response = junitController.doPostStageJunitStorageTarGZ(req);
             assertNotNull(response);
-
 
             final String expectedStageUrl = "/company/company1/org/org1/repo/repo1/branch/master/job/1/run/1/stage/apiTest";
             {
@@ -169,9 +186,34 @@ public class JunitControllerTest {
                 assertEquals(TestData.runReference.toString(), stagePath.getRun().getRunReference());
                 assertEquals(stageName, stagePath.getStage().getStageName());
                 assertEquals(expectedStageUrl, stagePath.getUrl());
+
+                Set<TestResultModel> testResultModels = testResultPersistService.getTestResults(stagePath.getStage().getStageId());
+                assertEquals(1, testResultModels.size());
+
+                TestResultModel testResultModel = testResultModels.iterator().next();
+                assertNotEquals("[]", testResultModel.getTestSuitesJson());
+                final List<TestSuiteModel> testSuiteModels = testResultModel.getTestSuites();
+                assertEquals(1, testSuiteModels.size());
+
+                TestSuiteModel testSuiteModel = testSuiteModels.iterator().next();
+                final List<TestCaseModel> testCaseModels = testSuiteModel.getTestCases();
+                assertEquals(2, testCaseModels.size());
+
+                for (TestCaseModel testCaseModel : testCaseModels) {
+                    final List<TestCaseFaultModel> testCaseFaults = testCaseModel.getTestCaseFaults();
+                    if ("Default user agent matches /CasperJS/".equals(testCaseModel.getName())) {
+                        assertEquals(0, testCaseFaults.size());
+                    } else if ("defaultTestValueIs_Value".equals(testCaseModel.getName())) {
+                        assertEquals(TestStatus.FAILURE, testCaseModel.getTestStatus());
+                        assertEquals(1, testCaseFaults.size());
+                    } else {
+                        assertEquals(0, testCaseFaults.size());
+                    }
+                }
+
             }
 
-            {
+            {//storage assertions
                 List<StoragePojo> storages = response.getStorages();
                 for (StoragePojo storage : storages) {
                     assertNotNull(storage.getStorageId());
@@ -264,6 +306,10 @@ public class JunitControllerTest {
 
     public static MultipartFile getJunitTarGz(ResourceReaderComponent resourceReader) throws IOException {
         return getTestTarGz(resourceReader, "junit.tar.gz", List.of(TestResultPersistServiceTest.junitXmlPath));
+    }
+
+    public static MultipartFile getSurefireTarGz(ResourceReaderComponent resourceReader) throws IOException {
+        return getTestTarGz(resourceReader, "junit.tar.gz", List.of(TestResultPersistServiceTest.surefireXmlPath));
     }
 
     public static MultipartFile getHtmlTarGz(ResourceReaderComponent resourceReader) throws IOException {

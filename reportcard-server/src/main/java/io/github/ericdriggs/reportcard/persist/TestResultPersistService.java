@@ -86,7 +86,7 @@ public class TestResultPersistService extends StagePathPersistService {
     }
 
     public StagePathTestResult insertTestResult(StageDetails reportMetaData, TestResultModel testResult) {
-        StagePath stagePath = getUpsertedStagePath(reportMetaData, testResult);
+        StagePath stagePath = getUpsertedStagePath(reportMetaData);
         return insertTestResult(stagePath, testResult);
     }
 
@@ -155,8 +155,8 @@ public class TestResultPersistService extends StagePathPersistService {
 
             TestResultRecord testResultRecord = record.into(TestResultRecord.class);
             TestResultModel testResult = testResultRecord.into(TestResultModel.class);
-            //TODO: why isn't this json field isn't being translated properly?
-            testResult.setTestSuiteJson(testResultRecord.getTestSuitesJson());
+
+            testResult.setTestSuitesJson(testResultRecord.getTestSuitesJson());
             TestSuiteModel testSuite = record.into(TestSuiteRecord.class).into(TestSuiteModel.class);
             List<TestSuiteModel> testSuiteModels = TestSuiteModel.fromJson(testResultRecord.getTestSuitesJson());
             testResult.setTestSuites(testSuiteModels);
@@ -194,6 +194,7 @@ public class TestResultPersistService extends StagePathPersistService {
         if (testResult.getTestResultId() == null) {
             List<TestSuiteModel> testSuites = testResult.getTestSuites();
             TestResultRecord testResultRecord = dsl.newRecord(TEST_RESULT);
+
             testResultRecord.setStageFk(testResult.getStageFk())
                     .setError(testResult.getError())
                     .setFailure(testResult.getFailure())

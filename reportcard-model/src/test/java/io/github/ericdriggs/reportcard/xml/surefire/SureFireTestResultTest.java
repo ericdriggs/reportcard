@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class SureFireTestResultTest {
 
     @Test
-    void unmarshallXml() {
+    void unmarshallXmlTest() {
         TestResultModel testResultModel = fromRelativePath("format-samples/sample-surefire.xml");
         assertEquals(1, testResultModel.getTestSuites().size());
 
@@ -31,8 +31,8 @@ public class SureFireTestResultTest {
         assertEquals(1, testSuite.getError());
         assertEquals(1, testSuite.getFailure());
         assertEquals(1, testSuite.getSkipped());
-        assertNull(testSuite.getHasSkip());
-        assertNull(testSuite.getIsSuccess());
+        assertTrue(testSuite.getHasSkip());
+        assertFalse(testSuite.getIsSuccess());
 
 
         {

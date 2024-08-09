@@ -56,7 +56,9 @@ public class TestCaseModel extends io.github.ericdriggs.reportcard.dto.TestCase 
 
     @JsonIgnore
     public TestCaseModel addTestCaseFaults(Collection<TestCaseFaultModel> testCaseFaults) {
-        this.testCaseFaults.addAll(testCaseFaults);
+        if (testCaseFaults != null) {
+            this.testCaseFaults.addAll(testCaseFaults);
+        }
         return this;
     }
 

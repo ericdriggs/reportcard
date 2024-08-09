@@ -31,6 +31,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TestResultPersistServiceTest {
 
     public static String junitXmlPath = "classpath:format-samples/sample-junit-small.xml";
+    public static String surefireXmlPath = "classpath:format-samples/sample-surefire-small.xml";
     public static final String htmlIndexFile = "html-samples/foo/index.html";
     public static List<String> htmlPaths = List.of("classpath:html-samples/foo/index.html", "classpath:html-samples/foo/other.html", "classpath:html-samples/foo/nested/nested.html");
 

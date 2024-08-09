@@ -56,13 +56,14 @@ public class Keys {
     // UNIQUE and PRIMARY KEY definitions
     // -------------------------------------------------------------------------
 
+    public static final UniqueKey<BranchRecord> KEY_BRANCH_BRANCH_NAME_UQ = Internal.createUniqueKey(BranchTable.BRANCH, DSL.name("KEY_branch_branch_name_uq"), new TableField[] { BranchTable.BRANCH.BRANCH_NAME, BranchTable.BRANCH.REPO_FK }, true);
     public static final UniqueKey<BranchRecord> KEY_BRANCH_PRIMARY = Internal.createUniqueKey(BranchTable.BRANCH, DSL.name("KEY_branch_PRIMARY"), new TableField[] { BranchTable.BRANCH.BRANCH_ID }, true);
     public static final UniqueKey<CompanyRecord> KEY_COMPANY_COMPANY_NAME_IDX = Internal.createUniqueKey(CompanyTable.COMPANY, DSL.name("KEY_company_company_name_idx"), new TableField[] { CompanyTable.COMPANY.COMPANY_NAME }, true);
     public static final UniqueKey<CompanyRecord> KEY_COMPANY_PRIMARY = Internal.createUniqueKey(CompanyTable.COMPANY, DSL.name("KEY_company_PRIMARY"), new TableField[] { CompanyTable.COMPANY.COMPANY_ID }, true);
     public static final UniqueKey<FaultContextRecord> KEY_FAULT_CONTEXT_PRIMARY = Internal.createUniqueKey(FaultContextTable.FAULT_CONTEXT, DSL.name("KEY_fault_context_PRIMARY"), new TableField[] { FaultContextTable.FAULT_CONTEXT.FAULT_CONTEXT_ID }, true);
     public static final UniqueKey<JobRecord> KEY_JOB_PRIMARY = Internal.createUniqueKey(JobTable.JOB, DSL.name("KEY_job_PRIMARY"), new TableField[] { JobTable.JOB.JOB_ID }, true);
     public static final UniqueKey<JobRecord> KEY_JOB_UQ_BRANCH_FK_JOB_INFO_STR = Internal.createUniqueKey(JobTable.JOB, DSL.name("KEY_job_UQ_BRANCH_FK_JOB_INFO_STR"), new TableField[] { JobTable.JOB.JOB_INFO_STR, JobTable.JOB.BRANCH_FK }, true);
-    public static final UniqueKey<OrgRecord> KEY_ORG_ORG_NAME_IDX = Internal.createUniqueKey(OrgTable.ORG, DSL.name("KEY_org_org_name_idx"), new TableField[] { OrgTable.ORG.ORG_NAME }, true);
+    public static final UniqueKey<OrgRecord> KEY_ORG_ORG_NAME_IDX = Internal.createUniqueKey(OrgTable.ORG, DSL.name("KEY_org_org_name_idx"), new TableField[] { OrgTable.ORG.ORG_NAME, OrgTable.ORG.COMPANY_FK }, true);
     public static final UniqueKey<OrgRecord> KEY_ORG_PRIMARY = Internal.createUniqueKey(OrgTable.ORG, DSL.name("KEY_org_PRIMARY"), new TableField[] { OrgTable.ORG.ORG_ID }, true);
     public static final UniqueKey<RepoRecord> KEY_REPO_PRIMARY = Internal.createUniqueKey(RepoTable.REPO, DSL.name("KEY_repo_PRIMARY"), new TableField[] { RepoTable.REPO.REPO_ID }, true);
     public static final UniqueKey<RepoRecord> KEY_REPO_REPO_NAME_IDX = Internal.createUniqueKey(RepoTable.REPO, DSL.name("KEY_repo_repo_name_idx"), new TableField[] { RepoTable.REPO.ORG_FK, RepoTable.REPO.REPO_NAME }, true);
