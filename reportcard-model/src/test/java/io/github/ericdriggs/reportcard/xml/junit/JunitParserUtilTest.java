@@ -12,7 +12,6 @@ public class JunitParserUtilTest {
 
         String xmlString = ResourceReader.resourceAsString("format-samples/sample-junit.xml");
         Testsuites testsuites = JunitParserUtil.parseTestSuites(xmlString);
-
         assertEquals(66, testsuites.testsuite.size());
         int testCount = 0;
         for (Testsuite t : testsuites.testsuite) {

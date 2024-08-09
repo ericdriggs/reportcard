@@ -6,11 +6,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.ericdriggs.reportcard.mappers.SharedObjectMappers;
+import io.github.ericdriggs.reportcard.util.CompareUtil;
 import io.github.ericdriggs.reportcard.xml.IsEmptyUtil;
 import io.github.ericdriggs.reportcard.xml.ResultCount;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -92,14 +94,39 @@ public class TestSuiteModel extends io.github.ericdriggs.reportcard.dto.TestSuit
 
     @JsonIgnore
     public TestStatus getTestStatus() {
-        if (getError() > 0) {
+        if (getError() != null && getError() > 0) {
             return TestStatus.ERROR;
-        } else if (getFailure() > 0) {
+        } else if (getFailure() != null && getFailure() > 0) {
             return TestStatus.FAILURE;
-        } else if (getIsSuccess()) {
-            return TestStatus.SUCCESS;
+        } else if (CompareUtil.compareInteger(getSkipped(), getTests()) == 0) {
+            return TestStatus.SKIPPED;
         }
-        return TestStatus.SKIPPED;
+        if (getIsSuccess() != null) {
+            if (getIsSuccess()) {
+                return TestStatus.SUCCESS;
+            } else {
+                return TestStatus.FAILURE;
+            }
+        }
+        return calculateTestStatus();
+    }
+
+    @JsonIgnore
+    TestStatus calculateTestStatus() {
+        TestStatus testStatus = TestStatus.SKIPPED;
+
+        for (TestCaseModel testCase : testCases) {
+            if (testCase.getTestStatus() == TestStatus.ERROR) {
+                return TestStatus.ERROR;
+            }
+            if (testCase.getTestStatus() == TestStatus.FAILURE) {
+                return TestStatus.FAILURE;
+            }
+            if (testCase.getTestStatus() == TestStatus.SUCCESS) {
+                testStatus = TestStatus.SUCCESS;
+            }
+        }
+        return testStatus;
     }
 
     @JsonIgnore
@@ -122,6 +149,45 @@ public class TestSuiteModel extends io.github.ericdriggs.reportcard.dto.TestSuit
     public static List<TestSuiteModel> fromJson(String json) {
         final TestSuiteModel[] testSuiteModels = SharedObjectMappers.readValueOrDefault(json, TestSuiteModel[].class, new TestSuiteModel[0]);
         return Arrays.asList(testSuiteModels);
+    }
+
+    //currently unused
+    private void updateTotals() {
+        if (testCases == null) {
+            return;
+        }
+        boolean hasSkip = false;
+        boolean isSuccess = true;
+        int errorCount = 0;
+        int failCount = 0;
+        int skipCount = 0;
+        int testCount = 0;
+        BigDecimal time = BigDecimal.ZERO;
+        for (TestCaseModel testCase : testCases) {
+            testCount++;
+            if (testCase.getTestStatus() == TestStatus.ERROR) {
+                errorCount++;
+                isSuccess = false;
+            }
+            if (testCase.getTestStatus() == TestStatus.FAILURE) {
+                failCount++;
+                isSuccess = false;
+            }
+            if (testCase.getTestStatus() == TestStatus.SKIPPED) {
+                hasSkip = true;
+                skipCount++;
+            }
+            if (testCase.getTime() != null) {
+                time = time.add(testCase.getTime());
+            }
+        }
+        setError(errorCount);
+        setIsSuccess(isSuccess);
+        setFailure(failCount);
+        setHasSkip(hasSkip);
+        setSkipped(skipCount);
+        setTests(testCount);;
+        setTime(time);
     }
 
 }

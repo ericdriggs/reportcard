@@ -2,11 +2,7 @@ package io.github.ericdriggs.reportcard.model.converter.junit;
 
 import io.github.ericdriggs.reportcard.model.*;
 import io.github.ericdriggs.reportcard.xml.IsEmptyUtil;
-import io.github.ericdriggs.reportcard.xml.junit.JunitParserUtil;
-import io.github.ericdriggs.reportcard.xml.junit.Testcase;
-import io.github.ericdriggs.reportcard.xml.junit.Testsuite;
-import io.github.ericdriggs.reportcard.xml.junit.Testsuites;
-import io.github.ericdriggs.reportcard.xml.surefire.HasValueMessageTypeSurefire;
+import io.github.ericdriggs.reportcard.xml.junit.*;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
@@ -62,13 +58,21 @@ public class JunitConvertersUtil {
         else {
             modelTestCase.setTestStatus(TestStatus.SUCCESS);
         }
+        modelTestCase.setTestCaseFaults(getTestCaseFaults(source));
         return modelTestCase;
     }
 
     public static List<TestCaseFaultModel> getTestCaseFaults(Testcase source) {
+        if (source == null) {
+            return null;
+        }
         List<TestCaseFaultModel> testCaseFaults = new ArrayList<>();
-        testCaseFaults.addAll(getTestCaseFaults(List.of(source.getError()), FaultContext.ERROR));
-        testCaseFaults.addAll(getTestCaseFaults(List.of(source.getFailure()), FaultContext.FAILURE));
+        if (source.getError() != null) {
+            testCaseFaults.addAll(getTestCaseFaults(List.of(source.getError()), FaultContext.ERROR));
+        }
+        if (source.getFailure() != null) {
+            testCaseFaults.addAll(getTestCaseFaults(List.of(source.getFailure()), FaultContext.FAILURE));
+        }
         return testCaseFaults;
     }
 
@@ -76,7 +80,7 @@ public class JunitConvertersUtil {
         List<TestCaseFaultModel> testCaseFaults = new ArrayList<>();
         if (!IsEmptyUtil.isCollectionEmpty(faults)) {
             for (Object o : faults) {
-                if (o instanceof HasValueMessageTypeSurefire hasValueMessageType) {
+                if (o instanceof HasValueMessageTypeJunit hasValueMessageType) {
                     testCaseFaults.add(getTestCaseFault(hasValueMessageType, faultContext));
                 }
             }
@@ -84,7 +88,7 @@ public class JunitConvertersUtil {
         return testCaseFaults;
     }
 
-    public static TestCaseFaultModel getTestCaseFault(HasValueMessageTypeSurefire fault, FaultContext faultContext) {
+    public static TestCaseFaultModel getTestCaseFault(HasValueMessageTypeJunit fault, FaultContext faultContext) {
 
         TestCaseFaultModel testCaseFault = new TestCaseFaultModel();
         testCaseFault.setFaultContextFk(faultContext.getFaultContextId())
@@ -108,6 +112,7 @@ public class JunitConvertersUtil {
         for (Testsuite testsuite : source.getTestsuite()) {
             testSuites.add(doFromJunitToModelTestSuite(testsuite));
         }
+
         return testSuites;
     }
 
@@ -124,6 +129,7 @@ public class JunitConvertersUtil {
         if (modelTestSuite.getFailure() == null) {
             modelTestSuite.setFailure(0);
         }
+        modelTestSuite.setIsSuccess(modelTestSuite.getError() == 0 && modelTestSuite.getFailure() == 0);
         modelTestSuite.setSkipped(source.getSkipped());
         if (modelTestSuite.getSkipped() == null) {
             modelTestSuite.setSkipped(0);
@@ -135,6 +141,9 @@ public class JunitConvertersUtil {
         modelTestSuite.setSkipped(source.getSkipped());
         if (modelTestSuite.getSkipped() == null) {
             modelTestSuite.setSkipped(0);
+        }
+        if (modelTestSuite.getSkipped() > 0) {
+            modelTestSuite.setHasSkip(true);
         }
         modelTestSuite.setPackageName(source.get_package());
         modelTestSuite.setProperties(null);

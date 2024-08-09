@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.ericdriggs.reportcard.model.*;
 import io.github.ericdriggs.reportcard.xml.IsEmptyUtil;
-import io.github.ericdriggs.reportcard.xml.junit.JunitParserUtil;
 import io.github.ericdriggs.reportcard.xml.surefire.*;
 import lombok.SneakyThrows;
 import org.modelmapper.AbstractConverter;
@@ -131,6 +130,9 @@ public class SurefireConvertersUtil {
         if (modelTestSuite.getSkipped() == null) {
             modelTestSuite.setSkipped(0);
         }
+        if (modelTestSuite.getSkipped() > 0) {
+            modelTestSuite.setHasSkip(true);
+        }
         modelTestSuite.setTests(source.getTests());
         if (modelTestSuite.getTests() == null) {
             modelTestSuite.setTests(0);
@@ -147,6 +149,8 @@ public class SurefireConvertersUtil {
         if (modelTestSuite.getTime() == null) {
             modelTestSuite.setTime(BigDecimal.ZERO);
         }
+
+        modelTestSuite.setIsSuccess(modelTestSuite.getError() == 0 && modelTestSuite.getFailure() == 0);
 
         return modelTestSuite;
     }
