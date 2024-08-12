@@ -26,11 +26,16 @@ public enum SharedObjectMappers {
             .registerModule(new JavaTimeModule());
 
     public final static ObjectMapper simpleObjectMapper = new ObjectMapper()
+            .registerModule(new JavaTimeModule())
+            .setSerializationInclusion(JsonInclude.Include.NON_NULL)
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             .registerModule(new JavaTimeModule())
             .setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
     public final static ObjectMapper ignoreUnknownObjectMapper = new ObjectMapper()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true)
+            .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+            .registerModule(new JavaTimeModule())
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             .setSerializationInclusion(JsonInclude.Include.NON_NULL)
             .registerModule(new JavaTimeModule());

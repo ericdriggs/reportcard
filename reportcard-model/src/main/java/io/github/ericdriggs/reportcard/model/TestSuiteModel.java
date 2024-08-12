@@ -111,8 +111,6 @@ public class TestSuiteModel extends io.github.ericdriggs.reportcard.dto.TestSuit
         return matched;
     }
 
-
-
     @JsonIgnore
     TestStatus calculateTestStatus() {
         TestStatus testStatus = TestStatus.SKIPPED;
