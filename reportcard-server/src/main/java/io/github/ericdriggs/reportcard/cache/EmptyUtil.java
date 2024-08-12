@@ -90,4 +90,18 @@ public enum EmptyUtil {
         }
 
     }
+
+    public static String emptyIfNull(String str) {
+        if (str == null) {
+            return "";
+        }
+        return str;
+    }
+
+    public static String nullStringIfNull(String str) {
+        if (str == null) {
+            return "null";
+        }
+        return str;
+    }
 }
