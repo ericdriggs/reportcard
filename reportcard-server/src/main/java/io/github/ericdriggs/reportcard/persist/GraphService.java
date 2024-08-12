@@ -2,7 +2,6 @@ package io.github.ericdriggs.reportcard.persist;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.github.ericdriggs.reportcard.cache.model.BranchStageViewResponse;
-import io.github.ericdriggs.reportcard.dto.TestSuite;
 import io.github.ericdriggs.reportcard.model.branch.BranchJobLatestRunMap;
 import io.github.ericdriggs.reportcard.model.graph.CompanyGraph;
 import io.github.ericdriggs.reportcard.model.graph.CompanyGraphBuilder;
@@ -106,22 +105,22 @@ public class GraphService extends AbstractPersistService {
     }
 
     public BranchStageViewResponse getRunBranchStageViewResponse(String companyName,
-                                                                 String orgName,
-                                                                 String repoName,
-                                                                 String branchName,
-                                                                 Long jobId,
-                                                                 Long runId) {
+                                                           String orgName,
+                                                           String repoName,
+                                                           String branchName,
+                                                           Long jobId,
+                                                           Long runId) {
 
         List<CompanyGraph> companyGraphs = getRunCompanyGraphs(companyName, orgName, repoName, branchName, jobId, runId);
         return BranchStageViewResponse.fromCompanyGraphs(companyGraphs);
     }
 
     List<CompanyGraph> getRunCompanyGraphs(String companyName,
-                                           String orgName,
-                                           String repoName,
-                                           String branchName,
-                                           Long jobId,
-                                           Long runId) {
+                                                String orgName,
+                                                String repoName,
+                                                String branchName,
+                                                Long jobId,
+                                                Long runId) {
 
         TableConditionMap tableConditionMap = new TableConditionMap();
         tableConditionMap.put(COMPANY, COMPANY.COMPANY_NAME.eq(companyName));
@@ -238,7 +237,7 @@ public class GraphService extends AbstractPersistService {
                                 .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID).and(RUN.IS_SUCCESS))
                                 .leftJoin(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID))
                                 .groupBy(JOB.JOB_ID, STAGE.STAGE_NAME)
-                ).fetchArray("MAX_RUN_ID",Long.class);
+                ).fetchArray("MAX_RUN_ID", Long.class);
 
         tableConditionMap.put(RUN, RUN.RUN_ID.in(runIds));
         return getCompanyGraphs(tableConditionMap);

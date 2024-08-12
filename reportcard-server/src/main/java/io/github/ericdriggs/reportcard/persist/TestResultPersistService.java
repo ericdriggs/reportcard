@@ -194,6 +194,7 @@ public class TestResultPersistService extends StagePathPersistService {
         if (testResult.getTestResultId() == null) {
             List<TestSuiteModel> testSuites = testResult.getTestSuites();
             TestResultRecord testResultRecord = dsl.newRecord(TEST_RESULT);
+
             testResultRecord.setStageFk(testResult.getStageFk())
                     .setError(testResult.getError())
                     .setFailure(testResult.getFailure())
