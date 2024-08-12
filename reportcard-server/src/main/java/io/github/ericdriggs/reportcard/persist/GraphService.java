@@ -78,7 +78,7 @@ public class GraphService extends AbstractPersistService {
         tableConditionMap.put(REPO, REPO.REPO_NAME.eq(repoName));
         tableConditionMap.put(BRANCH, BRANCH.BRANCH_NAME.eq(branchName));
         tableConditionMap.put(JOB, JOB.JOB_ID.eq(jobId));
-        tableConditionMap.put(TEST_RESULT, condition(SqlJsonUtil.fieldNotEqualsJson(TEST_RESULT.TEST_SUITES_JSON.getName(), "[]")));
+        tableConditionMap.put(TEST_RESULT, SqlJsonUtil.jsonNotEqualsCondition(TEST_RESULT.TEST_SUITES_JSON, "[]"));
 
         Condition runCondition = trueCondition();
         if (start != null) {
@@ -87,15 +87,24 @@ public class GraphService extends AbstractPersistService {
         if (end != null) {
             runCondition = runCondition.and(RUN.RUN_DATE.le(end));
         }
+        Condition stageCondition = trueCondition();
+
         if (maxRuns != null) {
+            Long[] runIds = dsl.selectDistinct(RUN.RUN_ID.as("RUN_IDS"))
+                    .from(COMPANY)
+                    .leftJoin(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID)).and(ORG.ORG_NAME.eq(orgName)).and(COMPANY.COMPANY_NAME.eq(companyName))
+                    .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID).and(REPO.REPO_NAME.eq(repoName)))
+                    .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID).and(BRANCH.BRANCH_NAME.eq(branchName)))
+                    .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
+                    .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID)).and(runCondition)
+                    .innerJoin(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID))
+                    .innerJoin(TEST_RESULT).on(TEST_RESULT.STAGE_FK.eq(STAGE.STAGE_ID)).and(SqlJsonUtil.jsonNotEqualsCondition(TEST_RESULT.TEST_SUITES_JSON, "[]"))
+                    .orderBy(RUN.RUN_ID.desc())
+                    .limit(maxRuns)
+                    .fetchArray("RUN_IDS", Long.class);
+
             runCondition = runCondition.and(
-                    RUN.RUN_ID.in(
-                            select(RUN.RUN_ID)
-                                    .from(RUN)
-                                    .where(RUN.JOB_FK.eq(jobId))
-                                    .orderBy(RUN.RUN_ID.desc())
-                                    .limit(maxRuns)
-                    )
+                    RUN.RUN_ID.in(runIds)
             );
         }
         tableConditionMap.put(RUN, runCondition);
@@ -176,6 +185,7 @@ public class GraphService extends AbstractPersistService {
                 .leftJoin(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID))
                 .groupBy(JOB.JOB_ID, STAGE.STAGE_NAME)
                 .fetchArray("MAX_RUN_ID", Long.class);
+
 
         tableConditionMap.put(RUN, RUN.RUN_ID.in(runIds));
         return getCompanyGraphs(tableConditionMap);
@@ -340,7 +350,7 @@ public class GraphService extends AbstractPersistService {
         Long[] ids = dsl.selectDistinct(TEST_RESULT.TEST_RESULT_ID)
                 .from(TEST_RESULT)
                 .where(TEST_RESULT.TEST_SUITES_JSON.isNull())
-                .orderBy(TEST_RESULT.TEST_RESULT_ID.asc())
+                .orderBy(TEST_RESULT.TEST_RESULT_ID.desc())
                 .limit(maxCount)
                 .fetchArray(TEST_RESULT.TEST_RESULT_ID, Long.class);
         return new TreeSet<Long>(Arrays.stream(ids).toList());
@@ -364,7 +374,7 @@ public class GraphService extends AbstractPersistService {
     public List<TestSuiteGraph> getTestSuitesGraph(Long testResultId) {
         Result result = getTestSuitesGraphResult(testResultId);
         if (!result.isEmpty() && result.get(0) instanceof Record1 record1) {
-            String json = record1.formatJSON();
+            String json = record1.get(0).toString();
             log.info("getTestSuitesGraph json: " + json);
             return Arrays.asList(mapper.readValue(json, TestSuiteGraph[].class));
         }
@@ -375,9 +385,16 @@ public class GraphService extends AbstractPersistService {
     public String getTestSuitesGraphJson(Long testResultId) {
         Result result = getTestSuitesGraphResult(testResultId);
         if (!result.isEmpty() && result.get(0) instanceof Record1 record1) {
-            String json = record1.formatJSON();
-            log.info("getTestSuitesGraphJson json: " + json);
-            return json;
+            if (record1.size() == 1 && record1.get(0) != null) {
+                //convert from nested array to array
+                String json = record1.get(0).toString();
+                log.info("getTestSuitesGraphJson json: " + json);
+                if (json != null && !"[null]".equals(json)) {
+                    return json;
+                }
+            } else if (record1.size() > 1) {
+                throw new IllegalStateException("Expected nested array with single element but got: " + record1.size() + " for record: " + record1 );
+            }
         }
         return "[]";
     }
@@ -390,7 +407,7 @@ public class GraphService extends AbstractPersistService {
     @SuppressWarnings("rawtypes")
     protected Result getTestSuitesGraphResult(Long testResultId) {
 
-        return dsl.select(jsonObject(
+        return dsl.select(jsonArrayAgg(jsonObject(
                         key("testSuiteId").value(TEST_SUITE.TEST_SUITE_ID),
                         key("testResultFk").value(TEST_SUITE.TEST_RESULT_FK),
                         key("name").value(TEST_SUITE.NAME),
@@ -422,7 +439,7 @@ public class GraphService extends AbstractPersistService {
                                         key("message").value(TEST_CASE_FAULT.MESSAGE)
                                 ))).from(TEST_CASE_FAULT).where(TEST_CASE_FAULT.TEST_CASE_FK.eq(TEST_CASE.TEST_CASE_ID)))
                         ))).from(TEST_CASE).where(TEST_CASE.TEST_SUITE_FK.eq(TEST_SUITE.TEST_SUITE_ID)))
-                )).from(TEST_SUITE).where(TEST_SUITE.TEST_RESULT_FK.eq(testResultId))
+                ))).from(TEST_SUITE).where(TEST_SUITE.TEST_RESULT_FK.eq(testResultId))
                 .fetch();
     }
 
