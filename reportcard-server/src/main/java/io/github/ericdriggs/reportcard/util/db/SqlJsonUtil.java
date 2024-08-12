@@ -5,8 +5,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.ericdriggs.reportcard.mappers.SharedObjectMappers;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.ObjectUtils;
+import org.jooq.Condition;
+import org.jooq.Field;
 
 import java.util.Map;
+
+import static org.jooq.impl.DSL.condition;
 
 public enum SqlJsonUtil {
     ;//static methods only
@@ -38,4 +42,7 @@ public enum SqlJsonUtil {
         return mapper.writeValueAsString(map);
     }
 
+    public static Condition jsonNotEqualsCondition(Field<?> field, String json) {
+        return condition(SqlJsonUtil.fieldNotEqualsJson(field.getName(), json));
+    }
 }
