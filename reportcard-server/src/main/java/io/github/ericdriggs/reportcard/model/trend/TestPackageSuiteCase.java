@@ -7,6 +7,8 @@ import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 import org.apache.commons.lang3.StringUtils;
 
+import static io.github.ericdriggs.reportcard.cache.EmptyUtil.emptyIfNull;
+
 @Builder
 @Jacksonized
 @Value
@@ -30,19 +32,12 @@ public class TestPackageSuiteCase implements Comparable<TestPackageSuiteCase> {
         this.testCaseName = testCaseName;
     }
 
-    static String wrapNull(String str) {
-        if (str == null) {
-            return "";
-        }
-        return str;
-    }
-
     @JsonIgnore
     public static String getPackageName(TestPackageSuiteCase t) {
         if (t == null) {
             return "";
         }
-        return wrapNull(t.testPackageName);
+        return emptyIfNull(t.testPackageName);
     }
 
 
@@ -51,7 +46,7 @@ public class TestPackageSuiteCase implements Comparable<TestPackageSuiteCase> {
         if (t == null) {
             return "";
         }
-        return wrapNull(t.testSuiteName);
+        return emptyIfNull(t.testSuiteName);
     }
 
     @JsonIgnore
@@ -59,7 +54,7 @@ public class TestPackageSuiteCase implements Comparable<TestPackageSuiteCase> {
         if (t == null) {
             return "";
         }
-        return wrapNull(t.testCaseName);
+        return emptyIfNull(t.testCaseName);
     }
 
 }
