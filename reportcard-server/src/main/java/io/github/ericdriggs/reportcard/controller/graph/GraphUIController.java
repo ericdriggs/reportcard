@@ -3,6 +3,8 @@ package io.github.ericdriggs.reportcard.controller.graph;
 import io.github.ericdriggs.reportcard.model.orgdashboard.OrgDashboard;
 import io.github.ericdriggs.reportcard.model.trend.JobStageTestTrend;
 import io.github.ericdriggs.reportcard.persist.GraphService;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +16,7 @@ import java.util.List;
 @RestController
 @RequestMapping("")
 @SuppressWarnings("unused")
+@Slf4j
 public class GraphUIController {
 
     private final GraphService graphService;
@@ -35,8 +38,23 @@ public class GraphUIController {
             @RequestParam(required = false) Instant end,
             @RequestParam(required = false, defaultValue = "30") Integer runs
     ) {
-        final JobStageTestTrend jobTestTrend = graphService.getJobStageTestTrend(company, org, repo, branch, jobId, stage, start, end, runs);
-        final String trendHtml = TrendHtmlHelper.renderTrendHtml(jobTestTrend);
+        Exception e = null;
+        String trendHtml = null;
+        //temporary workaround until bump max_allowed_packet
+        for (int i = runs; i > 0; i = i/2) {
+            try {
+                final JobStageTestTrend jobTestTrend = graphService.getJobStageTestTrend(company, org, repo, branch, jobId, stage, start, end, i);
+                e = null;
+                trendHtml = TrendHtmlHelper.renderTrendHtml(jobTestTrend);
+                break;
+            } catch (Exception ex) {
+                e = ex;
+                log.warn("failed run for jobId: {}, i: {}", jobId, i, ex);
+            }
+        }
+        if (e != null) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(String.join("\n", ExceptionUtils.getStackFrames(e)));
+        }
         //TODO: add cache headers * browser side cache using header, e.g. Cache-Control: max-age=600 //10 mins
         return new ResponseEntity<>(trendHtml, HttpStatus.OK);
     }
