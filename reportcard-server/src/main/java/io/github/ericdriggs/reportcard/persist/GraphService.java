@@ -90,18 +90,21 @@ public class GraphService extends AbstractPersistService {
         Condition stageCondition = trueCondition();
 
         if (maxRuns != null) {
-            Long[] runIds = dsl.selectDistinct(RUN.RUN_ID.as("RUN_IDS"))
-                    .from(COMPANY)
-                    .leftJoin(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID)).and(ORG.ORG_NAME.eq(orgName)).and(COMPANY.COMPANY_NAME.eq(companyName))
-                    .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID).and(REPO.REPO_NAME.eq(repoName)))
-                    .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID).and(BRANCH.BRANCH_NAME.eq(branchName)))
-                    .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
-                    .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID)).and(runCondition)
-                    .innerJoin(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID))
-                    .innerJoin(TEST_RESULT).on(TEST_RESULT.STAGE_FK.eq(STAGE.STAGE_ID)).and(SqlJsonUtil.jsonNotEqualsCondition(TEST_RESULT.TEST_SUITES_JSON, "[]"))
-                    .orderBy(RUN.RUN_ID.desc())
-                    .limit(maxRuns)
-                    .fetchArray("RUN_IDS", Long.class);
+            Long[] runIds =
+                    dsl.select().from(
+                                    dsl.selectDistinct(RUN.RUN_ID.as("RUN_IDS"))
+                                            .from(COMPANY)
+                                            .leftJoin(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID)).and(COMPANY.COMPANY_NAME.eq(companyName).and(ORG.ORG_NAME.eq(orgName)))
+                                            .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID).and(REPO.REPO_NAME.eq(repoName)))
+                                            .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID).and(BRANCH.BRANCH_NAME.eq(branchName)))
+                                            .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID).and(JOB.JOB_ID.eq(jobId)))
+                                            .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID)).and(runCondition)
+                                            .innerJoin(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID).and(STAGE.STAGE_NAME.eq(stageName)))
+                                            .innerJoin(TEST_RESULT).on(TEST_RESULT.STAGE_FK.eq(STAGE.STAGE_ID)).and(SqlJsonUtil.jsonNotEqualsCondition(TEST_RESULT.TEST_SUITES_JSON, "[]"))
+                                            .orderBy(RUN.RUN_ID.desc())
+                            )
+                            .limit(maxRuns)
+                            .fetchArray("RUN_IDS", Long.class);
 
             runCondition = runCondition.and(
                     RUN.RUN_ID.in(runIds)
@@ -234,7 +237,6 @@ public class GraphService extends AbstractPersistService {
                 .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
                 .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID))
                 .leftJoin(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID))
-
                 .groupBy(JOB.JOB_ID, STAGE.STAGE_NAME)
                 .union(
                         //latest successful run
