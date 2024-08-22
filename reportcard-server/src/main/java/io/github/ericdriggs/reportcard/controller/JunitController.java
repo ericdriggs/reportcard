@@ -200,7 +200,9 @@ public class JunitController {
                 .reports(reports)
                 .build();
         try {
+            log.info("postStageJunitStorageTarGZ request:  {}", req);
             StagePathStorageResultCountResponse response = lockService.criticalSectionCallable(this::doPostStageJunitStorageTarGZ, req, req.getStageDetails().getRunReference());
+            log.info("postStageJunitStorageTarGZ response:  {}", response);
             return new ResponseEntity<>(response, HttpStatus.valueOf(response.getHttpStatusCode()));
         } catch (Exception ex) {
             log.error("postJunitXml - stageDetails: {}, label: {}", req.getStageDetails(), req.getLabel(), ex);
@@ -226,7 +228,6 @@ public class JunitController {
 
         StagePathStorageResultCount stagePathStorageResultCount = new StagePathStorageResultCount(stagePathStorages.getStagePath(), stagePathStorages.getStorages(), stagePathTestResult);
         return StagePathStorageResultCountResponse.created(stagePathStorageResultCount);
-
     }
 
     protected StagePathStorages storeHtml(
