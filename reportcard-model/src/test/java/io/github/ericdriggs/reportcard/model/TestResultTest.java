@@ -19,7 +19,7 @@ public class TestResultTest {
     private static final BigDecimal TEST_TIME = new BigDecimal(TEST_COUNT - SKIPPED_COUNT);
 
     public static TestSuiteModel generateTestSuite(ResultCount resultCount) {
-        TestSuiteModel testSuite = new TestSuiteModel();
+        TestSuiteModel testSuite = TestSuiteModel.builder().build();
         testSuite.setError(resultCount.getErrors());
         testSuite.setFailure(resultCount.getFailures());
         testSuite.setSkipped(resultCount.getSkipped());
@@ -31,22 +31,22 @@ public class TestResultTest {
 
         List<TestCaseModel> testCases = new ArrayList<>();
         for (int i = 0; i < resultCount.getErrors(); i++) {
-            TestCaseModel testCase = new TestCaseModel();
+            TestCaseModel testCase = TestCaseModel.builder().build();
             testCase.setTestStatus(TestStatus.ERROR).setTime(BigDecimal.ONE);
             testCases.add(testCase);
         }
         for (int i = 0; i < resultCount.getFailures(); i++) {
-            TestCaseModel testCase = new TestCaseModel();
+            TestCaseModel testCase = TestCaseModel.builder().build();
             testCase.setTestStatus(TestStatus.FAILURE).setTime(BigDecimal.ONE);
             testCases.add(testCase);
         }
         for (int i = 0; i < resultCount.getSkipped(); i++) {
-            TestCaseModel testCase = new TestCaseModel();
+            TestCaseModel testCase = TestCaseModel.builder().build();
             testCase.setTestStatus(TestStatus.SKIPPED).setTime(BigDecimal.ZERO);
             testCases.add(testCase);
         }
         for (int i = 0; i < resultCount.getTests() - resultCount.getErrors() - resultCount.getFailures() - resultCount.getSkipped(); i++) {
-            TestCaseModel testCase = new TestCaseModel();
+            TestCaseModel testCase = TestCaseModel.builder().build();
             testCase.setTestStatus(TestStatus.SUCCESS).setTime(BigDecimal.ONE);
             testCases.add(testCase);
         }

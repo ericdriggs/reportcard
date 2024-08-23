@@ -33,7 +33,7 @@ public record TestCaseFaultGraph(
 
     @JsonIgnore
     public TestCaseFaultModel asTestCaseFaultModel() {
-        TestCaseFaultModel t = new TestCaseFaultModel();
+        TestCaseFaultModel t = TestCaseFaultModel.builder().build();
         t.setTestCaseFaultId(testCaseFaultId);
         t.setTestCaseFk(testCaseFk);
         t.setFaultContextFk(faultContextFk);

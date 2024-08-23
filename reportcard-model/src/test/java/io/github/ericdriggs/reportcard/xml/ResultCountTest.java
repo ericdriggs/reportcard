@@ -83,7 +83,7 @@ public class ResultCountTest {
             List<TestCaseModel> testCases = new ArrayList<>();
             testCases.add(getTestCase(TestStatus.FAILURE));
             testCases.add(getTestCase(TestStatus.FAILURE));
-            TestSuiteModel testSuite = new TestSuiteModel().setTestCases(testCases);
+            TestSuiteModel testSuite = TestSuiteModel.builder().build().setTestCases(testCases);
             testResult.getTestSuites().add(testSuite);
 
             ResultCount testSuite_resultCount = testSuite.getResultCount();
@@ -93,7 +93,7 @@ public class ResultCountTest {
         {
             List<TestCaseModel> testCases = new ArrayList<>();
             testCases.add(getTestCase(TestStatus.FAILURE));
-            TestSuiteModel testSuite = new TestSuiteModel().setTestCases(testCases);
+            TestSuiteModel testSuite = TestSuiteModel.builder().build().setTestCases(testCases);
             testResult.getTestSuites().add(testSuite);
 
             ResultCount testSuite_resultCount = testSuite.getResultCount();
@@ -107,7 +107,7 @@ public class ResultCountTest {
     static TestCaseModel getTestCase(TestStatus testStatus) {
 
         int randomInt = random.nextInt();
-        TestCaseModel testCase = new TestCaseModel();
+        TestCaseModel testCase = TestCaseModel.builder().build();
 
         testCase.setTestStatusFk(testStatus.getStatusId());
         testCase.setName("name-"+randomInt);
@@ -120,7 +120,7 @@ public class ResultCountTest {
             } else {
                 throw new IllegalStateException("not yet supported: " + testStatus);
             }
-            TestCaseFaultModel testCaseFault = new TestCaseFaultModel();
+            TestCaseFaultModel testCaseFault = TestCaseFaultModel.builder().build();
             testCaseFault
                     .setFaultContextFk(faultContext.getFaultContextId())
                     .setMessage("message-" + randomInt)
