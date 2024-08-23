@@ -27,4 +27,14 @@ public enum TruncateUtils {
         }
         throw new IllegalStateException("truncation coding error -- should be unreachable code");
     }
+
+    public static String truncateString(String str, int maxLength) {
+        if (str == null) {
+            return null;
+        }
+        if (str.length() <= maxLength) {
+            return str;
+        }
+        return str.substring(0, maxLength);
+    }
 }

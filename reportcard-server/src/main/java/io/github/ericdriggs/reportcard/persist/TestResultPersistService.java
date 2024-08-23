@@ -202,7 +202,7 @@ public class TestResultPersistService extends StagePathPersistService {
                     .setTests(testResult.getTests())
                     .setTime(testResult.getTime())
                     .setExternalLinks(testResult.getExternalLinks())
-                    .setTestSuitesJson(TestSuiteModel.asJson(testSuites))
+                    .setTestSuitesJson(TestSuiteModel.asJsonWithTruncatedErrorMessages(testSuites))
                     .store();
 
             testResult = testResultRecord.into(TestResultModel.class);

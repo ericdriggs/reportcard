@@ -5,13 +5,18 @@ package io.github.ericdriggs.reportcard.dto;
 
 
 import lombok.Data;
+import lombok.experimental.SuperBuilder;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
 @Data
+@SuperBuilder(builderMethodName = "testCaseBuilder", toBuilder = true)
 public class TestCase implements Serializable {
+
+    public TestCase() {
+    }
 
     @Serial
     private static final long serialVersionUID = -3938894842199056311L;
