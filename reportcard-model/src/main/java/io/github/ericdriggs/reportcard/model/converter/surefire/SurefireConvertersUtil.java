@@ -53,7 +53,7 @@ public class SurefireConvertersUtil {
     }
 
     public static TestCaseModel doFromSurefireToModelTestCase(Testcase source) {
-        TestCaseModel modelTestCase = new TestCaseModel();
+        TestCaseModel modelTestCase = TestCaseModel.builder().build();
         modelTestCase.setName(source.getName());
         modelTestCase.setClassName(source.getClassname());
         modelTestCase.setTime(new BigDecimal(source.getTime()));
@@ -99,7 +99,7 @@ public class SurefireConvertersUtil {
 
     public static TestCaseFaultModel getTestCaseFault(HasValueMessageTypeSurefire fault, FaultContext faultContext) {
 
-        TestCaseFaultModel testCaseFault = new TestCaseFaultModel();
+        TestCaseFaultModel testCaseFault = TestCaseFaultModel.builder().build();
         testCaseFault.setFaultContextFk(faultContext.getFaultContextId())
                      .setMessage(fault.getMessage())
                      .setType(fault.getType())
@@ -116,7 +116,7 @@ public class SurefireConvertersUtil {
     }
 
     public static TestSuiteModel doFromSurefireToModelTestSuite(Testsuite source) {
-        TestSuiteModel modelTestSuite = new TestSuiteModel();
+        TestSuiteModel modelTestSuite = TestSuiteModel.builder().build();
         modelTestSuite.setName(source.getName());
         modelTestSuite.setError(source.getErrors());
         if (modelTestSuite.getError() == null) {

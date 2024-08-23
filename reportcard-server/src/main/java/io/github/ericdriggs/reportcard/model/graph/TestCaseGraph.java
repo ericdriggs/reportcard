@@ -26,7 +26,7 @@ public record TestCaseGraph(
 
     @JsonIgnore
     public TestCaseModel asTestCaseModel() {
-        TestCaseModel testCaseModel = new TestCaseModel();
+        TestCaseModel testCaseModel = TestCaseModel.builder().build();
         testCaseModel.setTestCaseId(testCaseId);
         testCaseModel.setTestSuiteFk(testSuiteFk);
         testCaseModel.setTestStatusFk(testStatusFk);

@@ -205,7 +205,7 @@ public class InsertTestResultTest extends AbstractTestResultPersistTest {
         List<TestSuiteModel> testSuites = new ArrayList<>();
         {//TestSuite
 
-            TestSuiteModel testSuite = new TestSuiteModel();
+            TestSuiteModel testSuite = TestSuiteModel.builder().build();
             testSuite.setName(testSuiteName);
             testSuite.setError(testSuiteErrorCount);
             testSuite.setFailure(testSuiteFailureCount);
@@ -217,12 +217,12 @@ public class InsertTestResultTest extends AbstractTestResultPersistTest {
             List<TestCaseModel> testCases = new ArrayList<>();
             {//TestCase
 
-                TestCaseModel testCase = new TestCaseModel();
+                TestCaseModel testCase = TestCaseModel.builder().build();
                 testCase.setClassName(testCaseClassName);
                 testCase.setTestStatusFk(testCaseStatus.getStatusId());
                 testCase.setName(testCaseName);
                 testCase.setTime(testCaseTime);
-                TestCaseFaultModel testCaseFault = new TestCaseFaultModel();
+                TestCaseFaultModel testCaseFault = TestCaseFaultModel.builder().build();
                 {
                     testCaseFault.setValue(testCaseFaultValue);
                     testCaseFault.setMessage(testCaseFaultMessage);

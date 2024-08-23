@@ -37,7 +37,7 @@ public class JunitConvertersUtil {
     }
 
     public static TestCaseModel doFromJunitToModelTestCase(Testcase source) {
-        TestCaseModel modelTestCase = new TestCaseModel();
+        TestCaseModel modelTestCase = TestCaseModel.builder().build();
         modelTestCase.setName(source.getName());
         modelTestCase.setClassName(source.getClassname());
         modelTestCase.setTime(source.getTime());
@@ -90,7 +90,7 @@ public class JunitConvertersUtil {
 
     public static TestCaseFaultModel getTestCaseFault(HasValueMessageTypeJunit fault, FaultContext faultContext) {
 
-        TestCaseFaultModel testCaseFault = new TestCaseFaultModel();
+        TestCaseFaultModel testCaseFault = TestCaseFaultModel.builder().build();
         testCaseFault.setFaultContextFk(faultContext.getFaultContextId())
                      .setMessage(fault.getMessage())
                      .setType(fault.getType())
@@ -117,7 +117,7 @@ public class JunitConvertersUtil {
     }
 
     public static TestSuiteModel doFromJunitToModelTestSuite(Testsuite source) {
-        TestSuiteModel modelTestSuite = new TestSuiteModel();
+        TestSuiteModel modelTestSuite = TestSuiteModel.builder().build();
         modelTestSuite.setSystemErr(source.getSystemErr());
         modelTestSuite.setSystemOut(source.getSystemOut());
         modelTestSuite.setError(source.getErrors());

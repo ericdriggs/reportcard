@@ -109,7 +109,7 @@ public class InsertStagePathTest extends AbstractTestResultPersistTest {
 
 
     static TestSuiteModel getTestSuite(List<TestCaseModel> testCases) {
-        TestSuiteModel testSuite = new TestSuiteModel().setTestCases(testCases);
+        TestSuiteModel testSuite = TestSuiteModel.builder().build().setTestCases(testCases);
         ResultCount resultCount = testSuite.getResultCount();
         testSuite.setName("suite_" + random.nextInt());
         testSuite.setTests(testCases.size());
@@ -123,7 +123,7 @@ public class InsertStagePathTest extends AbstractTestResultPersistTest {
     static TestCaseModel getTestCase(TestStatus testStatus) {
 
         int randomInt = random.nextInt();
-        TestCaseModel testCase = new TestCaseModel();
+        TestCaseModel testCase = TestCaseModel.builder().build();
 
         testCase.setTestStatusFk(testStatus.getStatusId());
         testCase.setName("name-"+randomInt);
@@ -136,7 +136,7 @@ public class InsertStagePathTest extends AbstractTestResultPersistTest {
             } else {
                 throw new IllegalStateException("not yet supported: " + testStatus);
             }
-            TestCaseFaultModel testCaseFault = new TestCaseFaultModel();
+            TestCaseFaultModel testCaseFault = TestCaseFaultModel.builder().build();
             testCaseFault
                     .setFaultContextFk(faultContext.getFaultContextId())
                     .setMessage("message-" + randomInt)

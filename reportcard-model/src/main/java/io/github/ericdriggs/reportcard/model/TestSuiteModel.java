@@ -9,20 +9,30 @@ import io.github.ericdriggs.reportcard.mappers.SharedObjectMappers;
 import io.github.ericdriggs.reportcard.util.CompareUtil;
 import io.github.ericdriggs.reportcard.xml.IsEmptyUtil;
 import io.github.ericdriggs.reportcard.xml.ResultCount;
+import lombok.Builder;
+import lombok.experimental.SuperBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
+@SuperBuilder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class TestSuiteModel extends io.github.ericdriggs.reportcard.dto.TestSuite {
+
+    public TestSuiteModel() {
+
+    }
 
     @JsonIgnore
     final static Logger log = LoggerFactory.getLogger(TestResultModel.class);
     @JsonIgnore
     final static ObjectMapper mapper = SharedObjectMappers.ignoreUnknownObjectMapper;
 
+    @Builder.Default
     private List<TestCaseModel> testCases = new ArrayList<>();
 
     @JsonProperty("testCases")
@@ -130,7 +140,7 @@ public class TestSuiteModel extends io.github.ericdriggs.reportcard.dto.TestSuit
     }
 
     @JsonIgnore
-    public static String asJson(List<TestSuiteModel> testSuiteModels) {
+    public static String asJsonWithTruncatedErrorMessages(List<TestSuiteModel> testSuiteModels) {
         if (testSuiteModels == null) {
             return null;
         }
@@ -138,12 +148,31 @@ public class TestSuiteModel extends io.github.ericdriggs.reportcard.dto.TestSuit
             return "[]";
         }
         try {
-            return mapper.writeValueAsString(testSuiteModels);
+            return mapper.writeValueAsString(TestSuiteModel.withTruncatedErrorMessages(testSuiteModels));
         } catch (JsonProcessingException e) {
             log.error("failed to parse json for testResultModel: {}", testSuiteModels, e);
         }
         return null;
     }
+
+
+    public TestSuiteModel withTruncatedErrorMessages() {
+        return this.toBuilder()
+                .testCases(TestCaseModel.withTruncatedErrorMessages(testCases))
+                .build();
+    }
+
+    public static List<TestSuiteModel> withTruncatedErrorMessages(List<TestSuiteModel> testSuiteModels) {
+        if (testSuiteModels == null) {
+            return null;
+        }
+        List<TestSuiteModel> ret = new ArrayList<>();
+        for (TestSuiteModel testSuiteModel : testSuiteModels) {
+            ret.add(testSuiteModel.withTruncatedErrorMessages());
+        }
+        return ret;
+    }
+
 
     @JsonIgnore
     public static List<TestSuiteModel> fromJson(String json) {
