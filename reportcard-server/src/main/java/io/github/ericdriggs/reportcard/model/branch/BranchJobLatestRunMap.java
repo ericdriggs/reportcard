@@ -1,6 +1,7 @@
 package io.github.ericdriggs.reportcard.model.branch;
 
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.*;
+import io.github.ericdriggs.reportcard.mappers.SharedObjectMappers;
 import io.github.ericdriggs.reportcard.model.graph.*;
 import lombok.Builder;
 import lombok.Value;
@@ -49,7 +50,9 @@ public class BranchJobLatestRunMap {
                 for (StageGraph stageGraph : emptyIfNull(runGraph.stages())) {
                     final StagePojo stagePojo = stageGraph.asStagePojo();
                     if (stageRunStorageTestResultMap.get(stagePojo.getStageName()) != null) {
-                        throw new IllegalStateException("duplicate stage when expected singleton. stageRunStorageTestResultMap.get(stagePojo.getStageName()): " + stageRunStorageTestResultMap.get(stagePojo.getStageName()) + ", stageGraph: " + stageGraph);
+                        throw new IllegalStateException("duplicate stage when expected singleton. stageRunStorageTestResultMap.get(stagePojo.getStageName()): "
+                                + SharedObjectMappers.writeValueAsString(stageRunStorageTestResultMap.get(stagePojo.getStageName())) + ", stageGraph: "
+                                + SharedObjectMappers.writeValueAsString(stageGraph));
                     }
                     TestResultPojo testResultPojo = null;
                     for (TestResultGraph testResultGraph : emptyIfNull(stageGraph.testResults())) {
