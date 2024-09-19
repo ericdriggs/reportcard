@@ -122,9 +122,8 @@ public class S3Service {
         try {
 
             for (int i=0; i<uploadRetryCount; i++) {
-                try {
+                try ( InputStream inputStream = tarGz.getInputStream()){
                     tempDir = Files.createTempDirectory("s3.");
-                    InputStream inputStream = tarGz.getInputStream();
                     TarExtractorCommonsCompress tarExtractor = new TarExtractorCommonsCompress(inputStream, true, tempDir);
                     tarExtractor.untar();
                 } catch(Exception ex) {
