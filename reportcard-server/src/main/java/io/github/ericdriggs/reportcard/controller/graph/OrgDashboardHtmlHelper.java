@@ -91,13 +91,12 @@ public class OrgDashboardHtmlHelper extends BrowseHtmlHelper {
                             log.error("runGraphs size cannot exceed 2, runGraphs:\n " + runGraphsString + "\n. Only latest and last success allowed.");
                         }
 
-                        //TOOD: investigate why sometimes have extra run
+                        //runGraphs are descending by runId
                         for (RunGraph run : runGraphs) {
-                            if (runGraph == null || run.runId() > runGraph.runId()) {
+                            if (runGraph == null) {
                                 runGraph = run;
-                            }
-                            if (run.isSuccess()) {
-                                if (lastSuccess == null || run.runId() > lastSuccess.runId()) {
+                            } else {
+                                if (run.isSuccess() && lastSuccess == null) {
                                     lastSuccess = run;
                                 }
                             }
