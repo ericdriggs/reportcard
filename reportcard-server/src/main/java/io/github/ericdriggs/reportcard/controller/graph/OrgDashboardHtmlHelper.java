@@ -16,6 +16,8 @@ import io.github.ericdriggs.reportcard.util.StringMapUtil;
 import io.github.ericdriggs.reportcard.util.badge.*;
 import io.github.ericdriggs.reportcard.util.badge.dto.RunBadgeDTO;
 import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 
 import java.net.URI;
@@ -25,6 +27,8 @@ import static io.github.ericdriggs.reportcard.controller.html.StorageHtmlHelper.
 import static io.github.ericdriggs.reportcard.util.list.ListAssertUtil.emptyIfNull;
 
 public class OrgDashboardHtmlHelper extends BrowseHtmlHelper {
+
+    private static Logger log = LoggerFactory.getLogger(OrgDashboardHtmlHelper.class);
 
     public static String renderOrgDashboardHtml(OrgDashboard orgDashboard) {
         final String main = getOrgDashboardMainDiv(orgDashboard);
@@ -84,14 +88,19 @@ public class OrgDashboardHtmlHelper extends BrowseHtmlHelper {
                             } catch (JsonProcessingException e) {
                                 runGraphsString = runGraphs.toString();
                             }
-                            throw new IllegalStateException("runGraphs size cannot exceed 2, runGraphs:\n " + runGraphsString + "\n. Only latest and last success allowed.");
+                            log.error("runGraphs size cannot exceed 2, runGraphs:\n " + runGraphsString + "\n. Only latest and last success allowed.");
                         }
 
-                        if (runGraphs.size() == 2) {
-                            lastSuccess = runGraphs.last();
-                        }
-                        if (!runGraphs.isEmpty()) {
-                            runGraph = runGraphs.first();
+                        //TOOD: investigate why sometimes have extra run
+                        for (RunGraph run : runGraphs) {
+                            if (runGraph == null || run.runId() > runGraph.runId()) {
+                                runGraph = run;
+                            }
+                            if (run.isSuccess()) {
+                                if (lastSuccess == null || run.runId() > lastSuccess.runId()) {
+                                    lastSuccess = run;
+                                }
+                            }
                         }
                     }
 
