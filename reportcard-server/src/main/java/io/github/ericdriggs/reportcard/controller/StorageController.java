@@ -60,9 +60,11 @@ public class StorageController {
     @GetMapping(value = {"key/**"})
     public ResponseEntity<?> getKey(HttpServletRequest request) {
         final String prefix = request.getRequestURI().split(request.getContextPath() + "/key/")[1];
+        return getKeyForPrefix(prefix);
+    }
 
-        //TODO: implement static cache for html reporting css/js/fonts/images
-
+    public ResponseEntity<?> getKeyForPrefix(String prefix) {
+        //TOMAYBE: implement static cache for html reporting css/js/fonts/images
         ListObjectsV2Response listResponse = s3Service.listObjects(prefix);
         if (isS3File(listResponse)) {
             return getKeyContents(prefix);
