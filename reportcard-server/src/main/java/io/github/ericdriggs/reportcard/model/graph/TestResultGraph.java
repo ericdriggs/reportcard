@@ -27,6 +27,7 @@ public record TestResultGraph(
         @JsonProperty("testSuitesJson")
         List<TestSuiteGraph> testSuites
 ) {
+
     @JsonIgnore
     public TestResultPojo asTestResultPojo() {
         return TestResultPojo

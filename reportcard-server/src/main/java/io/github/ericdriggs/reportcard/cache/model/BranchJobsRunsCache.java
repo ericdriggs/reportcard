@@ -1,7 +1,6 @@
 package io.github.ericdriggs.reportcard.cache.model;
 
 import io.github.ericdriggs.reportcard.cache.AbstractAsyncCache;
-import io.github.ericdriggs.reportcard.cache.CacheDuration;
 import io.github.ericdriggs.reportcard.cache.SyncAsyncDuration;
 import io.github.ericdriggs.reportcard.cache.dto.CompanyOrgRepoBranchDTO;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.BranchPojo;

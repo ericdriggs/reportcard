@@ -1,5 +1,7 @@
 package io.github.ericdriggs.reportcard.controller.graph;
 
+import io.github.ericdriggs.reportcard.model.metrics.company.CompanyMetricsIntervalRequest;
+import io.github.ericdriggs.reportcard.model.metrics.company.CompanyMetricsIntervalResultCount;
 import io.github.ericdriggs.reportcard.model.orgdashboard.OrgDashboard;
 import io.github.ericdriggs.reportcard.model.trend.JobStageTestTrend;
 import io.github.ericdriggs.reportcard.persist.GraphService;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.TreeSet;
 
 @RestController
 @RequestMapping("")
@@ -41,7 +44,7 @@ public class GraphUIController {
         Exception e = null;
         String trendHtml = null;
         //temporary workaround until bump max_allowed_packet
-        for (int i = runs; i > 0; i = i/2) {
+        for (int i = runs; i > 0; i = i / 2) {
             try {
                 final JobStageTestTrend jobTestTrend = graphService.getJobStageTestTrend(company, org, repo, branch, jobId, stage, start, end, i);
                 e = null;
@@ -73,5 +76,15 @@ public class GraphUIController {
         //TODO: add cache headers * browser side cache using header, e.g. Cache-Control: max-age=600 //10 mins
         return new ResponseEntity<>(dashboardHtml, HttpStatus.OK);
     }
+
+    @PostMapping(path = "company/{company}/metrics", produces = "application/json;charset=UTF-8")
+    public ResponseEntity<TreeSet<CompanyMetricsIntervalResultCount>> postCompanyDashboard(
+            @RequestBody CompanyMetricsIntervalRequest companyMetricsIntervalRequest
+    ) {
+        TreeSet<CompanyMetricsIntervalResultCount> companyMetricsIntervalResultCounts = graphService.getCompanyDashboardIntervalResultCount(companyMetricsIntervalRequest);
+
+        return new ResponseEntity<>(companyMetricsIntervalResultCounts, HttpStatus.OK);
+    }
+
 
 }

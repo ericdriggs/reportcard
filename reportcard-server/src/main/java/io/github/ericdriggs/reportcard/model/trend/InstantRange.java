@@ -1,14 +1,14 @@
 package io.github.ericdriggs.reportcard.model.trend;
 
-import lombok.Builder;
+import io.github.ericdriggs.reportcard.util.CompareUtil;
 import lombok.Data;
-import lombok.Value;
-import lombok.extern.jackson.Jacksonized;
+import lombok.NonNull;
+import org.apache.commons.lang3.ObjectUtils;
 
 import java.time.Instant;
 
 @Data
-public class InstantRange {
+public class InstantRange implements Comparable<InstantRange> {
     Instant start;
     Instant end;
 
@@ -23,4 +23,11 @@ public class InstantRange {
         }
     }
 
+    @Override
+    public int compareTo(@NonNull InstantRange that) {
+        return CompareUtil.chainCompare(
+                ObjectUtils.compare(start, that.start),
+                ObjectUtils.compare(start, that.start)
+        );
+    }
 }

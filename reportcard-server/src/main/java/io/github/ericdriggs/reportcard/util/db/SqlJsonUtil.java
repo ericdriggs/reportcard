@@ -5,9 +5,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.ericdriggs.reportcard.mappers.SharedObjectMappers;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jooq.Condition;
 import org.jooq.Field;
+import org.springframework.util.CollectionUtils;
 
+import java.util.List;
 import java.util.Map;
 
 import static org.jooq.impl.DSL.condition;
@@ -24,6 +27,22 @@ public enum SqlJsonUtil {
         return fieldEqualsJson("job_info", jobInfoJson);
     }
 
+    public static String jobInfoRequiredExcluded(Map<String, List<String>> required, Map<String, List<String>> excluded) {
+        if (CollectionUtils.isEmpty(required) && CollectionUtils.isEmpty(excluded)) {
+            return "true";
+        }
+        throw new UnsupportedOperationException("TODO");
+    }
+
+
+    public static String jsonContains(Map<String,String> map, Pair<String,String> kv) {
+
+        final String mapJson = toJson(map);
+
+        //return String.format("JSON_CONTAINS(%s, %s, '$.%s')", toJson(map), kv.getRight(), kv.getLeft());
+        throw new UnsupportedOperationException("TODO");
+    }
+
     public static String fieldEqualsJson(String fieldName, String json) {
         if (ObjectUtils.isEmpty(json)) {
             return "true";
@@ -36,6 +55,7 @@ public enum SqlJsonUtil {
         }
         return " " + fieldName + " != CAST('" + json + "' AS JSON ) ";
     }
+
 
     @SneakyThrows(JsonProcessingException.class)
     protected static String toJson(Map<String, String> map) {

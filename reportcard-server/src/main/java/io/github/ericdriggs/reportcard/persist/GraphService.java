@@ -3,8 +3,10 @@ package io.github.ericdriggs.reportcard.persist;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.github.ericdriggs.reportcard.cache.model.BranchStageViewResponse;
 import io.github.ericdriggs.reportcard.model.branch.BranchJobLatestRunMap;
+import io.github.ericdriggs.reportcard.model.metrics.company.CompanyMetricsIntervalRequest;
+import io.github.ericdriggs.reportcard.model.metrics.company.CompanyMetricsIntervalResultCount;
+import io.github.ericdriggs.reportcard.model.metrics.company.CompanyMetricsRequest;
 import io.github.ericdriggs.reportcard.model.graph.CompanyGraph;
-import io.github.ericdriggs.reportcard.model.graph.CompanyGraphBuilder;
 import io.github.ericdriggs.reportcard.model.graph.TestSuiteGraph;
 import io.github.ericdriggs.reportcard.model.graph.TestSuiteGraphBuilder;
 import io.github.ericdriggs.reportcard.model.graph.condition.TableConditionMap;
@@ -23,9 +25,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
-import java.util.List;
-import java.util.TreeSet;
+import java.util.*;
 
 import static io.github.ericdriggs.reportcard.gen.db.Tables.*;
 import static org.jooq.impl.DSL.*;
@@ -117,22 +117,22 @@ public class GraphService extends AbstractPersistService {
     }
 
     public BranchStageViewResponse getRunBranchStageViewResponse(String companyName,
-                                                           String orgName,
-                                                           String repoName,
-                                                           String branchName,
-                                                           Long jobId,
-                                                           Long runId) {
+                                                                 String orgName,
+                                                                 String repoName,
+                                                                 String branchName,
+                                                                 Long jobId,
+                                                                 Long runId) {
 
         List<CompanyGraph> companyGraphs = getRunCompanyGraphs(companyName, orgName, repoName, branchName, jobId, runId);
         return BranchStageViewResponse.fromCompanyGraphs(companyGraphs);
     }
 
     List<CompanyGraph> getRunCompanyGraphs(String companyName,
-                                                String orgName,
-                                                String repoName,
-                                                String branchName,
-                                                Long jobId,
-                                                Long runId) {
+                                           String orgName,
+                                           String repoName,
+                                           String branchName,
+                                           Long jobId,
+                                           Long runId) {
 
         TableConditionMap tableConditionMap = new TableConditionMap();
         tableConditionMap.put(COMPANY, COMPANY.COMPANY_NAME.eq(companyName));
@@ -256,16 +256,107 @@ public class GraphService extends AbstractPersistService {
 
     }
 
+    public TreeSet<CompanyMetricsIntervalResultCount> getCompanyDashboardIntervalResultCount(CompanyMetricsIntervalRequest companyMetricsIntervalRequest) {
+        TreeSet<CompanyMetricsRequest> companyMetricsRequests = companyMetricsIntervalRequest.toCompanyDashboardRequests();
+        TreeSet<CompanyMetricsIntervalResultCount> results = new TreeSet<>();
+        for (CompanyMetricsRequest companyMetricsRequest : companyMetricsRequests) {
+            results.add(getCompanyDashboardIntervalResultCount(companyMetricsRequest));
+        }
+        return results;
+    }
+
+    CompanyMetricsIntervalResultCount getCompanyDashboardIntervalResultCount(CompanyMetricsRequest req) {
+        List<CompanyGraph> companyGraphs = getCompanyDashboardCompanyGraphs(req);
+        return CompanyMetricsIntervalResultCount.fromCompanyGraphs(companyGraphs, req.getExclude().getJobInfos(), req.getRequired().getJobInfos(), req.getRange());
+    }
+
+    List<CompanyGraph> getCompanyDashboardCompanyGraphs(CompanyMetricsRequest req) {
+
+        TableConditionMap tableConditionMap = new TableConditionMap();
+        tableConditionMap.put(COMPANY, COMPANY.COMPANY_NAME.eq(req.getCompanyName()));
+
+        {//org
+            if (!req.getRequired().getOrgs().isEmpty()) {
+                tableConditionMap.put(ORG, ORG.ORG_NAME.in(req.getRequired().getOrgs()));
+            }
+            if (!req.getExclude().getOrgs().isEmpty()) {
+                tableConditionMap.put(ORG, ORG.ORG_NAME.notIn(req.getRequired().getOrgs()));
+            }
+        }
+
+        {//repo
+            if (!req.getRequired().getRepos().isEmpty()) {
+                tableConditionMap.put(REPO, REPO.REPO_NAME.in(req.getRequired().getRepos()));
+            }
+            if (!req.getExclude().getRepos().isEmpty()) {
+                tableConditionMap.put(REPO, REPO.REPO_NAME.notIn(req.getRequired().getRepos()));
+            }
+            //TOMAYBE: repoCondition = REPO.REPO_NAME.likeRegex(String.join("|", repoNames));
+        }
+
+        final List<String> branchNames;
+        {//branch
+            List<String> branches = new ArrayList<>(req.getRequired().getBranches());
+            if (!req.getRequired().getBranches().isEmpty()) {
+                if (req.isShouldIncludeDefaultBranches()) {
+                    branches.addAll(defaultBranchNames);
+                }
+                tableConditionMap.put(BRANCH, BRANCH.BRANCH_NAME.in(branches));
+            }
+            if (!req.getExclude().getBranches().isEmpty()) {
+                tableConditionMap.put(BRANCH, BRANCH.BRANCH_NAME.notIn(req.getRequired().getBranches()));
+            }
+            branchNames = branches;
+        }
+
+        //TODO: support jobInfo required and excluded
+        {//jobInfo
+        }
+
+        tableConditionMap.put(JOB, JOB.LAST_RUN.greaterOrEqual(req.getRange().getStart())
+                        .and(JOB.LAST_RUN.lessThan(req.getRange().getEnd())));
+
+
+        //Don't show runs without test data. Maybe should filter on test_suites_json but this for now
+        tableConditionMap.put(TEST_RESULT, TEST_RESULT.TEST_RESULT_ID.isNotNull());
+
+        Long[] runIds = dsl.selectDistinct(RUN.RUN_ID.as("RUN_IDS"))
+                .from(COMPANY)
+                .leftJoin(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID))
+                .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID))
+                .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID))
+                .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
+                .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID))
+                .leftJoin(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID))
+                .leftJoin(TEST_RESULT).on(TEST_RESULT.STAGE_FK.eq(STAGE.STAGE_ID))
+                .where(tableConditionMap.getCondition(COMPANY)
+                        .and(tableConditionMap.getCondition(ORG))
+                        .and(tableConditionMap.getCondition(REPO))
+                        .and(tableConditionMap.getCondition(BRANCH))
+                        .and(tableConditionMap.getCondition(JOB))
+                        .and(tableConditionMap.getCondition(TEST_RESULT))
+                )
+                .fetchArray("RUN_IDS", Long.class);
+
+        tableConditionMap.put(RUN, RUN.RUN_ID.in(runIds));
+        return getCompanyGraphs(tableConditionMap, false);
+
+    }
+
+    protected List<CompanyGraph> getCompanyGraphs(TableConditionMap tableConditionMap) {
+        return getCompanyGraphs(tableConditionMap, true);
+    }
+
     @SneakyThrows(JsonProcessingException.class)
     @SuppressWarnings("rawtypes")
-    protected List<CompanyGraph> getCompanyGraphs(TableConditionMap tableConditionMap) {
-        Result result = getFullTestGraph(tableConditionMap);
+    protected List<CompanyGraph> getCompanyGraphs(TableConditionMap tableConditionMap, boolean shouldIncludeTestJson) {
+        Result result = getFullTestGraph(tableConditionMap, shouldIncludeTestJson);
         if (!result.isEmpty() && result.get(0) instanceof Record1 record1) {
             String json = record1.formatJSON();
             log.info("getCompanyGraph json: " + json);
             return Arrays.asList(mapper.readValue(json, CompanyGraph[].class));
         }
-        return List.of(CompanyGraphBuilder.builder().build());
+        return Collections.emptyList();
     }
 
     @SuppressWarnings("rawtypes")
@@ -279,8 +370,11 @@ public class GraphService extends AbstractPersistService {
                 field, DSL.inline(format));
     }
 
+    //    protected Result getFullTestGraph(TableConditionMap tableConditionMap) {
+//        return getFullTestGraph(tableConditionMap, true);
+//    }
     @SuppressWarnings("rawtypes")
-    protected Result getFullTestGraph(TableConditionMap tableConditionMap) {
+    protected Result getFullTestGraph(TableConditionMap tableConditionMap, boolean shouldIncludeTestJson) {
 
         return dsl.select(jsonObject(
                         key("companyId").value(COMPANY.COMPANY_ID),
@@ -324,20 +418,8 @@ public class GraphService extends AbstractPersistService {
                                                                                 key("indexFile").value(STORAGE.INDEX_FILE),
                                                                                 key("storageType").value(STORAGE.STORAGE_TYPE)
                                                                         ))).from(STORAGE).where(STORAGE.STAGE_FK.eq(STAGE.STAGE_ID).and(tableConditionMap.getCondition(STORAGE)))),
-                                                                        key("testResults").value(dsl.select(jsonArrayAgg(jsonObject(
-                                                                                key("testResultId").value(TEST_RESULT.TEST_RESULT_ID),
-                                                                                key("stageFk").value(TEST_RESULT.STAGE_FK),
-                                                                                key("tests").value(TEST_RESULT.TESTS),
-                                                                                key("skipped").value(TEST_RESULT.SKIPPED),
-                                                                                key("error").value(TEST_RESULT.ERROR),
-                                                                                key("failure").value(TEST_RESULT.FAILURE),
-                                                                                key("time").value(TEST_RESULT.TIME),
-                                                                                key("testResultCreated").value(isoDateFormat(TEST_RESULT.TEST_RESULT_CREATED)),
-                                                                                key("externalLinks").value(TEST_RESULT.EXTERNAL_LINKS),
-                                                                                key("isSuccess").value(TEST_RESULT.IS_SUCCESS),
-                                                                                key("hasSkip").value(TEST_RESULT.HAS_SKIP),
-                                                                                key("testSuitesJson").value(TEST_RESULT.TEST_SUITES_JSON)
-                                                                        ))).from(TEST_RESULT).where(TEST_RESULT.STAGE_FK.eq(STAGE.STAGE_ID).and(tableConditionMap.getCondition(TEST_RESULT))))
+                                                                        key("testResults").value(dsl.select(getTestResultSelect(shouldIncludeTestJson))
+                                                                                .from(TEST_RESULT).where(TEST_RESULT.STAGE_FK.eq(STAGE.STAGE_ID).and(tableConditionMap.getCondition(TEST_RESULT))))
                                                                 ))).from(STAGE).where(STAGE.RUN_FK.eq(RUN.RUN_ID).and(tableConditionMap.getCondition(STAGE))))
                                                         ))).from(RUN).where(RUN.JOB_FK.eq(JOB.JOB_ID).and(tableConditionMap.getCondition(RUN))))
                                                 ))).from(JOB).where(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID).and(tableConditionMap.getCondition(JOB))))
@@ -346,6 +428,43 @@ public class GraphService extends AbstractPersistService {
                         ))).from(ORG).where(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID).and(tableConditionMap.getCondition(ORG))))
                 )).from(COMPANY).where(tableConditionMap.getCondition(COMPANY))
                 .fetch();
+    }
+
+    JSONArrayAggOrderByStep<JSON> getTestResultSelect(boolean shouldIncludeTestResultJson) {
+
+        final JSONArrayAggOrderByStep<JSON> testResultSelect;
+
+        if (shouldIncludeTestResultJson) {
+            testResultSelect = jsonArrayAgg(jsonObject(
+                    key("testResultId").value(TEST_RESULT.TEST_RESULT_ID),
+                    key("stageFk").value(TEST_RESULT.STAGE_FK),
+                    key("tests").value(TEST_RESULT.TESTS),
+                    key("skipped").value(TEST_RESULT.SKIPPED),
+                    key("error").value(TEST_RESULT.ERROR),
+                    key("failure").value(TEST_RESULT.FAILURE),
+                    key("time").value(TEST_RESULT.TIME),
+                    key("testResultCreated").value(isoDateFormat(TEST_RESULT.TEST_RESULT_CREATED)),
+                    key("externalLinks").value(TEST_RESULT.EXTERNAL_LINKS),
+                    key("isSuccess").value(TEST_RESULT.IS_SUCCESS),
+                    key("hasSkip").value(TEST_RESULT.HAS_SKIP),
+                    key("testSuitesJson").value(TEST_RESULT.TEST_SUITES_JSON)
+            ));
+        } else {
+            testResultSelect = jsonArrayAgg(jsonObject(
+                    key("testResultId").value(TEST_RESULT.TEST_RESULT_ID),
+                    key("stageFk").value(TEST_RESULT.STAGE_FK),
+                    key("tests").value(TEST_RESULT.TESTS),
+                    key("skipped").value(TEST_RESULT.SKIPPED),
+                    key("error").value(TEST_RESULT.ERROR),
+                    key("failure").value(TEST_RESULT.FAILURE),
+                    key("time").value(TEST_RESULT.TIME),
+                    key("testResultCreated").value(isoDateFormat(TEST_RESULT.TEST_RESULT_CREATED)),
+                    key("externalLinks").value(TEST_RESULT.EXTERNAL_LINKS),
+                    key("isSuccess").value(TEST_RESULT.IS_SUCCESS),
+                    key("hasSkip").value(TEST_RESULT.HAS_SKIP)
+            ));
+        }
+        return testResultSelect;
     }
 
     public TreeSet<Long> getTestResultsWithoutSuiteJson(int maxCount) {
@@ -395,7 +514,7 @@ public class GraphService extends AbstractPersistService {
                     return json;
                 }
             } else if (record1.size() > 1) {
-                throw new IllegalStateException("Expected nested array with single element but got: " + record1.size() + " for record: " + record1 );
+                throw new IllegalStateException("Expected nested array with single element but got: " + record1.size() + " for record: " + record1);
             }
         }
         return "[]";

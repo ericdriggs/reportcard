@@ -2,23 +2,29 @@ package io.github.ericdriggs.reportcard.cache.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.github.ericdriggs.reportcard.model.StagePath;
+import io.github.ericdriggs.reportcard.util.CompareUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.NonNull;
+import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
 import org.apache.commons.lang3.StringUtils;
 
-@Data
-@Builder(toBuilder = true)
 @AllArgsConstructor
-public class CompanyOrgRepoBranchJobRunStageDTO {
-    private final String company;
-    private final String org;
-    private final String repo;
-    private final String branch;
-    private final Long jobId;
-    private final Long runId;
-    private final String stageName;
+@Builder(toBuilder = true)
+@Jacksonized
+@Value
+public class CompanyOrgRepoBranchJobRunStageDTO
+        implements Comparable<CompanyOrgRepoBranchJobRunStageDTO> {
+    String company;
+    String org;
+    String repo;
+    String branch;
+    Long jobId;
+    Long runId;
+    String stageName;
 
+    @JsonIgnore
     public static CompanyOrgRepoBranchJobRunStageDTO truncateCompany(CompanyOrgRepoBranchJobRunStageDTO o) {
         if (o == null) {
             return null;
@@ -28,6 +34,7 @@ public class CompanyOrgRepoBranchJobRunStageDTO {
                 .build();
     }
 
+    @JsonIgnore
     public static CompanyOrgRepoBranchJobRunStageDTO truncateOrg(CompanyOrgRepoBranchJobRunStageDTO o) {
         if (o == null) {
             return null;
@@ -38,6 +45,7 @@ public class CompanyOrgRepoBranchJobRunStageDTO {
                 .build();
     }
 
+    @JsonIgnore
     public static CompanyOrgRepoBranchJobRunStageDTO truncateRepo(CompanyOrgRepoBranchJobRunStageDTO o) {
         if (o == null) {
             return null;
@@ -49,6 +57,7 @@ public class CompanyOrgRepoBranchJobRunStageDTO {
                 .build();
     }
 
+    @JsonIgnore
     public static CompanyOrgRepoBranchJobRunStageDTO truncateBranch(CompanyOrgRepoBranchJobRunStageDTO o) {
         if (o == null) {
             return null;
@@ -61,6 +70,7 @@ public class CompanyOrgRepoBranchJobRunStageDTO {
                 .build();
     }
 
+    @JsonIgnore
     public static CompanyOrgRepoBranchJobRunStageDTO truncateJob(CompanyOrgRepoBranchJobRunStageDTO o) {
         if (o == null) {
             return null;
@@ -74,6 +84,7 @@ public class CompanyOrgRepoBranchJobRunStageDTO {
                 .build();
     }
 
+    @JsonIgnore
     public static CompanyOrgRepoBranchJobRunStageDTO truncateRun(CompanyOrgRepoBranchJobRunStageDTO o) {
         if (o == null) {
             return null;
@@ -88,6 +99,7 @@ public class CompanyOrgRepoBranchJobRunStageDTO {
                 .build();
     }
 
+    @JsonIgnore
     public String toUrlPath() {
         StringBuilder sb = new StringBuilder();
         if (!StringUtils.isEmpty(company)) {
@@ -120,6 +132,7 @@ public class CompanyOrgRepoBranchJobRunStageDTO {
         return sb.toString();
     }
 
+    @JsonIgnore
     public String toHtmlId() {
         StringBuilder sb = new StringBuilder();
         if (!StringUtils.isEmpty(company)) {
@@ -149,6 +162,7 @@ public class CompanyOrgRepoBranchJobRunStageDTO {
                 }
             }
         }
+
         return sb.toString();
     }
 
@@ -186,5 +200,18 @@ public class CompanyOrgRepoBranchJobRunStageDTO {
             }
         }
         return builder.build();
+    }
+
+    @Override
+    public int compareTo(@NonNull CompanyOrgRepoBranchJobRunStageDTO that) {
+        return CompareUtil.chainCompare(
+                StringUtils.compare(company, that.company),
+                StringUtils.compare(org, that.org),
+                StringUtils.compare(repo, that.repo),
+                StringUtils.compare(branch, that.branch),
+                CompareUtil.compareLong(jobId, that.jobId),
+                CompareUtil.compareLong(runId, that.runId),
+                StringUtils.compare(stageName, that.stageName)
+        );
     }
 }

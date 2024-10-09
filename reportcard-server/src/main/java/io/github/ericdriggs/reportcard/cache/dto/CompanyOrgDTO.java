@@ -1,13 +1,24 @@
 package io.github.ericdriggs.reportcard.cache.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import io.github.ericdriggs.reportcard.util.CompareUtil;
+import lombok.*;
+import lombok.extern.jackson.Jacksonized;
+import org.apache.commons.lang3.StringUtils;
 
-@Data
-@Builder
 @AllArgsConstructor
-public class CompanyOrgDTO {
-    private final String company;
-    private final String org;
+@Builder(toBuilder = true)
+@Jacksonized
+@Value
+public class CompanyOrgDTO implements Comparable<CompanyOrgDTO> {
+    String company;
+    String org;
+
+    @Override
+    public int compareTo(@NonNull CompanyOrgDTO that) {
+
+        return CompareUtil.chainCompare(
+                StringUtils.compare(company, that.company),
+                StringUtils.compare(org, that.org)
+        );
+    }
 }

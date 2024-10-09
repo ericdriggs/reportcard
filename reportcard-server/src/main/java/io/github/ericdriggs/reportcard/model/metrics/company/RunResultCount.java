@@ -1,11 +1,13 @@
-package io.github.ericdriggs.reportcard.xml;
+package io.github.ericdriggs.reportcard.model.metrics.company;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.ericdriggs.reportcard.model.TestStatus;
+import io.github.ericdriggs.reportcard.model.graph.TestResultGraph;
 import io.github.ericdriggs.reportcard.util.CompareUtil;
 import lombok.Builder;
-import lombok.Value;
+import lombok.Data;
+import lombok.extern.jackson.Jacksonized;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -16,9 +18,16 @@ import java.util.Objects;
 
 import static io.github.ericdriggs.reportcard.util.CompareUtil.chainCompare;
 
-@Value
+@Data
+@Jacksonized
 @Builder(toBuilder = true)
-public class ResultCount implements Comparable<ResultCount> {
+public class RunResultCount implements Comparable<RunResultCount> {
+    @Builder.Default
+    Integer runs = 0;
+    @Builder.Default
+    Integer successfulRuns = 0;
+    @Builder.Default
+    Integer failedRuns = 0;
 
     @Builder.Default
     Integer errors = 0;
@@ -33,6 +42,23 @@ public class ResultCount implements Comparable<ResultCount> {
     @Builder.Default
     BigDecimal time = BigDecimal.ZERO;
 
+    public static RunResultCount fromTestResultGraph(TestResultGraph testResultGraph) {
+
+        return RunResultCount.builder()
+                .runs(1)
+                .successfulRuns(testResultGraph.isSuccess() ? 1 : 0)
+                .failedRuns(testResultGraph.isSuccess() ? 0 : 1)
+                .errors(testResultGraph.error())
+                .failures(testResultGraph.failure())
+                .skipped(testResultGraph.skipped())
+                .successes(testResultGraph.tests() - testResultGraph.error() - testResultGraph.failure() - testResultGraph.skipped())
+                .tests(testResultGraph.tests())
+                .time(testResultGraph.time())
+                .build();
+    }
+
+
+    @JsonIgnore
     public TestStatus getTestStatus() {
         if (errors > 0) {
             return TestStatus.ERROR;
@@ -49,35 +75,36 @@ public class ResultCount implements Comparable<ResultCount> {
     }
 
     /**
-     * Sums the fields of a resultCount
+     * Adds a RunResultCount to the current RunResultCount
      *
-     * @param r1 a ResultCount
-     * @param r2 a ResultCount
+     * @param that a ResultCount
      * @return a new ResultCount sum of this and that
      */
     @JsonIgnore
-    public static ResultCount add(ResultCount r1, ResultCount r2) {
-        if (r1 == null) {
-            return r2;
-        }
+    public void add(RunResultCount that) {
 
-        ResultCount result = ResultCount
-                .builder()
-                .errors(addIntegers(r1.getErrors(), r2.getErrors()))
-                .failures(addIntegers(r1.getFailures(), r2.getFailures()))
-                .skipped(addIntegers(r1.getSkipped(), r2.getSkipped()))
-                .successes(addIntegers(r1.getSuccesses(), r2.getSuccesses()))
-                .tests(addIntegers(r1.getTests(), r2.getTests()))
-                .time(addBigDecimal(r1.getTime(), r2.getTime()))
-                .build();
-        return result;
+        runs = addIntegers(runs, that.runs);
+        successfulRuns = addIntegers(successfulRuns, that.successfulRuns);
+        failedRuns = addIntegers(failedRuns, that.failedRuns);
+
+        errors = addIntegers(errors, that.getErrors());
+        failures = addIntegers(failures, that.getFailures());
+        skipped = addIntegers(skipped, that.getSkipped());
+        successes = addIntegers(successes, that.getSuccesses());
+        tests = addIntegers(tests, that.getTests());
+        time = addBigDecimal(time, that.getTime());
     }
 
     @JsonIgnore
-    public static ResultCount aggregate(List<ResultCount> resultCounts) {
-        ResultCount resultCount = ResultCount.builder().build();
-        for (ResultCount r : resultCounts) {
-            resultCount = add(resultCount, r);
+    public void add(TestResultGraph that) {
+        add(RunResultCount.fromTestResultGraph(that));
+    }
+
+    @JsonIgnore
+    public static RunResultCount aggregate(List<RunResultCount> resultCounts) {
+        RunResultCount resultCount = RunResultCount.builder().build();
+        for (RunResultCount r : resultCounts) {
+            resultCount.add(r);
         }
         return resultCount;
     }
@@ -108,7 +135,7 @@ public class ResultCount implements Comparable<ResultCount> {
         try {
             return BigDecimal.valueOf(
                     100 * (double) successCount /
-                    (double) (tests - skippedCount)
+                            (double) (tests - skippedCount)
             ).setScale(2, RoundingMode.HALF_UP);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -170,7 +197,7 @@ public class ResultCount implements Comparable<ResultCount> {
 
     @JsonIgnore
     @Override
-    public int compareTo(ResultCount that) {
+    public int compareTo(RunResultCount that) {
         if (that == null) {
             return 1;
         }
@@ -186,7 +213,7 @@ public class ResultCount implements Comparable<ResultCount> {
     }
 
     @JsonIgnore
-    public static List<String> diff(ResultCount o1, ResultCount o2) {
+    public static List<String> diff(RunResultCount o1, RunResultCount o2) {
         if (o1 == null && o2 == null) {
             return Collections.emptyList();
         } else if (o1 == null) {
@@ -196,6 +223,19 @@ public class ResultCount implements Comparable<ResultCount> {
         }
 
         List<String> diffs = new ArrayList<>();
+
+        if (!Objects.equals(o1.runs, o2.runs)) {
+            diffs.add("o1.runs: " + o1.runs + " != o2.runs: " + o2.runs);
+        }
+
+        if (!Objects.equals(o1.failedRuns, o2.failedRuns)) {
+            diffs.add("o1.failedRuns: " + o1.failedRuns + " != o2.failedRuns: " + o2.failedRuns);
+        }
+
+        if (!Objects.equals(o1.successfulRuns, o2.successfulRuns)) {
+            diffs.add("o1.successfulRuns: " + o1.successfulRuns + " != o2.successfulRuns: " + o2.successfulRuns);
+        }
+
         if (!Objects.equals(o1.errors, o2.errors)) {
             diffs.add("o1.errors: " + o1.errors + " != o2.errors: " + o2.errors);
         }
