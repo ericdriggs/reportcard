@@ -38,3 +38,15 @@ li {
 .shortcuts-fieldset {
     padding: 10px 10px 10px 20px;
 }
+
+.dto-header {
+    background-color: #355 !important;
+}
+
+.run-header {
+    background-color: #533 !important;
+}
+
+.test-header {
+    background-color: #335 !important;
+}

@@ -8,6 +8,7 @@ import io.github.ericdriggs.reportcard.controller.browse.BrowseHtmlHelper;
 import io.github.ericdriggs.reportcard.model.metrics.company.MetricsIntervalResultCountMaps;
 import io.github.ericdriggs.reportcard.model.metrics.company.RunResultCount;
 import io.github.ericdriggs.reportcard.model.trend.InstantRange;
+import io.github.ericdriggs.reportcard.util.StringMapUtil;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.math.RoundingMode;
@@ -83,10 +84,10 @@ public class MetricsHtmlHelper {
         for (Map.Entry<T, TreeMap<InstantRange, RunResultCount>> orgEntry : dtoResultCounts.entrySet()) {
             final String aggregationHeader =
                     """
-                    <th>test %</th>
-                    <th>tests</th>
-                    <th>run %</th>
-                    <th>runs</th>
+                    <th class='test-header'>test %</th>
+                    <th class='test-header'>tests</th>
+                    <th class='run-header'>run %</th>
+                    <th class='run-header'>runs</th>
                     """;
             sb.append(aggregationHeader.repeat(orgEntry.getValue().size()));
             break;
@@ -127,7 +128,7 @@ public class MetricsHtmlHelper {
 
     private static String instantRangeHeader(InstantRange instantRange) {
 
-        final String header = "<th colspan='4'>{start}&nbsp;&nbsp;→&nbsp;&nbsp;{end}</th>";
+        final String header = "<th class='interval-header' colspan='4'>{start}&nbsp;&nbsp;→&nbsp;&nbsp;{end}</th>";
         return header
                 .replace("{start}", instantToYmdhs(instantRange.getStart()))
                 .replace("{end}", instantToYmdhs(instantRange.getEnd()));
@@ -194,29 +195,29 @@ public class MetricsHtmlHelper {
     }
 
     private static String renderOrgHeaders() {
-        return "<th rowspan='2'>Company</th>" + ls +
-               "<th rowspan='2'>Org</th>" + ls;
+        return "<th class='dto-header' rowspan='2'>Company</th>" + ls +
+               "<th class='dto-header' rowspan='2'>Org</th>" + ls;
     }
 
     private static String renderRepoHeaders() {
-        return "<th rowspan='2'>Company</th>" + ls +
-               "<th rowspan='2'>Org</th>" + ls +
-               "<th rowspan='2'>Repo</th>" + ls;
+        return "<th class='dto-header' rowspan='2'>Company</th>" + ls +
+               "<th class='dto-header' rowspan='2'>Org</th>" + ls +
+               "<th class='dto-header' rowspan='2'>Repo</th>" + ls;
     }
 
     private static String renderBranchHeaders() {
-        return "<th rowspan='2'>Company</th>" + ls +
-               "<th rowspan='2'>Org</th>" + ls +
-               "<th rowspan='2'>Repo</th>" + ls +
-               "<th rowspan='2'>Branch</th>";
+        return "<th class='dto-header' rowspan='2'>Company</th>" + ls +
+               "<th class='dto-header' rowspan='2'>Org</th>" + ls +
+               "<th class='dto-header' rowspan='2'>Repo</th>" + ls +
+               "<th class='dto-header' rowspan='2'>Branch</th>";
     }
 
     private static String renderJobHeaders() {
-        return "<th rowspan='2'>Company</th>" + ls +
-               "<th rowspan='2'>Org</th>" + ls +
-               "<th rowspan='2'>Repo</th>" + ls +
-               "<th rowspan='2'>Branch</th>" + ls +
-               "<th rowspan='2'>JobInfo</th>";
+        return "<th class='dto-header' rowspan='2'>Company</th>" + ls +
+               "<th class='dto-header' rowspan='2'>Org</th>" + ls +
+               "<th class='dto-header' rowspan='2'>Repo</th>" + ls +
+               "<th class='dto-header' rowspan='2'>Branch</th>" + ls +
+               "<th class='dto-header' rowspan='2'>JobInfo</th>";
     }
 
     private static String renderOrg(CompanyOrgDTO dto) {
@@ -242,7 +243,7 @@ public class MetricsHtmlHelper {
                "<td>" + dto.getOrg() + "</td>" + ls +
                "<td>" + dto.getRepo() + "</td>" + ls +
                "<td>" + dto.getBranch() + "</td>" + ls +
-               "<td>" + dto.getJobInfo() + "</td>" + ls;
+               "<td>" + StringMapUtil.valuesOnlyColonSeparated(dto.getJobInfo()) + "</td>" + ls;
     }
 
     final static String shortcuts =

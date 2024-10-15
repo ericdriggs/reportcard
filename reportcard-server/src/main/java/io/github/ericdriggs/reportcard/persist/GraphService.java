@@ -316,8 +316,7 @@ public class GraphService extends AbstractPersistService {
             tableConditionMap.put(REPO, repoCondition);
         }
 
-        //branch
-        if (!req.getRequired().getBranches().isEmpty() || !req.getExcluded().getBranches().isEmpty()) {
+        {//branch
             List<String> branches = new ArrayList<>(req.getRequired().getBranches());
             List<String> notBranches = new ArrayList<>(req.getExcluded().getBranches());
 
@@ -325,14 +324,17 @@ public class GraphService extends AbstractPersistService {
                 branches.addAll(defaultBranchNames);
             }
 
-            Condition branchCondition = trueCondition();
-            if (!branches.isEmpty()) {
-                branchCondition = branchCondition.and(BRANCH.BRANCH_NAME.in(branches));
+            if (!branches.isEmpty() || !notBranches.isEmpty()) {
+                Condition branchCondition = trueCondition();
+                if (!branches.isEmpty()) {
+                    branchCondition = branchCondition.and(BRANCH.BRANCH_NAME.in(branches));
+                }
+                if (!notBranches.isEmpty()) {
+                    branchCondition = branchCondition.and(BRANCH.BRANCH_NAME.notIn(notBranches));
+                }
+
+                tableConditionMap.put(BRANCH, branchCondition);
             }
-            if (!notBranches.isEmpty()) {
-                branchCondition = branchCondition.and(BRANCH.BRANCH_NAME.notIn(notBranches));
-            }
-            tableConditionMap.put(BRANCH, branchCondition);
         }
 
         //TOMAYBE: support jobInfo required and excluded (currently filtered at later stage).
