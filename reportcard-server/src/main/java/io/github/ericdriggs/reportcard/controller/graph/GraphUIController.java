@@ -2,6 +2,7 @@ package io.github.ericdriggs.reportcard.controller.graph;
 
 import io.github.ericdriggs.reportcard.model.metrics.company.MetricsIntervalRequest;
 import io.github.ericdriggs.reportcard.model.metrics.company.MetricsIntervalResultCount;
+import io.github.ericdriggs.reportcard.model.metrics.company.MetricsIntervalResultCountMaps;
 import io.github.ericdriggs.reportcard.model.trend.JobStageTestTrend;
 import io.github.ericdriggs.reportcard.persist.GraphService;
 import lombok.extern.slf4j.Slf4j;
@@ -12,8 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
-import java.util.List;
-import java.util.Map;
 import java.util.TreeSet;
 
 @RestController
@@ -63,32 +62,46 @@ public class GraphUIController {
     }
 
     @GetMapping(path = "metrics", produces = "text/html;charset=UTF-8")
-    public ResponseEntity<TreeSet<MetricsIntervalResultCount>> getOrgDashbarod(
-            @RequestParam(required = false) List<String> companies,
-            @RequestParam(required = false) List<String> repos,
-            @RequestParam(required = false) List<String> branches,
-            @RequestParam(required = false) Map<String,String> jobInfo,
-            @RequestParam(required = false) List<String> notCompanies,
-            @RequestParam(required = false) List<String> notRepos,
-            @RequestParam(required = false) List<String> notBranches,
-            @RequestParam(required = false) Map<String,String> noJobInfo,
+    public ResponseEntity<String> getOrgDashbarod(
+            @RequestParam(required = false, defaultValue = "") TreeSet<String> companies,
+            @RequestParam(required = false, defaultValue = "") TreeSet<String> orgs,
+            @RequestParam(required = false, defaultValue = "") TreeSet<String> repos,
+            @RequestParam(required = false, defaultValue = "") TreeSet<String> branches,
+            @RequestParam(required = false, defaultValue = "") TreeSet<String> jobInfos,
+            @RequestParam(required = false, defaultValue = "") TreeSet<String> notCompanies,
+            @RequestParam(required = false, defaultValue = "") TreeSet<String> notOrgs,
+            @RequestParam(required = false, defaultValue = "") TreeSet<String> notRepos,
+            @RequestParam(required = false, defaultValue = "") TreeSet<String> notBranches,
+            @RequestParam(required = false, defaultValue = "") TreeSet<String> notJobInfos,
             @RequestParam(required = false, defaultValue = "true") boolean shouldIncludeDefaultBranches,
-            @RequestParam(required = false, defaultValue = "30") Integer dayInterval,
+            @RequestParam(required = false, defaultValue = "30") Integer intervalDays,
             @RequestParam(required = false, defaultValue = "2") Integer intervalCount
     ) {
-        MetricsIntervalRequest metricsIntervalRequest = MetricsIntervalRequest
-                .builder()
-                .build();
+        MetricsIntervalRequest metricsIntervalRequest = MetricsIntervalRequest.fromQueryParams(
+                companies,
+                orgs,
+                repos,
+                branches,
+                jobInfos,
+                notCompanies,
+                notOrgs,
+                notRepos,
+                notBranches,
+                notJobInfos,
+                shouldIncludeDefaultBranches,
+                intervalDays,
+                intervalCount
+        );
         return postCompanyDashboard(metricsIntervalRequest);
     }
 
     @PostMapping(path = "metrics", produces = "application/json;charset=UTF-8")
-    public ResponseEntity<TreeSet<MetricsIntervalResultCount>> postCompanyDashboard(
+    public ResponseEntity<String> postCompanyDashboard(
             @RequestBody MetricsIntervalRequest metricsIntervalRequest
     ) {
         TreeSet<MetricsIntervalResultCount> metricsIntervalResultCounts = graphService.getCompanyDashboardIntervalResultCount(metricsIntervalRequest);
-        return new ResponseEntity<>(metricsIntervalResultCounts, HttpStatus.OK);
+        MetricsIntervalResultCountMaps metricsIntervalResultCountMaps = MetricsIntervalResultCountMaps.fromMetricsIntervalResultCount(metricsIntervalResultCounts);
+        final String response = MetricsHtmlHelper.renderMetricsIntervalResultCountMaps(metricsIntervalResultCountMaps);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
-
-
 }

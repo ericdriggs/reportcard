@@ -27,6 +27,7 @@ import org.springframework.util.CollectionUtils;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 import static io.github.ericdriggs.reportcard.gen.db.Tables.*;
 import static org.jooq.impl.DSL.*;
@@ -190,7 +191,6 @@ public class GraphService extends AbstractPersistService {
                 .groupBy(JOB.JOB_ID, STAGE.STAGE_NAME)
                 .fetchArray("MAX_RUN_ID", Long.class);
 
-
         tableConditionMap.put(RUN, RUN.RUN_ID.in(runIds));
         return getCompanyGraphs(tableConditionMap);
 
@@ -259,11 +259,16 @@ public class GraphService extends AbstractPersistService {
 
     public TreeSet<MetricsIntervalResultCount> getCompanyDashboardIntervalResultCount(MetricsIntervalRequest metricsIntervalRequest) {
         TreeSet<MetricsRequest> metricsRequests = metricsIntervalRequest.toCompanyDashboardRequests();
-        TreeSet<MetricsIntervalResultCount> results = new TreeSet<>();
+        Set<MetricsIntervalResultCount> results = new ConcurrentSkipListSet<>();
+
+        //for (MetricsRequest metricsRequest : metricsRequests) {
+        metricsRequests.parallelStream().forEach(metricsRequest -> {
+            results.add(getCompanyDashboardIntervalResultCount(metricsRequest));
+        });
         for (MetricsRequest metricsRequest : metricsRequests) {
             results.add(getCompanyDashboardIntervalResultCount(metricsRequest));
         }
-        return results;
+        return new TreeSet<>(results);
     }
 
     MetricsIntervalResultCount getCompanyDashboardIntervalResultCount(MetricsRequest req) {
@@ -274,34 +279,45 @@ public class GraphService extends AbstractPersistService {
     List<CompanyGraph> getCompanyDashboardCompanyGraphs(MetricsRequest req) {
 
         TableConditionMap tableConditionMap = new TableConditionMap();
-        {//company
-            if (!req.getRequired().getOrgs().isEmpty()) {
-                tableConditionMap.put(COMPANY, COMPANY.COMPANY_NAME.in(req.getRequired().getCompanies()));
+
+        //company
+        if (!req.getRequired().getCompanies().isEmpty() || !req.getExcluded().getCompanies().isEmpty()) {
+            Condition companyCondition = trueCondition();
+            if (!req.getRequired().getCompanies().isEmpty()) {
+                companyCondition = companyCondition.and(COMPANY.COMPANY_NAME.in(req.getRequired().getCompanies()));
             }
-            if (!req.getExcluded().getOrgs().isEmpty()) {
-                tableConditionMap.put(COMPANY, COMPANY.COMPANY_NAME.notIn(req.getRequired().getCompanies()));
+            if (!req.getExcluded().getCompanies().isEmpty()) {
+                companyCondition = companyCondition.and(COMPANY.COMPANY_NAME.notIn(req.getExcluded().getCompanies()));
             }
+            tableConditionMap.put(COMPANY, companyCondition);
         }
 
-        {//org
+        //org
+        if (!req.getRequired().getOrgs().isEmpty() || !req.getExcluded().getOrgs().isEmpty()) {//org
+            Condition orgCondition = trueCondition();
             if (!req.getRequired().getOrgs().isEmpty()) {
-                tableConditionMap.put(ORG, ORG.ORG_NAME.in(req.getRequired().getOrgs()));
+                orgCondition = orgCondition.and(ORG.ORG_NAME.in(req.getRequired().getOrgs()));
             }
             if (!req.getExcluded().getOrgs().isEmpty()) {
-                tableConditionMap.put(ORG, ORG.ORG_NAME.notIn(req.getRequired().getOrgs()));
+                orgCondition = orgCondition.and(ORG.ORG_NAME.notIn(req.getExcluded().getOrgs()));
             }
+            tableConditionMap.put(ORG, orgCondition);
         }
 
-        {//repo
+        //repo
+        if (!req.getRequired().getRepos().isEmpty() || !req.getExcluded().getRepos().isEmpty()) {
+            Condition repoCondition = trueCondition();
             if (!req.getRequired().getRepos().isEmpty()) {
-                tableConditionMap.put(REPO, REPO.REPO_NAME.in(req.getRequired().getRepos()));
+                repoCondition = repoCondition.and(REPO.REPO_NAME.in(req.getRequired().getRepos()));
             }
             if (!req.getExcluded().getRepos().isEmpty()) {
-                tableConditionMap.put(REPO, REPO.REPO_NAME.notIn(req.getRequired().getRepos()));
+                repoCondition = repoCondition.and(REPO.REPO_NAME.notIn(req.getExcluded().getRepos()));
             }
+            tableConditionMap.put(REPO, repoCondition);
         }
 
-        {//branch
+        //branch
+        if (!req.getRequired().getBranches().isEmpty() || !req.getExcluded().getBranches().isEmpty()) {
             List<String> branches = new ArrayList<>(req.getRequired().getBranches());
             List<String> notBranches = new ArrayList<>(req.getExcluded().getBranches());
 
@@ -330,7 +346,6 @@ public class GraphService extends AbstractPersistService {
             tableConditionMap.put(RUN, runCondition);
         }
 
-
         //Don't show runs without test data. Maybe should filter on test_suites_json but this for now
         tableConditionMap.put(TEST_RESULT, TEST_RESULT.TEST_RESULT_ID.isNotNull());
 
@@ -348,6 +363,7 @@ public class GraphService extends AbstractPersistService {
                         .and(tableConditionMap.getCondition(REPO))
                         .and(tableConditionMap.getCondition(BRANCH))
                         .and(tableConditionMap.getCondition(JOB))
+                        .and(tableConditionMap.getCondition(RUN))
                         .and(tableConditionMap.getCondition(TEST_RESULT))
                 )
                 .fetchArray("RUN_IDS", Long.class);

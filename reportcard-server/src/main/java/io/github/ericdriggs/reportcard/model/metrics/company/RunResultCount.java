@@ -2,29 +2,27 @@ package io.github.ericdriggs.reportcard.model.metrics.company;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.github.ericdriggs.reportcard.model.graph.TestResultGraph;
-import io.github.ericdriggs.reportcard.util.CompareUtil;
 import io.github.ericdriggs.reportcard.xml.ResultCount;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
 import org.apache.commons.lang3.ObjectUtils;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 import static io.github.ericdriggs.reportcard.util.CompareUtil.chainCompare;
-import static io.github.ericdriggs.reportcard.xml.ResultCount.addIntegers;
 
 @Data
 @Jacksonized
 @Builder(toBuilder = true)
 public class RunResultCount implements Comparable<RunResultCount> {
-    RunCount runCount;
-    ResultCount resultCount;
+
+    @Builder.Default
+    RunCount runCount  = RunCount.builder().build();
+    @Builder.Default
+    ResultCount resultCount = ResultCount.builder().build();
 
     @JsonIgnore
     @Override

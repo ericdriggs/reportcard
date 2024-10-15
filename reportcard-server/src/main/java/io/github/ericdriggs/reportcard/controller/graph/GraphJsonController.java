@@ -66,33 +66,22 @@ public class GraphJsonController {
             @RequestParam(required = false, defaultValue = "30") Integer intervalDays,
             @RequestParam(required = false, defaultValue = "2") Integer intervalCount
     ) {
-        MetricsFilter required = MetricsFilter
-                .builder()
-                .companies(companies)
-                .orgs(orgs)
-                .repos(repos)
-                .branches(branches)
-                .jobInfos(StringMapUtil.fromColonSeparated(jobInfos))
-                .build();
+        MetricsIntervalRequest metricsIntervalRequest = MetricsIntervalRequest.fromQueryParams(
+                companies,
+                orgs,
+                repos,
+                branches,
+                jobInfos,
+                notCompanies,
+                notOrgs,
+                notRepos,
+                notBranches,
+                notJobInfos,
+                shouldIncludeDefaultBranches,
+                intervalDays,
+                intervalCount
+        );
 
-        MetricsFilter excluded = MetricsFilter
-                .builder()
-                .companies(notCompanies)
-                .orgs(notOrgs)
-                .repos(notRepos)
-                .branches(notBranches)
-                .jobInfos(StringMapUtil.fromColonSeparated((notJobInfos)))
-                .build();
-
-        TreeSet<InstantRange> ranges = MetricsIntervalRequest.ranges(intervalDays, intervalCount);
-
-        MetricsIntervalRequest metricsIntervalRequest = MetricsIntervalRequest
-                .builder()
-                .required(required)
-                .excluded(excluded)
-                .ranges(ranges)
-                .shouldIncludeDefaultBranches(shouldIncludeDefaultBranches)
-                .build();
         return postCompanyDashboard(metricsIntervalRequest);
     }
 
@@ -103,5 +92,7 @@ public class GraphJsonController {
         TreeSet<MetricsIntervalResultCount> metricsIntervalResultCounts = graphService.getCompanyDashboardIntervalResultCount(metricsIntervalRequest);
         return new ResponseEntity<>(metricsIntervalResultCounts, HttpStatus.OK);
     }
+
+
 
 }

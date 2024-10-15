@@ -2,6 +2,7 @@ package io.github.ericdriggs.reportcard.model.metrics.company;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.github.ericdriggs.reportcard.model.trend.InstantRange;
+import io.github.ericdriggs.reportcard.util.StringMapUtil;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -49,4 +50,48 @@ public class MetricsIntervalRequest {
         }
         return ranges;
     }
+
+    public static MetricsIntervalRequest fromQueryParams(
+            TreeSet<String> companies,
+            TreeSet<String> orgs,
+            TreeSet<String> repos,
+            TreeSet<String> branches,
+            TreeSet<String> jobInfos,
+            TreeSet<String> notCompanies,
+            TreeSet<String> notOrgs,
+            TreeSet<String> notRepos,
+            TreeSet<String> notBranches,
+            TreeSet<String> notJobInfos,
+            boolean shouldIncludeDefaultBranches,
+            Integer intervalDays,
+            Integer intervalCount) {
+        MetricsFilter required = MetricsFilter
+                .builder()
+                .companies(companies)
+                .orgs(orgs)
+                .repos(repos)
+                .branches(branches)
+                .jobInfos(StringMapUtil.fromColonSeparated(jobInfos))
+                .build();
+
+        MetricsFilter excluded = MetricsFilter
+                .builder()
+                .companies(notCompanies)
+                .orgs(notOrgs)
+                .repos(notRepos)
+                .branches(notBranches)
+                .jobInfos(StringMapUtil.fromColonSeparated((notJobInfos)))
+                .build();
+
+        TreeSet<InstantRange> ranges = MetricsIntervalRequest.ranges(intervalDays, intervalCount);
+
+        return MetricsIntervalRequest
+                .builder()
+                .required(required)
+                .excluded(excluded)
+                .ranges(ranges)
+                .shouldIncludeDefaultBranches(shouldIncludeDefaultBranches)
+                .build();
+    }
+
 }
