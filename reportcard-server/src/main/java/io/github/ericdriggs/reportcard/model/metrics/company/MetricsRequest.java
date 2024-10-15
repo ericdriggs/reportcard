@@ -7,28 +7,24 @@ import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 
 @Builder
 @Jacksonized
 @Value
-public class CompanyMetricsRequest implements Comparable<CompanyMetricsRequest> {
+public class MetricsRequest implements Comparable<MetricsRequest> {
     @NonNull InstantRange range;
-    @NonNull
-    String companyName;
     @Builder.Default
-    CompanyMetricsFilter exclude = CompanyMetricsFilter.builder().build();
+    MetricsFilter excluded = MetricsFilter.builder().build();
     @Builder.Default
-    CompanyMetricsFilter required = CompanyMetricsFilter.builder().build();
+    MetricsFilter required = MetricsFilter.builder().build();
     @Builder.Default
     boolean shouldIncludeDefaultBranches = true;
 
     @Override
-    public int compareTo(@NonNull CompanyMetricsRequest that) {
+    public int compareTo(@NonNull MetricsRequest that) {
         return CompareUtil.chainCompare(
                 ObjectUtils.compare(range, that.range),
-                StringUtils.compare(companyName, that.companyName),
-                ObjectUtils.compare(exclude, that.exclude),
+                ObjectUtils.compare(excluded, that.excluded),
                 ObjectUtils.compare(required, that.required),
                 ObjectUtils.compare(shouldIncludeDefaultBranches, that.shouldIncludeDefaultBranches)
         );

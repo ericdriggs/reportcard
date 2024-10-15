@@ -11,9 +11,10 @@ import java.util.TreeSet;
 @Builder
 @Jacksonized
 @Value
-public class CompanyMetricsFilter implements Comparable<CompanyMetricsFilter> {
+public class MetricsFilter implements Comparable<MetricsFilter> {
 
-    int days;
+    @Builder.Default
+    TreeSet<String> companies = new TreeSet<>();
     @Builder.Default
     TreeSet<String> orgs = new TreeSet<>();
     @Builder.Default
@@ -24,9 +25,9 @@ public class CompanyMetricsFilter implements Comparable<CompanyMetricsFilter> {
     TreeMap<String, TreeSet<String>> jobInfos = new TreeMap<>();
 
     @Override
-    public int compareTo(CompanyMetricsFilter that) {
+    public int compareTo(MetricsFilter that) {
         return CompareUtil.chainCompare(
-                CompareUtil.compareInteger(days, that.days),
+                CompareUtil.compareComparableCollection(companies, that.companies),
                 CompareUtil.compareComparableCollection(orgs, that.orgs),
                 CompareUtil.compareComparableCollection(repos, that.repos),
                 CompareUtil.compareComparableCollection(branches, that.branches),

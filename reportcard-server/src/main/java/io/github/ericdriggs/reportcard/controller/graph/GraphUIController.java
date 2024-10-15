@@ -1,8 +1,7 @@
 package io.github.ericdriggs.reportcard.controller.graph;
 
-import io.github.ericdriggs.reportcard.model.metrics.company.CompanyMetricsIntervalRequest;
-import io.github.ericdriggs.reportcard.model.metrics.company.CompanyMetricsIntervalResultCount;
-import io.github.ericdriggs.reportcard.model.orgdashboard.OrgDashboard;
+import io.github.ericdriggs.reportcard.model.metrics.company.MetricsIntervalRequest;
+import io.github.ericdriggs.reportcard.model.metrics.company.MetricsIntervalResultCount;
 import io.github.ericdriggs.reportcard.model.trend.JobStageTestTrend;
 import io.github.ericdriggs.reportcard.persist.GraphService;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeSet;
 
 @RestController
@@ -62,28 +62,32 @@ public class GraphUIController {
         return new ResponseEntity<>(trendHtml, HttpStatus.OK);
     }
 
-    @GetMapping(path = "company/{company}/org/{org}/dashboard", produces = "text/html;charset=UTF-8")
-    public ResponseEntity<String> getOrgDashbarod(
-            @PathVariable String company,
-            @PathVariable String org,
+    @GetMapping(path = "metrics", produces = "text/html;charset=UTF-8")
+    public ResponseEntity<TreeSet<MetricsIntervalResultCount>> getOrgDashbarod(
+            @RequestParam(required = false) List<String> companies,
             @RequestParam(required = false) List<String> repos,
-            @RequestParam(required = false, defaultValue = "") List<String> branches,
+            @RequestParam(required = false) List<String> branches,
+            @RequestParam(required = false) Map<String,String> jobInfo,
+            @RequestParam(required = false) List<String> notCompanies,
+            @RequestParam(required = false) List<String> notRepos,
+            @RequestParam(required = false) List<String> notBranches,
+            @RequestParam(required = false) Map<String,String> noJobInfo,
             @RequestParam(required = false, defaultValue = "true") boolean shouldIncludeDefaultBranches,
-            @RequestParam(required = false) Integer days
+            @RequestParam(required = false, defaultValue = "30") Integer dayInterval,
+            @RequestParam(required = false, defaultValue = "2") Integer intervalCount
     ) {
-        final OrgDashboard orgDashboard = graphService.getOrgDashboard(company, org, repos, branches, shouldIncludeDefaultBranches, days);
-        final String dashboardHtml = OrgDashboardHtmlHelper.renderOrgDashboardHtml(orgDashboard);
-        //TODO: add cache headers * browser side cache using header, e.g. Cache-Control: max-age=600 //10 mins
-        return new ResponseEntity<>(dashboardHtml, HttpStatus.OK);
+        MetricsIntervalRequest metricsIntervalRequest = MetricsIntervalRequest
+                .builder()
+                .build();
+        return postCompanyDashboard(metricsIntervalRequest);
     }
 
-    @PostMapping(path = "company/{company}/metrics", produces = "application/json;charset=UTF-8")
-    public ResponseEntity<TreeSet<CompanyMetricsIntervalResultCount>> postCompanyDashboard(
-            @RequestBody CompanyMetricsIntervalRequest companyMetricsIntervalRequest
+    @PostMapping(path = "metrics", produces = "application/json;charset=UTF-8")
+    public ResponseEntity<TreeSet<MetricsIntervalResultCount>> postCompanyDashboard(
+            @RequestBody MetricsIntervalRequest metricsIntervalRequest
     ) {
-        TreeSet<CompanyMetricsIntervalResultCount> companyMetricsIntervalResultCounts = graphService.getCompanyDashboardIntervalResultCount(companyMetricsIntervalRequest);
-
-        return new ResponseEntity<>(companyMetricsIntervalResultCounts, HttpStatus.OK);
+        TreeSet<MetricsIntervalResultCount> metricsIntervalResultCounts = graphService.getCompanyDashboardIntervalResultCount(metricsIntervalRequest);
+        return new ResponseEntity<>(metricsIntervalResultCounts, HttpStatus.OK);
     }
 
 

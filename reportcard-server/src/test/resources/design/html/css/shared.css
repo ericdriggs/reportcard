@@ -14,6 +14,77 @@ body {
     font-family: Verdana, sans-serif;
 }
 
+summary {
+    text-align: left;
+    max-width: 508px;
+    padding: 4px;
+    border-radius: 6px;
+    margin-left: 8px;
+    margin-right: 8px;
+}
+
+details {
+    border-radius: 10px;
+}
+
+details > summary {
+    font-weight: bold;
+    background-color: #eee;
+    box-shadow: 3px 3px 4px black;
+    cursor: pointer;
+    margin: 0;
+
+}
+
+details > summary.fail-messages {
+    font-weight: normal
+}
+
+
+details > dl {
+    border-radius: 6px;
+    background-color: #eee;
+    padding: 6px 6px 6px 20px;
+    margin: 0;
+    box-shadow: 3px 3px 4px black;
+}
+
+dl {
+    border: 3px double #ccc;
+    max-width:500px;
+}
+
+.page-context-summary {
+    padding-left: 20px;
+}
+
+.page-context {
+    width: auto;
+    /*display:block;*/
+}
+
+.dd-page-context {
+
+}
+
+.dt-page-context {
+    width: 90px;
+}
+
+dt {
+    float: left;
+    font-weight: bold;
+    color: #468;
+}
+
+dt::after {
+    content: ":";
+}
+
+dd > div {
+    padding-left: 50px;
+}
+
 fieldset {
     margin: 20px;
     border-radius: 8px;
@@ -26,7 +97,9 @@ legend {
 }
 
 ul {
-    list-style: none;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
 }
 
 /**** header ****/
@@ -62,9 +135,8 @@ header {
 
 ul.breadcrumb {
     padding: 10px 16px;
-    /*list-style: none;*/
+    list-style: none;
     background-color: #ddd;
-    margin: 0;
 }
 
 ul.breadcrumb li {
@@ -83,6 +155,10 @@ ul.breadcrumb li + li:before {
 
 .count {
     text-align: right;
+}
+
+.number {
+    text-align: right !important;
 }
 
 .dot {
@@ -116,10 +192,10 @@ ul.breadcrumb li + li:before {
     font-weight: bold;
 }
 
-a:hover.info {
-    color: #0af !important;
+.tiny_info {
+    font-size: 7pt;
+    font-weight: bold;
 }
-
 
 .report-img {
     margin-bottom: 5px;
@@ -136,11 +212,6 @@ a:hover.info {
 
 .stage-pass {
     background-color: #e1f6e1;
-    border: 2px solid #cdc;
-}
-
-.stage-skip {
-    background-color: #ffe;
     border: 2px solid #cdc;
 }
 
@@ -184,34 +255,4 @@ footer {
 
 footer a {
     font-family: Verdana, sans-serif;
-}
-
-.page-context-summary {
-    padding-left: 20px;
-}
-
-.page-context {
-
-}
-
-.dd-page-context {
-
-}
-
-.dt-page-context {
-    width: 90px;
-}
-
-dt {
-    float: left;
-    font-weight: bold;
-    color: #468;
-}
-
-dt::after {
-    content: ":";
-}
-
-dd > div {
-    padding-left: 50px;
 }

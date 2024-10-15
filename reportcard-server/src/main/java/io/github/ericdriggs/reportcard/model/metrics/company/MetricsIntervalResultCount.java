@@ -1,10 +1,7 @@
 package io.github.ericdriggs.reportcard.model.metrics.company;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.github.ericdriggs.reportcard.cache.dto.CompanyOrgDTO;
-import io.github.ericdriggs.reportcard.cache.dto.CompanyOrgRepoBranchDTO;
-import io.github.ericdriggs.reportcard.cache.dto.CompanyOrgRepoBranchJobDTO;
-import io.github.ericdriggs.reportcard.cache.dto.CompanyOrgRepoDTO;
+import io.github.ericdriggs.reportcard.cache.dto.*;
 import io.github.ericdriggs.reportcard.model.graph.*;
 import io.github.ericdriggs.reportcard.model.trend.InstantRange;
 import io.github.ericdriggs.reportcard.util.CompareUtil;
@@ -26,14 +23,14 @@ import static io.github.ericdriggs.reportcard.util.list.ListAssertUtil.emptyIfNu
 @Jacksonized
 @Value
 @Slf4j
-public class CompanyMetricsIntervalResultCount implements Comparable<CompanyMetricsIntervalResultCount> {
+public class MetricsIntervalResultCount implements Comparable<MetricsIntervalResultCount> {
     InstantRange range;
     TreeMap<CompanyOrgDTO, RunResultCount> orgResultCounts;
     TreeMap<CompanyOrgRepoDTO, RunResultCount> repoResultCounts;
     TreeMap<CompanyOrgRepoBranchDTO, RunResultCount> branchResultCounts;
-    TreeMap<CompanyOrgRepoBranchJobDTO, RunResultCount> jobResultCounts;
+    TreeMap<CompanyOrgRepoBranchJobInfoDTO, RunResultCount> jobResultCounts;
     @Override
-    public int compareTo(@NonNull CompanyMetricsIntervalResultCount that) {
+    public int compareTo(@NonNull MetricsIntervalResultCount that) {
         return CompareUtil.chainCompare(
                 ObjectUtils.compare(range, that.range),
                 CompareUtil.compareComparableMap(orgResultCounts, that.orgResultCounts),
@@ -44,9 +41,9 @@ public class CompanyMetricsIntervalResultCount implements Comparable<CompanyMetr
     }
 
     @JsonIgnore
-    public static CompanyMetricsIntervalResultCount fromCompanyGraphs(List<CompanyGraph> companyGraphs, TreeMap<String, TreeSet<String>> excluded, TreeMap<String, TreeSet<String>> required, InstantRange range) {
+    public static MetricsIntervalResultCount fromCompanyGraphs(List<CompanyGraph> companyGraphs, TreeMap<String, TreeSet<String>> excluded, TreeMap<String, TreeSet<String>> required, InstantRange range) {
 
-        TreeMap<CompanyOrgRepoBranchJobDTO, RunResultCount> jobResultCounts = new TreeMap<>();
+        TreeMap<CompanyOrgRepoBranchJobInfoDTO, RunResultCount> jobResultCounts = new TreeMap<>();
         TreeMap<CompanyOrgRepoBranchDTO, RunResultCount> branchResultCounts = new TreeMap<>();
         TreeMap<CompanyOrgRepoDTO, RunResultCount> repoResultCounts = new TreeMap<>();
         TreeMap<CompanyOrgDTO, RunResultCount> orgResultCounts = new TreeMap<>();
@@ -73,7 +70,7 @@ public class CompanyMetricsIntervalResultCount implements Comparable<CompanyMetr
                             if (!matchExcludedRequired(jobGraph, excluded, required)) {
                                 continue;
                             }
-                            final CompanyOrgRepoBranchJobDTO companyOrgRepoBranchJobDTO = CompanyOrgRepoBranchJobDTO.builder().company(companyGraph.companyName()).org(orgGraph.orgName()).repo(repoGraph.repoName()).branch(branchGraph.branchName()).jobId(jobGraph.jobId()).build();
+                            final CompanyOrgRepoBranchJobInfoDTO companyOrgRepoBranchJobInfoDTO = CompanyOrgRepoBranchJobInfoDTO.builder().company(companyGraph.companyName()).org(orgGraph.orgName()).repo(repoGraph.repoName()).branch(branchGraph.branchName()).jobInfo(jobGraph.jobInfo()).build();
                             RunResultCount jobResultCount = RunResultCount.builder().build();
                             final List<RunGraph> runGraphs = jobGraph.runs();
 
@@ -91,7 +88,7 @@ public class CompanyMetricsIntervalResultCount implements Comparable<CompanyMetr
                                     }
                                 }
                             }
-                            jobResultCounts.put(companyOrgRepoBranchJobDTO, jobResultCount);
+                            jobResultCounts.put(companyOrgRepoBranchJobInfoDTO, jobResultCount);
                         }
                         branchResultCounts.put(companyOrgRepoBranchDTO, branchResultCount);
                     }
@@ -100,7 +97,7 @@ public class CompanyMetricsIntervalResultCount implements Comparable<CompanyMetr
                 orgResultCounts.put(companyOrgDTO, orgResultCount);
             }
         }
-        return CompanyMetricsIntervalResultCount.builder()
+        return MetricsIntervalResultCount.builder()
                 .orgResultCounts(orgResultCounts)
                 .repoResultCounts(repoResultCounts)
                 .branchResultCounts(branchResultCounts)
@@ -116,7 +113,7 @@ public class CompanyMetricsIntervalResultCount implements Comparable<CompanyMetr
         jobInfo.putAll(jobGraph.jobInfo());
         for (Map.Entry<String, TreeSet<String>> entry : excluded.entrySet()) {
             for (String value : entry.getValue()) {
-                if (jobInfo.get(entry.getKey()).equalsIgnoreCase(value)) {
+                if (value.trim().equals(jobInfo.get(entry.getKey()))) {
                     log.trace("excluded key: {}, value: {} was found in jobInfo: {}", entry.getKey(), entry.getValue(), jobInfo);
                     return false;
                 }
@@ -126,7 +123,7 @@ public class CompanyMetricsIntervalResultCount implements Comparable<CompanyMetr
         for (Map.Entry<String, TreeSet<String>> entry : required.entrySet()) {
             boolean foundRequired = false;
             for (String value : entry.getValue()) {
-                if (jobInfo.get(entry.getKey()).equalsIgnoreCase(value)) {
+                if (value.trim().equalsIgnoreCase(jobInfo.get(entry.getKey()))) {
                     foundRequired = true;
                 }
             }

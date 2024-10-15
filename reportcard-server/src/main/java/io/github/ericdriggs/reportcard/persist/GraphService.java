@@ -3,14 +3,15 @@ package io.github.ericdriggs.reportcard.persist;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.github.ericdriggs.reportcard.cache.model.BranchStageViewResponse;
 import io.github.ericdriggs.reportcard.model.branch.BranchJobLatestRunMap;
-import io.github.ericdriggs.reportcard.model.metrics.company.CompanyMetricsIntervalRequest;
-import io.github.ericdriggs.reportcard.model.metrics.company.CompanyMetricsIntervalResultCount;
-import io.github.ericdriggs.reportcard.model.metrics.company.CompanyMetricsRequest;
+import io.github.ericdriggs.reportcard.model.metrics.company.MetricsIntervalRequest;
+import io.github.ericdriggs.reportcard.model.metrics.company.MetricsIntervalResultCount;
+import io.github.ericdriggs.reportcard.model.metrics.company.MetricsRequest;
 import io.github.ericdriggs.reportcard.model.graph.CompanyGraph;
 import io.github.ericdriggs.reportcard.model.graph.TestSuiteGraph;
 import io.github.ericdriggs.reportcard.model.graph.TestSuiteGraphBuilder;
 import io.github.ericdriggs.reportcard.model.graph.condition.TableConditionMap;
 import io.github.ericdriggs.reportcard.model.orgdashboard.OrgDashboard;
+import io.github.ericdriggs.reportcard.model.trend.InstantRange;
 import io.github.ericdriggs.reportcard.model.trend.JobStageTestTrend;
 import io.github.ericdriggs.reportcard.util.db.SqlJsonUtil;
 import lombok.SneakyThrows;
@@ -256,30 +257,37 @@ public class GraphService extends AbstractPersistService {
 
     }
 
-    public TreeSet<CompanyMetricsIntervalResultCount> getCompanyDashboardIntervalResultCount(CompanyMetricsIntervalRequest companyMetricsIntervalRequest) {
-        TreeSet<CompanyMetricsRequest> companyMetricsRequests = companyMetricsIntervalRequest.toCompanyDashboardRequests();
-        TreeSet<CompanyMetricsIntervalResultCount> results = new TreeSet<>();
-        for (CompanyMetricsRequest companyMetricsRequest : companyMetricsRequests) {
-            results.add(getCompanyDashboardIntervalResultCount(companyMetricsRequest));
+    public TreeSet<MetricsIntervalResultCount> getCompanyDashboardIntervalResultCount(MetricsIntervalRequest metricsIntervalRequest) {
+        TreeSet<MetricsRequest> metricsRequests = metricsIntervalRequest.toCompanyDashboardRequests();
+        TreeSet<MetricsIntervalResultCount> results = new TreeSet<>();
+        for (MetricsRequest metricsRequest : metricsRequests) {
+            results.add(getCompanyDashboardIntervalResultCount(metricsRequest));
         }
         return results;
     }
 
-    CompanyMetricsIntervalResultCount getCompanyDashboardIntervalResultCount(CompanyMetricsRequest req) {
+    MetricsIntervalResultCount getCompanyDashboardIntervalResultCount(MetricsRequest req) {
         List<CompanyGraph> companyGraphs = getCompanyDashboardCompanyGraphs(req);
-        return CompanyMetricsIntervalResultCount.fromCompanyGraphs(companyGraphs, req.getExclude().getJobInfos(), req.getRequired().getJobInfos(), req.getRange());
+        return MetricsIntervalResultCount.fromCompanyGraphs(companyGraphs, req.getExcluded().getJobInfos(), req.getRequired().getJobInfos(), req.getRange());
     }
 
-    List<CompanyGraph> getCompanyDashboardCompanyGraphs(CompanyMetricsRequest req) {
+    List<CompanyGraph> getCompanyDashboardCompanyGraphs(MetricsRequest req) {
 
         TableConditionMap tableConditionMap = new TableConditionMap();
-        tableConditionMap.put(COMPANY, COMPANY.COMPANY_NAME.eq(req.getCompanyName()));
+        {//company
+            if (!req.getRequired().getOrgs().isEmpty()) {
+                tableConditionMap.put(COMPANY, COMPANY.COMPANY_NAME.in(req.getRequired().getCompanies()));
+            }
+            if (!req.getExcluded().getOrgs().isEmpty()) {
+                tableConditionMap.put(COMPANY, COMPANY.COMPANY_NAME.notIn(req.getRequired().getCompanies()));
+            }
+        }
 
         {//org
             if (!req.getRequired().getOrgs().isEmpty()) {
                 tableConditionMap.put(ORG, ORG.ORG_NAME.in(req.getRequired().getOrgs()));
             }
-            if (!req.getExclude().getOrgs().isEmpty()) {
+            if (!req.getExcluded().getOrgs().isEmpty()) {
                 tableConditionMap.put(ORG, ORG.ORG_NAME.notIn(req.getRequired().getOrgs()));
             }
         }
@@ -288,33 +296,39 @@ public class GraphService extends AbstractPersistService {
             if (!req.getRequired().getRepos().isEmpty()) {
                 tableConditionMap.put(REPO, REPO.REPO_NAME.in(req.getRequired().getRepos()));
             }
-            if (!req.getExclude().getRepos().isEmpty()) {
+            if (!req.getExcluded().getRepos().isEmpty()) {
                 tableConditionMap.put(REPO, REPO.REPO_NAME.notIn(req.getRequired().getRepos()));
             }
-            //TOMAYBE: repoCondition = REPO.REPO_NAME.likeRegex(String.join("|", repoNames));
         }
 
-        final List<String> branchNames;
         {//branch
             List<String> branches = new ArrayList<>(req.getRequired().getBranches());
-            if (!req.getRequired().getBranches().isEmpty()) {
-                if (req.isShouldIncludeDefaultBranches()) {
-                    branches.addAll(defaultBranchNames);
-                }
-                tableConditionMap.put(BRANCH, BRANCH.BRANCH_NAME.in(branches));
+            List<String> notBranches = new ArrayList<>(req.getExcluded().getBranches());
+
+            if (req.isShouldIncludeDefaultBranches()) {
+                branches.addAll(defaultBranchNames);
             }
-            if (!req.getExclude().getBranches().isEmpty()) {
-                tableConditionMap.put(BRANCH, BRANCH.BRANCH_NAME.notIn(req.getRequired().getBranches()));
+
+            Condition branchCondition = trueCondition();
+            if (!branches.isEmpty()) {
+                branchCondition = branchCondition.and(BRANCH.BRANCH_NAME.in(branches));
             }
-            branchNames = branches;
+            if (!notBranches.isEmpty()) {
+                branchCondition = branchCondition.and(BRANCH.BRANCH_NAME.notIn(notBranches));
+            }
+            tableConditionMap.put(BRANCH, branchCondition);
         }
 
-        //TODO: support jobInfo required and excluded
-        {//jobInfo
-        }
+        //TOMAYBE: support jobInfo required and excluded (currently filtered at later stage).
+        //phrasing this in SQL may be difficult and require rethinking indexes to avoid scans
+        //{//jobInfo }
 
-        tableConditionMap.put(JOB, JOB.LAST_RUN.greaterOrEqual(req.getRange().getStart())
-                        .and(JOB.LAST_RUN.lessThan(req.getRange().getEnd())));
+        { //Run
+            final InstantRange range = req.getRange();
+            Condition runCondition = RUN.RUN_DATE.ge(range.getStart());
+            runCondition = runCondition.and(RUN.RUN_DATE.le(range.getEnd()));
+            tableConditionMap.put(RUN, runCondition);
+        }
 
 
         //Don't show runs without test data. Maybe should filter on test_suites_json but this for now

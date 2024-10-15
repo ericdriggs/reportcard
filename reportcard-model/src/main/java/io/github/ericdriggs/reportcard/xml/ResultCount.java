@@ -85,8 +85,8 @@ public class ResultCount implements Comparable<ResultCount> {
     /**
      * @return percent of tests which passed (skipped tests are excluded from total)
      */
-    @JsonProperty("passedPercent")
-    public BigDecimal getPassedPercent() {
+    @JsonProperty("testSuccessPercent")
+    public BigDecimal getTestSuccessPercent() {
 
         if (tests == null || tests == 0) {
             return BigDecimal.ZERO;
@@ -140,7 +140,7 @@ public class ResultCount implements Comparable<ResultCount> {
      * @return an Integer sum of thiz and that, may be 0 but never null
      */
     @JsonIgnore
-    private static Integer addIntegers(Integer thiz, Integer that) {
+    public static Integer addIntegers(Integer thiz, Integer that) {
         if (thiz == null) {
             thiz = 0;
         }
@@ -158,7 +158,7 @@ public class ResultCount implements Comparable<ResultCount> {
      * @return an Integer sum of thiz and that, may be zero, never null
      */
     @JsonIgnore
-    private static BigDecimal addBigDecimal(BigDecimal thiz, BigDecimal that) {
+    public static BigDecimal addBigDecimal(BigDecimal thiz, BigDecimal that) {
         if (thiz == null) {
             thiz = BigDecimal.ZERO;
         }
@@ -190,9 +190,9 @@ public class ResultCount implements Comparable<ResultCount> {
         if (o1 == null && o2 == null) {
             return Collections.emptyList();
         } else if (o1 == null) {
-            return Collections.singletonList("o1 is NULL, o2 is not NULL");
+            return Collections.singletonList("resultCount o1 is NULL, o2 is not NULL");
         } else if (o2 == null) {
-            return Collections.singletonList("o1 is not NULL, o2 is NULL");
+            return Collections.singletonList("resultCount o1 is not NULL, o2 is NULL");
         }
 
         List<String> diffs = new ArrayList<>();

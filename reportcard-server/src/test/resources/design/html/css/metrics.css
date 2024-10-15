@@ -1,0 +1,40 @@
+th {
+    text-align: center !important;
+    vertical-align: bottom !important;
+    margin: 0 !important;
+    padding: 7px !important;
+}
+
+th, td {
+    border: 1px #333 solid;
+    border-radius: 0 !important;
+}
+
+td, tr {
+    text-align: center !important;
+    margin: 0 !important;
+    padding: 2px !important;
+    border-radius: 0 !important;
+}
+
+fieldset {
+    display: inline-block;
+    padding: 20px;
+}
+
+legend {
+    padding: 5px;
+}
+
+.shortcuts {
+    list-style-type: disc;
+    padding-left: 10px;
+}
+
+li {
+    padding: 4px;
+}
+
+.shortcuts-fieldset {
+    padding: 10px 10px 10px 20px;
+}
