@@ -46,7 +46,7 @@ public class JobStageTestTrend {
         CompanyOrgRepoBranchJobStageName companyOrgRepoBranchJobStageNameStageName = graphPair.getLeft();
         JobGraph jobGraph = graphPair.getRight();
         Instant now = Instant.now();
-        InstantRange instantRange = new InstantRange();
+        InstantRange instantRange = InstantRange.builder().build();
         TreeMap<TestPackageSuiteCase, TreeMap<RunPojo, TestCaseModel>> testCaseTrends = new TreeMap<>();
         StageName stageName = null;
 

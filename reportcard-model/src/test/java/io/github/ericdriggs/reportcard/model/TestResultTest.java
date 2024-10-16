@@ -84,7 +84,7 @@ public class TestResultTest {
             assertEquals(totalCopies * FAILURE_COUT, resultCout.getFailures());
             assertEquals(totalCopies * SKIPPED_COUNT, resultCout.getSkipped());
             assertEquals(TEST_TIME.multiply(new BigDecimal(totalCopies)), resultCout.getTime());
-            assertEquals(new BigDecimal("57.14"), resultCout.getPassedPercent());
+            assertEquals(new BigDecimal("57.14"), resultCout.getTestSuccessPercent());
         }
     }
 
@@ -113,7 +113,7 @@ public class TestResultTest {
             assertEquals(suiteCopies * FAILURE_COUT, resultCout.getFailures());
             assertEquals(suiteCopies * SKIPPED_COUNT, resultCout.getSkipped());
             assertEquals(TEST_TIME.multiply(new BigDecimal(suiteCopies)), resultCout.getTime());
-            assertEquals(new BigDecimal("57.14"), resultCout.getPassedPercent());
+            assertEquals(new BigDecimal("57.14"), resultCout.getTestSuccessPercent());
         }
     }
 

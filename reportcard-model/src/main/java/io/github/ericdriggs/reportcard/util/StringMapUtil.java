@@ -7,29 +7,26 @@ import io.github.ericdriggs.reportcard.mappers.SharedObjectMappers;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
+import java.util.*;
 
 @Slf4j
 public enum StringMapUtil {
     ;//static methods only
 
-    private final static ObjectMapper  mapper = SharedObjectMappers.simpleObjectMapper;
+    private final static ObjectMapper mapper = SharedObjectMappers.simpleObjectMapper;
 
     @SneakyThrows(JsonProcessingException.class)
-    public static TreeMap<String,String> jsonToMap(String json) {
+    public static TreeMap<String, String> jsonToMap(String json) {
         TypeReference<TreeMap<String, String>> typeRef
-                = new TypeReference<TreeMap<String, String>>() {};
+                = new TypeReference<TreeMap<String, String>>() {
+        };
         return mapper.readValue(json, typeRef);
     }
 
-    public static String valuesOnlyColonSeparated(TreeMap<String,String> map) {
+    public static String valuesOnlyColonSeparated(TreeMap<String, String> map) {
         //preserving treemap key order for values
         List<String> values = new ArrayList<>();
-        for (Map.Entry<String,String> entry : map.entrySet()) {
+        for (Map.Entry<String, String> entry : map.entrySet()) {
             values.add(entry.getValue());
         }
         return String.join(":", values);
@@ -38,14 +35,14 @@ public enum StringMapUtil {
     public static String jsonToDefinitionList(String json) {
 
         StringBuilder builder = new StringBuilder();
-        TreeMap<String,String> map = jsonToMap(json);
+        TreeMap<String, String> map = jsonToMap(json);
         for (Map.Entry<String, String> entry : map.entrySet()) {
             builder.append("<dt>" + entry.getKey() + "</dt><dd>" + entry.getValue() + "</dd>");
         }
         return "<dl>" + builder + "</dl>";
     }
 
-    public static TreeMap<String,String> stringToMap(String str) {
+    public static TreeMap<String, String> stringToMap(String str) {
         if (str == null) {
             return new TreeMap<>();
         }
@@ -53,7 +50,7 @@ public enum StringMapUtil {
         if (kvs.length == 0) {
             return new TreeMap<>();
         }
-        TreeMap<String,String> map = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        TreeMap<String, String> map = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         for (String s : kvs) {
             String[] kv = s.split("=");
             if (kv.length == 2) {
@@ -65,13 +62,13 @@ public enum StringMapUtil {
         return map;
     }
 
-    public static TreeMap<String,String> lower(TreeMap<String,String> map) {
-        if (map == null || map .isEmpty()) {
+    public static TreeMap<String, String> lower(TreeMap<String, String> map) {
+        if (map == null || map.isEmpty()) {
             return map;
         }
 
-        TreeMap<String,String> ret = new TreeMap<>();
-        for (Map.Entry<String,String> entry : map.entrySet()) {
+        TreeMap<String, String> ret = new TreeMap<>();
+        for (Map.Entry<String, String> entry : map.entrySet()) {
             ret.put(entry.getKey().toLowerCase(), entry.getValue().toLowerCase());
         }
         return ret;
@@ -82,9 +79,26 @@ public enum StringMapUtil {
             return "";
         }
         List<String> params = new ArrayList<>();
-        for(Map.Entry<String,String> entry : paramMap.entrySet()) {
+        for (Map.Entry<String, String> entry : paramMap.entrySet()) {
             params.add(entry.getKey() + "=" + entry.getValue());
         }
         return "?" + String.join(",", params);
+    }
+
+    public static TreeMap<String, TreeSet<String>> fromColonSeparated(Collection<String> colonSeparatedValues) {
+        TreeMap<String, TreeSet<String>> ret = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        for (String colonSeparatedValue : colonSeparatedValues) {
+            String[] parts = colonSeparatedValue.split(":");
+            if (parts.length != 2) {
+                log.warn("skipping since unable to parse colonSeparatedValue: " + colonSeparatedValue);
+            }
+            final String key = parts[0].trim();
+            final String value = parts[1].trim();
+            if (!ret.containsKey(key)) {
+                ret.put(key, new TreeSet<>());
+            }
+            ret.get(key).add(value);
+        }
+        return ret;
     }
 }

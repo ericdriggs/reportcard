@@ -54,7 +54,7 @@ public class ResultParserUtilTest {
         ResultCount resultCount = testResult.getResultCount();
         assertEquals(ERROR_COUNT, resultCount.getErrors());
         assertEquals(FAILURE_COUNT, resultCount.getFailures());
-        assertEquals(PASSED_PERCENTAGE, resultCount.getPassedPercent());
+        assertEquals(PASSED_PERCENTAGE, resultCount.getTestSuccessPercent());
         assertEquals(SKIPPED_COUNT, resultCount.getSkipped());
         assertEquals(SUCCESS_COUNT, resultCount.getSuccesses());
         assertEquals(TEST_COUNT, resultCount.getTests());

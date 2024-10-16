@@ -126,7 +126,7 @@ public enum TestResultHtmlHelper {
                 .replace("{failure}", Integer.toString(resultCount.getErrorsAndFailures()))
                 .replace("{skipped}", Integer.toString(resultCount.getSkipped()))
                 .replace("{duration}", NumberStringUtil.fromSecondBigDecimal(resultCount.getTime()))
-                .replace("{successRate}", NumberStringUtil.percentFromBigDecimal(resultCount.getPassedPercent()));
+                .replace("{successRate}", NumberStringUtil.percentFromBigDecimal(resultCount.getTestSuccessPercent()));
     }
 
     public static String getOverviewTotalRow(ResultCount resultCount) {
@@ -148,7 +148,7 @@ public enum TestResultHtmlHelper {
                 .replace("{failure}", NumberStringUtil.toString(resultCount.getErrorsAndFailures()))
                 .replace("{skipped}", NumberStringUtil.toString(resultCount.getSkipped()))
                 .replace("{duration}", NumberStringUtil.fromSecondBigDecimal(resultCount.getTime()))
-                .replace("{successRate}", NumberStringUtil.percentFromBigDecimal(resultCount.getPassedPercent()));
+                .replace("{successRate}", NumberStringUtil.percentFromBigDecimal(resultCount.getTestSuccessPercent()));
     }
 
     static String getStatusClass(TestStatus testStatus) {

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+    <title>reportcard metrics</title>
+    <link rel="stylesheet" href="css/sortable.min.css"/>
+    <script src="js/sortable.min.js"></script>
+
+    <link rel="stylesheet" href="css/shared.css">
+    <link rel="stylesheet" href="css/metrics.css">
+
+</head>
+<fieldset class="shortcuts-fieldset">
+    <legend>metrics group by</legend>
+    <ul class="shortcuts">
+        <li><a href="#org-fieldset">org</a></li>
+        <li><a href="#repo-fieldset">repo</a></li>
+        <li><a href="#branch-fieldset">branch</a></li>
+        <li><a href="#job-fieldset">job</a></li>
+    </ul>
+</fieldset>
+<br>
+<fieldset id="org-fieldset">
+    <legend>Org</legend>
+    <table class="sortable" id="org-table">
+        <thead>
+        <tr>
+            <th rowspan='2'>Company</th>
+            <th rowspan='2'>Org</th>
+            <th colspan='4'>2024-09-10T08:30Z&nbsp;&nbsp;→&nbsp;&nbsp;2024-10-10T08:30Z</th>
+            <th colspan='4'>2024-08-10T08:30Z&nbsp;&nbsp;→&nbsp;&nbsp;2024-09-10T08:30Z</th>
+        </tr>
+        <tr>
+            <th>run %</th>
+            <th>test %</th>
+            <th>tests</th>
+            <th>failures</th>
+
+            <th>run %</th>
+            <th>test %</th>
+            <th>tests</th>
+            <th>failures</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>company1</td>
+            <td>org1</td>
+
+            <td>80%</td>
+            <td>89%</td>
+            <td>100</td>
+            <td>11</td>
+
+            <td>70%</td>
+            <td>79%</td>
+            <td>100</td>
+            <td>21</td>
+        </tr>
+        <tr>
+            <td>company1</td>
+            <td>org2</td>
+
+            <td>70%</td>
+            <td>79%</td>
+            <td>90</td>
+            <td>5</td>
+
+            <td>60%</td>
+            <td>69%</td>
+            <td>80</td>
+            <td>11</td>
+        </tr>
+        </tbody>
+    </table>
+</fieldset>
+
+</html>

@@ -5,9 +5,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.ericdriggs.reportcard.mappers.SharedObjectMappers;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jooq.Condition;
 import org.jooq.Field;
+import org.springframework.util.CollectionUtils;
 
+import java.util.List;
 import java.util.Map;
 
 import static org.jooq.impl.DSL.condition;
@@ -22,6 +25,13 @@ public enum SqlJsonUtil {
 
     public static String jobInfoEqualsJson(String jobInfoJson) {
         return fieldEqualsJson("job_info", jobInfoJson);
+    }
+
+    public static String jobInfoRequiredExcluded(Map<String, List<String>> required, Map<String, List<String>> excluded) {
+        if (CollectionUtils.isEmpty(required) && CollectionUtils.isEmpty(excluded)) {
+            return "true";
+        }
+        throw new UnsupportedOperationException("TODO");
     }
 
     public static String fieldEqualsJson(String fieldName, String json) {

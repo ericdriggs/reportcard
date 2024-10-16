@@ -1,5 +1,7 @@
 package io.github.ericdriggs.reportcard.xml;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.ericdriggs.reportcard.model.TestStatus;
 import io.github.ericdriggs.reportcard.util.CompareUtil;
 import lombok.Builder;
@@ -53,6 +55,7 @@ public class ResultCount implements Comparable<ResultCount> {
      * @param r2 a ResultCount
      * @return a new ResultCount sum of this and that
      */
+    @JsonIgnore
     public static ResultCount add(ResultCount r1, ResultCount r2) {
         if (r1 == null) {
             return r2;
@@ -70,6 +73,7 @@ public class ResultCount implements Comparable<ResultCount> {
         return result;
     }
 
+    @JsonIgnore
     public static ResultCount aggregate(List<ResultCount> resultCounts) {
         ResultCount resultCount = ResultCount.builder().build();
         for (ResultCount r : resultCounts) {
@@ -81,7 +85,8 @@ public class ResultCount implements Comparable<ResultCount> {
     /**
      * @return percent of tests which passed (skipped tests are excluded from total)
      */
-    public BigDecimal getPassedPercent() {
+    @JsonProperty("testSuccessPercent")
+    public BigDecimal getTestSuccessPercent() {
 
         if (tests == null || tests == 0) {
             return BigDecimal.ZERO;
@@ -111,14 +116,16 @@ public class ResultCount implements Comparable<ResultCount> {
         }
     }
 
-    protected Integer zeroIfNull(Integer val) {
+    @JsonIgnore
+    private Integer zeroIfNull(Integer val) {
         if (val == null) {
             return 0;
         }
         return val;
     }
 
-    protected BigDecimal zeroIfNull(BigDecimal val) {
+    @JsonIgnore
+    private BigDecimal zeroIfNull(BigDecimal val) {
         if (val == null) {
             return BigDecimal.ZERO;
         }
@@ -132,7 +139,8 @@ public class ResultCount implements Comparable<ResultCount> {
      * @param that an Integer, may be null
      * @return an Integer sum of thiz and that, may be 0 but never null
      */
-    private static Integer addIntegers(Integer thiz, Integer that) {
+    @JsonIgnore
+    public static Integer addIntegers(Integer thiz, Integer that) {
         if (thiz == null) {
             thiz = 0;
         }
@@ -149,7 +157,8 @@ public class ResultCount implements Comparable<ResultCount> {
      * @param that an Integer, may be null
      * @return an Integer sum of thiz and that, may be zero, never null
      */
-    private static BigDecimal addBigDecimal(BigDecimal thiz, BigDecimal that) {
+    @JsonIgnore
+    public static BigDecimal addBigDecimal(BigDecimal thiz, BigDecimal that) {
         if (thiz == null) {
             thiz = BigDecimal.ZERO;
         }
@@ -159,6 +168,7 @@ public class ResultCount implements Comparable<ResultCount> {
         return thiz.add(that);
     }
 
+    @JsonIgnore
     @Override
     public int compareTo(ResultCount that) {
         if (that == null) {
@@ -175,13 +185,14 @@ public class ResultCount implements Comparable<ResultCount> {
         );
     }
 
+    @JsonIgnore
     public static List<String> diff(ResultCount o1, ResultCount o2) {
         if (o1 == null && o2 == null) {
             return Collections.emptyList();
         } else if (o1 == null) {
-            return Collections.singletonList("o1 is NULL, o2 is not NULL");
+            return Collections.singletonList("resultCount o1 is NULL, o2 is not NULL");
         } else if (o2 == null) {
-            return Collections.singletonList("o1 is not NULL, o2 is NULL");
+            return Collections.singletonList("resultCount o1 is not NULL, o2 is NULL");
         }
 
         List<String> diffs = new ArrayList<>();

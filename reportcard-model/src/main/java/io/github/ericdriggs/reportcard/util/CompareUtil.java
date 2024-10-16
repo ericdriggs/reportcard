@@ -1,10 +1,14 @@
 package io.github.ericdriggs.reportcard.util;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URI;
+import java.util.Collection;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 public enum CompareUtil {
     ;//static methods only
@@ -70,4 +74,51 @@ public enum CompareUtil {
         BigInteger b2 = val2.toBigInteger();
         return b1.compareTo(b2);
     }
+
+    public static <T extends Comparable<T>> int compareComparableCollection(Collection<T> val1, Collection<T> val2) {
+        if (val1 == null || val2 == null) {
+            return ObjectUtils.compare(!ObjectUtils.isEmpty(val1), !ObjectUtils.isEmpty(val2));
+        }
+        if (CollectionUtils.isEqualCollection(val1, val2)) {
+            return 0;
+        }
+        TreeSet<T> t1 = new TreeSet<T>(val1);
+        TreeSet<T> t2 = new TreeSet<T>(val2);
+
+        return chainCompare(
+                ObjectUtils.compare(val1.size(), val2.size()),
+                ObjectUtils.compare(t1.toString(), t2.toString())
+        );
+    }
+
+    //Note: Requires toString for T and U to serialize contents not just object address. This method would need work before externalizing
+    public static <T extends Comparable<T>, U extends Comparable<U>> int compareComparableMap(TreeMap<T,U> val1, TreeMap<T,U> val2) {
+        if (val1 == null || val2 == null) {
+            return ObjectUtils.compare(!ObjectUtils.isEmpty(val1), !ObjectUtils.isEmpty(val2));
+        }
+        if (val1.equals(val2)) {
+            return 0;
+        }
+        if (    ObjectUtils.compare(val1.size(), val2.size()) != 0) {
+            return ObjectUtils.compare(val1.size(), val2.size());
+        }
+
+        return chainCompare(
+                ObjectUtils.compare(val1.size(), val2.size()),
+                compareComparableCollection(val1.keySet(), val1.keySet()),
+                compareComparableCollection(val1.values(), val2.values()),
+                ObjectUtils.compare(val1.toString(), val1.toString())
+        );
+    }
+
+    public static int compareMultiValueStringMap(TreeMap<String, TreeSet<String>> val1, TreeMap<String, TreeSet<String>> val2) {
+        if (val1 == null || val2 == null) {
+            return ObjectUtils.compare(!ObjectUtils.isEmpty(val1), !ObjectUtils.isEmpty(val2));
+        }
+        if (val1.equals(val2)) {
+            return 0;
+        }
+        return ObjectUtils.compare(val1.toString(), val2.toString());
+    }
+
 }

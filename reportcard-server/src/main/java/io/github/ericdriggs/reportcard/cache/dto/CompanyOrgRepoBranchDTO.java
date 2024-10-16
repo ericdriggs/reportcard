@@ -1,18 +1,20 @@
 package io.github.ericdriggs.reportcard.cache.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import io.github.ericdriggs.reportcard.util.CompareUtil;
+import lombok.*;
+import lombok.extern.jackson.Jacksonized;
+import org.apache.commons.lang3.StringUtils;
 
-@Data
-@Builder
 @AllArgsConstructor
-public class CompanyOrgRepoBranchDTO {
-    private final String company;
-    private final String org;
-    private final String repo;
-    private final String branch;
+@Builder(toBuilder = true)
+@Jacksonized
+@Value
+public class CompanyOrgRepoBranchDTO implements Comparable<CompanyOrgRepoBranchDTO> {
+    String company;
+    String org;
+    String repo;
+    String branch;
 
     @JsonIgnore
     public CompanyOrgRepoBranchJobRunStageDTO toCompanyOrgRepoBranchJobRunStageDTO() {
@@ -22,16 +24,16 @@ public class CompanyOrgRepoBranchDTO {
 
     @JsonIgnore
     public CompanyOrgRepoBranchJobRunStageDTO toCompanyOrgRepoBranchJobRunStageDTO(Long jobId, Long runId, String stageName) {
-        return CompanyOrgRepoBranchJobRunStageDTO
-                .builder()
-                .company(company)
-                .org(org)
-                .repo(repo)
-                .branch(branch)
-                .jobId(jobId)
-                .runId(runId)
-                .stageName(stageName)
-                .build();
+        return new CompanyOrgRepoBranchJobRunStageDTO(company, org, repo, branch, jobId, runId, stageName);
+    }
 
+    @Override
+    public int compareTo(@NonNull CompanyOrgRepoBranchDTO that) {
+        return CompareUtil.chainCompare(
+                StringUtils.compare(company, that.company),
+                StringUtils.compare(org, that.org),
+                StringUtils.compare(repo, that.repo),
+                StringUtils.compare(branch, that.branch)
+        );
     }
 }

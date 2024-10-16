@@ -38,7 +38,7 @@ public class ResultCountTest {
         assertEquals(FAILURES_COUNT, RESULT_COUNT.getFailures());
         assertEquals(SKIPPED_COUNT, RESULT_COUNT.getSkipped());
         assertEquals(SUCCESS_COUNT, RESULT_COUNT.getSuccesses());
-        assertEquals(PASSED_PERCENTAGE, RESULT_COUNT.getPassedPercent());
+        assertEquals(PASSED_PERCENTAGE, RESULT_COUNT.getTestSuccessPercent());
         assertEquals(TESTS_COUNT, RESULT_COUNT.getTests());
         assertEquals(TIME, RESULT_COUNT.getTime());
     }
@@ -49,7 +49,7 @@ public class ResultCountTest {
         final int copies = 2;
         assertEquals(ERRORS_COUNT * copies, added.getErrors());
         assertEquals(FAILURES_COUNT * copies, added.getFailures());
-        assertEquals(PASSED_PERCENTAGE, added.getPassedPercent());
+        assertEquals(PASSED_PERCENTAGE, added.getTestSuccessPercent());
         assertEquals(SKIPPED_COUNT * copies, added.getSkipped());
         assertEquals(SUCCESS_COUNT * copies, added.getSuccesses());
         assertEquals(TESTS_COUNT * copies, added.getTests());
@@ -59,7 +59,7 @@ public class ResultCountTest {
     @Test
     public void passedPercentZeroTests() {
         final ResultCount resultCount= ResultCount.builder().build();
-        assertEquals(BigDecimal.ZERO, resultCount.getPassedPercent());
+        assertEquals(BigDecimal.ZERO, resultCount.getTestSuccessPercent());
         assertEquals(BigDecimal.ZERO, resultCount.getTime());
         assertEquals(0, resultCount.getErrors());
         assertEquals(0, resultCount.getFailures());
