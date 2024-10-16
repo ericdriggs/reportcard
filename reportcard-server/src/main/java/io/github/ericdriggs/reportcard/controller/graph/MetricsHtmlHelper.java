@@ -108,6 +108,19 @@ public class MetricsHtmlHelper {
         StringBuilder sb = new StringBuilder();
         sb.append("<tbody>").append(ls);
         for (Map.Entry<T, TreeMap<InstantRange, RunResultCount>> orgEntry : orgResultCounts.entrySet()) {
+
+            //filter out rows without tests
+            boolean rowHasTests = false;
+            for (Map.Entry<InstantRange, RunResultCount> rangeRunResultCountEntry : orgEntry.getValue().entrySet()) {
+                if (rangeRunResultCountEntry.getValue().getResultCount().getTests() > 0) {
+                    rowHasTests = true;
+                }
+            }
+            if (!rowHasTests) {
+                continue;
+            }
+
+
             sb.append("<tr>").append(ls);
             final T t = orgEntry.getKey();
             sb.append(renderDto(t));

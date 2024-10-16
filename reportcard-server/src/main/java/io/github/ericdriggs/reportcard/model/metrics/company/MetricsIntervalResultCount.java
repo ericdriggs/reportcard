@@ -29,6 +29,7 @@ public class MetricsIntervalResultCount implements Comparable<MetricsIntervalRes
     TreeMap<CompanyOrgRepoDTO, RunResultCount> repoResultCounts;
     TreeMap<CompanyOrgRepoBranchDTO, RunResultCount> branchResultCounts;
     TreeMap<CompanyOrgRepoBranchJobInfoDTO, RunResultCount> jobResultCounts;
+
     @Override
     public int compareTo(@NonNull MetricsIntervalResultCount that) {
         return CompareUtil.chainCompare(
@@ -91,8 +92,10 @@ public class MetricsIntervalResultCount implements Comparable<MetricsIntervalRes
                             jobResultCounts.put(companyOrgRepoBranchJobInfoDTO, jobResultCount);
                         }
                         branchResultCounts.put(companyOrgRepoBranchDTO, branchResultCount);
+
                     }
                     repoResultCounts.put(companyOrgRepoDTO, repoResultCount);
+
                 }
                 orgResultCounts.put(companyOrgDTO, orgResultCount);
             }

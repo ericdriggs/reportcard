@@ -265,9 +265,6 @@ public class GraphService extends AbstractPersistService {
         metricsRequests.parallelStream().forEach(metricsRequest -> {
             results.add(getCompanyDashboardIntervalResultCount(metricsRequest));
         });
-        for (MetricsRequest metricsRequest : metricsRequests) {
-            results.add(getCompanyDashboardIntervalResultCount(metricsRequest));
-        }
         return new TreeSet<>(results);
     }
 
@@ -349,7 +346,7 @@ public class GraphService extends AbstractPersistService {
         }
 
         //Don't show runs without test data. Maybe should filter on test_suites_json but this for now
-        tableConditionMap.put(TEST_RESULT, TEST_RESULT.TEST_RESULT_ID.isNotNull());
+        tableConditionMap.put(TEST_RESULT, TEST_RESULT.TEST_RESULT_ID.isNotNull().and(TEST_RESULT.TESTS.greaterThan(0)));
 
         Long[] runIds = dsl.selectDistinct(RUN.RUN_ID.as("RUN_IDS"))
                 .from(COMPANY)
