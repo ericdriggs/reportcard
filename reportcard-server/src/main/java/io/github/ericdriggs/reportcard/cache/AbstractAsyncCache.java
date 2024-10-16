@@ -12,8 +12,8 @@ import java.time.Instant;
  * A cache which supports asynchronous refreshing.
  * Usage: instantiate sub-class and call getCache() every time you want to access the cache.
  *
- * @param <K>
- * @param <V>
+ * @param <K> key
+ * @param <V> value
  */
 public abstract class AbstractAsyncCache<K, V> {
 

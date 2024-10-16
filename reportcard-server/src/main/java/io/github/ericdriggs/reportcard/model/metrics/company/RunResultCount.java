@@ -63,7 +63,6 @@ public class RunResultCount implements Comparable<RunResultCount> {
      * Adds a RunResultCount to the current RunResultCount
      *
      * @param that a ResultCount
-     * @return a new ResultCount sum of this and that
      */
     @JsonIgnore
     public void add(RunResultCount that) {
