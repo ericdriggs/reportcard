@@ -3,6 +3,7 @@ package io.github.ericdriggs.reportcard.controller.graph;
 import io.github.ericdriggs.reportcard.model.metrics.company.MetricsIntervalRequest;
 import io.github.ericdriggs.reportcard.model.metrics.company.MetricsIntervalResultCount;
 import io.github.ericdriggs.reportcard.model.metrics.company.MetricsIntervalResultCountMaps;
+import io.github.ericdriggs.reportcard.model.orgdashboard.OrgDashboard;
 import io.github.ericdriggs.reportcard.model.trend.JobStageTestTrend;
 import io.github.ericdriggs.reportcard.persist.GraphService;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.TreeSet;
 
 @RestController
@@ -59,6 +61,21 @@ public class GraphUIController {
         }
         //TODO: add cache headers * browser side cache using header, e.g. Cache-Control: max-age=600 //10 mins
         return new ResponseEntity<>(trendHtml, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "company/{company}/org/{org}/dashboard", produces = "text/html;charset=UTF-8")
+    public ResponseEntity<String> getOrgDashbarod(
+            @PathVariable String company,
+            @PathVariable String org,
+            @RequestParam(required = false) List<String> repos,
+            @RequestParam(required = false, defaultValue = "") List<String> branches,
+            @RequestParam(required = false, defaultValue = "true") boolean shouldIncludeDefaultBranches,
+            @RequestParam(required = false) Integer days
+    ) {
+        final OrgDashboard orgDashboard = graphService.getOrgDashboard(company, org, repos, branches, shouldIncludeDefaultBranches, days);
+        final String dashboardHtml = OrgDashboardHtmlHelper.renderOrgDashboardHtml(orgDashboard);
+        //TODO: add cache headers * browser side cache using header, e.g. Cache-Control: max-age=600 //10 mins
+        return new ResponseEntity<>(dashboardHtml, HttpStatus.OK);
     }
 
     @GetMapping(path = "metrics/all", produces = "text/html;charset=UTF-8")

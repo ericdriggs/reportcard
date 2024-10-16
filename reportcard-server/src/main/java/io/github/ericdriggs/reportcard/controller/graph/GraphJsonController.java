@@ -78,11 +78,11 @@ public class GraphJsonController {
                 intervalCount
         );
 
-        return postCompanyDashboard(metricsIntervalRequest);
+        return postMetrics(metricsIntervalRequest);
     }
 
     @PostMapping(path = "metrics", produces = "application/json;charset=UTF-8")
-    public ResponseEntity<TreeSet<MetricsIntervalResultCount>> postCompanyDashboard(
+    public ResponseEntity<TreeSet<MetricsIntervalResultCount>> postMetrics(
             @RequestBody MetricsIntervalRequest metricsIntervalRequest
     ) {
         TreeSet<MetricsIntervalResultCount> metricsIntervalResultCounts = graphService.getCompanyDashboardIntervalResultCount(metricsIntervalRequest);
