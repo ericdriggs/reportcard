@@ -9,21 +9,20 @@ import io.github.ericdriggs.reportcard.model.metrics.company.MetricsIntervalResu
 import io.github.ericdriggs.reportcard.model.metrics.company.RunResultCount;
 import io.github.ericdriggs.reportcard.model.trend.InstantRange;
 import io.github.ericdriggs.reportcard.util.StringMapUtil;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.math.RoundingMode;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.Collections;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class MetricsHtmlHelper {
     final static String ls = System.lineSeparator();
 
     public static String renderMetricsIntervalResultCountMaps(MetricsIntervalResultCountMaps metricsIntervalResultCountMaps) {
 
-//        List<Pair<String, String>> breadCrumbs = new ArrayList<>();
-//        breadCrumbs.add(Pair.of("metrics", "metrics"));
         final String main = renderMetricsMain(metricsIntervalResultCountMaps);
         return BrowseHtmlHelper.getPage(main, Collections.emptyList(), "metrics")
                 .replace("<!--additionalLinks-->", "<link rel=\"stylesheet\" href=\"/css/metrics.css\">" + ls);

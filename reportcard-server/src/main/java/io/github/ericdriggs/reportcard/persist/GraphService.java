@@ -399,9 +399,6 @@ public class GraphService extends AbstractPersistService {
                 field, DSL.inline(format));
     }
 
-    //    protected Result getFullTestGraph(TableConditionMap tableConditionMap) {
-//        return getFullTestGraph(tableConditionMap, true);
-//    }
     @SuppressWarnings("rawtypes")
     protected Result getFullTestGraph(TableConditionMap tableConditionMap, boolean shouldIncludeTestJson) {
 

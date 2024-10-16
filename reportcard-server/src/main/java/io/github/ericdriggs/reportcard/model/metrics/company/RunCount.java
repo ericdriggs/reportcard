@@ -1,9 +1,7 @@
 package io.github.ericdriggs.reportcard.model.metrics.company;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.github.ericdriggs.reportcard.model.graph.TestResultGraph;
 import io.github.ericdriggs.reportcard.util.CompareUtil;
-import io.github.ericdriggs.reportcard.xml.ResultCount;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
@@ -83,5 +81,4 @@ public class RunCount implements Comparable<RunCount> {
 
         return diffs;
     }
-
 }

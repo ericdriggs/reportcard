@@ -162,7 +162,6 @@ public class CompanyOrgRepoBranchJobRunStageDTO
                 }
             }
         }
-
         return sb.toString();
     }
 

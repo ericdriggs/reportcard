@@ -101,6 +101,4 @@ public class RunResultCount implements Comparable<RunResultCount> {
         diffs.addAll(ResultCount.diff(o1.resultCount, o2.resultCount));
         return diffs;
     }
-
-
 }

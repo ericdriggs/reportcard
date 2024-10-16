@@ -34,15 +34,6 @@ public enum SqlJsonUtil {
         throw new UnsupportedOperationException("TODO");
     }
 
-
-    public static String jsonContains(Map<String,String> map, Pair<String,String> kv) {
-
-        final String mapJson = toJson(map);
-
-        //return String.format("JSON_CONTAINS(%s, %s, '$.%s')", toJson(map), kv.getRight(), kv.getLeft());
-        throw new UnsupportedOperationException("TODO");
-    }
-
     public static String fieldEqualsJson(String fieldName, String json) {
         if (ObjectUtils.isEmpty(json)) {
             return "true";
@@ -55,7 +46,6 @@ public enum SqlJsonUtil {
         }
         return " " + fieldName + " != CAST('" + json + "' AS JSON ) ";
     }
-
 
     @SneakyThrows(JsonProcessingException.class)
     protected static String toJson(Map<String, String> map) {

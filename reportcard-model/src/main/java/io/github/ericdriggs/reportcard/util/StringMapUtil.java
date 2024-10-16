@@ -87,7 +87,6 @@ public enum StringMapUtil {
 
     public static TreeMap<String, TreeSet<String>> fromColonSeparated(Collection<String> colonSeparatedValues) {
         TreeMap<String, TreeSet<String>> ret = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-        ;
         for (String colonSeparatedValue : colonSeparatedValues) {
             String[] parts = colonSeparatedValue.split(":");
             if (parts.length != 2) {
