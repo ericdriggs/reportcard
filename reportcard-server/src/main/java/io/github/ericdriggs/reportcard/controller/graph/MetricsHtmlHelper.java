@@ -55,13 +55,14 @@ public class MetricsHtmlHelper {
                 break;
             }
         }
+        final String dtoNameLower = dtoName == null ? null : dtoName.toLowerCase();
 
-        sb.append("<fieldset id='").append(dtoName).append("'-fieldset'>").append(ls);
+        sb.append("<fieldset id='").append(dtoNameLower).append("-fieldset'>").append(ls);
         sb.append("<legend>").append(dtoName).append("</legend>").append(ls);
-        sb.append("<table class='sortable' id='").append(dtoName).append("-table'>").append(ls);
+        sb.append("<table class='sortable' id='").append(dtoNameLower).append("-table'>").append(ls);
         sb.append("<thead>").append(ls);
 
-        //span headers
+        //header row 1
         sb.append("<tr>").append(ls);
 
         for (Map.Entry<T, TreeMap<InstantRange, RunResultCount>> orgEntry : dtoResultCounts.entrySet()) {
@@ -71,25 +72,26 @@ public class MetricsHtmlHelper {
         }
 
         for (Map.Entry<T, TreeMap<InstantRange, RunResultCount>> orgEntry : dtoResultCounts.entrySet()) {
+            final String aggregationHeader =
+                    """
+                    <th class='test-header'>test pass %</th>
+                    <th class='test-header'>tests</th>
+                    <th class='run-header'>run pass %</th>
+                    <th class='run-header'>runs</th>
+                    """;
+            sb.append(aggregationHeader.repeat(orgEntry.getValue().size()));
+            break;
+        }
+
+        sb.append("</tr>").append(ls);
+
+        //header row 2
+        sb.append("<tr>").append(ls);
+        for (Map.Entry<T, TreeMap<InstantRange, RunResultCount>> orgEntry : dtoResultCounts.entrySet()) {
             final TreeMap<InstantRange, RunResultCount> rangeResultMap = orgEntry.getValue();
             for (Map.Entry<InstantRange, RunResultCount> rangeResultEntry : rangeResultMap.entrySet()) {
                 sb.append(instantRangeHeader(rangeResultEntry.getKey()));
             }
-            break;
-        }
-        sb.append("</tr>").append(ls);
-
-        //metrics headers
-        sb.append("<tr>").append(ls);
-        for (Map.Entry<T, TreeMap<InstantRange, RunResultCount>> orgEntry : dtoResultCounts.entrySet()) {
-            final String aggregationHeader =
-                    """
-                    <th class='test-header'>test %</th>
-                    <th class='test-header'>tests</th>
-                    <th class='run-header'>run %</th>
-                    <th class='run-header'>runs</th>
-                    """;
-            sb.append(aggregationHeader.repeat(orgEntry.getValue().size()));
             break;
         }
         sb.append("</tr>").append(ls);
@@ -116,10 +118,10 @@ public class MetricsHtmlHelper {
                 if (resultCount == null) {
                     resultCount = RunResultCount.builder().build();
                 }
-                sb.append("<td>").append(resultCount.getResultCount().getTestSuccessPercent().setScale(0, RoundingMode.HALF_UP)).append("</td>").append(ls);
-                sb.append("<td>").append(resultCount.getResultCount().getTests()).append("</td>").append(ls);
-                sb.append("<td>").append(resultCount.getRunCount().getRunSuccessPercent().setScale(0, RoundingMode.HALF_UP)).append("</td>").append(ls);
-                sb.append("<td>").append(resultCount.getRunCount().getRuns()).append("</td>").append(ls);
+                sb.append("<td class='percent'>").append(resultCount.getResultCount().getTestSuccessPercent().setScale(0, RoundingMode.HALF_UP)).append("%</td>").append(ls);
+                sb.append("<td class='count'>").append(String.format("%,d", resultCount.getResultCount().getTests())).append("</td>").append(ls);
+                sb.append("<td class='percent'>").append(resultCount.getRunCount().getRunSuccessPercent().setScale(0, RoundingMode.HALF_UP)).append("%</td>").append(ls);
+                sb.append("<td class='count'>").append(String.format("%,d", resultCount.getRunCount().getRuns())).append("</td>").append(ls);
             }
         }
         sb.append("</tbody>").append(ls);
@@ -135,7 +137,7 @@ public class MetricsHtmlHelper {
     }
 
     private static String instantToYmdhs(Instant instant) {
-        final String ISO_YHMDHS_FORMAT = "yyyy-MM-dd'T'HH:mmX";
+        final String ISO_YHMDHS_FORMAT = "yyyy-MM-dd HH:mm";
         final DateTimeFormatter isoYmdhsFormatter = DateTimeFormatter.ofPattern(ISO_YHMDHS_FORMAT)
                 .withZone(ZoneOffset.UTC);
 
@@ -254,7 +256,7 @@ public class MetricsHtmlHelper {
                     <li><a href="#org-fieldset">org</a></li>
                     <li><a href="#repo-fieldset">repo</a></li>
                     <li><a href="#branch-fieldset">branch</a></li>
-                    <li><a href="#job-fieldset">job</a></li>
+                    <li><a href="#jobinfo-fieldset">job</a></li>
                 </ul>
             </fieldset>
             <br>

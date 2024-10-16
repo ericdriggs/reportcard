@@ -26,11 +26,6 @@ legend {
     padding: 5px;
 }
 
-.shortcuts {
-    list-style-type: disc;
-    padding-left: 10px;
-}
-
 li {
     padding: 4px;
 }
@@ -45,8 +40,26 @@ li {
 
 .run-header {
     background-color: #533 !important;
+    border: 2px #a77 solid !important;
 }
 
 .test-header {
     background-color: #335 !important;
+    border: 2px #77a solid !important;
+}
+
+.interval-header {
+    font-size: 0.9em;
+    font-weight: bold;
+    background-color: #443 !important;
+    border: 2px #aa7 solid;
+    font-family: "Times New Roman", serif;
+}
+
+.percent {
+    text-align: right !important;
+}
+
+.count {
+    text-align: right !important;
 }
