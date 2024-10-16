@@ -15,20 +15,17 @@ import java.math.RoundingMode;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public class MetricsHtmlHelper {
     final static String ls = System.lineSeparator();
 
     public static String renderMetricsIntervalResultCountMaps(MetricsIntervalResultCountMaps metricsIntervalResultCountMaps) {
 
-        List<Pair<String, String>> breadCrumbs = new ArrayList<>();
-        breadCrumbs.add(Pair.of("metrics", "metrics"));
+//        List<Pair<String, String>> breadCrumbs = new ArrayList<>();
+//        breadCrumbs.add(Pair.of("metrics", "metrics"));
         final String main = renderMetricsMain(metricsIntervalResultCountMaps);
-        return BrowseHtmlHelper.getPage(main, breadCrumbs, "metrics")
+        return BrowseHtmlHelper.getPage(main, Collections.emptyList(), "metrics")
                 .replace("<!--additionalLinks-->", "<link rel=\"stylesheet\" href=\"/css/metrics.css\">" + ls);
 
     }
@@ -172,7 +169,7 @@ public class MetricsHtmlHelper {
             return "Branch";
         }
         if (t instanceof CompanyOrgRepoBranchJobInfoDTO) {
-            return "JobInfo";
+            return "Job";
         }
         throw new IllegalArgumentException("Unsupported type: " + t.getClass().getSimpleName());
     }
@@ -264,12 +261,11 @@ public class MetricsHtmlHelper {
     final static String shortcuts =
             """
             <fieldset class="shortcuts-fieldset">
-                <legend>metrics group by</legend>
                 <ul class="shortcuts">
                     <li><a href="#org-fieldset">org</a></li>
                     <li><a href="#repo-fieldset">repo</a></li>
                     <li><a href="#branch-fieldset">branch</a></li>
-                    <li><a href="#jobinfo-fieldset">job</a></li>
+                    <li><a href="#job-fieldset">job</a></li>
                 </ul>
             </fieldset>
             <br>

@@ -53,6 +53,22 @@ public class BrowseHtmlHelper {
     }
 
     //******************** company ********************//
+
+
+    public static String getCompanyLinks(String company) {
+
+        return
+                """
+                <fieldset>
+                <legend>{companyName} links</legend>
+                    {metricsLink}
+                </fieldset>
+                """
+                        .replace("{companyName}", company)
+                        .replace("{metricsLink}", getLink(company + " Metrics 🔢", "/metrics/company/" + company ))
+                ;
+    }
+
     public static String getCompanyHtml(String company) {
         final CompanyOrgRepoBranchJobRunStageDTO path = CompanyOrgRepoBranchJobRunStageDTO.builder().company(company).build();
         Map<CompanyPojo, Map<OrgPojo, Set<RepoPojo>>> companyOrgReposMap = CompanyOrgsReposCacheMap.INSTANCE.getValue(new CompanyDTO(company));
@@ -66,9 +82,20 @@ public class BrowseHtmlHelper {
 
         Map<OrgPojo, Set<RepoPojo>> orgRepos = companyOrgReposMap.values().stream().findFirst().get();
 
-        final String main = baseFieldsetTable.replace(LEGEND, "Orgs")
-                .replace(TABLE_HEADERS, nameCountHeaders)
+        final String companyLinks = getCompanyLinks(company);
+
+        final String orgs = baseFieldsetTable.replace(LEGEND, "Orgs")
+                .replace(TABLE_HEADERS, nameCountLastUpdatedHeaders)
                 .replace(TABLE_ROWS, getCompanyOrgs(path, orgRepos));
+
+        final String main =
+                """
+                <div>
+                  {orgLinks}
+                  {orgs}
+                </div>
+                """.replace("{orgLinks}", companyLinks)
+                        .replace("{orgs}", orgs);
         return getPage(main, getBreadCrumb(path));
     }
 
@@ -93,11 +120,14 @@ public class BrowseHtmlHelper {
                 """
                 <fieldset>
                 <legend>{orgName} links</legend>
-                    {dashboardLink}
+                    {dashboardLink}<br>
+                    {metricsLink}
                 </fieldset>
                 """
                         .replace("{orgName}", org)
-                        .replace("{dashboardLink}", getLink(org + " Dashboard 📊", orgPath.toUrlPath() + "/dashboard?days=30"));
+                        .replace("{dashboardLink}", getLink(org + " Dashboard 📊", orgPath.toUrlPath() + "/dashboard?days=30"))
+                        .replace("{metricsLink}", getLink(org + " Metrics 🔢", "/metrics" + orgPath.toUrlPath() ))
+                ;
     }
 
     public static String getOrgHtml(String company, String org) {

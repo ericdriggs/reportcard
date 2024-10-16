@@ -46,7 +46,7 @@ public class GraphJsonController {
     }
 
 
-    @GetMapping(path = "metrics", produces = "application/json")
+    @GetMapping(path = "metrics/all", produces = "application/json")
     @Operation(summary = "Get metrics using query parameters",
             description = "supports filtering and exclusion using lists e.g. (companies or notCompanies). jobInfo and notJobInfo expected colon separated values, e.g. application:foo,application:bar",
             operationId = "getMetricsJson"

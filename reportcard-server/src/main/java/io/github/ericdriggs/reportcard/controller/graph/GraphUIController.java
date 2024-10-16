@@ -61,8 +61,8 @@ public class GraphUIController {
         return new ResponseEntity<>(trendHtml, HttpStatus.OK);
     }
 
-    @GetMapping(path = "metrics", produces = "text/html;charset=UTF-8")
-    public ResponseEntity<String> getOrgDashbarod(
+    @GetMapping(path = "metrics/all", produces = "text/html;charset=UTF-8")
+    public ResponseEntity<String> getMetricsAll(
             @RequestParam(required = false, defaultValue = "") TreeSet<String> companies,
             @RequestParam(required = false, defaultValue = "") TreeSet<String> orgs,
             @RequestParam(required = false, defaultValue = "") TreeSet<String> repos,
@@ -77,6 +77,85 @@ public class GraphUIController {
             @RequestParam(required = false, defaultValue = "30") Integer intervalDays,
             @RequestParam(required = false, defaultValue = "2") Integer intervalCount
     ) {
+        MetricsIntervalRequest metricsIntervalRequest = MetricsIntervalRequest.fromQueryParams(
+                companies,
+                orgs,
+                repos,
+                branches,
+                jobInfos,
+                notCompanies,
+                notOrgs,
+                notRepos,
+                notBranches,
+                notJobInfos,
+                shouldIncludeDefaultBranches,
+                intervalDays,
+                intervalCount
+        );
+        return postCompanyDashboard(metricsIntervalRequest);
+    }
+
+    @GetMapping(path = "metrics/company/{company}", produces = "text/html;charset=UTF-8")
+    public ResponseEntity<String> getCompanyMetrics(
+            @PathVariable String company,
+            @RequestParam(required = false, defaultValue = "") TreeSet<String> orgs,
+            @RequestParam(required = false, defaultValue = "") TreeSet<String> repos,
+            @RequestParam(required = false, defaultValue = "") TreeSet<String> branches,
+            @RequestParam(required = false, defaultValue = "") TreeSet<String> jobInfos,
+
+            @RequestParam(required = false, defaultValue = "") TreeSet<String> notOrgs,
+            @RequestParam(required = false, defaultValue = "") TreeSet<String> notRepos,
+            @RequestParam(required = false, defaultValue = "") TreeSet<String> notBranches,
+            @RequestParam(required = false, defaultValue = "") TreeSet<String> notJobInfos,
+            @RequestParam(required = false, defaultValue = "true") boolean shouldIncludeDefaultBranches,
+            @RequestParam(required = false, defaultValue = "30") Integer intervalDays,
+            @RequestParam(required = false, defaultValue = "2") Integer intervalCount
+    ) {
+        TreeSet<String> companies = new TreeSet<>();
+        companies.add(company);
+        TreeSet<String> notCompanies = new TreeSet<>();
+
+        MetricsIntervalRequest metricsIntervalRequest = MetricsIntervalRequest.fromQueryParams(
+                companies,
+                orgs,
+                repos,
+                branches,
+                jobInfos,
+                notCompanies,
+                notOrgs,
+                notRepos,
+                notBranches,
+                notJobInfos,
+                shouldIncludeDefaultBranches,
+                intervalDays,
+                intervalCount
+        );
+        return postCompanyDashboard(metricsIntervalRequest);
+    }
+
+    @GetMapping(path = "metrics/company/{company}/org/{org}", produces = "text/html;charset=UTF-8")
+    public ResponseEntity<String> getOrgMetrics(
+            @PathVariable String company,
+            @PathVariable String org,
+            @RequestParam(required = false, defaultValue = "") TreeSet<String> repos,
+            @RequestParam(required = false, defaultValue = "") TreeSet<String> branches,
+            @RequestParam(required = false, defaultValue = "") TreeSet<String> jobInfos,
+
+            @RequestParam(required = false, defaultValue = "") TreeSet<String> notRepos,
+            @RequestParam(required = false, defaultValue = "") TreeSet<String> notBranches,
+            @RequestParam(required = false, defaultValue = "") TreeSet<String> notJobInfos,
+            @RequestParam(required = false, defaultValue = "true") boolean shouldIncludeDefaultBranches,
+            @RequestParam(required = false, defaultValue = "30") Integer intervalDays,
+            @RequestParam(required = false, defaultValue = "2") Integer intervalCount
+    ) {
+        TreeSet<String> companies = new TreeSet<>();
+        companies.add(company);
+        TreeSet<String> notCompanies = new TreeSet<>();
+
+        TreeSet<String> orgs = new TreeSet<>();
+        orgs.add(org);
+        TreeSet<String> notOrgs = new TreeSet<>();
+
         MetricsIntervalRequest metricsIntervalRequest = MetricsIntervalRequest.fromQueryParams(
                 companies,
                 orgs,
