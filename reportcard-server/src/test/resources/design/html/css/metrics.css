@@ -11,7 +11,7 @@ th, td {
 }
 
 td, tr {
-    text-align: center !important;
+    text-align: left !important;
     margin: 0 !important;
     padding: 2px !important;
     border-radius: 0 !important;
