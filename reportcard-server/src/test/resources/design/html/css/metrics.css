@@ -30,8 +30,10 @@ li {
     padding: 4px;
 }
 
-.shortcuts-fieldset {
-    padding: 10px 10px 10px 20px;
+.top-fieldset {
+    padding: 10px;
+    padding-top: 0;
+    margin-top: 0;
 }
 
 .dto-header {
@@ -48,6 +50,10 @@ li {
     border: 2px #77a solid !important;
 }
 
+.transparent {
+    display:none;
+}
+
 .interval-header {
     font-size: 0.9em;
     font-weight: bold;
@@ -62,4 +68,23 @@ li {
 
 .count {
     text-align: right !important;
+}
+
+dl {
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+dt {
+    float: left;
+    width: 30%;
+    text-align: right;
+    padding: .2em;
+    clear: left;
+}
+dd {
+    float: left;
+    width: 60%;
+    padding: .2em 0;
 }

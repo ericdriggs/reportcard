@@ -18,6 +18,8 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 
+import static io.github.ericdriggs.reportcard.util.NumberStringUtil.fromSecondBigDecimalPadded;
+
 public class MetricsHtmlHelper {
     final static String ls = System.lineSeparator();
 
@@ -33,6 +35,8 @@ public class MetricsHtmlHelper {
 
         StringBuilder sb = new StringBuilder();
         sb.append(shortcuts);
+        sb.append(legend);
+        sb.append("<br>");
         sb.append(renderResultCountMap(metricsIntervalResultCountMaps.getOrgResultCounts()));
         sb.append(renderResultCountMap(metricsIntervalResultCountMaps.getRepoResultCounts()));
         sb.append(renderResultCountMap(metricsIntervalResultCountMaps.getBranchResultCounts()));
@@ -71,9 +75,10 @@ public class MetricsHtmlHelper {
             final String aggregationHeader =
                     """
                     <th class='test-header'>test pass %</th>
-                    <th class='test-header'>tests</th>
-                    <th class='run-header'>run pass %</th>
-                    <th class='run-header'>runs</th>
+                    <th class='test-header'>test executions</th>
+                    <th class='test-header'>test time</th>
+                    <th class='run-header'>job pass %</th>
+                    <th class='run-header'>job runs</th>
                     """;
             sb.append(aggregationHeader.repeat(orgEntry.getValue().size()));
             break;
@@ -129,6 +134,7 @@ public class MetricsHtmlHelper {
                 }
                 sb.append("<td class='percent'>").append(resultCount.getResultCount().getTestSuccessPercent().setScale(0, RoundingMode.HALF_UP)).append("%</td>").append(ls);
                 sb.append("<td class='count'>").append(String.format("%,d", resultCount.getResultCount().getTests())).append("</td>").append(ls);
+                sb.append("<td class='count'>").append(fromSecondBigDecimalPadded(resultCount.getResultCount().getTime())).append("</td>").append(ls);
                 sb.append("<td class='percent'>").append(resultCount.getRunCount().getRunSuccessPercent().setScale(0, RoundingMode.HALF_UP)).append("%</td>").append(ls);
                 sb.append("<td class='count'>").append(String.format("%,d", resultCount.getRunCount().getRuns())).append("</td>").append(ls);
             }
@@ -139,7 +145,7 @@ public class MetricsHtmlHelper {
 
     private static String instantRangeHeader(InstantRange instantRange) {
 
-        final String header = "<th class='interval-header' colspan='4'>{start}&nbsp;&nbsp;→&nbsp;&nbsp;{end}</th>";
+        final String header = "<th class='interval-header' colspan='5'>{start}&nbsp;&nbsp;→&nbsp;&nbsp;{end}</th>";
         return header
                 .replace("{start}", instantToYmdhs(instantRange.getStart()))
                 .replace("{end}", instantToYmdhs(instantRange.getEnd()));
@@ -259,7 +265,8 @@ public class MetricsHtmlHelper {
 
     final static String shortcuts =
             """
-            <fieldset class="shortcuts-fieldset">
+            <fieldset class="top-fieldset">
+                <legend>Table of contents</legend>
                 <ul class="shortcuts">
                     <li><a href="#org-fieldset">org</a></li>
                     <li><a href="#repo-fieldset">repo</a></li>
@@ -267,7 +274,29 @@ public class MetricsHtmlHelper {
                     <li><a href="#job-fieldset">job</a></li>
                 </ul>
             </fieldset>
-            <br>
+            """;
+
+    final static String legend =
+            """
+            <fieldset class='top-fieldset'>
+            <legend>Definitions</legend>
+            <dl>
+            	<dt>Test Pass %</dt>
+            	<dd>The % of test executions which passed.</dd>
+                        
+            	<dt>Test Execution</dt>
+            	<dd>The total number of executions of tests</dd>
+                        
+            	<dt>Test time</dt>
+            	<dd>Cumulative time</dd>
+                        
+            	<dt>Job Pass %</dt>
+            	<dd>The percentage of job runs with no failing tests</dd>
+                        
+            	<dt>Job Runs</dt>
+            	<dd>Total job runs</dd>
+            </dl>
+            </fieldset>
             """;
 
 }

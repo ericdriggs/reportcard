@@ -79,15 +79,81 @@ public enum NumberStringUtil {
         Duration duration = Duration.ofMillis(durationSeconds.multiply(BigDecimal.valueOf(1000)).longValue());
 
         long days = duration.toDaysPart();
+        long years = 0;
+        if (days > 365) {
+            years = days / 365;
+            days = days - years * 365;
+        }
         int hours = duration.toHoursPart();
         int minutes = duration.toMinutesPart();
         BigDecimal seconds = getDecimalSeconds(duration);
 
+        final String yearString = years > 0 ? years + "y " : "";
         final String dayString = days > 0 ? days + "d " : "";
         final String hourString = hours > 0 ? hours + "h " : "";
         final String minuteString = minutes > 0 || hours > 0 ? minutes + "m " : "";
         final String secondString = seconds.toPlainString() + "s";
-        return dayString + hourString + minuteString + secondString;
+        return yearString+ dayString + hourString + minuteString + secondString;
+    }
+
+    public static String fromSecondBigDecimalPadded(BigDecimal durationSeconds) {
+
+        if (durationSeconds == null) {
+            return "";
+        }
+
+        Duration duration = Duration.ofMillis(durationSeconds.multiply(BigDecimal.valueOf(1000)).longValue());
+
+        int days = (int)duration.toDaysPart();
+        int years = 0;
+        if (days > 365) {
+            years = days / 365;
+            days = days - years * 365;
+        }
+        int hours = duration.toHoursPart();
+        int minutes = duration.toMinutesPart();
+
+        StringBuilder sb = new StringBuilder();
+        boolean transparent = true;
+        sb.append("<span class='transparent'>");
+
+        if (years > 0 ) {
+            transparent = false;
+            sb.append("</span>");
+        }
+        sb.append(paddedTransparent(years,2,"y"));
+
+        if (days > 0 && transparent) {
+            transparent = false;
+            sb.append("</span>");
+        }
+        sb.append(paddedTransparent(days,3,"d"));
+
+        if (hours > 0 && transparent) {
+            transparent = false;
+            sb.append("</span>");
+        }
+        sb.append(padded(hours,2,"h"));
+
+        if (minutes > 0 && transparent) {
+            sb.append("</span>");
+        }
+        sb.append(padded(minutes,2,"m"));
+        return sb.toString();
+    }
+
+    static String paddedTransparent(int num, int columns, String suffix) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<span class='transparent'>");
+        String ret = String.format("%0" + columns + "d", num);
+        ret = ret.replaceAll(num + "$", "</span>" + num);
+        sb.append(ret);
+        sb.append(suffix);
+        return sb.toString();
+    }
+
+    static String padded(int num, int columns, String suffix) {
+        return String.format("%0" + columns + "d", num) + suffix;
     }
 
     static BigDecimal getDecimalSeconds(Duration duration) {
