@@ -19,5 +19,5 @@ public class TestCaseTrendRow {
     BigDecimal successPercent;
     BigDecimal averageDurationSeconds;
     boolean hasSkip;
-    TreeSet<TestCaseRunGroupedState> testRunGroupedStates;
+    TreeMap<Long,TestCaseRunGroupedState> testRunGroupedStates;
 }
