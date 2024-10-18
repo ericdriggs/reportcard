@@ -43,7 +43,7 @@ public class TrendHtmlHelper extends BrowseHtmlHelper {
                 .replace("<!--jobInfo-->", renderJobInfo(companyOrgRepoBranchJobStageName.getJobPojo().getJobInfo()))
                 .replace("<!--stageName-->", companyOrgRepoBranchJobStageName.getStageName())
                 .replace("<!--jobRunHeaders-->", renderJobRunHeaders(testTrendTable.getTestRunHeaders()))
-                .replace("<!--jobRunTestRows-->", renderJobRunTestRows(testTrendTable.getTestCaseTrendRows()))
+                .replace("<!--jobRunTestRows-->", renderJobRunTestRows(testTrendTable))
                 ;
     }
 
@@ -74,15 +74,20 @@ public class TrendHtmlHelper extends BrowseHtmlHelper {
         return builder.toString();
     }
 
-    static String renderJobRunTestRows(List<TestCaseTrendRow> testCaseTrendRows) {
+    static String renderJobRunTestRows(TestTrendTable testTrendTable) {
+
+        final Collection<TestRunHeader> testRunHeaders = testTrendTable.getTestRunHeaders();
+        final List<TestCaseTrendRow> testCaseTrendRows = testTrendTable.getTestCaseTrendRows();
 
         Set<TestPackageSuiteCase> testsWithFailures = new TreeSet<>();
         Set<TestPackageSuiteCase> testWithSkip = new TreeSet<>();
         Set<Long> runIdsWithFailures = new TreeSet<>();
         Set<Long> runIdsWithSkip = new TreeSet<>();
+        TreeSet<Long> runIds = new TreeSet<>(Collections.reverseOrder());
+        runIds.addAll(testRunHeaders.stream().map(TestRunHeader::getRunId).toList());
 
         for (TestCaseTrendRow row : testCaseTrendRows) {
-            for (TestCaseRunGroupedState col : row.getTestRunGroupedStates()) {
+            for (TestCaseRunGroupedState col : row.getTestRunGroupedStates().values()) {
                 if (col.getTestCaseRunState().isFail()) {
                     testsWithFailures.add(row.getTestPackageSuiteCase());
                     runIdsWithFailures.add(col.getRunId());
@@ -93,7 +98,7 @@ public class TrendHtmlHelper extends BrowseHtmlHelper {
         for (TestCaseTrendRow row : testCaseTrendRows) {
             if (row.isHasSkip()) {
                 testWithSkip.add(row.getTestPackageSuiteCase());
-                for (TestCaseRunGroupedState col : row.getTestRunGroupedStates()) {
+                for (TestCaseRunGroupedState col : row.getTestRunGroupedStates().values()) {
                     if (col.getTestCaseRunState().isSkipped()) {
                         runIdsWithSkip.add(col.getRunId());
                     }
@@ -119,10 +124,16 @@ public class TrendHtmlHelper extends BrowseHtmlHelper {
         for (TestCaseTrendRow testCaseTrendRow : testCaseTrendRows) {
             StringBuilder runStatesBuilder = new StringBuilder();
 
-            for (TestCaseRunGroupedState testCaseRunGroupedState : testCaseTrendRow.getTestRunGroupedStates()) {
-                final boolean runHasFail = runIdsWithFailures.contains(testCaseRunGroupedState.getRunId());
-                final boolean runHasSkip = runIdsWithSkip.contains(testCaseRunGroupedState.getRunId());
-                runStatesBuilder.append(renderTestRunState(testCaseRunGroupedState, runHasFail, runHasSkip));
+            TreeMap<Long, TestCaseRunGroupedState> runTestMap =  testCaseTrendRow.getTestRunGroupedStates();
+            for (Long runId : runIds) {
+                if (runTestMap.get(runId) != null) {
+                    TestCaseRunGroupedState testCaseRunGroupedState = runTestMap.get(runId);
+                    final boolean runHasFail = runIdsWithFailures.contains(testCaseRunGroupedState.getRunId());
+                    final boolean runHasSkip = runIdsWithSkip.contains(testCaseRunGroupedState.getRunId());
+                    runStatesBuilder.append(renderTestRunState(testCaseRunGroupedState, runHasFail, runHasSkip));
+                } else {
+                    runStatesBuilder.append(("<td></td>"));
+                }
             }
 
             final boolean hasFail = testsWithFailures.contains(testCaseTrendRow.getTestPackageSuiteCase());

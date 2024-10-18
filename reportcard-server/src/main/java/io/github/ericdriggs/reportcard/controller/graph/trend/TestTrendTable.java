@@ -46,9 +46,8 @@ public class TestTrendTable {
                 SuccessAverage successTotal = new SuccessAverage(runTestCaseMap.size());
 
                 FailureMessageIndexMap failureMessageIndexMap = FailureMessageIndexMap.builder().build();
-                TreeSet<TestCaseRunGroupedState> testRunGroupedStates = new TreeSet<>();
+                TreeMap<Long,TestCaseRunGroupedState> testRunGroupedStates = new TreeMap<>(Collections.reverseOrder());
                 boolean hasSkip = false;
-                Map<TestPackageSuiteCase,Instant> testCaseFailSinceMap = new HashMap<>();
 
                 Instant failSince = null;
                 boolean hasPassed = false;
@@ -85,12 +84,10 @@ public class TestTrendTable {
                     totalDuration = totalDuration.add(testRunDuration);
 
                     final String failureMessage = getTruncatedFailureMessage(testCaseModel.getTestCaseFaults());
-                    testRunGroupedStates.add(TestCaseRunGroupedState.factory(runPojo.getRunId(), testStatus, failureMessageIndexMap, failureMessage));
+                    testRunGroupedStates.put(runPojo.getRunId(), TestCaseRunGroupedState.factory(runPojo.getRunId(), testStatus, failureMessageIndexMap, failureMessage));
                 }
 
                 final BigDecimal averageDurationSeconds = runTestCaseMap.isEmpty() ? BigDecimal.ZERO : totalDuration.divide(new BigDecimal(runTestCaseMap.size()), RoundingMode.HALF_UP).setScale(0, RoundingMode.HALF_UP);
-
-                isFirst = false;
 
                 testCaseTrendRows.add(TestCaseTrendRow
                         .builder()
