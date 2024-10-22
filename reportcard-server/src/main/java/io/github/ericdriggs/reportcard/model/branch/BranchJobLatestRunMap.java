@@ -1,12 +1,10 @@
 package io.github.ericdriggs.reportcard.model.branch;
 
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.*;
-import io.github.ericdriggs.reportcard.mappers.SharedObjectMappers;
 import io.github.ericdriggs.reportcard.model.graph.*;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
-
 
 import java.util.List;
 import java.util.TreeMap;
@@ -50,9 +48,11 @@ public class BranchJobLatestRunMap {
                 for (StageGraph stageGraph : emptyIfNull(runGraph.stages())) {
                     final StagePojo stagePojo = stageGraph.asStagePojo();
                     if (stageRunStorageTestResultMap.get(stagePojo.getStageName()) != null) {
-                        throw new IllegalStateException("duplicate stage when expected singleton. stageRunStorageTestResultMap.get(stagePojo.getStageName()): "
-                                + SharedObjectMappers.writeValueAsString(stageRunStorageTestResultMap.get(stagePojo.getStageName())) + ", stageGraph: "
-                                + SharedObjectMappers.writeValueAsString(stageGraph));
+                        final RunStorageTestResult existingResult = stageRunStorageTestResultMap.get(stagePojo.getStageName());
+                        //query may have duplicates for multi-stage so use comparison to get latest
+                        if (existingResult.getRunPojo().getRunId() > runPojo.getRunId()) {
+                            continue;
+                        }
                     }
                     TestResultPojo testResultPojo = null;
                     for (TestResultGraph testResultGraph : emptyIfNull(stageGraph.testResults())) {

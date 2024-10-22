@@ -6,6 +6,7 @@ import io.github.ericdriggs.reportcard.model.StageTestResultPojo;
 import io.github.ericdriggs.reportcard.model.graph.*;
 import lombok.Builder;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
 
@@ -14,6 +15,7 @@ import static io.github.ericdriggs.reportcard.util.list.ListAssertUtil.emptyIfNu
 
 @Data
 @Builder(toBuilder = true)
+@Slf4j
 public class BranchStageViewResponse {
     CompanyOrgRepoBranch companyOrgRepoBranch;
     Map<JobRun, Map<StageTestResultPojo, Set<StoragePojo>>> jobRun_StageTestResult_StoragesMap;
@@ -49,7 +51,9 @@ public class BranchStageViewResponse {
                     }
                     StageTestResultPojo stageTestResultPojo = StageTestResultPojo.builder().stage(stagePojo).testResultPojo(testResultPojo).build();
                     if (stageResultStoragesMap.get(stageTestResultPojo) != null) {
-                        throw new IllegalStateException("duplicate stage when expected singleton. stageResultStoragesMap.get(stageTestResultPojo): " + stageResultStoragesMap.get(stageTestResultPojo) );
+                        IllegalStateException ex = new IllegalStateException("duplicate stage when expected singleton. stageResultStoragesMap.get(stageTestResultPojo): " + stageResultStoragesMap.get(stageTestResultPojo) );
+                        log.error("duplicate stage: {}", stagePojo.getStageName(), ex);
+                        continue;
                     }
                     TreeSet<StoragePojo> storagePojos = new TreeSet<>(PojoComparators.STORAGE_CASE_INSENSITIVE_ORDER);
                     for (StorageGraph storageGraph : emptyIfNull(stageGraph.storages())) {

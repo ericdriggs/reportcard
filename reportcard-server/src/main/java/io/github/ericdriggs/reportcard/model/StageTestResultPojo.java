@@ -1,5 +1,6 @@
 package io.github.ericdriggs.reportcard.model;
 
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.PojoComparators;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.StagePojo;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestResultPojo;
 import lombok.Builder;
@@ -9,7 +10,7 @@ import java.time.Duration;
 
 @Value
 @Builder
-public class StageTestResultPojo {
+public class StageTestResultPojo implements Comparable<StageTestResultPojo> {
     StagePojo stage;
     TestResultPojo testResultPojo;
 
@@ -42,5 +43,10 @@ public class StageTestResultPojo {
         String minuteString = minutes > 0 || hours > 0 ? minutes + "min " : "";
         String secondString = seconds + "s";
         return hourString + minuteString + secondString;
+    }
+
+    @Override
+    public int compareTo(StageTestResultPojo that) {
+        return PojoComparators.compareStageTestResultPojoDateDescending(this, that);
     }
 }
