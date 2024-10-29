@@ -130,12 +130,12 @@ public class SurefireConvertersUtil {
         if (modelTestSuite.getSkipped() == null) {
             modelTestSuite.setSkipped(0);
         }
-        if (modelTestSuite.getSkipped() > 0) {
-            modelTestSuite.setHasSkip(true);
-        }
         modelTestSuite.setTests(source.getTests());
         if (modelTestSuite.getTests() == null) {
             modelTestSuite.setTests(0);
+        }
+        if (modelTestSuite.getSkipped() > 0 || modelTestSuite.getTests() == 0) {
+            modelTestSuite.setHasSkip(true);
         }
         modelTestSuite.setSkipped(source.getSkipped());
         if (modelTestSuite.getSkipped() == null) {
@@ -150,7 +150,7 @@ public class SurefireConvertersUtil {
             modelTestSuite.setTime(BigDecimal.ZERO);
         }
 
-        modelTestSuite.setIsSuccess(modelTestSuite.getError() == 0 && modelTestSuite.getFailure() == 0);
+        modelTestSuite.setIsSuccess(modelTestSuite.getError() == 0 && modelTestSuite.getFailure() == 0 && modelTestSuite.getTests() > 0);
 
         return modelTestSuite;
     }

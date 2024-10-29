@@ -65,7 +65,7 @@ public class ResultCountTest {
         assertEquals(0, resultCount.getFailures());
         assertEquals(0, resultCount.getSkipped());
         assertEquals(0, resultCount.getTests());
-        assertEquals(TestStatus.SUCCESS, resultCount.getTestStatus());
+        assertEquals(TestStatus.SKIPPED, resultCount.getTestStatus());
     }
 
     @Test

@@ -360,6 +360,7 @@ public class StagePathPersistService extends AbstractPersistService {
         }
     }
 
+    //TOMAYBE: consolidate into single sql query
     public boolean isRunSuccess(StagePath stagePath) {
         int testResultFailures = dsl.fetchCount(
                 select(TEST_RESULT.TEST_RESULT_ID)
@@ -370,7 +371,16 @@ public class StagePathPersistService extends AbstractPersistService {
                                          .and(TEST_RESULT.IS_SUCCESS.eq(false))
                         )
         );
-        return testResultFailures == 0;
+
+        int testCount = dsl.fetchCount(
+                select(TEST_RESULT.TEST_RESULT_ID)
+                        .from(RUN)
+                        .join(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID))
+                        .join(TEST_RESULT).on(TEST_RESULT.STAGE_FK.eq(STAGE.STAGE_ID))
+                        .where(RUN.RUN_ID.eq(stagePath.getRun().getRunId()))
+        );
+
+        return testResultFailures == 0 && testCount > 0;
     }
 
     public Map<Byte, String> getTestStatusMap() {
