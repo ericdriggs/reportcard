@@ -508,8 +508,7 @@ public class BrowseHtmlHelper {
     }
 
     private static URI getTrendReportURI(CompanyOrgRepoBranchJobRunStageDTO c, String stageName) {
-        //return new URI(c.toUrlPath() + "/trend");
-        return URI.create("/company/" + c.getCompany() + "/org/" + c.getOrg() + "/repo/" + c.getRepo() + "/branch/" + c.getBranch() + "/job/" + c.getJobId() + "/stage/" + stageName + "/trend");
+        return URI.create("/company/" + c.getCompany() + "/org/" + c.getOrg() + "/repo/" + c.getRepo() + "/branch/" + c.getBranch() + "/job/" + c.getJobId() + "/stage/" + stageName + "/trend?runs=30");
     }
 
     private static String getJobRunRow(CompanyOrgRepoBranchJobRunStageDTO path, String jobInfo, String stageName, TreeSet<StoragePojo> storagePojos, URI trendReportURI) {

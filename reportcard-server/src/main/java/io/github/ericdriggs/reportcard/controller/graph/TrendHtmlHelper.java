@@ -355,6 +355,6 @@ public class TrendHtmlHelper extends BrowseHtmlHelper {
 
         final String jobUrl = getUrl(CompanyOrgRepoBranchJobRunStageDTO.truncateJob(path));
         final String stageUrl = jobUrl + "/stage/" + path.getStageName();
-        return URI.create(stageUrl + "/trend");
+        return URI.create(stageUrl + "/trend?runs=30");
     }
 }
