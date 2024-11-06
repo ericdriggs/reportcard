@@ -22,7 +22,7 @@ public class RunBadgeDTO {
 
     public static RunBadgeDTO fromRunGraph(RunGraph runGraph, CompanyOrgRepoBranchJobRunStageDTO path) {
 
-        BadgeStatus badgeStatus = BadgeStatus.fromIsSuccess(runGraph.isSuccess());
+        BadgeStatus badgeStatus = BadgeStatus.fromRunGraph(runGraph);
         return RunBadgeDTO
                 .builder()
                 .badgeStatus(badgeStatus)

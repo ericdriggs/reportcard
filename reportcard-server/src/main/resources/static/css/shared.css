@@ -210,6 +210,12 @@ ul.breadcrumb li + li:before {
     border: 2px solid #a55;
 }
 
+.stage-skip {
+    background-image: linear-gradient(45deg, #fd5 25%, #cb6 25%, #cb6 50%, #fd5 50%, #fd5 75%, #cb6 75%, #cb6 100%);
+    background-size: 80px 80px;
+    border: 2px solid #aa5;
+}
+
 .stage-pass {
     background-color: #e1f6e1;
     border: 2px solid #cdc;
