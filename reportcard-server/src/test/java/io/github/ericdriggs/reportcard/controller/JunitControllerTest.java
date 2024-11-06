@@ -119,18 +119,31 @@ public class JunitControllerTest {
     @Test
     void postJunitHtmlSurefireFormat() throws IOException {
         final MultipartFile junitTarGz = getSurefireTarGz(resourceReader);
-        doPostHtmlTest(junitTarGz);
+        StagePathStorageResultCountResponse response = doPostHtmlTest(junitTarGz);
+        assertSingleTestResponse(response);
     }
 
     @Test
     void postJunitHtmlJunitFormat() throws IOException {
         final MultipartFile junitTarGz = getJunitTarGz(resourceReader);
-        doPostHtmlTest(junitTarGz);
+        StagePathStorageResultCountResponse response = doPostHtmlTest(junitTarGz);
+        assertSingleTestResponse(response);
     }
 
-    void doPostHtmlTest(MultipartFile junitTarGz) throws IOException {
+    @Test
+    void postNoJunitXmlTest() throws IOException {
+        final MultipartFile junitTarGz = getEmptyTarGz(resourceReader);
+        StagePathStorageResultCountResponse response = doPostHtmlTest(junitTarGz);
+        assertNoTestResponse(response);
+    }
 
-        final String stageName = "apiTest";
+
+    final String expectedStageUrl = "/company/company1/org/org1/repo/repo1/branch/master/job/1/run/1/stage/apiTest";
+
+    final String stageName = "apiTest";
+
+    StagePathStorageResultCountResponse doPostHtmlTest(MultipartFile junitTarGz) throws IOException {
+
         MultipartFile[] files = TestResultPersistServiceTest.getMockMultipartFilesFromPathStrings(TestResultPersistServiceTest.htmlPaths, resourceReader);
         String indexFile = TestResultPersistServiceTest.htmlIndexFile;
         final String label = "cucumber_html";
@@ -154,7 +167,6 @@ public class JunitControllerTest {
             StagePathStorageResultCountResponse response = junitController.doPostStageJunitStorageTarGZ(req);
             assertNotNull(response);
 
-            final String expectedStageUrl = "/company/company1/org/org1/repo/repo1/branch/master/job/1/run/1/stage/apiTest";
             {
                 final ResponseDetails responseDetails = response.getResponseDetails();
                 assertEquals(201, responseDetails.getHttpStatus());
@@ -174,97 +186,174 @@ public class JunitControllerTest {
                     assertThat(junitUrl, matchesPattern("/v1/api/storage/key/rc/company1/org1/repo1/master/.*/1/1/apiTest/junit"));
                 }
             }
-            {
-                StagePath stagePath = response.getStagePath();
-                System.out.println("stagePath: " + stagePath);
-                assertEquals("company1", stagePath.getCompany().getCompanyName());
-                assertEquals("org1", stagePath.getOrg().getOrgName());
-                assertEquals("repo1", stagePath.getRepo().getRepoName());
-                assertEquals("master", stagePath.getBranch().getBranchName());
-                assertJsonEquals("{\"host\": \"foocorp.jenkins.com\", \"pipeline\": \"foopipeline\", \"application\": \"fooapp\"}",
-                        stagePath.getJob().getJobInfo());
-                assertEquals(TestData.runReference.toString(), stagePath.getRun().getRunReference());
-                assertEquals(stageName, stagePath.getStage().getStageName());
-                assertEquals(expectedStageUrl, stagePath.getUrl());
 
-                Set<TestResultModel> testResultModels = testResultPersistService.getTestResults(stagePath.getStage().getStageId());
-                assertEquals(1, testResultModels.size());
-
-                TestResultModel testResultModel = testResultModels.iterator().next();
-                assertNotEquals("[]", testResultModel.getTestSuitesJson());
-                final List<TestSuiteModel> testSuiteModels = testResultModel.getTestSuites();
-                assertEquals(1, testSuiteModels.size());
-
-                TestSuiteModel testSuiteModel = testSuiteModels.iterator().next();
-                final List<TestCaseModel> testCaseModels = testSuiteModel.getTestCases();
-                assertEquals(2, testCaseModels.size());
-
-                for (TestCaseModel testCaseModel : testCaseModels) {
-                    final List<TestCaseFaultModel> testCaseFaults = testCaseModel.getTestCaseFaults();
-                    if ("Default user agent matches /CasperJS/".equals(testCaseModel.getName())) {
-                        assertEquals(0, testCaseFaults.size());
-                    } else if ("defaultTestValueIs_Value".equals(testCaseModel.getName())) {
-                        assertEquals(TestStatus.FAILURE, testCaseModel.getTestStatus());
-                        assertEquals(1, testCaseFaults.size());
-                    } else {
-                        assertEquals(0, testCaseFaults.size());
-                    }
-                }
-
-            }
-
-            {//storage assertions
-                List<StoragePojo> storages = response.getStorages();
-                for (StoragePojo storage : storages) {
-                    assertNotNull(storage.getStorageId());
-                    assertNotNull(storage.getLabel());
-
-                    System.out.println("storage: " + storage);
-                    assertTrue(storage.getIsUploadComplete());
-
-                }
-
-                {
-                    ListObjectsV2Response s3Objects = s3Service.listObjectsForBucket();
-
-                    assertNotNull(s3Objects.contents());
-                    assertThat(s3Objects.contents().size(), is(greaterThanOrEqualTo(3)));
-                    System.out.println(s3Objects);
-
-                    assertNotNull(s3Objects.contents());
-                    assertThat(s3Objects.contents().size(), is(greaterThanOrEqualTo(3)));
-                    System.out.println(s3Objects);
-
-                    {
-                        List<String> s3Keys = s3Objects.contents().stream().map(S3Object::key).toList();
-                        Integer cucumberCount = 0;
-                        Integer junitCount = 0;
-                        for (String s3Key : s3Keys) {
-                            if (s3Key.contains("cucumber_html")) {
-                                cucumberCount++;
-                            }
-                            if (s3Key.contains("junit.tar.gz")) {
-                                junitCount++;
-                            }
-
-                        }
-
-                        final Integer expectedJunitCount = 1;
-                        final Integer expectedCucumberCount = 3;
-
-                        assertEquals(expectedCucumberCount, cucumberCount);
-                        assertEquals(expectedJunitCount, junitCount);
-                    }
-
-                }
-            }
-
+            return response;
         } finally {
             if (tempTarGz != null) {
                 Files.delete(tempTarGz);
             }
         }
 
+    }
+
+
+    void assertSingleTestResponse(StagePathStorageResultCountResponse response) {
+
+        {
+            StagePath stagePath = response.getStagePath();
+            System.out.println("stagePath: " + stagePath);
+            assertEquals("company1", stagePath.getCompany().getCompanyName());
+            assertEquals("org1", stagePath.getOrg().getOrgName());
+            assertEquals("repo1", stagePath.getRepo().getRepoName());
+            assertEquals("master", stagePath.getBranch().getBranchName());
+            assertJsonEquals("{\"host\": \"foocorp.jenkins.com\", \"pipeline\": \"foopipeline\", \"application\": \"fooapp\"}",
+                    stagePath.getJob().getJobInfo());
+            assertEquals(TestData.runReference.toString(), stagePath.getRun().getRunReference());
+            assertEquals(stageName, stagePath.getStage().getStageName());
+            assertEquals(expectedStageUrl, stagePath.getUrl());
+
+            Set<TestResultModel> testResultModels = testResultPersistService.getTestResults(stagePath.getStage().getStageId());
+            assertEquals(1, testResultModels.size());
+
+            TestResultModel testResultModel = testResultModels.iterator().next();
+            assertNotEquals("[]", testResultModel.getTestSuitesJson());
+            final List<TestSuiteModel> testSuiteModels = testResultModel.getTestSuites();
+            assertEquals(1, testSuiteModels.size());
+
+            TestSuiteModel testSuiteModel = testSuiteModels.iterator().next();
+            final List<TestCaseModel> testCaseModels = testSuiteModel.getTestCases();
+            assertEquals(2, testCaseModels.size());
+
+            for (TestCaseModel testCaseModel : testCaseModels) {
+                final List<TestCaseFaultModel> testCaseFaults = testCaseModel.getTestCaseFaults();
+                if ("Default user agent matches /CasperJS/".equals(testCaseModel.getName())) {
+                    assertEquals(0, testCaseFaults.size());
+                } else if ("defaultTestValueIs_Value".equals(testCaseModel.getName())) {
+                    assertEquals(TestStatus.FAILURE, testCaseModel.getTestStatus());
+                    assertEquals(1, testCaseFaults.size());
+                } else {
+                    assertEquals(0, testCaseFaults.size());
+                }
+            }
+
+        }
+
+        {//storage assertions
+            List<StoragePojo> storages = response.getStorages();
+            for (StoragePojo storage : storages) {
+                assertNotNull(storage.getStorageId());
+                assertNotNull(storage.getLabel());
+
+                System.out.println("storage: " + storage);
+                assertTrue(storage.getIsUploadComplete());
+
+            }
+
+            {
+                ListObjectsV2Response s3Objects = s3Service.listObjectsForBucket();
+
+                assertNotNull(s3Objects.contents());
+                assertThat(s3Objects.contents().size(), is(greaterThanOrEqualTo(3)));
+                System.out.println(s3Objects);
+
+                assertNotNull(s3Objects.contents());
+                assertThat(s3Objects.contents().size(), is(greaterThanOrEqualTo(3)));
+                System.out.println(s3Objects);
+
+                {
+                    List<String> s3Keys = s3Objects.contents().stream().map(S3Object::key).toList();
+                    Integer cucumberCount = 0;
+                    Integer junitCount = 0;
+                    for (String s3Key : s3Keys) {
+                        if (s3Key.contains("cucumber_html")) {
+                            cucumberCount++;
+                        }
+                        if (s3Key.contains("junit.tar.gz")) {
+                            junitCount++;
+                        }
+
+                    }
+
+                    final Integer expectedJunitCount = 1;
+                    final Integer expectedCucumberCount = 3;
+
+                    assertEquals(expectedCucumberCount, cucumberCount);
+                    assertEquals(expectedJunitCount, junitCount);
+                }
+
+            }
+        }
+
+
+    }
+
+    void assertNoTestResponse(StagePathStorageResultCountResponse response) {
+
+        StagePath stagePath = response.getStagePath();
+        System.out.println("stagePath: " + stagePath);
+        assertEquals("company1", stagePath.getCompany().getCompanyName());
+        assertEquals("org1", stagePath.getOrg().getOrgName());
+        assertEquals("repo1", stagePath.getRepo().getRepoName());
+        assertEquals("master", stagePath.getBranch().getBranchName());
+        assertJsonEquals("{\"host\": \"foocorp.jenkins.com\", \"pipeline\": \"foopipeline\", \"application\": \"fooapp\"}",
+                stagePath.getJob().getJobInfo());
+        assertEquals(TestData.runReference.toString(), stagePath.getRun().getRunReference());
+        assertEquals(stageName, stagePath.getStage().getStageName());
+        assertEquals(expectedStageUrl, stagePath.getUrl());
+
+        Set<TestResultModel> testResultModels = testResultPersistService.getTestResults(stagePath.getStage().getStageId());
+        assertEquals(1, testResultModels.size());
+
+        TestResultModel testResultModel = testResultModels.iterator().next();
+        assertEquals("[]", testResultModel.getTestSuitesJson());
+        assertTrue(testResultModel.getHasSkip());
+        assertEquals(testResultModel.getSkipped(), 0);
+        final List<TestSuiteModel> testSuiteModels = testResultModel.getTestSuites();
+        assertEquals(0, testSuiteModels.size());
+
+
+        List<StoragePojo> storages = response.getStorages();
+        for (StoragePojo storage : storages) {
+            assertNotNull(storage.getStorageId());
+            assertNotNull(storage.getLabel());
+
+            System.out.println("storage: " + storage);
+            assertTrue(storage.getIsUploadComplete());
+
+        }
+
+        {
+            ListObjectsV2Response s3Objects = s3Service.listObjectsForBucket();
+
+            assertNotNull(s3Objects.contents());
+            assertThat(s3Objects.contents().size(), is(greaterThanOrEqualTo(3)));
+            System.out.println(s3Objects);
+
+            assertNotNull(s3Objects.contents());
+            assertThat(s3Objects.contents().size(), is(greaterThanOrEqualTo(3)));
+            System.out.println(s3Objects);
+
+            {
+                List<String> s3Keys = s3Objects.contents().stream().map(S3Object::key).toList();
+                Integer cucumberCount = 0;
+                Integer junitCount = 0;
+                for (String s3Key : s3Keys) {
+                    if (s3Key.contains("cucumber_html")) {
+                        cucumberCount++;
+                    }
+                    if (s3Key.contains("junit.tar.gz")) {
+                        junitCount++;
+                    }
+
+                }
+
+                final Integer expectedJunitCount = 1;
+                final Integer expectedCucumberCount = 3;
+
+                assertEquals(expectedCucumberCount, cucumberCount);
+                assertEquals(expectedJunitCount, junitCount);
+            }
+        }
     }
 
     static void assertTestCaseFaults(TestSuiteModel testSuite) {
@@ -310,6 +399,10 @@ public class JunitControllerTest {
 
     public static MultipartFile getSurefireTarGz(ResourceReaderComponent resourceReader) throws IOException {
         return getTestTarGz(resourceReader, "junit.tar.gz", List.of(TestResultPersistServiceTest.surefireXmlPath));
+    }
+
+    public static MultipartFile getEmptyTarGz(ResourceReaderComponent resourceReader) throws IOException {
+        return getTestTarGz(resourceReader, "junit.tar.gz", List.of());
     }
 
     public static MultipartFile getHtmlTarGz(ResourceReaderComponent resourceReader) throws IOException {

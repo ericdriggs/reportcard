@@ -236,8 +236,8 @@ CREATE TABLE IF NOT EXISTS `reportcard`.`test_result` (
   `time` DECIMAL(9,3) UNSIGNED NOT NULL,
   `test_result_created` DATETIME NOT NULL DEFAULT (utc_timestamp()),
   `external_links` JSON NULL DEFAULT NULL,
-  `is_success` TINYINT(1) GENERATED ALWAYS AS (((`failure` + `error`) = 0)) VIRTUAL,
-  `has_skip` TINYINT(1) GENERATED ALWAYS AS ((`skipped` > 0)) VIRTUAL,
+  `is_success` TINYINT(1) GENERATED ALWAYS AS (`tests` > 0 && (`failure` + `error`) = 0) VIRTUAL ,
+  `has_skip` TINYINT(1) GENERATED ALWAYS AS (`tests` = 0 || `skipped` > 0) VIRTUAL ;
   `test_suites_json` JSON DEFAULT NULL,
   PRIMARY KEY (`test_result_id`),
   INDEX `test_result_stage_fk_idx` (`stage_fk` ASC) VISIBLE,

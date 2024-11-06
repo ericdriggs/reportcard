@@ -129,26 +129,30 @@ public class JunitConvertersUtil {
         if (modelTestSuite.getFailure() == null) {
             modelTestSuite.setFailure(0);
         }
-        modelTestSuite.setIsSuccess(modelTestSuite.getError() == 0 && modelTestSuite.getFailure() == 0);
-        modelTestSuite.setSkipped(source.getSkipped());
-        if (modelTestSuite.getSkipped() == null) {
-            modelTestSuite.setSkipped(0);
-        }
+
         modelTestSuite.setTests(source.getTests());
         if (modelTestSuite.getTests() == null) {
             modelTestSuite.setTests(0);
         }
+
+        modelTestSuite.setIsSuccess(modelTestSuite.getError() == 0 && modelTestSuite.getFailure() == 0 && modelTestSuite.getTests() > 0);
         modelTestSuite.setSkipped(source.getSkipped());
         if (modelTestSuite.getSkipped() == null) {
             modelTestSuite.setSkipped(0);
         }
-        if (modelTestSuite.getSkipped() > 0) {
+
+        modelTestSuite.setSkipped(source.getSkipped());
+        if (modelTestSuite.getSkipped() == null) {
+            modelTestSuite.setSkipped(0);
+        }
+        if (modelTestSuite.getSkipped() > 0 || modelTestSuite.getTests() == 0) {
             modelTestSuite.setHasSkip(true);
         }
         modelTestSuite.setPackageName(source.get_package());
         modelTestSuite.setProperties(null);
         modelTestSuite.setTestCases(doFromJunitToModelTestCases(source.getTestcase()));
         modelTestSuite.setTime(source.getTime());
+
         if (modelTestSuite.getTime() == null) {
             modelTestSuite.setTime(BigDecimal.ZERO);
         }

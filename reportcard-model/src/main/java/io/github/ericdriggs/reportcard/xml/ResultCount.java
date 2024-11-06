@@ -38,7 +38,7 @@ public class ResultCount implements Comparable<ResultCount> {
             return TestStatus.ERROR;
         } else if (failures > 0) {
             return TestStatus.FAILURE;
-        } else if (skipped > 0) {
+        } else if (skipped > 0 || tests == 0) {
             return TestStatus.SKIPPED;
         }
         return TestStatus.SUCCESS;

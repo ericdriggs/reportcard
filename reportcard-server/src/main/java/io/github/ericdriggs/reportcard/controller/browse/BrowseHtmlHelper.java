@@ -354,10 +354,9 @@ public class BrowseHtmlHelper {
                 final StagePojo stage = stageTestResult.getStage();
                 final CompanyOrgRepoBranchJobRunStageDTO stagePath = runPath.toBuilder().stageName(stage.getStageName()).build();
                 final Set<StoragePojo> storages = stageTestResultEntry.getValue();
-                final boolean stageIsSuccess = stageTestResult.isSuccess();
 
                 final String stageHtml = stageItemHtmlBase
-                        .replace("{stageClass}", stageIsSuccess ? "stage-pass" : "stage-fail")
+                        .replace("{stageClass}", getStageClass(stageTestResult))
                         .replace("{stageName}", stage.getStageName())
                         .replace("{stageId}", Long.toString(stage.getStageId()))
                         .replace("{stageTime}", stageTestResult.getDurationString())
@@ -381,6 +380,20 @@ public class BrowseHtmlHelper {
             runRowsHtml.append(runRowHtml);
         }
         return stageViewMain.replace("<!--runRows-->", runRowsHtml.toString());
+    }
+
+    protected static String getStageClass(StageTestResultPojo stageTestResultPojo) {
+
+        if (!stageTestResultPojo.isSuccess() && stageTestResultPojo.getTestResultPojo().getTests() > 0) {
+            return "stage-fail";
+        } else {
+            TestResultPojo testResultPojo = stageTestResultPojo.getTestResultPojo();
+            if (testResultPojo.getTests() == 0 || (testResultPojo.getSkipped().equals(testResultPojo.getTests()))) {
+                return "stage-skip";
+            } else {
+                return "stage-pass";
+            }
+        }
     }
 
     protected static String getReportLinks(Set<StoragePojo> storages) {

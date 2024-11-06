@@ -81,8 +81,8 @@ public class TestResultModel extends io.github.ericdriggs.reportcard.dto.TestRes
         this.setSkipped(resultCount.getSkipped());
         this.setTests(resultCount.getTests());
         this.setTime(resultCount.getTime());
-        this.setHasSkip(resultCount.getSkipped() > 0);
-        this.setIsSuccess(resultCount.getErrors() == 0 && resultCount.getFailures() == 0 );
+        this.setHasSkip(resultCount.getSkipped() > 0 || resultCount.getTests() == 0);
+        this.setIsSuccess(resultCount.getErrors() == 0 && resultCount.getFailures() == 0 && resultCount.getTests() > 0);
     }
 
     @JsonIgnore
@@ -100,7 +100,7 @@ public class TestResultModel extends io.github.ericdriggs.reportcard.dto.TestRes
     @JsonIgnore
     public Boolean getIsSuccess() {
         if (super.getIsSuccess() != null) {
-            return super.getIsSuccess();
+            return super.getIsSuccess() && super.getTests() > 0;
         } else {
             int failure = Objects.requireNonNullElse(super.getFailure(), 0);
             int error = Objects.requireNonNullElse(super.getError(), 0);
@@ -121,7 +121,7 @@ public class TestResultModel extends io.github.ericdriggs.reportcard.dto.TestRes
             return super.getHasSkip();
         } else {
             int skipped = Objects.requireNonNullElse(super.getSkipped(), 0);
-            return skipped > 0;
+            return skipped > 0 || super.getTests() == 0;
         }
     }
 

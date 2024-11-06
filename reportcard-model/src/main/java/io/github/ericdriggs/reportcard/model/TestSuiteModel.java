@@ -52,7 +52,7 @@ public class TestSuiteModel extends io.github.ericdriggs.reportcard.dto.TestSuit
             return TestStatus.ERROR;
         } else if (getFailure() != null && getFailure() > 0) {
             return TestStatus.FAILURE;
-        } else if (CompareUtil.compareInteger(getSkipped(), getTests()) == 0) {
+        } else if (( getSkipped() != null && getSkipped() > 0) || getTests() == null || getTests() == 0) {
             return TestStatus.SKIPPED;
         }
         if (getIsSuccess() != null) {
