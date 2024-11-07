@@ -27,7 +27,6 @@ public class TestRunHeader implements Comparable<TestRunHeader> {
                 .repo(c.getRepoPojo().getRepoName())
                 .branch(c.getBranchPojo().getBranchName())
                 .jobId(c.getJobPojo().getJobId())
-                .stageName(c.getStageName())
                 .runId(runPojo.getRunId())
                 .build()
                 .toUrlPath();
