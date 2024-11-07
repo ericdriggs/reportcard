@@ -125,7 +125,8 @@ public class StorageControllerTest {
                         stagePath.getJob().getJobInfo());
                 assertEquals(TestData.runReference.toString(), stagePath.getRun().getRunReference());
                 assertEquals("api", stagePath.getStage().getStageName());
-                assertEquals(expectedStageUrl, stagePath.getUrl());
+                final Map<String, String> urlMaps = stagePath.getUrlMaps();
+                assertEquals(expectedStageUrl, urlMaps.get("stage"));
             }
 
             {

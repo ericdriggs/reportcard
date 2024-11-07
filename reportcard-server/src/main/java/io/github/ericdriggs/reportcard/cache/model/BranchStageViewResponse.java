@@ -84,8 +84,8 @@ public class BranchStageViewResponse {
     }
 
     @JsonIgnore
-    public Set<Long> getJobIds() {
-        Set<Long> jobIds = new TreeSet<>();
+    public TreeSet<Long> getJobIds() {
+        TreeSet<Long> jobIds = new TreeSet<>();
         for (JobRun jobRun : jobRun_StageTestResult_StoragesMap.keySet()) {
             final JobPojo job = jobRun.getJob();
             if (job != null) {

@@ -29,7 +29,7 @@ public class StagePathStorages {
     static Map<String,String> getUrls(StagePath stagePath, List<StoragePojo> storages) {
         Map<String,String> urls = new LinkedHashMap<>();
         if (stagePath != null) {
-            urls.put("stage", stagePath.getUrl());
+            urls.putAll(stagePath.getUrlMaps());
         }
         if (!CollectionUtils.isEmpty(storages)) {
             for (StoragePojo storage : storages) {

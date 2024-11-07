@@ -2,7 +2,8 @@
 package io.github.ericdriggs.reportcard.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.github.ericdriggs.reportcard.cache.dto.CompanyOrgRepoBranchJobRunStageDTO;
+import io.github.ericdriggs.reportcard.cache.dto.CompanyOrgRepoBranchJobInfoRunCountStageDTO;
+import io.github.ericdriggs.reportcard.controller.util.ResponseServerUrl;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.*;
 import io.github.ericdriggs.reportcard.util.CompareUtil;
 import lombok.Data;
@@ -14,6 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 
 //TOMAYBE: refactor to Value with Builder
@@ -128,9 +130,14 @@ public class StagePath implements Comparable<StagePath> {
         return HashCodeBuilder.reflectionHashCode(this);
     }
 
-
     @JsonIgnore
-    public String getUrl() {
-        return CompanyOrgRepoBranchJobRunStageDTO.fromStagePath(this).toUrlPath();
+    public Map<String,String> getUrlMaps() {
+        final String serverUrl = ResponseServerUrl.getServerUrl();
+        final CompanyOrgRepoBranchJobInfoRunCountStageDTO stage = CompanyOrgRepoBranchJobInfoRunCountStageDTO.fromStagePath(this);
+        final CompanyOrgRepoBranchJobInfoRunCountStageDTO run = CompanyOrgRepoBranchJobInfoRunCountStageDTO.truncateRun(stage);
+        TreeMap<String,String> urlMaps = new TreeMap<>();
+        urlMaps.put("run", serverUrl + run.toUrlPath());
+        urlMaps.put("stage", serverUrl + stage.toUrlPath());
+        return urlMaps;
     }
 }

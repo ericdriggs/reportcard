@@ -640,6 +640,40 @@ public class BrowseService extends AbstractPersistService {
         return ret;
     }
 
+    public StageTestResultModel getStageTestResultMap(String companyName, String orgName, String repoName, String branchName, Map<String,String> jobInfo, Integer runCount, String stageName) {
+
+        Result<Record> recordResult =
+                dsl.select()
+                        .from(COMPANY)
+                        .leftJoin(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID)
+                                .and(ORG.ORG_NAME.eq(orgName)))
+                        .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)
+                                .and(REPO.REPO_NAME.eq(repoName)))
+                        .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
+                                .and(BRANCH.BRANCH_NAME.eq(branchName)))
+                        .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID)
+                                .and(SqlJsonUtil.jobInfoEqualsJson(jobInfo)))
+                        .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID)
+                                .and(RUN.JOB_RUN_COUNT.eq(runCount)))
+                        .leftJoin(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID)
+                                .and(STAGE.STAGE_NAME.eq(stageName)))
+                        .leftJoin(TEST_RESULT).on(TEST_RESULT.STAGE_FK.eq(STAGE.STAGE_ID))
+                        .where(COMPANY.COMPANY_NAME.eq(companyName))
+                        .fetch();
+
+        StagePojo stage = null;
+        TestResultModel testResult = TestResultPersistService.testResultFromRecords(recordResult);
+
+        for (Record record : recordResult) {
+            if (stage == null) {
+                stage = record.into(StagePojo.class);
+            }
+            break;
+        }
+
+        return StageTestResultModel.builder().stage(stage).testResult(testResult).build();
+    }
+
     public StageTestResultModel getStageTestResultMap(String companyName, String orgName, String repoName, String branchName, Long jobId, Long runId, String stageName) {
 
         Result<Record> recordResult =
@@ -661,14 +695,9 @@ public class BrowseService extends AbstractPersistService {
                    .where(COMPANY.COMPANY_NAME.eq(companyName))
                    .fetch();
 
-        //
-
         StagePojo stage = null;
-        //TestResultPojo testResult = null;
-
         TestResultModel testResult = TestResultPersistService.testResultFromRecords(recordResult);
 
-        //Map<TestSuitePojo, Map<TestCasePojo, List<TestCaseFaultPojo>>> testSuiteTestCaseMap = new LinkedHashMap<>();
         for (Record record : recordResult) {
             if (stage == null) {
                 stage = record.into(StagePojo.class);

@@ -5,6 +5,7 @@ import io.github.ericdriggs.reportcard.aws.comparatorr.S3ObjectComparator;
 
 import io.github.ericdriggs.reportcard.controller.StorageController;
 import io.github.ericdriggs.reportcard.controller.browse.BrowseHtmlHelper;
+import io.github.ericdriggs.reportcard.controller.util.ResponseServerUrl;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.StoragePojo;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -73,6 +74,7 @@ public class StorageHtmlHelper extends BrowseHtmlHelper {
 
     public static URI getStorageURI(StoragePojo storage) {
         StringBuilder sb = new StringBuilder();
+        sb.append(ResponseServerUrl.getServerUrl());
         sb.append(StorageController.storageKeyPath );
         sb.append("/" + storage.getPrefix());
         if (storage.getIndexFile() != null) {

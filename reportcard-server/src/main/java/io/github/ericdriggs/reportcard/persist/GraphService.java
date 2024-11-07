@@ -122,11 +122,39 @@ public class GraphService extends AbstractPersistService {
                                                                  String orgName,
                                                                  String repoName,
                                                                  String branchName,
+                                                                 Map<String,String> jobInfo,
+                                                                 Integer runCount) {
+
+        List<CompanyGraph> companyGraphs = getRunCompanyGraphs(companyName, orgName, repoName, branchName, jobInfo, runCount);
+        return BranchStageViewResponse.fromCompanyGraphs(companyGraphs);
+    }
+
+    public BranchStageViewResponse getRunBranchStageViewResponse(String companyName,
+                                                                 String orgName,
+                                                                 String repoName,
+                                                                 String branchName,
                                                                  Long jobId,
                                                                  Long runId) {
 
         List<CompanyGraph> companyGraphs = getRunCompanyGraphs(companyName, orgName, repoName, branchName, jobId, runId);
         return BranchStageViewResponse.fromCompanyGraphs(companyGraphs);
+    }
+
+    List<CompanyGraph> getRunCompanyGraphs(String companyName,
+                                           String orgName,
+                                           String repoName,
+                                           String branchName,
+                                           Map<String,String> jobInfo,
+                                           Integer runCount) {
+
+        TableConditionMap tableConditionMap = new TableConditionMap();
+        tableConditionMap.put(COMPANY, COMPANY.COMPANY_NAME.eq(companyName));
+        tableConditionMap.put(ORG, ORG.ORG_NAME.eq(orgName));
+        tableConditionMap.put(REPO, REPO.REPO_NAME.eq(repoName));
+        tableConditionMap.put(BRANCH, BRANCH.BRANCH_NAME.eq(branchName));
+        tableConditionMap.put(JOB, trueCondition().and(SqlJsonUtil.jobInfoEqualsJson(jobInfo)));
+        tableConditionMap.put(RUN, RUN.JOB_RUN_COUNT.eq(runCount));
+        return getCompanyGraphs(tableConditionMap);
     }
 
     List<CompanyGraph> getRunCompanyGraphs(String companyName,
