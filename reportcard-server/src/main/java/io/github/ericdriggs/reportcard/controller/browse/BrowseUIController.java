@@ -11,9 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @RestController
 @RequestMapping("")
@@ -109,7 +109,7 @@ public class BrowseUIController {
     }
 
     @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/{runId}",
-            "company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/{runId}/stage"}, produces = "text/html;charset=UTF-8")
+                        "company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/{runId}/stage"}, produces = "text/html;charset=UTF-8")
     public ResponseEntity<String> getStageTestResults(
             @PathVariable String company,
             @PathVariable String org,
@@ -122,9 +122,29 @@ public class BrowseUIController {
         return new ResponseEntity<>(BrowseHtmlHelper.getJobHtml(company, org, repo, branch, jobId, branchStageViewResponse, branchJobLatestRunMap), HttpStatus.OK);
     }
 
+    @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}/branch/{branch}/jobinfo/{jobInfo}/runcount/{runCount}"}, produces = "text/html;charset=UTF-8")
+    public ResponseEntity<String> getStageTestResultsNaturalKeys(
+            @PathVariable String company,
+            @PathVariable String org,
+            @PathVariable String repo,
+            @PathVariable String branch,
+            @PathVariable String jobInfo,
+            @PathVariable Integer runCount) {
+        TreeMap<String,String> jobInfoMap = StringMapUtil.stringToMap(jobInfo);
+        BranchStageViewResponse branchStageViewResponse = graphService.getRunBranchStageViewResponse(company, org, repo, branch, jobInfoMap, runCount);
+        final TreeSet<Long> jobIds = branchStageViewResponse.getJobIds();
+        if (jobIds == null || jobIds.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No job matches parameters requested");
+        }
+        if (jobIds.size() > 1) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Multiple jobIds match parameters requested: " + jobIds);
+        }
+        BranchJobLatestRunMap branchJobLatestRunMap = graphService.getBranchJobLatestRunMap(company, org, repo, branch, jobIds.first());
+        return new ResponseEntity<>(BrowseHtmlHelper.getJobHtml(company, org, repo, branch, jobIds.first(), branchStageViewResponse, branchJobLatestRunMap), HttpStatus.OK);
+    }
 
-    @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/{runId}/stage/{stage}",
-            "company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/{runId}/stage/{stage}"}, produces = "text/html;charset=UTF-8")
+
+    @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/{runId}/stage/{stage}"}, produces = "text/html;charset=UTF-8")
     public ResponseEntity<String> getTestResult(
             @PathVariable String company,
             @PathVariable String org,
@@ -137,6 +157,20 @@ public class BrowseUIController {
         return new ResponseEntity<>(TestResultHtmlHelper.getTestResult(stageTestResultModel.getTestResult()), HttpStatus.OK);
     }
 
+    @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}/branch/{branch}/jobinfo/{jobInfo}/runcount/{runCount}/stage/{stage}"}, produces = "text/html;charset=UTF-8")
+    public ResponseEntity<String> getTestResultNaturalKeys(
+            @PathVariable String company,
+            @PathVariable String org,
+            @PathVariable String repo,
+            @PathVariable String branch,
+            @PathVariable String jobInfo,
+            @PathVariable Integer runCount,
+            @PathVariable String stage) {
+
+        TreeMap<String,String> jobInfoMap = StringMapUtil.stringToMap(jobInfo);
+        StageTestResultModel stageTestResultModel = browseService.getStageTestResultMap(company, org, repo, branch , jobInfoMap, runCount, stage);
+        return new ResponseEntity<>(TestResultHtmlHelper.getTestResult(stageTestResultModel.getTestResult()), HttpStatus.OK);
+    }
 
     Integer validateRuns(int runs) {
         if (runs < 1) {

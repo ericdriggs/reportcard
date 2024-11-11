@@ -210,7 +210,8 @@ public class JunitControllerTest {
                     stagePath.getJob().getJobInfo());
             assertEquals(TestData.runReference.toString(), stagePath.getRun().getRunReference());
             assertEquals(stageName, stagePath.getStage().getStageName());
-            assertEquals(expectedStageUrl, stagePath.getUrl());
+            Map<String, String> urlMaps = stagePath.getUrlMaps();
+            assertEquals(expectedStageUrl, urlMaps.get("stage"));
 
             Set<TestResultModel> testResultModels = testResultPersistService.getTestResults(stagePath.getStage().getStageId());
             assertEquals(1, testResultModels.size());
@@ -299,7 +300,8 @@ public class JunitControllerTest {
                 stagePath.getJob().getJobInfo());
         assertEquals(TestData.runReference.toString(), stagePath.getRun().getRunReference());
         assertEquals(stageName, stagePath.getStage().getStageName());
-        assertEquals(expectedStageUrl, stagePath.getUrl());
+        final Map<String, String> urlMaps = stagePath.getUrlMaps();
+        assertEquals(expectedStageUrl, urlMaps.get("stage"));
 
         Set<TestResultModel> testResultModels = testResultPersistService.getTestResults(stagePath.getStage().getStageId());
         assertEquals(1, testResultModels.size());
