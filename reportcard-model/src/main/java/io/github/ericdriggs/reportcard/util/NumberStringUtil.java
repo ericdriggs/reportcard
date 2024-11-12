@@ -34,18 +34,23 @@ public enum NumberStringUtil {
         return Integer.toString(val);
     }
 
-    public static String bigDecimalToIntString(BigDecimal val) {
-        if (val == null) {
-            return "";
-        }
-        return val.toBigInteger().toString();
-    }
-
     public static String percentFromBigDecimal(BigDecimal val) {
         if (val == null) {
             return "";
         }
-        return val.setScale(1, RoundingMode.HALF_UP).toString() + "%";
+        Long percent = val.setScale(1, RoundingMode.HALF_UP).toBigInteger().longValue();
+        StringBuilder sb = new StringBuilder();
+        sb.append("<span class='transparent'>");
+        if (percent >= 100) {
+            sb.append("</span>" + percent);
+        } else if (percent >= 10) {
+            sb.append("0</span>" + percent);
+        } else {
+            sb.append("00</span>" + percent);
+        }
+        sb.append("%");
+
+        return sb.toString();
     }
 
     /**
@@ -96,7 +101,19 @@ public enum NumberStringUtil {
         return yearString+ dayString + hourString + minuteString + secondString;
     }
 
-    public static String fromSecondBigDecimalPadded(BigDecimal durationSeconds) {
+    public static String fromIntegerPadded(Integer val) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<span class='transparent'>");
+        final String padding = "0,000,000,000";
+        final String commaSeparated = String.format("%,d", val);
+        int position = padding.length() - commaSeparated.length();
+        sb.append(padding, 0, position);
+        sb.append("</span>");
+        sb.append(commaSeparated);
+        return sb.toString();
+    }
+
+        public static String fromSecondBigDecimalPadded(BigDecimal durationSeconds) {
 
         if (durationSeconds == null) {
             return "";
@@ -112,6 +129,7 @@ public enum NumberStringUtil {
         }
         int hours = duration.toHoursPart();
         int minutes = duration.toMinutesPart();
+        int seconds = duration.toSecondsPart();
 
         StringBuilder sb = new StringBuilder();
         boolean transparent = true;
@@ -139,6 +157,13 @@ public enum NumberStringUtil {
             sb.append("</span>");
         }
         sb.append(padded(minutes,2,"m"));
+
+        if (transparent) {
+            sb.append("</span>");
+        }
+        if (years == 0 && days == 0 && hours == 0 && minutes == 0) {
+            sb.append(padded(seconds,2,"s"));
+        }
         return sb.toString();
     }
 

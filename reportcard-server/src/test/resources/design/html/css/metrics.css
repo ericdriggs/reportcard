@@ -71,6 +71,8 @@ li {
 }
 
 dl {
+    max-width: 650px;
+    width: 650px;
     margin: 0;
     padding: 0;
     border: 0;
@@ -80,11 +82,14 @@ dt {
     float: left;
     width: 30%;
     text-align: right;
-    padding: .2em;
+    padding: .0em;
     clear: left;
 }
+
 dd {
     float: left;
     width: 60%;
-    padding: .2em 0;
+    padding: .0em 0;
+    margin-left: 1em;
+    padding-bottom: 0.3em;
 }
