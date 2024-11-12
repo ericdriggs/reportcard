@@ -54,22 +54,7 @@ dl {
     max-width:500px;
 }
 
-.page-context-summary {
-    padding-left: 20px;
-}
 
-.page-context {
-    width: auto;
-    /*display:block;*/
-}
-
-.dd-page-context {
-
-}
-
-.dt-page-context {
-    width: 90px;
-}
 
 dt {
     float: left;
