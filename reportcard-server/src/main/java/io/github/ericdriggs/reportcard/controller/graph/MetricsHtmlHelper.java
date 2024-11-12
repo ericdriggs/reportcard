@@ -134,11 +134,6 @@ public class MetricsHtmlHelper {
                 if (resultCount == null) {
                     resultCount = RunResultCount.builder().build();
                 }
-                sb.append("<td class='percent'>").append(resultCount.getResultCount().getTestSuccessPercent().setScale(0, RoundingMode.HALF_UP)).append("%</td>").append(ls);
-                sb.append("<td class='count'>").append(String.format("%,d", resultCount.getResultCount().getTests())).append("</td>").append(ls);
-                sb.append("<td class='count'>").append(fromSecondBigDecimalPadded(resultCount.getResultCount().getTime())).append("</td>").append(ls);
-                sb.append("<td class='percent'>").append(resultCount.getRunCount().getRunSuccessPercent().setScale(0, RoundingMode.HALF_UP)).append("%</td>").append(ls);
-                sb.append("<td class='count'>").append(String.format("%,d", resultCount.getRunCount().getRuns())).append("</td>").append(ls);
 
                 final BigDecimal testSuccessPercent = resultCount.getResultCount().getTestSuccessPercent().setScale(0, RoundingMode.HALF_UP);
                 final Integer totalTests = resultCount.getResultCount().getTests();
