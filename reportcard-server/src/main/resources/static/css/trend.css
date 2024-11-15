@@ -22,6 +22,8 @@ details {
 
 .page-context-summary {
     padding-left: 20px;
+    width:600px;
+    height:
 }
 
 .test-count-summary {
@@ -32,6 +34,7 @@ details {
 .page-context {
     width: auto;
     /*display:block;*/
+    height:150px;
 }
 
 .dd-page-context {
@@ -51,6 +54,7 @@ details {
 }
 
 .test-page-context {
+
     padding-left:20px;
     padding-top:20px;
 }
