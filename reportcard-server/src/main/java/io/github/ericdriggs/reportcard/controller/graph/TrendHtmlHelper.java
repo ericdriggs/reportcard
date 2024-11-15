@@ -43,7 +43,7 @@ public class TrendHtmlHelper extends BrowseHtmlHelper {
                 .replace("<!--repoName-->", companyOrgRepoBranchJobStageName.getRepoPojo().getRepoName())
                 .replace("<!--branchName-->", companyOrgRepoBranchJobStageName.getBranchPojo().getBranchName())
                 .replace("<!--jobInfo-->", renderJobInfo(companyOrgRepoBranchJobStageName.getJobPojo().getJobInfo()))
-                .replace("<!--stageName-->", companyOrgRepoBranchJobStageName.getStageName())
+                .replace("<!--stageName-->", companyOrgRepoBranchJobStageName.getStageName() == null ? "" : companyOrgRepoBranchJobStageName.getStageName())
                 .replace("<!--testCount-->", Integer.toString(testRowSummary.getTests()))
                 .replace("<!--successCount-->", Integer.toString(testRowSummary.getSuccess()))
                 .replace("<!--failCount-->", Integer.toString(testRowSummary.getFail()))
