@@ -15,8 +15,47 @@ table {
     box-shadow: 3px 3px 4px grey;
 }
 
+details {
+    display: inline-block;
+    text-align:top;
+}
+
+.page-context-summary {
+    padding-left: 20px;
+}
+
+.test-count-summary {
+    padding-left: 20px;
+}
+
+
+.page-context {
+    width: auto;
+    /*display:block;*/
+}
+
+.dd-page-context {
+
+}
+
+.dt-page-context {
+    width: 90px;
+}
+
+.dd-test-count {
+
+}
+
+.dt-test-count {
+    width: 90px;
+}
 
 .test-page-context {
+    padding-left:20px;
+    padding-top:20px;
+}
+
+.test-count-context {
     padding-left:20px;
     padding-top:20px;
 }
@@ -32,6 +71,7 @@ table {
 .test-row-header {
     font-size: .7em;
 }
+
 
 .job-info {
     font-style: italic;

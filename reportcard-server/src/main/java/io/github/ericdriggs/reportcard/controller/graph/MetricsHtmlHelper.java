@@ -10,6 +10,7 @@ import io.github.ericdriggs.reportcard.model.metrics.company.RunResultCount;
 import io.github.ericdriggs.reportcard.model.trend.InstantRange;
 import io.github.ericdriggs.reportcard.util.StringMapUtil;
 
+import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -18,7 +19,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 
-import static io.github.ericdriggs.reportcard.util.NumberStringUtil.fromSecondBigDecimalPadded;
+import static io.github.ericdriggs.reportcard.util.NumberStringUtil.*;
 
 public class MetricsHtmlHelper {
     final static String ls = System.lineSeparator();
@@ -74,11 +75,12 @@ public class MetricsHtmlHelper {
         for (Map.Entry<T, TreeMap<InstantRange, RunResultCount>> orgEntry : dtoResultCounts.entrySet()) {
             final String aggregationHeader =
                     """
-                    <th class='test-header'>test pass %</th>
-                    <th class='test-header'>test executions</th>
-                    <th class='test-header'>test time</th>
-                    <th class='run-header'>job pass %</th>
-                    <th class='run-header'>job runs</th>
+                    <th class='test-header'>Test pass %</th>
+                    <th class='test-header'>Test executions</th>
+                    <th class='test-header'>Test Time Total</th>
+                    <th class='run-header'>Job Time Avg</th>
+                    <th class='run-header'>Job pass %</th>
+                    <th class='run-header'>Job runs</th>
                     """;
             sb.append(aggregationHeader.repeat(orgEntry.getValue().size()));
             break;
@@ -132,11 +134,20 @@ public class MetricsHtmlHelper {
                 if (resultCount == null) {
                     resultCount = RunResultCount.builder().build();
                 }
-                sb.append("<td class='percent'>").append(resultCount.getResultCount().getTestSuccessPercent().setScale(0, RoundingMode.HALF_UP)).append("%</td>").append(ls);
-                sb.append("<td class='count'>").append(String.format("%,d", resultCount.getResultCount().getTests())).append("</td>").append(ls);
-                sb.append("<td class='count'>").append(fromSecondBigDecimalPadded(resultCount.getResultCount().getTime())).append("</td>").append(ls);
-                sb.append("<td class='percent'>").append(resultCount.getRunCount().getRunSuccessPercent().setScale(0, RoundingMode.HALF_UP)).append("%</td>").append(ls);
-                sb.append("<td class='count'>").append(String.format("%,d", resultCount.getRunCount().getRuns())).append("</td>").append(ls);
+
+                final BigDecimal testSuccessPercent = resultCount.getResultCount().getTestSuccessPercent().setScale(0, RoundingMode.HALF_UP);
+                final Integer totalTests = resultCount.getResultCount().getTests();
+                final BigDecimal totalTime = resultCount.getResultCount().getTime();
+                final Integer runCount = resultCount.getRunCount().getRuns();
+                final BigDecimal averageTime = divide(totalTime, runCount);
+                final BigDecimal runSuccessPercent = resultCount.getRunCount().getRunSuccessPercent().setScale(0, RoundingMode.HALF_UP);
+
+                sb.append("<td class='percent'>").append(percentFromBigDecimal(testSuccessPercent)).append("</td>").append(ls);
+                sb.append("<td class='count'>").append(fromIntegerPadded(totalTests)).append("</td>").append(ls);
+                sb.append("<td class='count'>").append(fromSecondBigDecimalPadded(totalTime)).append("</td>").append(ls);
+                sb.append("<td class='count'>").append(fromSecondBigDecimalPadded(averageTime)).append("</td>").append(ls);
+                sb.append("<td class='percent'>").append(percentFromBigDecimal(runSuccessPercent)).append("</td>").append(ls);
+                sb.append("<td class='count'>").append(fromIntegerPadded(runCount)).append("</td>").append(ls);
             }
         }
         sb.append("</tbody>").append(ls);
@@ -145,7 +156,7 @@ public class MetricsHtmlHelper {
 
     private static String instantRangeHeader(InstantRange instantRange) {
 
-        final String header = "<th class='interval-header' colspan='5'>{start}&nbsp;&nbsp;→&nbsp;&nbsp;{end}</th>";
+        final String header = "<th class='interval-header' colspan='6'>{start}&nbsp;&nbsp;→&nbsp;&nbsp;{end}</th>";
         return header
                 .replace("{start}", instantToYmdhs(instantRange.getStart()))
                 .replace("{end}", instantToYmdhs(instantRange.getEnd()));
@@ -284,11 +295,14 @@ public class MetricsHtmlHelper {
             	<dt>Test Pass %</dt>
             	<dd>The % of test executions which passed.</dd>
                         
-            	<dt>Test Execution</dt>
+            	<dt>Test Executions</dt>
             	<dd>The total number of executions of tests</dd>
                         
-            	<dt>Test time</dt>
-            	<dd>Cumulative time</dd>
+            	<dt>Test Time Total</dt>
+            	<dd>Cumulative test time</dd>
+            	
+            	<dt>Job Time Avg</dt>
+            	<dd>Test Time Total / Job Runs</dd>
                         
             	<dt>Job Pass %</dt>
             	<dd>The percentage of job runs with no failing tests</dd>
@@ -298,5 +312,19 @@ public class MetricsHtmlHelper {
             </dl>
             </fieldset>
             """;
+
+    public static BigDecimal divide(BigDecimal num, Integer dem) {
+        if (num == null || dem == null) {
+            return num;
+        }
+        return divide(num, new BigDecimal(dem));
+    }
+
+    public static BigDecimal divide(BigDecimal num, BigDecimal dem) {
+        if (num == null || dem == null || BigDecimal.ZERO.equals(dem)) {
+            return num;
+        }
+        return num.divide(dem, RoundingMode.HALF_UP);
+    }
 
 }

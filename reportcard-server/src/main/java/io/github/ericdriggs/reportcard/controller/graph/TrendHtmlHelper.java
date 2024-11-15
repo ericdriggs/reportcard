@@ -36,12 +36,17 @@ public class TrendHtmlHelper extends BrowseHtmlHelper {
         final CompanyOrgRepoBranchJobStageName companyOrgRepoBranchJobStageName = jobStageTestTrend.getCompanyOrgRepoBranchJobStageName();
 
         TestTrendTable testTrendTable = TestTrendTable.fromJob(jobStageTestTrend);
+        TestRowSummary testRowSummary = TestRowSummary.fromTestTrendTable(testTrendTable);
+
         return trendMainDiv.replace("<!--companyName-->", companyOrgRepoBranchJobStageName.getCompanyPojo().getCompanyName())
                 .replace("<!--orgName-->", companyOrgRepoBranchJobStageName.getOrgPojo().getOrgName())
                 .replace("<!--repoName-->", companyOrgRepoBranchJobStageName.getRepoPojo().getRepoName())
                 .replace("<!--branchName-->", companyOrgRepoBranchJobStageName.getBranchPojo().getBranchName())
                 .replace("<!--jobInfo-->", renderJobInfo(companyOrgRepoBranchJobStageName.getJobPojo().getJobInfo()))
-                .replace("<!--stageName-->", companyOrgRepoBranchJobStageName.getStageName())
+                .replace("<!--stageName-->", companyOrgRepoBranchJobStageName.getStageName() == null ? "" : companyOrgRepoBranchJobStageName.getStageName())
+                .replace("<!--testCount-->", Integer.toString(testRowSummary.getTests()))
+                .replace("<!--successCount-->", Integer.toString(testRowSummary.getSuccess()))
+                .replace("<!--failCount-->", Integer.toString(testRowSummary.getFail()))
                 .replace("<!--jobRunHeaders-->", renderJobRunHeaders(testTrendTable.getTestRunHeaders()))
                 .replace("<!--jobRunTestRows-->", renderJobRunTestRows(testTrendTable))
                 ;
@@ -243,6 +248,7 @@ public class TrendHtmlHelper extends BrowseHtmlHelper {
     static String trendMainDiv =
             """
             <div id="main">
+                
                 <details id="test-page-context" open="open" class="test-page-context">
                     <summary id="page-context-summary" class="page-context-summary ">Test trend context</summary>
                     <dl class="page-context">
@@ -261,11 +267,12 @@ public class TrendHtmlHelper extends BrowseHtmlHelper {
                         <dt class="dt-page-context">stage</dt>
                         <dd><!--stageName--></dd>
                     </dl>
-                    <br>
                 </details>
+                <br/>
+           
 
                 <!--todo: implement js filter functions and display-->
-                <fieldset style="display:inline-block;width=500px;" id="test-filters" display:none>
+                <fieldset style="display:inline-block;width=500px;vertical-align:bottom" id="test-filters" display:none>
                     <legend>Test Filters</legend>
 
                     <label for="test-case-status-filter">Test Cases</label>
@@ -284,6 +291,21 @@ public class TrendHtmlHelper extends BrowseHtmlHelper {
                         <option value="success">Success</option>
                     </select>
                 </fieldset>
+                
+                 <details id="test-count-context" open="open" class="test-count-context">
+                    <summary id="test-count-summary" class="test-count-summary ">Test row summary</summary>
+                    <dl class="test-count-context">
+                        <dt class="dt-test-count">Tests</dt>
+                        <dd class="dd-test-count"><!--testCount--></dd>
+                        
+                        <dt class="dt-test-count">Success</dt>
+                        <dd class="dd-test-count"><!--successCount--></dd>
+                        
+                        <dt class="dt-test-count">Fail</dt>
+                        <dd class="dd-test-count"><!--failCount--></dd>
+                    </dl>
+                </details>
+                <br>
                 <br>
 
                 <table class="sortable" style="vertical-align: top" id="test-case-trends">
