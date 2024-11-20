@@ -293,7 +293,7 @@ public class TrendHtmlHelper extends BrowseHtmlHelper {
                 </fieldset>
                 
                  <details id="test-count-context" open="open" class="test-count-context">
-                    <summary id="test-count-summary" class="test-count-summary ">Test row summary</summary>
+                    <summary id="test-count-summary" class="test-count-summary ">Test case summary</summary>
                     <dl class="test-count-context">
                         <dt class="dt-test-count">Tests</dt>
                         <dd class="dd-test-count"><!--testCount--></dd>
