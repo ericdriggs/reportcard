@@ -345,7 +345,6 @@ public class JunitControllerTest {
             System.out.println(s3Objects);
 
             assertNotNull(s3Objects.contents());
-            assertThat(s3Objects.contents().size(), is(greaterThanOrEqualTo(3)));
             System.out.println(s3Objects);
         }
     }

@@ -13,6 +13,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.TreeMap;
 
+import static io.github.ericdriggs.reportcard.util.StringMapUtil.decode;
+
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Jacksonized
@@ -129,7 +131,7 @@ public class CompanyOrgRepoBranchJobInfoRunCountStageDTO
                         builder.branch(stagePath.getBranch().getBranchName());
 
                         if (stagePath.getJob() != null && stagePath.getJob().getJobId() != null) {
-                            builder.jobInfo(StringMapUtil.jsonToMap(stagePath.getJob().getJobInfo()));
+                            builder.jobInfo(decode(StringMapUtil.jsonToMap(stagePath.getJob().getJobInfo())));
 
                             if (stagePath.getRun() != null && stagePath.getRun().getRunId() != null) {
                                 builder.runCount(stagePath.getRun().getJobRunCount());

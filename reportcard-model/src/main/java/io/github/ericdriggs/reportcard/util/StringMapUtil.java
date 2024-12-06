@@ -7,6 +7,9 @@ import io.github.ericdriggs.reportcard.mappers.SharedObjectMappers;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @Slf4j
@@ -42,6 +45,20 @@ public enum StringMapUtil {
         return "<dl>" + builder + "</dl>";
     }
 
+    public static TreeMap<String,String> decode(TreeMap<String,String> map) {
+        if (map == null || map.isEmpty()) {
+            return map;
+        }
+        TreeMap<String,String> result = new TreeMap<>();
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            result.put(entry.getKey(), decode(entry.getValue()));
+        }
+        return result;
+    }
+
+    public static String decode(String str) {
+        return URLDecoder.decode(str, StandardCharsets.UTF_8);
+    }
     public static TreeMap<String, String> stringToMap(String str) {
         if (str == null) {
             return new TreeMap<>();

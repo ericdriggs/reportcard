@@ -25,7 +25,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.function.Function;
+
+import static io.github.ericdriggs.reportcard.util.StringMapUtil.decode;
 
 @Slf4j
 @RestController
@@ -101,7 +102,7 @@ public class JunitController {
                 .branch(branch)
                 .sha(sha)
                 .stage(stage)
-                .jobInfo(StringMapUtil.stringToMap(jobInfo))
+                .jobInfo(decode(StringMapUtil.stringToMap(jobInfo)))
                 .runReference(runReference)
                 .externalLinks(StringMapUtil.stringToMap(externalLinks))
                 .build();
@@ -187,7 +188,7 @@ public class JunitController {
                 .branch(branch)
                 .sha(sha)
                 .stage(stage)
-                .jobInfo(StringMapUtil.stringToMap(jobInfo))
+                .jobInfo(decode(StringMapUtil.stringToMap(jobInfo)))
                 .runReference(runReference)
                 .externalLinks(StringMapUtil.stringToMap(externalLinks))
                 .build();
