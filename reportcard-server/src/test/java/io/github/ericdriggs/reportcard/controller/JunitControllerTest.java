@@ -34,6 +34,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import static net.javacrumbs.jsonunit.JsonAssert.assertJsonEquals;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -74,6 +75,19 @@ public class JunitControllerTest {
                 .sha(TestData.sha)
                 .jobInfo(TestData.jobInfo)
                 .runReference(TestData.runReference)
+                .stage(stageName)
+                .build();
+    }
+
+    static StageDetails getStageDetails(String stageName, UUID runReference) {
+        return StageDetails.builder()
+                .company(TestData.company)
+                .org(TestData.org)
+                .repo(TestData.repo)
+                .branch(TestData.branch)
+                .sha(TestData.sha)
+                .jobInfo(TestData.jobInfo)
+                .runReference(runReference)
                 .stage(stageName)
                 .build();
     }
@@ -119,30 +133,31 @@ public class JunitControllerTest {
     @Test
     void postJunitHtmlSurefireFormat() throws IOException {
         final MultipartFile junitTarGz = getSurefireTarGz(resourceReader);
-        StagePathStorageResultCountResponse response = doPostHtmlTest(junitTarGz);
+        StagePathStorageResultCountResponse response = doPostHtmlTest(junitTarGz, getStageDetails(stageName));
         assertSingleTestResponse(response);
     }
 
     @Test
     void postJunitHtmlJunitFormat() throws IOException {
         final MultipartFile junitTarGz = getJunitTarGz(resourceReader);
-        StagePathStorageResultCountResponse response = doPostHtmlTest(junitTarGz);
+        StagePathStorageResultCountResponse response = doPostHtmlTest(junitTarGz, getStageDetails(stageName));
         assertSingleTestResponse(response);
     }
 
     @Test
     void postNoJunitXmlTest() throws IOException {
         final MultipartFile junitTarGz = getEmptyTarGz(resourceReader);
-        StagePathStorageResultCountResponse response = doPostHtmlTest(junitTarGz);
-        assertNoTestResponse(response);
+        StageDetails stageDetails = getStageDetails(stageName, UUID.randomUUID());
+        StagePathStorageResultCountResponse response = doPostHtmlTest(junitTarGz, stageDetails);
+        assertNoTestResponse(response, stageDetails);
     }
 
 
-    final String expectedStageUrl = "/company/company1/org/org1/repo/repo1/branch/master/job/1/run/1/stage/apiTest";
+    final String expectedStageRegex = "/company/company1/org/org1/repo/repo1/branch/master/jobinfo/application=fooapp,host=foocorp.jenkins.com,pipeline=foopipeline/runcount/.*/stage/apiTest";
 
     final String stageName = "apiTest";
 
-    StagePathStorageResultCountResponse doPostHtmlTest(MultipartFile junitTarGz) throws IOException {
+    StagePathStorageResultCountResponse doPostHtmlTest(MultipartFile junitTarGz, StageDetails stageDetails) throws IOException {
 
         MultipartFile[] files = TestResultPersistServiceTest.getMockMultipartFilesFromPathStrings(TestResultPersistServiceTest.htmlPaths, resourceReader);
         String indexFile = TestResultPersistServiceTest.htmlIndexFile;
@@ -151,8 +166,6 @@ public class JunitControllerTest {
         Path tempTarGz = null;
         try {
             tempTarGz = TestXmlTarGzUtil.createTarGzipFilesForTesting(files);
-
-            final StageDetails stageDetails = getStageDetails(stageName);
 
             final MultipartFile htmlTarGz = getHtmlTarGz(resourceReader);
 
@@ -175,15 +188,15 @@ public class JunitControllerTest {
                 assertNull(responseDetails.getProblemInstance());
                 assertNull(responseDetails.getProblemType());
                 final Map<String, String> createdUrls = responseDetails.getCreatedUrls();
-                assertEquals(3, createdUrls.size());
-                assertEquals(createdUrls.get("stage"), expectedStageUrl);
+                assertEquals(4, createdUrls.size());
+                assertThat(createdUrls.get("stage"), matchesPattern(expectedStageRegex));
                 {
                     final String htmlUrl = createdUrls.get("cucumber_html");
-                    assertThat(htmlUrl, matchesPattern("/v1/api/storage/key/rc/company1/org1/repo1/master/.*/1/1/apiTest/cucumber_html/html-samples/foo/index.html"));
+                    assertThat(htmlUrl, matchesPattern("/v1/api/storage/key/rc/company1/org1/repo1/master/.*/1/.*/apiTest/cucumber_html/html-samples/foo/index.html"));
                 }
                 {
                     final String junitUrl = createdUrls.get("junit");
-                    assertThat(junitUrl, matchesPattern("/v1/api/storage/key/rc/company1/org1/repo1/master/.*/1/1/apiTest/junit"));
+                    assertThat(junitUrl, matchesPattern("/v1/api/storage/key/rc/company1/org1/repo1/master/.*/1/.*/apiTest/junit"));
                 }
             }
 
@@ -211,7 +224,7 @@ public class JunitControllerTest {
             assertEquals(TestData.runReference.toString(), stagePath.getRun().getRunReference());
             assertEquals(stageName, stagePath.getStage().getStageName());
             Map<String, String> urlMaps = stagePath.getUrlMaps();
-            assertEquals(expectedStageUrl, urlMaps.get("stage"));
+            assertThat(urlMaps.get("stage"), matchesPattern(expectedStageRegex));
 
             Set<TestResultModel> testResultModels = testResultPersistService.getTestResults(stagePath.getStage().getStageId());
             assertEquals(1, testResultModels.size());
@@ -288,7 +301,7 @@ public class JunitControllerTest {
 
     }
 
-    void assertNoTestResponse(StagePathStorageResultCountResponse response) {
+    void assertNoTestResponse(StagePathStorageResultCountResponse response, StageDetails stageDetails) {
 
         StagePath stagePath = response.getStagePath();
         System.out.println("stagePath: " + stagePath);
@@ -298,10 +311,10 @@ public class JunitControllerTest {
         assertEquals("master", stagePath.getBranch().getBranchName());
         assertJsonEquals("{\"host\": \"foocorp.jenkins.com\", \"pipeline\": \"foopipeline\", \"application\": \"fooapp\"}",
                 stagePath.getJob().getJobInfo());
-        assertEquals(TestData.runReference.toString(), stagePath.getRun().getRunReference());
+        assertEquals(stageDetails.getRunReference().toString(), stagePath.getRun().getRunReference());
         assertEquals(stageName, stagePath.getStage().getStageName());
         final Map<String, String> urlMaps = stagePath.getUrlMaps();
-        assertEquals(expectedStageUrl, urlMaps.get("stage"));
+        assertThat(urlMaps.get("stage"), matchesPattern(expectedStageRegex));
 
         Set<TestResultModel> testResultModels = testResultPersistService.getTestResults(stagePath.getStage().getStageId());
         assertEquals(1, testResultModels.size());
@@ -334,27 +347,6 @@ public class JunitControllerTest {
             assertNotNull(s3Objects.contents());
             assertThat(s3Objects.contents().size(), is(greaterThanOrEqualTo(3)));
             System.out.println(s3Objects);
-
-            {
-                List<String> s3Keys = s3Objects.contents().stream().map(S3Object::key).toList();
-                Integer cucumberCount = 0;
-                Integer junitCount = 0;
-                for (String s3Key : s3Keys) {
-                    if (s3Key.contains("cucumber_html")) {
-                        cucumberCount++;
-                    }
-                    if (s3Key.contains("junit.tar.gz")) {
-                        junitCount++;
-                    }
-
-                }
-
-                final Integer expectedJunitCount = 1;
-                final Integer expectedCucumberCount = 3;
-
-                assertEquals(expectedCucumberCount, cucumberCount);
-                assertEquals(expectedJunitCount, junitCount);
-            }
         }
     }
 

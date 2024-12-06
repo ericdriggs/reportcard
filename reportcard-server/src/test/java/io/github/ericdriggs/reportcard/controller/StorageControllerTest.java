@@ -98,20 +98,25 @@ public class StorageControllerTest {
             assertNotNull(responseEntity);
             StagePathStorageResponse response = responseEntity.getBody();
 
-            final String expectedStageUrl = "/company/company1/org/org1/repo/repo1/branch/master/job/1/run/1/stage/api";
+            final String expectedStageUrl = "/company/company1/org/org1/repo/repo1/branch/master/jobinfo/application=fooapp,host=foocorp.jenkins.com,pipeline=foopipeline/runcount/1/stage/api";
             {
+
+                final String expectedRunUrl = "/company/company1/org/org1/repo/repo1/branch/master/jobinfo/application=fooapp,host=foocorp.jenkins.com,pipeline=foopipeline/runcount/1";
+                final String expectedCucumberRegex = "/v1/api/storage/key/rc/company1/org1/repo1/master/.*/1/1/api/cucumber_html/html-samples/foo/index.html";
+
                 final ResponseDetails responseDetails = response.getResponseDetails();
                 assertEquals(201, responseDetails.getHttpStatus());
                 assertNull(responseDetails.getDetail());
                 assertNull(responseDetails.getStackTrace());
                 assertNull(responseDetails.getProblemInstance());
                 assertNull(responseDetails.getProblemType());
-                final Map<String, String> createdUrls = responseDetails.getCreatedUrls();
-                assertEquals(2, createdUrls.size());
-                assertEquals(createdUrls.get("stage"), expectedStageUrl);
                 {
+                    final Map<String, String> createdUrls = responseDetails.getCreatedUrls();
+                    assertEquals(3, createdUrls.size());
+                    assertEquals(expectedStageUrl, createdUrls.get("stage"));
+                    assertEquals(expectedRunUrl, createdUrls.get("run"));
                     final String htmlUrl = createdUrls.get("cucumber_html");
-                    assertThat(htmlUrl, matchesPattern("/v1/api/storage/key/rc/company1/org1/repo1/master/.*/1/1/api/cucumber_html/html-samples/foo/index.html"));
+                    assertThat(htmlUrl, matchesPattern(expectedCucumberRegex));
                 }
             }
             {
