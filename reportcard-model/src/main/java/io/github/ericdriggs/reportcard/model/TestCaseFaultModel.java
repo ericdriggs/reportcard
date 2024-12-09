@@ -53,7 +53,7 @@ public class TestCaseFaultModel extends io.github.ericdriggs.reportcard.dto.Test
 
 
     static String truncateString(String str) {
-        return TruncateUtils.truncateString(str, truncateLength);
+        return TruncateUtils.truncateLeft(str, truncateLength);
     }
 
     private final static int truncateLength = 512;

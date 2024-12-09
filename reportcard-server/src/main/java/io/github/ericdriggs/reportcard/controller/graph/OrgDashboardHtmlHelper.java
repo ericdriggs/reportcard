@@ -15,6 +15,7 @@ import io.github.ericdriggs.reportcard.util.NumberStringUtil;
 import io.github.ericdriggs.reportcard.util.StringMapUtil;
 import io.github.ericdriggs.reportcard.util.badge.*;
 import io.github.ericdriggs.reportcard.util.badge.dto.RunBadgeDTO;
+import io.github.ericdriggs.reportcard.util.truncate.TruncateUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,11 +70,11 @@ public class OrgDashboardHtmlHelper extends BrowseHtmlHelper {
                 for (JobGraph jobGraph : emptyIfNull(branchGraph.jobs())) {
                     final CompanyOrgRepoBranchJobRunStageDTO jobPath = branchPath.toBuilder().jobId(jobGraph.jobId()).build();
                     final String jobUrl = getUrl(jobPath);
+                    final String jobInfoTruncated = TruncateUtils.truncateRight(StringMapUtil.valuesOnlyColonSeparated(jobGraph.jobInfo()), 45, true);
                     str.append("<fieldset class=\"job-fieldset fieldset-group\">").append(ls);
                     str.append("  <legend>job: <a target=\"_blank\" href=\"{jobUrl}\">{jobInfo}</a></legend>"
                             .replace("{jobUrl}", jobUrl)
-                            .replace("{jobInfo}", StringMapUtil.valuesOnlyColonSeparated(jobGraph.jobInfo()))
-                    ).append(ls);
+                            .replace("{jobInfo}", jobInfoTruncated)).append(ls);
 
                     RunGraph lastSuccess = null;
                     RunGraph runGraph = null;
@@ -187,9 +188,11 @@ public class OrgDashboardHtmlHelper extends BrowseHtmlHelper {
             htmlLinks.append("<td>"+BadgeSvgHelper.storage(storageUri)+"</td>");
         }
 
+        final String stageNameTruncated = TruncateUtils.truncateRight(stageBadgesDTO.getStageName(), 20, true);
+
         return stageBase
                 .replace("{stageUri}", stageBadgesDTO.getStageUri().toString())
-                .replace("{stageName}", stageBadgesDTO.getStageName())
+                .replace("{stageName}", stageNameTruncated)
                 .replace("<!--statusBadge-->", statusBadge)
                 .replace("<!--trendBadge-->", trendBadge)
                 .replace("<!--htmlLinks-->", htmlLinks.toString());

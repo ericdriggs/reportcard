@@ -28,13 +28,27 @@ public enum TruncateUtils {
         throw new IllegalStateException("truncation coding error -- should be unreachable code");
     }
 
-    public static String truncateString(String str, int maxLength) {
+    public static String truncateLeft(String str, int maxLength) {
+        return truncateLeft(str, maxLength, false);
+    }
+
+    public static String truncateLeft(String str, int maxLength, boolean shouldAddEllipsis) {
         if (str == null) {
             return null;
         }
         if (str.length() <= maxLength) {
             return str;
         }
-        return str.substring(0, maxLength);
+        return (shouldAddEllipsis ? "…" : "") + str.substring(0, maxLength);
+    }
+
+    public static String truncateRight(String str, int maxLength, boolean shouldAddEllipsis) {
+        if (str == null) {
+            return null;
+        }
+        if (str.length() <= maxLength) {
+            return str;
+        }
+        return (shouldAddEllipsis ? "…" : "") + str.substring(str.length()-maxLength);
     }
 }
