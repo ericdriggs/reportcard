@@ -22,6 +22,11 @@ TODOs:
 * size issues and assign to milestones
 
 
+versioning
+
+* git tag
+* replace tags in source code to match
+
 publishing
 
 1. ./gradlew publishToSonatype -Si
