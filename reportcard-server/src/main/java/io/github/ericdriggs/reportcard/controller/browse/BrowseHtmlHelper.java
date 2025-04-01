@@ -383,12 +383,12 @@ public class BrowseHtmlHelper {
     }
 
     protected static String getStageClass(StageTestResultPojo stageTestResultPojo) {
-
-        if (!stageTestResultPojo.isSuccess() && stageTestResultPojo.getTestResultPojo().getTests() > 0) {
+        final int testCount = stageTestResultPojo.getTestCount();
+        if (!stageTestResultPojo.isSuccess() && testCount > 0) {
             return "stage-fail";
         } else {
             TestResultPojo testResultPojo = stageTestResultPojo.getTestResultPojo();
-            if (testResultPojo.getTests() == 0 || (testResultPojo.getSkipped().equals(testResultPojo.getTests()))) {
+            if (testCount == 0 || (testResultPojo.getSkipped().equals(testCount))) {
                 return "stage-skip";
             } else {
                 return "stage-pass";

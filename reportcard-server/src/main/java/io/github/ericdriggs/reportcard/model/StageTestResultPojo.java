@@ -49,4 +49,11 @@ public class StageTestResultPojo implements Comparable<StageTestResultPojo> {
     public int compareTo(StageTestResultPojo that) {
         return PojoComparators.compareStageTestResultPojoDateDescending(this, that);
     }
+
+    public int getTestCount() {
+        if (testResultPojo == null || testResultPojo.getTests() == null ) {
+            return 0;
+        }
+        return testResultPojo.getTests();
+    }
 }
