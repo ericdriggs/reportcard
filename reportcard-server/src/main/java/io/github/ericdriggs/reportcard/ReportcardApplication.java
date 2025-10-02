@@ -8,9 +8,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @EnableTransactionManagement
+@EnableScheduling
 @SpringBootApplication(scanBasePackages = {"io.github.ericdriggs.reportcard"}, exclude = {R2dbcAutoConfiguration.class})
 @EnableJpaRepositories(basePackages = "io.github.ericdriggs.reportcard")
 public class ReportcardApplication {

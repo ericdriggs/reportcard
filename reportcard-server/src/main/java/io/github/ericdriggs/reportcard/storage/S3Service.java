@@ -123,7 +123,7 @@ public class S3Service {
 
             for (int i=0; i<uploadRetryCount; i++) {
                 try ( InputStream inputStream = tarGz.getInputStream()){
-                    tempDir = Files.createTempDirectory("s3.");
+                    tempDir = Files.createTempDirectory("reportcard-");
                     TarExtractorCommonsCompress tarExtractor = new TarExtractorCommonsCompress(inputStream, true, tempDir);
                     tarExtractor.untar();
                 } catch(Exception ex) {
@@ -154,7 +154,7 @@ public class S3Service {
 
     @SneakyThrows(IOException.class)
     public DirectoryUploadResponse uploadDirectory(String prefix, MultipartFile... files) {
-        final Path tempDir = Files.createTempDirectory("s3.");
+        final Path tempDir = Files.createTempDirectory("reportcard-");
         Exception ex = null;
         for (int i = 1; i<= uploadRetryCount; i++) {
             try {
