@@ -22,7 +22,7 @@ public enum TestXmlTarGzUtil {
 
     @SneakyThrows(IOException.class)
     public static List<String> getFileContentsFromTarGz(MultipartFile tarGz) {
-        Path tempDir = Files.createTempDirectory("tar-gz");
+        Path tempDir = Files.createTempDirectory("reportcard-");
         try {
             extractTarGz(tempDir, tarGz);
             return FileUtils.fileContentsFromPathAndRegex(tempDir, io.github.ericdriggs.file.FileUtils.regexForExtension("xml"));
@@ -54,7 +54,7 @@ public enum TestXmlTarGzUtil {
      */
     @SneakyThrows(IOException.class)
     public static Path createTarGzipFilesForTesting(List<Path> filePaths) {
-        Path tarGzOutput = Files.createTempFile("tar-gz", ".tar.gz");
+        Path tarGzOutput = Files.createTempFile("reportcard-", ".tar.gz");
         try {
             TarCompressor.createTarGzipFiles(filePaths, tarGzOutput);
         } catch (Exception ex) {
@@ -72,7 +72,7 @@ public enum TestXmlTarGzUtil {
     @SneakyThrows(IOException.class)
     public static Path createTarGzipFilesForTesting(MultipartFile[] files ) {
 
-        Path tmpDir = Files.createTempDirectory("tar-gz");
+        Path tmpDir = Files.createTempDirectory("reportcard-");
         try {
             List<Path> filePaths = new ArrayList<>();
             for (MultipartFile file : files) {
