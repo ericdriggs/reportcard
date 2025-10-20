@@ -3,6 +3,7 @@ import io.github.ericdriggs.reportcard.mappers.SharedObjectMappers;
 import io.github.ericdriggs.reportcard.model.graph.TestSuiteGraph;
 import io.github.ericdriggs.reportcard.persist.GraphService;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,10 +17,13 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 
+//This is a manual integration test which was used to migrate form relational test results to json
+//The relational test data was far too slow since it performed too many joins
 @SpringBootTest(classes = ReportcardApplication.class)
 @ActiveProfiles("integrationTest")
 @TestPropertySource(locations = "classpath:application-integration-test.properties")
 @Slf4j
+@Disabled
 public class TestResultJsonUpdateIntegrationTest {
 
     private final GraphService graphService;

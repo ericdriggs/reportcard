@@ -522,7 +522,7 @@ public class GraphService extends AbstractPersistService {
     }
 
     public TreeSet<Long> getTestResultsWithoutSuiteJson(int maxCount) {
-        Long[] ids = dsl.selectDistinct(TEST_RESULT.TEST_RESULT_ID)
+        Long[] ids = dsl.select(TEST_RESULT.TEST_RESULT_ID)
                 .from(TEST_RESULT)
                 .where(TEST_RESULT.TEST_SUITES_JSON.isNull())
                 .orderBy(TEST_RESULT.TEST_RESULT_ID.desc())
