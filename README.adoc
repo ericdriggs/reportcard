@@ -27,19 +27,19 @@ versioning
 * git tag
 * replace tags in source code to match
 
-publishing
+== publishing
 
-1. ./gradlew publishToSonatype -Si
+1. upload files
+*  ./gradlew publishToSonatype -Si
 
-2. close staging repository
-* https://s01.oss.sonatype.org/#stagingRepositories
+2. move files to portal
+* ./gradlew uploadStagingDefaultToPortal -Si
 
-3. verify
-* https://s01.oss.sonatype.org/content/groups/staging/io/github/ericdriggs/reportcard-server
+3. publish
+* go to https://central.sonatype.com/publishing/deployments and click publish
 
-4. release staging repository (once ready)
-* https://s01.oss.sonatype.org/#stagingRepositories
+4. check deployment status (after release)
+* https://central.sonatype.com/publishing/deployments
 
-5. verify
-
-* https://s01.oss.sonatype.org/content/groups/public/io/github/ericdriggs/reportcard-server/
+5. verify published artifacts
+* https://central.sonatype.com/artifact/io.github.ericdriggs/reportcard-server

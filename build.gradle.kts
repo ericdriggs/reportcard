@@ -1,3 +1,5 @@
+import java.util.Base64
+
 plugins {
     id("java-library")
     id("org.asciidoctor.jvm.convert").version("3.3.2")
@@ -134,6 +136,7 @@ allprojects {
     }
 }
 
+val namespace = "io.github.ericdriggs"
 
 tasks {
     register<Javadoc>("javadocs") {
@@ -166,6 +169,30 @@ tasks {
         }
         setOutputDir(file("$buildDir/docs/asciidoc"))
         setBaseDir(file("docs"))
+    }
+
+    register("uploadStagingDefaultToPortal") {
+        group = "publishing"
+        description = "Transfers the default staged repository for the namespace into the Central Publisher Portal"
+        doLast {
+            val user = System.getenv("OSSRH_USER") ?: System.getenv("CENTRAL_USER") ?: error("Set OSSRH_USER or CENTRAL_USER")
+            val token = System.getenv("OSSRH_PASSWORD") ?: System.getenv("CENTRAL_TOKEN") ?: error("Set OSSRH_PASSWORD or CENTRAL_TOKEN")
+
+            val auth = Base64.getEncoder()
+                .encodeToString("$user:$token".toByteArray(Charsets.UTF_8))
+
+            val url = "https://ossrh-staging-api.central.sonatype.com/manual/upload/defaultRepository/$namespace"
+
+            val proc = ProcessBuilder()
+                .command(listOf("curl", "-fsS", "-X", "POST", "-H", "Authorization: Bearer $auth", url))
+                .inheritIO()
+                .start()
+            val exit = proc.waitFor()
+            if (exit != 0) {
+                throw GradleException("Upload to Portal failed. Check credentials/IP/namespace and logs above.")
+            }
+            println("Upload to Portal completed for namespace: $namespace")
+        }
     }
 }
 
