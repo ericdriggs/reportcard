@@ -23,9 +23,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(classes = {ReportcardApplication.class, LocalStackConfig.class},
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -42,6 +43,107 @@ public class S3ServiceTest {
 
     @Autowired
     StoragePersistService storagePersistService;
+
+    @Test
+    void tempDirectoryCleanupAfterSuccessfulUpload() throws IOException {
+        Long stageId = 1L;
+        final String label = "temp_cleanup_success";
+        MultipartFile[] files = TestResultPersistServiceTest.getMockMultipartFilesFromPathStrings(TestResultPersistServiceTest.htmlPaths, resourceReader);
+
+        Path tempTarGz = null;
+        int tempDirCountBefore = countReportcardTempDirectories();
+        
+        try {
+            tempTarGz = TestXmlTarGzUtil.createTarGzipFilesForTesting(files);
+            MockMultipartFile junitTarGz = new MockMultipartFile(
+                    "junit.tar.gz",
+                    "junit.tar.gz",
+                    MediaType.ALL_VALUE,
+                    Files.newInputStream(tempTarGz)
+            );
+
+            final StagePath stagePath = storagePersistService.getStagePath(stageId);
+            final String prefix = new StoragePath(stagePath, label).getPrefix();
+
+            s3Service.uploadTarGz(prefix, true, junitTarGz);
+            
+            int tempDirCountAfter = countReportcardTempDirectories();
+            assertEquals(tempDirCountBefore, tempDirCountAfter, "Temp directories should be cleaned up after successful upload");
+
+        } finally {
+            if (tempTarGz != null) {
+                Files.deleteIfExists(tempTarGz);
+            }
+        }
+    }
+
+    @Test
+    void tempDirectoryCleanupAfterFailedUpload() throws IOException {
+        int tempDirCountBefore = countReportcardTempDirectories();
+        
+        MockMultipartFile invalidTarGz = new MockMultipartFile(
+                "invalid.tar.gz",
+                "invalid.tar.gz",
+                MediaType.ALL_VALUE,
+                "invalid tar content".getBytes()
+        );
+
+        assertThrows(Exception.class, () -> {
+            s3Service.uploadTarGz("test-prefix", true, invalidTarGz);
+        });
+        
+        int tempDirCountAfter = countReportcardTempDirectories();
+        assertEquals(tempDirCountBefore, tempDirCountAfter, "Temp directories should be cleaned up even after failed upload");
+    }
+
+    @Test
+    void noTempDirectoryAccumulationAfterMultipleOperations() throws IOException {
+        Long stageId = 1L;
+        MultipartFile[] files = TestResultPersistServiceTest.getMockMultipartFilesFromPathStrings(TestResultPersistServiceTest.htmlPaths, resourceReader);
+
+        int tempDirCountBefore = countReportcardTempDirectories();
+        
+        for (int i = 0; i < 3; i++) {
+            Path tempTarGz = null;
+            try {
+                tempTarGz = TestXmlTarGzUtil.createTarGzipFilesForTesting(files);
+                MockMultipartFile junitTarGz = new MockMultipartFile(
+                        "junit.tar.gz",
+                        "junit.tar.gz",
+                        MediaType.ALL_VALUE,
+                        Files.newInputStream(tempTarGz)
+                );
+
+                final StagePath stagePath = storagePersistService.getStagePath(stageId);
+                final String prefix = new StoragePath(stagePath, "multi_test_" + i).getPrefix();
+
+                s3Service.uploadTarGz(prefix, true, junitTarGz);
+                
+            } finally {
+                if (tempTarGz != null) {
+                    Files.deleteIfExists(tempTarGz);
+                }
+            }
+        }
+        
+        int tempDirCountAfter = countReportcardTempDirectories();
+        assertEquals(tempDirCountBefore, tempDirCountAfter, "No temp directories should accumulate after multiple operations");
+    }
+
+    private int countReportcardTempDirectories() {
+        try {
+            Path tempDir = Paths.get(System.getProperty("java.io.tmpdir"));
+            try (Stream<Path> stream = Files.list(tempDir)) {
+                return (int) stream
+                        .filter(Files::isDirectory)
+                        .filter(path -> path.getFileName().toString().startsWith("reportcard-"))
+                        .count();
+            }
+        } catch (IOException e) {
+            log.warn("Failed to count temp directories", e);
+            return 0;
+        }
+    }
 
     @Test
     void givenExistingUpload_WhenReUpload_ThenSkipExistingFilesTest() throws IOException {

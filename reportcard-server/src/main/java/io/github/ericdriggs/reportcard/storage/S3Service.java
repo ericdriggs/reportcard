@@ -120,62 +120,64 @@ public class S3Service {
     public DirectoryUploadResponse uploadTarGZExpanded(String prefix, MultipartFile tarGz) {
         Path tempDir = null;
         try {
-
-            for (int i=0; i<uploadRetryCount; i++) {
-                try ( InputStream inputStream = tarGz.getInputStream()){
-                    tempDir = Files.createTempDirectory("reportcard-");
+            tempDir = Files.createTempDirectory("reportcard-");
+            for (int i = 0; i < uploadRetryCount; i++) {
+                try (InputStream inputStream = tarGz.getInputStream()) {
                     TarExtractorCommonsCompress tarExtractor = new TarExtractorCommonsCompress(inputStream, true, tempDir);
                     tarExtractor.untar();
-                } catch(Exception ex) {
+                    return uploadDirectory(prefix, tempDir);
+                } catch (Exception ex) {
                     log.warn("exception extracting tar file, attempt: {}", i, ex);
-                    if (tempDir != null) {
-                        FileUtils.deleteDirectory(tempDir.toFile());
+                    if (i == uploadRetryCount - 1) {
+                        throw new RuntimeException("uploadTarGZExpanded - failed to extract file for prefix: " + prefix, ex);
                     }
-                    tempDir = null;
                 }
             }
-
-            if (tempDir == null) {
-                throw new NullPointerException("uploadTarGZExpanded - failed to extract file for prefix: " + prefix);
-            }
-
-            return uploadDirectory(prefix, tempDir);
+            throw new RuntimeException("uploadTarGZExpanded - failed after all retries for prefix: " + prefix);
         } catch (Exception ex) {
-            ex.printStackTrace();
             log.error("uploadTarGZ failed for prefix: {}", prefix, ex);
             throw ex;
-        }
-        finally {
+        } finally {
             if (tempDir != null) {
-                FileUtils.deleteDirectory(tempDir.toFile());
+                try {
+                    FileUtils.deleteDirectory(tempDir.toFile());
+                } catch (IOException e) {
+                    log.warn("Failed to cleanup temp directory: {}", tempDir, e);
+                }
             }
         }
     }
 
     @SneakyThrows(IOException.class)
     public DirectoryUploadResponse uploadDirectory(String prefix, MultipartFile... files) {
-        final Path tempDir = Files.createTempDirectory("reportcard-");
-        Exception ex = null;
-        for (int i = 1; i<= uploadRetryCount; i++) {
-            try {
-                for (MultipartFile file : files) {
-                    final String fileName = file.getName();
-                    final Path filepath = Paths.get(tempDir.toString(), fileName);
-                    file.transferTo(filepath);
+        Path tempDir = null;
+        try {
+            tempDir = Files.createTempDirectory("reportcard-");
+            Exception lastException = null;
+            for (int i = 1; i <= uploadRetryCount; i++) {
+                try {
+                    for (MultipartFile file : files) {
+                        final String fileName = file.getName();
+                        final Path filepath = Paths.get(tempDir.toString(), fileName);
+                        file.transferTo(filepath);
+                    }
+                    return uploadDirectory(prefix, tempDir);
+                } catch (Exception e) {
+                    log.warn("upload attempt failed. prefix: {}, attempt: {}", prefix, i, e);
+                    lastException = e;
                 }
-                return uploadDirectory(prefix, tempDir);
-            } catch (Exception e) {
-                log.warn("uploadTarGZExpanded upload attempt failed. prefix: {}, attempt: {}", prefix, i, e);
-                ex = e;
-            }finally {
-                FileUtils.deleteDirectory(tempDir.toFile());
+            }
+            log.error("upload failed after all retries. prefix: {}", prefix, lastException);
+            throw new IllegalStateException("upload failed", lastException);
+        } finally {
+            if (tempDir != null) {
+                try {
+                    FileUtils.deleteDirectory(tempDir.toFile());
+                } catch (IOException e) {
+                    log.warn("Failed to cleanup temp directory: {}", tempDir, e);
+                }
             }
         }
-        if (ex != null) {
-            log.error("uploadTarGZExpanded upload failed. prefix: {}", prefix, ex);
-            ex.printStackTrace();
-        }
-        throw new IllegalStateException("upload failed", ex);
     }
 
     /**
