@@ -17,17 +17,17 @@ public class TempFileCleanupService {
 
     private static final Logger logger = LoggerFactory.getLogger(TempFileCleanupService.class);
 
-    private static final int MAX_AGE_HOURS = 1;
+    private static final int MAX_AGE_MINUTES = 20;
 
     private static final String PREFIX = "reportcard-";
 
-    @Scheduled(fixedRate = 1800000) // 30 minutes in milliseconds
+    @Scheduled(fixedRate = 10 * 60 * 1000) // 10 minutes in milliseconds
     public void cleanupTempFiles() {
         String tempDir = System.getProperty("java.io.tmpdir");
-        logger.info("Starting cleanup of reportcard temp files older than {} hours", MAX_AGE_HOURS);
+        logger.info("Starting cleanup of reportcard temp files older than {} hours", MAX_AGE_MINUTES);
         
         Path tempPath = Paths.get(tempDir);
-        Instant cutoffTime = Instant.now().minus(MAX_AGE_HOURS, ChronoUnit.HOURS);
+        Instant cutoffTime = Instant.now().minus(MAX_AGE_MINUTES, ChronoUnit.MINUTES);
         int deletedCount = 0;
 
         try {
