@@ -27,6 +27,256 @@ For human-oriented documentation, see `README.adoc`.
 
 ---
 
+## AI Collaboration Quick Start
+
+**For Implementation Tasks:**
+1. **New Feature:** Start with `controller/` → `persist/` → `model/` → tests
+2. **Bug Fix:** Check `persist/` first (business logic), then `controller/` (API layer)
+3. **Database Changes:** `db/migration/` → regenerate JOOQ → update `persist/`
+4. **API Changes:** `controller/` → update OpenAPI docs → integration tests
+
+**Evidence Format for Verification:**
+- File modifications: `ClassName.java L45-67`
+- Test results: `TestClass.java L23-35: PASS/FAIL`
+- Database changes: `V1.2__description.sql L10-25`
+- Generated code: `gen/db/tables/TableName.java L15-30 (regenerated)`
+
+**Common Implementation Patterns:**
+
+### Adding New REST Endpoint
+**Sequence:** 
+1. Create controller method in `controller/` package
+2. Add business logic in `persist/` package  
+3. Create/modify models in `model/` package
+4. Add integration test in `src/integrationTest/`
+5. Update OpenAPI documentation
+
+**Evidence Pattern:** `XController.java L45-67, XPersist.java L23-45, XModel.java L10-25, XIntegrationTest.java L30-55`
+
+### Database Schema Changes
+**Sequence:**
+1. Create new migration file: `db/migration/V1.X__description.sql`
+2. Apply to local MySQL manually
+3. Regenerate JOOQ: `./gradlew generateJooqSchemaSource`
+4. Update persist layer to use new schema
+5. Add tests for new functionality
+
+**Evidence Pattern:** `V1.X__description.sql L1-25, gen/db/tables/NewTable.java L1-50 (regenerated), XPersist.java L67-89`
+
+### Adding Test Coverage
+**Sequence:**
+1. Identify business logic in `persist/` package
+2. Create test class extending `AbstractTestResultPersistTest`
+3. Use BDD format: Given/When/Then
+4. Verify with Testcontainers MySQL + LocalStack S3
+
+**Evidence Pattern:** `XPersistTest.java L15-45: PASS, test_method_name() L20-35`
+
+### Collaborative Development Integration
+
+**When to Create collaboration_progress.md:**
+- Any task requiring 3+ steps (MANDATORY per RULE_ sections)
+- Database schema changes
+- New feature implementation
+- Multi-file bug fixes
+- API endpoint additions
+
+**Collaboration File Structure:**
+```
+# Collaborative Development - [Task Name]
+
+| Status | Task | Actions | Evidence |
+|--------|------|---------|----------|
+| 📋 | 1. Gather requirements | | |
+| 📋 | 2. Collaborative agreement on requirements | | |
+| 📋 | 3. Create plan | | |
+| 📋 | 4. Collaborative agreement on plan | | |
+| 📋 | 5. Verify granular tasks and tests defined | | |
+[Implementation tasks follow]
+```
+
+**Evidence Format Requirements:**
+- File modifications: `ClassName.java L45-67`
+- Test results: `TestClass.java L23-35: PASS/FAIL`
+- Database changes: `V1.2__description.sql L10-25`
+- Generated code: `gen/db/tables/TableName.java L15-30 (regenerated)`
+
+**RULE_ Section Compliance:**
+The following sections in collaborative development skill are MANDATORY:
+- RULE_MANDATORY_FILE_CREATION - Must create collaboration_progress.md
+- RULE_REQUIREMENTS_ALIGNMENT_BEHAVIOR - Must stop and wait for approval
+- RULE_PLAN_AGREEMENT_BEHAVIOR - Must stop and wait for approval
+- RULE_MUTUAL_AGREEMENT_GATES - Cannot proceed without human agreement
+- RULE_SEQUENTIAL_EXECUTION - Work on one task at a time
+- RULE_PERSISTENT_STATE_MANAGEMENT - Always read current file state
+
+**Integration with README_AI.md:**
+1. Use Decision Framework to determine if collaborative development required
+2. Follow File Modification Safety Guidelines during implementation
+3. Use Troubleshooting Workflows when issues arise
+4. Reference Package Purposes for file location guidance
+
+**AI-Specific Troubleshooting Decision Trees:**
+
+### Issue Classification Tree
+```
+Error Type?
+├─ Build/Compilation → Follow Build Failure Tree
+├─ Test Execution → Follow Test Failure Tree
+├─ JOOQ Generation → Follow JOOQ Failure Tree
+├─ Runtime/Logic → Follow Runtime Issue Tree
+└─ Unknown → Gather more information first
+```
+
+### JOOQ Generation Failure Tree
+```
+JOOQ Generation Failed?
+├─ Database Connection Issue?
+│   ├─ YES → Check application.properties, verify MySQL running
+│   └─ NO → Continue
+├─ Schema Mismatch?
+│   ├─ YES → Apply migration files manually to local MySQL
+│   └─ NO → Continue
+├─ Build Configuration Issue?
+│   ├─ YES → Check build.gradle JOOQ configuration
+│   └─ NO → Run ./gradlew clean generateJooqSchemaSource
+└─ Still failing → Check for version conflicts, clean workspace
+```
+
+### Test Failure Tree
+```
+Test Failed?
+├─ Container Startup Issue?
+│   ├─ YES → Check Docker running, container logs
+│   └─ NO → Continue
+├─ Database Schema Issue?
+│   ├─ YES → Verify SQL files in docker-entrypoint-initdb.d
+│   └─ NO → Continue
+├─ S3/LocalStack Issue?
+│   ├─ YES → Check LocalStack container, bucket creation
+│   └─ NO → Continue
+├─ Test Data Issue?
+│   ├─ YES → Verify 2_data.sql loaded correctly
+│   └─ NO → Check test logic, assertions
+└─ Configuration Issue → Verify application-test.properties
+```
+
+### Build Failure Tree
+```
+Build Failed?
+├─ Generated Code Missing?
+│   ├─ YES → Run generateJooqSchemaSource first
+│   └─ NO → Continue
+├─ Dependency Conflict?
+│   ├─ YES → Check build.gradle versions, run ./gradlew dependencies
+│   └─ NO → Continue
+├─ Configuration Issue?
+│   ├─ YES → Verify application.properties, profile settings
+│   └─ NO → Continue
+└─ Clean Build → ./gradlew clean build
+```
+
+### Runtime Issue Tree
+```
+Runtime Error?
+├─ Database Connection?
+│   ├─ YES → Check environment variables, MySQL status
+│   └─ NO → Continue
+├─ S3 Connection?
+│   ├─ YES → Check AWS credentials, S3 configuration
+│   └─ NO → Continue
+├─ Authentication Issue?
+│   ├─ YES → Check service.username/password in application.properties
+│   └─ NO → Continue
+└─ Application Logic → Check logs, debug business logic
+```
+
+### Systematic Troubleshooting Process
+
+**For ANY issue:**
+1. **Classify** using Issue Classification Tree
+2. **Follow** appropriate decision tree
+3. **Document** findings in collaboration file if using collaborative development
+4. **Verify** fix with evidence (file:line, test results)
+5. **Update** collaboration progress with resolution
+
+**Evidence Format for Troubleshooting:**
+- Issue identified: `ErrorClass.java L45: NullPointerException`
+- Fix applied: `ServiceClass.java L67-70: Added null check`
+- Verification: `TestClass.java L25-30: PASS`
+
+---
+
+## AI Decision Framework
+
+### Task Classification Decision Tree
+
+**Step 1: Identify Task Type**
+```
+Implementation Task?
+├─ YES → Use collaborative development skill (RULE_ sections mandatory)
+└─ NO → Continue to Step 2
+
+Information/Analysis Task?
+├─ YES → Use existing README sections directly
+└─ NO → Continue to Step 3
+
+Troubleshooting Task?
+├─ YES → Follow troubleshooting workflows below
+└─ NO → Ask for clarification
+```
+
+**Step 2: Implementation Scope Assessment**
+```
+Multiple files/steps?
+├─ YES → MUST use collaborative development skill
+└─ NO → Single file edit (still recommend collaboration for verification)
+
+Database changes involved?
+├─ YES → MANDATORY: db/migration → JOOQ regeneration → persist layer
+└─ NO → Continue with standard implementation pattern
+
+Testing required?
+├─ YES → Include BDD test tasks in plan
+└─ NO → Verify if testing should be added
+```
+
+**Step 3: File Modification Risk Assessment**
+```
+File in Danger Zones list?
+├─ YES → Ask before modifying, explain risks
+└─ NO → Proceed with safety guidelines
+
+Generated code?
+├─ YES → NEVER edit directly, regenerate instead
+└─ NO → Safe to modify with proper verification
+
+Schema/Migration file?
+├─ YES → Manual DB update + JOOQ regeneration required
+└─ NO → Standard file modification process
+```
+
+### When to Use Collaborative Development
+
+**MANDATORY (RULE_ sections apply):**
+- Any implementation task with 3+ steps
+- Database schema changes
+- New feature development
+- Bug fixes affecting multiple files
+- API endpoint additions/modifications
+
+**RECOMMENDED:**
+- Single file modifications for verification
+- Configuration changes
+- Test additions
+
+**NOT REQUIRED:**
+- Information queries
+- Documentation reading
+- Architecture explanations
+
+---
+
 ## Critical Rules for AI Assistants
 
 1. **Always check module context** - Don't search all modules when the task is clearly in reportcard-server
@@ -38,6 +288,66 @@ For human-oriented documentation, see `README.adoc`.
 7. **Security is basic** - Current auth is placeholder; don't assume Spring Security features exist
 
 ---
+
+## File Modification Safety Guidelines
+
+### Pre-Modification Checklist
+
+**ALWAYS before modifying any file:**
+1. Read current file state with fsRead (never use cached content)
+2. Identify exact lines to change
+3. Verify file is not in Danger Zones list
+4. Check if file is generated code
+5. Use fsReplace with precise oldStr from current file content
+
+### Modification Risk Levels
+
+**🔴 CRITICAL RISK - Ask Before Modifying**
+- **Generated JOOQ code** (`src/generated/`) - Never edit directly, regenerate instead
+- **Schema SQL files** (`db/migration/V*.sql`) - Changes require manual DB updates + JOOQ regeneration
+- **PersistenceContext.java** - Core database connection setup, affects entire app
+- **Test database setup** (`MyEmbeddedMysql.java`) - Changes affect all tests
+
+**🟡 MODERATE RISK - Understand Before Modifying**
+- **Cache hierarchy** (`cache/`) - Complex async patterns, easy to break
+- **Configuration files** (`application*.properties`) - Environment-specific settings
+- **Build files** (`build.gradle`, `settings.gradle`) - Affects entire build process
+
+**🟢 LOW RISK - Safe to Modify with Verification**
+- **Controller classes** - REST endpoints, well-isolated
+- **Model classes** - Data structures, minimal dependencies
+- **Test classes** - Isolated test logic
+- **Utility classes** - Helper functions
+
+### Safe Modification Process
+
+**For ANY file modification:**
+```
+1. fsRead target file
+2. Identify exact current content to change
+3. Use fsReplace with:
+   - oldStr: Exact text from step 1 (including whitespace)
+   - newStr: Desired replacement
+4. Verify change with evidence (file:line format)
+```
+
+**For Database-Related Changes:**
+```
+1. Create/modify SQL in db/migration/
+2. Apply SQL to local MySQL manually
+3. Run: ./gradlew generateJooqSchemaSource
+4. Update persist layer to use new schema
+5. Add tests for new functionality
+```
+
+**For Generated Code Issues:**
+```
+1. NEVER edit generated files directly
+2. Identify source (schema, configuration, etc.)
+3. Modify source
+4. Regenerate (JOOQ, OpenAPI, etc.)
+5. Verify regenerated code
+```
 
 ## Danger Zones (Ask Before Modifying)
 
