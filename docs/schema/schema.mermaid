@@ -1,0 +1,143 @@
+```mermaid
+erDiagram
+    branch {
+        int branch_id PK 
+        varchar branch_name UK 
+        datetime last_run 
+        int repo_fk FK,UK 
+    }
+
+    company {
+        int company_id PK 
+        varchar company_name UK 
+    }
+
+    fault_context {
+        tinyint fault_context_id PK 
+        varchar fault_context_name 
+    }
+
+    job {
+        int branch_fk FK,UK 
+        bigint job_id PK 
+        json job_info 
+        varchar job_info_str UK 
+        datetime last_run 
+    }
+
+    org {
+        int company_fk FK,UK 
+        int org_id PK 
+        varchar org_name UK 
+    }
+
+    repo {
+        int org_fk FK,UK 
+        int repo_id PK 
+        varchar repo_name UK 
+    }
+
+    run {
+        tinyint is_success 
+        bigint job_fk FK,UK 
+        mediumint job_run_count 
+        datetime run_date 
+        bigint run_id PK,UK 
+        varchar run_reference UK 
+        varchar sha 
+    }
+
+    stage {
+        bigint run_fk FK,UK 
+        bigint stage_id PK,UK 
+        varchar stage_name UK 
+        json test_result_json 
+    }
+
+    storage {
+        varchar index_file 
+        tinyint is_upload_complete 
+        varchar label UK 
+        varchar prefix 
+        bigint stage_fk FK,UK 
+        bigint storage_id PK 
+        tinyint storage_type FK 
+    }
+
+    storage_type {
+        tinyint storage_type_id PK 
+        varchar storage_type_name 
+    }
+
+    test_case {
+        text assertions 
+        varchar class_name 
+        varchar name 
+        text system_err 
+        text system_out 
+        bigint test_case_id PK 
+        tinyint test_status_fk FK 
+        bigint test_suite_fk FK 
+        decimal time 
+    }
+
+    test_case_fault {
+        tinyint fault_context_fk FK 
+        varchar message 
+        bigint test_case_fault_id PK 
+        bigint test_case_fk FK 
+        varchar type 
+        mediumtext value 
+    }
+
+    test_result {
+        int error 
+        json external_links 
+        int failure 
+        tinyint has_skip 
+        tinyint is_success 
+        int skipped 
+        bigint stage_fk FK,UK 
+        datetime test_result_created 
+        bigint test_result_id PK 
+        json test_suites_json 
+        int tests 
+        decimal time 
+    }
+
+    test_status {
+        tinyint test_status_id PK 
+        varchar test_status_name 
+    }
+
+    test_suite {
+        int error 
+        int failure 
+        varchar group 
+        tinyint has_skip 
+        tinyint is_success 
+        varchar name 
+        varchar package_name 
+        json properties 
+        int skipped 
+        bigint test_result_fk FK 
+        bigint test_suite_id PK 
+        int tests 
+        decimal time 
+    }
+
+    branch }o--|| repo : "repo_fk"
+    job }o--|| branch : "branch_fk"
+    org }o--|| company : "company_fk"
+    test_case_fault }o--|| fault_context : "fault_context_fk"
+    run }o--|| job : "job_fk"
+    repo }o--|| org : "org_fk"
+    stage }o--|| run : "run_fk"
+    storage }o--|| stage : "stage_fk"
+    test_result }o--|| stage : "stage_fk"
+    storage }o--|| storage_type : "storage_type"
+    test_case }o--|| test_status : "test_status_fk"
+    test_case }o--|| test_suite : "test_suite_fk"
+    test_case_fault }o--|| test_case : "test_case_fk"
+    test_suite }o--|| test_result : "test_result_fk"
+```
