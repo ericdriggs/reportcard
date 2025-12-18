@@ -374,6 +374,28 @@ Schema/Migration file?
 
 ---
 
+## AI Productivity Notes
+
+### Immediate Context
+- Multi-module Gradle project with database-first design
+- JOOQ provides type-safe database access - use generated classes
+- Integration tests require Docker for TestContainers
+- AWS integration for production artifact storage
+
+### Common AI Tasks
+1. **Adding new API endpoints**: Work in reportcard-server, use JOOQ for database access
+2. **Database changes**: Update schema first, regenerate JOOQ, update business logic
+3. **New test cases**: Use TestContainers for integration tests, MockMvc for API tests
+4. **Client library changes**: Work in reportcard-client, coordinate with server changes
+
+### Safety Constraints
+- Never modify generated JOOQ code
+- Always regenerate JOOQ after schema changes
+- Use TestContainers for database-dependent tests
+- Coordinate changes across modules due to dependencies
+
+---
+
 ## Module Structure
 
 ### reportcard-server
