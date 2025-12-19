@@ -6,6 +6,8 @@ import io.github.ericdriggs.reportcard.model.branch.BranchJobLatestRunMap;
 import io.github.ericdriggs.reportcard.model.metrics.company.MetricsIntervalRequest;
 import io.github.ericdriggs.reportcard.model.metrics.company.MetricsIntervalResultCount;
 import io.github.ericdriggs.reportcard.model.metrics.company.MetricsRequest;
+import io.github.ericdriggs.reportcard.model.pipeline.PipelineDashboardRequest;
+import io.github.ericdriggs.reportcard.model.pipeline.PipelineDashboardMetrics;
 import io.github.ericdriggs.reportcard.model.graph.CompanyGraph;
 import io.github.ericdriggs.reportcard.model.graph.TestSuiteGraph;
 import io.github.ericdriggs.reportcard.model.graph.TestSuiteGraphBuilder;
@@ -18,6 +20,8 @@ import lombok.SneakyThrows;
 import org.jooq.*;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
+
+import java.math.BigDecimal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -577,6 +581,32 @@ public class GraphService extends AbstractPersistService {
     public void populateTestSuitesJson(Long testResultId) {
         final String testResultJson = getTestSuitesGraphJson(testResultId);
         updateTestResultJson(testResultId, testResultJson);
+    }
+
+    public List<PipelineDashboardMetrics> getPipelineDashboard(PipelineDashboardRequest request) {
+        List<CompanyGraph> companyGraphs = getPipelineDashboardCompanyGraphs(request);
+        return PipelineDashboardMetrics.fromCompanyGraphs(companyGraphs, request);
+    }
+    
+    List<CompanyGraph> getPipelineDashboardCompanyGraphs(PipelineDashboardRequest request) {
+        TableConditionMap tableConditionMap = new TableConditionMap();
+        tableConditionMap.put(COMPANY, COMPANY.COMPANY_NAME.eq(request.getCompany()));
+        tableConditionMap.put(ORG, ORG.ORG_NAME.eq(request.getOrg()));
+        
+        // Filter by pipeline in job_info_str
+        String pipelineFilter = "pipeline:" + request.getPipeline();
+        tableConditionMap.put(JOB, JOB.JOB_INFO_STR.like("%" + pipelineFilter + "%"));
+        
+        // Filter by days
+        if (request.getDays() != null) {
+            Instant cutoff = Instant.now().minus(request.getDays(), ChronoUnit.DAYS);
+            tableConditionMap.put(RUN, RUN.RUN_DATE.ge(cutoff));
+        }
+        
+        // Include test data
+        tableConditionMap.put(TEST_RESULT, TEST_RESULT.TEST_RESULT_ID.isNotNull());
+        
+        return getCompanyGraphs(tableConditionMap);
     }
 
     @SuppressWarnings("rawtypes")

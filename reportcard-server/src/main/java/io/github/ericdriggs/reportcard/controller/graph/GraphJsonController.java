@@ -2,6 +2,8 @@ package io.github.ericdriggs.reportcard.controller.graph;
 
 import io.github.ericdriggs.reportcard.model.metrics.company.MetricsIntervalRequest;
 import io.github.ericdriggs.reportcard.model.metrics.company.MetricsIntervalResultCount;
+import io.github.ericdriggs.reportcard.model.pipeline.PipelineDashboardRequest;
+import io.github.ericdriggs.reportcard.model.pipeline.PipelineDashboardMetrics;
 import io.github.ericdriggs.reportcard.model.trend.JobStageTestTrend;
 import io.github.ericdriggs.reportcard.persist.GraphService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.TreeSet;
 
 @RestController
@@ -89,6 +92,26 @@ public class GraphJsonController {
         return new ResponseEntity<>(metricsIntervalResultCounts, HttpStatus.OK);
     }
 
-
+    @GetMapping(path = "test_health/company/{company}/org/{org}", produces = "application/json")
+    @Operation(summary = "Get pipeline dashboard metrics",
+            description = "Pipeline dashboard showing days since passing, job pass %, test pass % for jobs matching pipeline filter",
+            operationId = "getPipelineDashboardJson"
+    )
+    public ResponseEntity<List<PipelineDashboardMetrics>> getPipelineDashboardJson(
+            @PathVariable String company,
+            @PathVariable String org,
+            @RequestParam(required = false, defaultValue = "build_acceptance") String pipeline,
+            @RequestParam(required = false, defaultValue = "90") Integer days
+    ) {
+        PipelineDashboardRequest request = PipelineDashboardRequest.builder()
+                .company(company)
+                .org(org)
+                .pipeline(pipeline)
+                .days(days)
+                .build();
+        
+        List<PipelineDashboardMetrics> metrics = graphService.getPipelineDashboard(request);
+        return new ResponseEntity<>(metrics, HttpStatus.OK);
+    }
 
 }

@@ -4,6 +4,8 @@ import io.github.ericdriggs.reportcard.model.metrics.company.MetricsIntervalRequ
 import io.github.ericdriggs.reportcard.model.metrics.company.MetricsIntervalResultCount;
 import io.github.ericdriggs.reportcard.model.metrics.company.MetricsIntervalResultCountMaps;
 import io.github.ericdriggs.reportcard.model.orgdashboard.OrgDashboard;
+import io.github.ericdriggs.reportcard.model.pipeline.PipelineDashboardRequest;
+import io.github.ericdriggs.reportcard.model.pipeline.PipelineDashboardMetrics;
 import io.github.ericdriggs.reportcard.model.trend.JobStageTestTrend;
 import io.github.ericdriggs.reportcard.persist.GraphService;
 import lombok.extern.slf4j.Slf4j;
@@ -199,5 +201,24 @@ public class GraphUIController {
         MetricsIntervalResultCountMaps metricsIntervalResultCountMaps = MetricsIntervalResultCountMaps.fromMetricsIntervalResultCount(metricsIntervalResultCounts);
         final String response = MetricsHtmlHelper.renderMetricsIntervalResultCountMaps(metricsIntervalResultCountMaps);
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "test_health/company/{company}/org/{org}", produces = "text/html;charset=UTF-8")
+    public ResponseEntity<String> getPipelineDashboardHtml(
+            @PathVariable String company,
+            @PathVariable String org,
+            @RequestParam(required = false, defaultValue = "build_acceptance") String pipeline,
+            @RequestParam(required = false, defaultValue = "90") Integer days
+    ) {
+        PipelineDashboardRequest request = PipelineDashboardRequest.builder()
+                .company(company)
+                .org(org)
+                .pipeline(pipeline)
+                .days(days)
+                .build();
+        
+        List<PipelineDashboardMetrics> metrics = graphService.getPipelineDashboard(request);
+        final String dashboardHtml = PipelineDashboardHtmlHelper.renderPipelineDashboard(metrics, pipeline);
+        return new ResponseEntity<>(dashboardHtml, HttpStatus.OK);
     }
 }
