@@ -1,6 +1,6 @@
 package io.github.ericdriggs.reportcard.controller.graph;
 
-import io.github.ericdriggs.reportcard.model.pipeline.PipelineDashboardMetrics;
+import io.github.ericdriggs.reportcard.model.pipeline.JobDashboardMetrics;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -14,8 +14,8 @@ class PipelineDashboardHtmlHelperTest {
     @Test
     void testRenderPipelineDashboard() {
         // Given
-        List<PipelineDashboardMetrics> metrics = Arrays.asList(
-            PipelineDashboardMetrics.builder()
+        List<JobDashboardMetrics> metrics = Arrays.asList(
+            JobDashboardMetrics.builder()
                 .company("hulu")
                 .org("SubLife")
                 .repo("test-service")
@@ -25,7 +25,7 @@ class PipelineDashboardHtmlHelperTest {
                 .jobPassPercent(new BigDecimal("85.5"))
                 .testPassPercent(new BigDecimal("92.3"))
                 .build(),
-            PipelineDashboardMetrics.builder()
+            JobDashboardMetrics.builder()
                 .company("hulu")
                 .org("SubLife")
                 .repo("other-service")
