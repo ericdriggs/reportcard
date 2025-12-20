@@ -13,7 +13,7 @@ import java.time.temporal.ChronoUnit;
 public class PipelineDashboardRequest {
     String company;
     String org;
-    String pipeline; // e.g., "build_acceptance"
+    String jobInfo; // e.g., "pipeline:build_acceptance" or "application:commons-utils"
     @Builder.Default
     Integer days = 90;
     @Builder.Default

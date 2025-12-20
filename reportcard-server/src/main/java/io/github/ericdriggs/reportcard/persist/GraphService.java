@@ -6,8 +6,9 @@ import io.github.ericdriggs.reportcard.model.branch.BranchJobLatestRunMap;
 import io.github.ericdriggs.reportcard.model.metrics.company.MetricsIntervalRequest;
 import io.github.ericdriggs.reportcard.model.metrics.company.MetricsIntervalResultCount;
 import io.github.ericdriggs.reportcard.model.metrics.company.MetricsRequest;
-import io.github.ericdriggs.reportcard.model.pipeline.PipelineDashboardRequest;
-import io.github.ericdriggs.reportcard.model.pipeline.PipelineDashboardMetrics;
+import io.github.ericdriggs.reportcard.model.pipeline.JobDashboardRequest;
+import io.github.ericdriggs.reportcard.model.pipeline.JobDashboardMetrics;
+
 import io.github.ericdriggs.reportcard.model.graph.CompanyGraph;
 import io.github.ericdriggs.reportcard.model.graph.TestSuiteGraph;
 import io.github.ericdriggs.reportcard.model.graph.TestSuiteGraphBuilder;
@@ -31,6 +32,7 @@ import org.springframework.util.CollectionUtils;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 import static io.github.ericdriggs.reportcard.gen.db.Tables.*;
@@ -583,31 +585,64 @@ public class GraphService extends AbstractPersistService {
         updateTestResultJson(testResultId, testResultJson);
     }
 
-    public List<PipelineDashboardMetrics> getPipelineDashboard(PipelineDashboardRequest request) {
+    public List<JobDashboardMetrics> getPipelineDashboard(JobDashboardRequest request) {
         List<CompanyGraph> companyGraphs = getPipelineDashboardCompanyGraphs(request);
-        return PipelineDashboardMetrics.fromCompanyGraphs(companyGraphs, request);
+        return JobDashboardMetrics.fromCompanyGraphs(companyGraphs, request);
     }
     
-    List<CompanyGraph> getPipelineDashboardCompanyGraphs(PipelineDashboardRequest request) {
+    List<CompanyGraph> getPipelineDashboardCompanyGraphs(JobDashboardRequest request) {
         TableConditionMap tableConditionMap = new TableConditionMap();
         tableConditionMap.put(COMPANY, COMPANY.COMPANY_NAME.eq(request.getCompany()));
         tableConditionMap.put(ORG, ORG.ORG_NAME.eq(request.getOrg()));
         
-        // Filter by pipeline in job_info_str
-        String pipelineFilter = "pipeline:" + request.getPipeline();
-        tableConditionMap.put(JOB, JOB.JOB_INFO_STR.like("%" + pipelineFilter + "%"));
+        // Build conditions for lightweight runIds query
+        Condition companyCondition = COMPANY.COMPANY_NAME.eq(request.getCompany());
+        Condition orgCondition = ORG.ORG_NAME.eq(request.getOrg());
+        Condition jobCondition = trueCondition();
+        Condition runCondition = trueCondition();
+        
+        // Filter by jobInfo in job_info_str (only if jobInfo is provided)
+        if (request.getJobInfo() != null && !request.getJobInfo().trim().isEmpty()) {
+            log.info("DEBUG: jobInfo parameter received: '{}'", request.getJobInfo());
+            // Parse jobInfo as key:value format (e.g., "pipeline:dev-cp3")
+            String[] parts = request.getJobInfo().split(":", 2);
+            if (parts.length == 2) {
+                String key = parts[0].trim();
+                String value = parts[1].trim();
+                jobCondition = jobCondition.and(SqlJsonUtil.jobInfoContainsKeyValue(key, value));
+            } else {
+                log.info("DEBUG: Using fallback pattern for: '{}'", request.getJobInfo());
+                jobCondition = jobCondition.and(JOB.JOB_INFO_STR.like("%" + request.getJobInfo() + "%"));
+            }
+        }
         
         // Filter by days
         if (request.getDays() != null) {
             Instant cutoff = Instant.now().minus(request.getDays(), ChronoUnit.DAYS);
-            tableConditionMap.put(RUN, RUN.RUN_DATE.ge(cutoff));
+            runCondition = runCondition.and(RUN.RUN_DATE.ge(cutoff));
         }
+        
+        // Step 1: Get runIds with lightweight query (prevents LIKE from propagating to STAGE/TEST_RESULT)
+        Long[] runIds = dsl.selectDistinct(RUN.RUN_ID.as("RUN_IDS"))
+                .from(COMPANY)
+                .leftJoin(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID))
+                .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID))
+                .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID))
+                .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
+                .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID))
+                .where(companyCondition.and(orgCondition).and(jobCondition).and(runCondition))
+                .fetchArray("RUN_IDS", Long.class);
+        
+        // Step 2: Use runIds to limit expensive graph query
+        tableConditionMap.put(RUN, RUN.RUN_ID.in(runIds));
         
         // Include test data
         tableConditionMap.put(TEST_RESULT, TEST_RESULT.TEST_RESULT_ID.isNotNull());
         
         return getCompanyGraphs(tableConditionMap);
     }
+
+
 
     @SuppressWarnings("rawtypes")
     protected Result getTestSuitesGraphResult(Long testResultId) {
