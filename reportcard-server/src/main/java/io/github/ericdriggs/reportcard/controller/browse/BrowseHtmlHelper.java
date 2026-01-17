@@ -121,11 +121,13 @@ public class BrowseHtmlHelper {
                 <fieldset>
                 <legend>{orgName} links</legend>
                     {dashboardLink}<br>
+                    {jobDashboardLink}<br>
                     {metricsLink}
                 </fieldset>
                 """
                         .replace("{orgName}", org)
                         .replace("{dashboardLink}", getLink(org + " Dashboard 📊", orgPath.toUrlPath() + "/dashboard?days=30"))
+                        .replace("{jobDashboardLink}", getLink(org + " Job Dashboard 📋", "/job_dashboard" + orgPath.toUrlPath()))
                         .replace("{metricsLink}", getLink(org + " Metrics 🔢", "/metrics" + orgPath.toUrlPath() ))
                 ;
     }

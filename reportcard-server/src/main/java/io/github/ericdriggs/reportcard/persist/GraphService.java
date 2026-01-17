@@ -603,16 +603,19 @@ public class GraphService extends AbstractPersistService {
         
         // Filter by jobInfo in job_info_str (only if jobInfo is provided)
         if (request.getJobInfo() != null && !request.getJobInfo().trim().isEmpty()) {
-            log.info("DEBUG: jobInfo parameter received: '{}'", request.getJobInfo());
-            // Parse jobInfo as key:value format (e.g., "pipeline:dev-cp3")
             String[] parts = request.getJobInfo().split(":", 2);
             if (parts.length == 2) {
                 String key = parts[0].trim();
                 String value = parts[1].trim();
-                jobCondition = jobCondition.and(SqlJsonUtil.jobInfoContainsKeyValue(key, value));
+                Condition jobInfoCondition = SqlJsonUtil.jobInfoContainsKeyValue(key, value);
+                log.info("Setting JOB condition: key='{}', value='{}', condition={}", key, value, jobInfoCondition);
+                jobCondition = jobCondition.and(jobInfoCondition);
+                tableConditionMap.put(JOB, jobInfoCondition);
             } else {
-                log.info("DEBUG: Using fallback pattern for: '{}'", request.getJobInfo());
-                jobCondition = jobCondition.and(JOB.JOB_INFO_STR.like("%" + request.getJobInfo() + "%"));
+                Condition jobInfoCondition = JOB.JOB_INFO_STR.like("%" + request.getJobInfo() + "%");
+                log.info("Setting JOB fallback condition: {}", jobInfoCondition);
+                jobCondition = jobCondition.and(jobInfoCondition);
+                tableConditionMap.put(JOB, jobInfoCondition);
             }
         }
         
@@ -623,23 +626,29 @@ public class GraphService extends AbstractPersistService {
         }
         
         // Step 1: Get runIds with lightweight query (prevents LIKE from propagating to STAGE/TEST_RESULT)
+        // Optimized: Skip REPO/BRANCH joins since we don't filter on them
         Long[] runIds = dsl.selectDistinct(RUN.RUN_ID.as("RUN_IDS"))
-                .from(COMPANY)
-                .leftJoin(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID))
-                .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID))
-                .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID))
-                .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
-                .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID))
+                .from(RUN)
+                .innerJoin(JOB).on(JOB.JOB_ID.eq(RUN.JOB_FK))
+                .innerJoin(BRANCH).on(BRANCH.BRANCH_ID.eq(JOB.BRANCH_FK))
+                .innerJoin(REPO).on(REPO.REPO_ID.eq(BRANCH.REPO_FK))
+                .innerJoin(ORG).on(ORG.ORG_ID.eq(REPO.ORG_FK))
+                .innerJoin(COMPANY).on(COMPANY.COMPANY_ID.eq(ORG.COMPANY_FK))
                 .where(companyCondition.and(orgCondition).and(jobCondition).and(runCondition))
+                .orderBy(RUN.RUN_DATE.desc())
+                .limit(10000)  // Safety limit to prevent excessive memory usage
                 .fetchArray("RUN_IDS", Long.class);
+        
+        log.info("Found {} runIds matching filter", runIds.length);
         
         // Step 2: Use runIds to limit expensive graph query
         tableConditionMap.put(RUN, RUN.RUN_ID.in(runIds));
         
-        // Include test data
+        // Include test data - but exclude testSuitesJson (only need aggregate counts)
         tableConditionMap.put(TEST_RESULT, TEST_RESULT.TEST_RESULT_ID.isNotNull());
         
-        return getCompanyGraphs(tableConditionMap);
+        // Pass false to exclude testSuitesJson - massive performance improvement
+        return getCompanyGraphs(tableConditionMap, false);
     }
 
 

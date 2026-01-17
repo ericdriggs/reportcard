@@ -78,6 +78,11 @@ public class JobDashboardMetrics {
                             BigDecimal testPassPercent = totalTests > 0 ? 
                                 BigDecimal.valueOf(passingTests * 100.0 / totalTests) : BigDecimal.ZERO;
                             
+                            // Skip jobs with no runs
+                            if (totalRuns == 0) {
+                                continue;
+                            }
+                            
                             results.add(JobDashboardMetrics.builder()
                                 .company(companyGraph.companyName())
                                 .org(orgGraph.orgName())

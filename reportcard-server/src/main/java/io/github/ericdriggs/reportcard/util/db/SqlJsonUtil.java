@@ -58,9 +58,14 @@ public enum SqlJsonUtil {
             return condition("true");
         }
         
-        // Key is exact match, value uses SQL wildcards as provided
-        String pattern = "%\"" + key + "\":\"" + value + "\"";
-        return JOB.JOB_INFO_STR.like(pattern);
+        // Use MySQL JSON_EXTRACT for both exact match and wildcards
+        if (value.contains("%")) {
+            // Wildcard search - use JSON_EXTRACT with LIKE
+            return condition("JSON_EXTRACT(job_info, '$." + key + "') LIKE '" + value + "'");
+        } else {
+            // Exact match - use JSON_EXTRACT with =
+            return condition("JSON_EXTRACT(job_info, '$." + key + "') = '" + value + "'");
+        }
     }
 
     public static Condition jsonNotEqualsCondition(Field<?> field, String json) {
