@@ -635,7 +635,7 @@ public class GraphService extends AbstractPersistService {
                 .innerJoin(ORG).on(ORG.ORG_ID.eq(REPO.ORG_FK))
                 .innerJoin(COMPANY).on(COMPANY.COMPANY_ID.eq(ORG.COMPANY_FK))
                 .where(companyCondition.and(orgCondition).and(jobCondition).and(runCondition))
-                .orderBy(RUN.RUN_DATE.desc())
+                .orderBy(RUN.RUN_ID.desc())
                 .limit(10000)  // Safety limit to prevent excessive memory usage
                 .fetchArray("RUN_IDS", Long.class);
         

@@ -22,7 +22,41 @@ public class PipelineDashboardHtmlHelper {
         StringBuilder sb = new StringBuilder();
         String title = pipeline != null && !pipeline.trim().isEmpty() ? pipeline : "All Pipelines";
         sb.append("<h1>Pipeline Dashboard - ").append(title).append("</h1>").append(ls);
+        sb.append(renderFilterForm());
         sb.append(renderPipelineTable(metrics));
+        return sb.toString();
+    }
+
+    private static String renderFilterForm() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<form method='get' style='margin: 20px 0; padding: 15px; border: 1px solid #ccc; background: #f9f9f9;'>").append(ls);
+        sb.append("<div style='margin-bottom: 10px;'>").append(ls);
+        sb.append("<label for='jobInfoKey' style='display: inline-block; width: 120px; font-weight: bold;'>Job Info Key:</label>").append(ls);
+        sb.append("<input type='text' id='jobInfoKey' name='jobInfoKey' style='width: 350px; padding: 5px;' placeholder='e.g., pipeline, application'>").append(ls);
+        sb.append("</div>").append(ls);
+        sb.append("<div style='margin-bottom: 10px;'>").append(ls);
+        sb.append("<label for='jobInfoValue' style='display: inline-block; width: 120px; font-weight: bold;'>Job Info Value:</label>").append(ls);
+        sb.append("<input type='text' id='jobInfoValue' name='jobInfoValue' style='width: 350px; padding: 5px;' placeholder='e.g., build_acceptance, commons-utils'>").append(ls);
+        sb.append("</div>").append(ls);
+        sb.append("<div style='margin-bottom: 10px; margin-left: 120px; font-size: 0.9em; color: #666;'>").append(ls);
+        sb.append("Wildcard matching: Use * before or after text (e.g., *acceptance, build*, *commons*). <br>Exact matching recommended for best performance.").append(ls);
+        sb.append("</div>").append(ls);
+        sb.append("<div style='margin-left: 120px;'>").append(ls);
+        sb.append("<button type='submit' style='padding: 8px 20px; background: #007bff; color: white; border: none; cursor: pointer;'>Filter</button>").append(ls);
+        sb.append("<button type='button' onclick='window.location.href=window.location.pathname' style='padding: 8px 20px; margin-left: 10px; background: #6c757d; color: white; border: none; cursor: pointer;'>Clear</button>").append(ls);
+        sb.append("</div>").append(ls);
+        sb.append("<script>").append(ls);
+        sb.append("document.querySelector('form').addEventListener('submit', function(e) {").append(ls);
+        sb.append("  e.preventDefault();").append(ls);
+        sb.append("  const key = document.getElementById('jobInfoKey').value.trim();").append(ls);
+        sb.append("  const value = document.getElementById('jobInfoValue').value.trim();").append(ls);
+        sb.append("  if (key && value) {").append(ls);
+        sb.append("    const jobInfo = key + ':' + value;").append(ls);
+        sb.append("    window.location.href = window.location.pathname + '?jobInfo=' + encodeURIComponent(jobInfo);").append(ls);
+        sb.append("  }").append(ls);
+        sb.append("});").append(ls);
+        sb.append("</script>").append(ls);
+        sb.append("</form>").append(ls);
         return sb.toString();
     }
 
