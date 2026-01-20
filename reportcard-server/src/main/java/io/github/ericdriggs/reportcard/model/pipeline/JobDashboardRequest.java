@@ -1,11 +1,13 @@
 package io.github.ericdriggs.reportcard.model.pipeline;
 
 import lombok.Builder;
+import lombok.Singular;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Map;
 
 @Builder
 @Jacksonized
@@ -13,7 +15,8 @@ import java.time.temporal.ChronoUnit;
 public class JobDashboardRequest {
     String company;
     String org;
-    String jobInfo; // e.g., "pipeline:build_acceptance" or "application:commons-utils"
+    @Singular
+    Map<String, String> jobInfos; // e.g., {"pipeline": "build_acceptance", "application": "commons-utils"}
     @Builder.Default
     Integer days = 90;
     @Builder.Default

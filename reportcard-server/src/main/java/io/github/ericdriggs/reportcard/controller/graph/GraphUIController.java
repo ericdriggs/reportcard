@@ -17,7 +17,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeSet;
 
 @RestController
@@ -208,19 +210,30 @@ public class GraphUIController {
     public ResponseEntity<String> getJobDashboard(
             @PathVariable String company,
             @PathVariable String org,
-            @RequestParam(required = false) String jobInfo,
+            @RequestParam(required = false) List<String> jobInfo,
             @RequestParam(required = false, defaultValue = "90") Integer days
     ) {
-        // Convert asterisk wildcards to SQL wildcards at controller layer
-        String processedJobInfo = jobInfo;
-        if (jobInfo != null && jobInfo.contains("*")) {
-            processedJobInfo = jobInfo.replace("*", "%");
+        // Parse jobInfo params into Map (supports compound filtering via query string)
+        Map<String, String> jobInfoMap = new HashMap<>();
+        if (jobInfo != null) {
+            for (String info : jobInfo) {
+                String[] parts = info.split(":", 2);
+                if (parts.length == 2) {
+                    String key = parts[0].trim();
+                    String value = parts[1].trim();
+                    // Convert asterisk wildcards to SQL wildcards
+                    if (value.contains("*")) {
+                        value = value.replace("*", "%");
+                    }
+                    jobInfoMap.put(key, value);
+                }
+            }
         }
         
         JobDashboardRequest request = JobDashboardRequest.builder()
                 .company(company)
                 .org(org)
-                .jobInfo(processedJobInfo)
+                .jobInfos(jobInfoMap)
                 .days(days)
                 .build();
         List<JobDashboardMetrics> metrics = graphService.getPipelineDashboard(request);

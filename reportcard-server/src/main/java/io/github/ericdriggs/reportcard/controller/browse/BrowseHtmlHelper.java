@@ -127,7 +127,7 @@ public class BrowseHtmlHelper {
                 """
                         .replace("{orgName}", org)
                         .replace("{dashboardLink}", getLink(org + " Dashboard 📊", orgPath.toUrlPath() + "/dashboard?days=30"))
-                        .replace("{jobDashboardLink}", getLink(org + " Job Dashboard 📋", "/job_dashboard" + orgPath.toUrlPath()))
+                        .replace("{jobDashboardLink}", getLink(org + " Job Dashboard 📋", "/job_dashboard" + orgPath.toUrlPath() + "?days=90"))
                         .replace("{metricsLink}", getLink(org + " Metrics 🔢", "/metrics" + orgPath.toUrlPath() ))
                 ;
     }

@@ -601,22 +601,14 @@ public class GraphService extends AbstractPersistService {
         Condition jobCondition = trueCondition();
         Condition runCondition = trueCondition();
         
-        // Filter by jobInfo in job_info_str (only if jobInfo is provided)
-        if (request.getJobInfo() != null && !request.getJobInfo().trim().isEmpty()) {
-            String[] parts = request.getJobInfo().split(":", 2);
-            if (parts.length == 2) {
-                String key = parts[0].trim();
-                String value = parts[1].trim();
-                Condition jobInfoCondition = SqlJsonUtil.jobInfoContainsKeyValue(key, value);
-                log.info("Setting JOB condition: key='{}', value='{}', condition={}", key, value, jobInfoCondition);
+        // Filter by jobInfos (only if provided)
+        if (request.getJobInfos() != null && !request.getJobInfos().isEmpty()) {
+            for (Map.Entry<String, String> entry : request.getJobInfos().entrySet()) {
+                Condition jobInfoCondition = SqlJsonUtil.jobInfoContainsKeyValue(entry.getKey(), entry.getValue());
+                log.info("Setting JOB condition: key='{}', value='{}', condition={}", entry.getKey(), entry.getValue(), jobInfoCondition);
                 jobCondition = jobCondition.and(jobInfoCondition);
-                tableConditionMap.put(JOB, jobInfoCondition);
-            } else {
-                Condition jobInfoCondition = JOB.JOB_INFO_STR.like("%" + request.getJobInfo() + "%");
-                log.info("Setting JOB fallback condition: {}", jobInfoCondition);
-                jobCondition = jobCondition.and(jobInfoCondition);
-                tableConditionMap.put(JOB, jobInfoCondition);
             }
+            tableConditionMap.put(JOB, jobCondition);
         }
         
         // Filter by days

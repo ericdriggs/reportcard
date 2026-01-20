@@ -29,34 +29,70 @@ public class PipelineDashboardHtmlHelper {
 
     private static String renderFilterForm() {
         StringBuilder sb = new StringBuilder();
-        sb.append("<form method='get' style='margin: 20px 0; padding: 15px; border: 1px solid #ccc; background: #f9f9f9;'>").append(ls);
+        sb.append("<fieldset style='margin: 20px 0; padding: 15px; border: 1px solid #ccc; background: #f9f9f9;'>").append(ls);
+        sb.append("<legend style='font-weight: bold;'>Filter by Job Info</legend>").append(ls);
+        sb.append("<form method='get'>").append(ls);
         sb.append("<div style='margin-bottom: 10px;'>").append(ls);
-        sb.append("<label for='jobInfoKey' style='display: inline-block; width: 120px; font-weight: bold;'>Job Info Key:</label>").append(ls);
-        sb.append("<input type='text' id='jobInfoKey' name='jobInfoKey' style='width: 350px; padding: 5px;' placeholder='e.g., pipeline, application'>").append(ls);
+        sb.append("<label for='jobInfoKey' style='display: inline-block; width: 80px; font-weight: bold;'>Key:</label>").append(ls);
+        sb.append("<input type='text' id='jobInfoKey' name='jobInfoKey' style='width: 250px; padding: 5px; margin-right: 20px;' placeholder='e.g. application'>").append(ls);
+        sb.append("<label for='jobInfoValue' style='display: inline-block; width: 80px; font-weight: bold;'>Value:</label>").append(ls);
+        sb.append("<input type='text' id='jobInfoValue' name='jobInfoValue' style='width: 250px; padding: 5px;' placeholder='e.g. my_app'>").append(ls);
+        sb.append("</div>").append(ls);
+        sb.append("<div style='margin-bottom: 15px;'>").append(ls);
+        sb.append("<label for='jobInfoKey2' style='display: inline-block; width: 80px; font-weight: bold;'>Key:</label>").append(ls);
+        sb.append("<input type='text' id='jobInfoKey2' name='jobInfoKey2' style='width: 250px; padding: 5px; margin-right: 20px;' placeholder='e.g. pipeline'>").append(ls);
+        sb.append("<label for='jobInfoValue2' style='display: inline-block; width: 80px; font-weight: bold;'>Value:</label>").append(ls);
+        sb.append("<input type='text' id='jobInfoValue2' name='jobInfoValue2' style='width: 250px; padding: 5px;' placeholder='e.g. staging'>").append(ls);
         sb.append("</div>").append(ls);
         sb.append("<div style='margin-bottom: 10px;'>").append(ls);
-        sb.append("<label for='jobInfoValue' style='display: inline-block; width: 120px; font-weight: bold;'>Job Info Value:</label>").append(ls);
-        sb.append("<input type='text' id='jobInfoValue' name='jobInfoValue' style='width: 350px; padding: 5px;' placeholder='e.g., build_acceptance, commons-utils'>").append(ls);
-        sb.append("</div>").append(ls);
-        sb.append("<div style='margin-bottom: 10px; margin-left: 120px; font-size: 0.9em; color: #666;'>").append(ls);
-        sb.append("Wildcard matching: Use * before or after text (e.g., *acceptance, build*, *commons*). <br>Exact matching recommended for best performance.").append(ls);
-        sb.append("</div>").append(ls);
-        sb.append("<div style='margin-left: 120px;'>").append(ls);
         sb.append("<button type='submit' style='padding: 8px 20px; background: #007bff; color: white; border: none; cursor: pointer;'>Filter</button>").append(ls);
         sb.append("<button type='button' onclick='window.location.href=window.location.pathname' style='padding: 8px 20px; margin-left: 10px; background: #6c757d; color: white; border: none; cursor: pointer;'>Clear</button>").append(ls);
         sb.append("</div>").append(ls);
+        sb.append("<div style='font-size: 0.9em; color: #666;'>").append(ls);
+        sb.append("Wildcard matching: Use * before or after text (e.g., *acceptance, build*, *commons*).<br>").append(ls);
+        sb.append("Exact matching recommended for best performance.").append(ls);
+        sb.append("</div>").append(ls);
         sb.append("<script>").append(ls);
+        sb.append("// Populate form from query string on page load").append(ls);
+        sb.append("(function() {").append(ls);
+        sb.append("  const params = new URLSearchParams(window.location.search);").append(ls);
+        sb.append("  const jobInfos = params.getAll('jobInfo');").append(ls);
+        sb.append("  if (jobInfos.length > 0) {").append(ls);
+        sb.append("    const parts = jobInfos[0].split(':', 2);").append(ls);
+        sb.append("    if (parts.length === 2) {").append(ls);
+        sb.append("      document.getElementById('jobInfoKey').value = parts[0];").append(ls);
+        sb.append("      document.getElementById('jobInfoValue').value = parts[1];").append(ls);
+        sb.append("    }").append(ls);
+        sb.append("  }").append(ls);
+        sb.append("  if (jobInfos.length > 1) {").append(ls);
+        sb.append("    const parts = jobInfos[1].split(':', 2);").append(ls);
+        sb.append("    if (parts.length === 2) {").append(ls);
+        sb.append("      document.getElementById('jobInfoKey2').value = parts[0];").append(ls);
+        sb.append("      document.getElementById('jobInfoValue2').value = parts[1];").append(ls);
+        sb.append("    }").append(ls);
+        sb.append("  }").append(ls);
+        sb.append("})();").append(ls);
+        sb.append("// Handle form submission").append(ls);
         sb.append("document.querySelector('form').addEventListener('submit', function(e) {").append(ls);
         sb.append("  e.preventDefault();").append(ls);
         sb.append("  const key = document.getElementById('jobInfoKey').value.trim();").append(ls);
         sb.append("  const value = document.getElementById('jobInfoValue').value.trim();").append(ls);
+        sb.append("  const key2 = document.getElementById('jobInfoKey2').value.trim();").append(ls);
+        sb.append("  const value2 = document.getElementById('jobInfoValue2').value.trim();").append(ls);
+        sb.append("  const params = new URLSearchParams();").append(ls);
         sb.append("  if (key && value) {").append(ls);
-        sb.append("    const jobInfo = key + ':' + value;").append(ls);
-        sb.append("    window.location.href = window.location.pathname + '?jobInfo=' + encodeURIComponent(jobInfo);").append(ls);
+        sb.append("    params.append('jobInfo', key + ':' + value);").append(ls);
+        sb.append("  }").append(ls);
+        sb.append("  if (key2 && value2) {").append(ls);
+        sb.append("    params.append('jobInfo', key2 + ':' + value2);").append(ls);
+        sb.append("  }").append(ls);
+        sb.append("  if (params.toString()) {").append(ls);
+        sb.append("    window.location.href = window.location.pathname + '?' + params.toString();").append(ls);
         sb.append("  }").append(ls);
         sb.append("});").append(ls);
         sb.append("</script>").append(ls);
         sb.append("</form>").append(ls);
+        sb.append("</fieldset>").append(ls);
         return sb.toString();
     }
 
@@ -71,7 +107,7 @@ public class PipelineDashboardHtmlHelper {
         sb.append("<th>Repo</th>").append(ls);
         sb.append("<th>Branch</th>").append(ls);
         sb.append("<th>Job Info</th>").append(ls);
-        sb.append("<th>Days Since Passing</th>").append(ls);
+        sb.append("<th>Days since SUCCESS</th>").append(ls);
         sb.append("<th>Job Pass %</th>").append(ls);
         sb.append("<th>Test Pass %</th>").append(ls);
         sb.append("</tr>").append(ls);
@@ -86,9 +122,15 @@ public class PipelineDashboardHtmlHelper {
             sb.append("<td>").append(metric.getBranch()).append("</td>").append(ls);
             sb.append("<td>").append(metric.getJobInfo()).append("</td>").append(ls);
             
-            // Days since passing - show N/A if null
-            String daysSince = metric.getDaysSincePassingRun() != null ? 
-                metric.getDaysSincePassingRun().toString() : "N/A";
+            // Days since passing - show 0 (SUCCESS) if 0, N/A if null
+            String daysSince;
+            if (metric.getDaysSincePassingRun() == null) {
+                daysSince = "N/A";
+            } else if (metric.getDaysSincePassingRun() == 0) {
+                daysSince = "0 (SUCCESS)";
+            } else {
+                daysSince = metric.getDaysSincePassingRun().toString();
+            }
             sb.append("<td>").append(daysSince).append("</td>").append(ls);
             
             // Job pass % and Test pass %
@@ -103,7 +145,7 @@ public class PipelineDashboardHtmlHelper {
     }
 
     public static String renderPipelineDashboardMetrics(List<JobDashboardMetrics> metrics, io.github.ericdriggs.reportcard.model.pipeline.JobDashboardRequest request) {
-        String jobInfo = request != null ? request.getJobInfo() : null;
-        return renderPipelineDashboard(metrics, jobInfo);
+        String title = request.getCompany() + "/" + request.getOrg();
+        return renderPipelineDashboard(metrics, title);
     }
 }
