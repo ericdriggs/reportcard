@@ -22,7 +22,7 @@ public class PipelineDashboardHtmlHelper {
     private static String renderPipelineDashboardMain(List<JobDashboardMetrics> metrics, String pipeline, Integer days) {
         StringBuilder sb = new StringBuilder();
         String title = pipeline != null && !pipeline.trim().isEmpty() ? pipeline : "All Pipelines";
-        sb.append("<h1>Pipeline Dashboard - ").append(title).append("</h1>").append(ls);
+        sb.append("<h1>Org Pipelines - ").append(title).append("</h1>").append(ls);
         String daysText = days != null ? days.toString() : "90";
         sb.append("<p style='margin-left: 20px; font-size: 1.1em;'>Metrics calculated from runs in the last <strong>").append(daysText).append(" days</strong></p>").append(ls);
         sb.append(renderFilterForm());

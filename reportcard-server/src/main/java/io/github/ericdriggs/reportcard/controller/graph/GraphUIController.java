@@ -206,7 +206,7 @@ public class GraphUIController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping(path = "job_dashboard/company/{company}/org/{org}", produces = "text/html;charset=UTF-8")
+    @GetMapping(path = "company/{company}/org/{org}/pipelines", produces = "text/html;charset=UTF-8")
     public ResponseEntity<String> getJobDashboard(
             @PathVariable String company,
             @PathVariable String org,

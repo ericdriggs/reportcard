@@ -127,7 +127,7 @@ public class BrowseHtmlHelper {
                 """
                         .replace("{orgName}", org)
                         .replace("{dashboardLink}", getLink(org + " Dashboard 📊", orgPath.toUrlPath() + "/dashboard?days=30"))
-                        .replace("{jobDashboardLink}", getLink(org + " Job Dashboard 📋", "/job_dashboard" + orgPath.toUrlPath() + "?days=90"))
+                        .replace("{jobDashboardLink}", "<a href='" + orgPath.toUrlPath() + "/pipelines?days=90' style='text-decoration: none;'>" + org + " Pipelines ⏲</a>" + System.lineSeparator())
                         .replace("{metricsLink}", getLink(org + " Metrics 🔢", "/metrics" + orgPath.toUrlPath() ))
                 ;
     }
