@@ -69,9 +69,8 @@ public class JobDashboardMetrics {
                                 for (StageGraph stage : emptyIfNull(run.stages())) {
                                     for (TestResultGraph testResult : emptyIfNull(stage.testResults())) {
                                         totalTests += testResult.tests();
-                                        if (testResult.isSuccess()) {
-                                            passingTests += testResult.tests();
-                                        }
+                                        int passing = testResult.tests() - testResult.error() - testResult.failure() - testResult.skipped();
+                                        passingTests += passing;
                                     }
                                 }
                             }

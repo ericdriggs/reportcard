@@ -12,16 +12,19 @@ import static io.github.ericdriggs.reportcard.util.NumberStringUtil.*;
 public class PipelineDashboardHtmlHelper {
     final static String ls = System.lineSeparator();
 
-    public static String renderPipelineDashboard(List<JobDashboardMetrics> metrics, String pipeline) {
-        final String main = renderPipelineDashboardMain(metrics, pipeline);
+    public static String renderPipelineDashboard(List<JobDashboardMetrics> metrics, String pipeline, Integer days) {
+        final String main = renderPipelineDashboardMain(metrics, pipeline, days);
         return BrowseHtmlHelper.getPage(main, Collections.emptyList(), "pipeline-dashboard")
-                .replace("<!--additionalLinks-->", "<link rel=\"stylesheet\" href=\"/css/metrics.css\">" + ls);
+                .replace("<!--additionalLinks-->", "<link rel=\"stylesheet\" href=\"/css/metrics.css\">" + ls +
+                        "<style>.pipeline-dashboard { margin-left: 20px; }</style>" + ls);
     }
 
-    private static String renderPipelineDashboardMain(List<JobDashboardMetrics> metrics, String pipeline) {
+    private static String renderPipelineDashboardMain(List<JobDashboardMetrics> metrics, String pipeline, Integer days) {
         StringBuilder sb = new StringBuilder();
         String title = pipeline != null && !pipeline.trim().isEmpty() ? pipeline : "All Pipelines";
         sb.append("<h1>Pipeline Dashboard - ").append(title).append("</h1>").append(ls);
+        String daysText = days != null ? days.toString() : "90";
+        sb.append("<p style='margin-left: 20px; font-size: 1.1em;'>Metrics calculated from runs in the last <strong>").append(daysText).append(" days</strong></p>").append(ls);
         sb.append(renderFilterForm());
         sb.append(renderPipelineTable(metrics));
         return sb.toString();
@@ -43,6 +46,10 @@ public class PipelineDashboardHtmlHelper {
         sb.append("<input type='text' id='jobInfoKey2' name='jobInfoKey2' style='width: 250px; padding: 5px; margin-right: 20px;' placeholder='e.g. pipeline'>").append(ls);
         sb.append("<label for='jobInfoValue2' style='display: inline-block; width: 80px; font-weight: bold;'>Value:</label>").append(ls);
         sb.append("<input type='text' id='jobInfoValue2' name='jobInfoValue2' style='width: 250px; padding: 5px;' placeholder='e.g. staging'>").append(ls);
+        sb.append("</div>").append(ls);
+        sb.append("<div style='margin-bottom: 15px;'>").append(ls);
+        sb.append("<label for='days' style='display: inline-block; width: 80px; font-weight: bold;'>Days:</label>").append(ls);
+        sb.append("<input type='number' id='days' name='days' style='width: 100px; padding: 5px;' placeholder='90' min='1'>").append(ls);
         sb.append("</div>").append(ls);
         sb.append("<div style='margin-bottom: 10px;'>").append(ls);
         sb.append("<button type='submit' style='padding: 8px 20px; background: #007bff; color: white; border: none; cursor: pointer;'>Filter</button>").append(ls);
@@ -71,6 +78,10 @@ public class PipelineDashboardHtmlHelper {
         sb.append("      document.getElementById('jobInfoValue2').value = parts[1];").append(ls);
         sb.append("    }").append(ls);
         sb.append("  }").append(ls);
+        sb.append("  const days = params.get('days');").append(ls);
+        sb.append("  if (days) {").append(ls);
+        sb.append("    document.getElementById('days').value = days;").append(ls);
+        sb.append("  }").append(ls);
         sb.append("})();").append(ls);
         sb.append("// Handle form submission").append(ls);
         sb.append("document.querySelector('form').addEventListener('submit', function(e) {").append(ls);
@@ -79,12 +90,16 @@ public class PipelineDashboardHtmlHelper {
         sb.append("  const value = document.getElementById('jobInfoValue').value.trim();").append(ls);
         sb.append("  const key2 = document.getElementById('jobInfoKey2').value.trim();").append(ls);
         sb.append("  const value2 = document.getElementById('jobInfoValue2').value.trim();").append(ls);
+        sb.append("  const days = document.getElementById('days').value.trim();").append(ls);
         sb.append("  const params = new URLSearchParams();").append(ls);
         sb.append("  if (key && value) {").append(ls);
         sb.append("    params.append('jobInfo', key + ':' + value);").append(ls);
         sb.append("  }").append(ls);
         sb.append("  if (key2 && value2) {").append(ls);
         sb.append("    params.append('jobInfo', key2 + ':' + value2);").append(ls);
+        sb.append("  }").append(ls);
+        sb.append("  if (days) {").append(ls);
+        sb.append("    params.append('days', days);").append(ls);
         sb.append("  }").append(ls);
         sb.append("  if (params.toString()) {").append(ls);
         sb.append("    window.location.href = window.location.pathname + '?' + params.toString();").append(ls);
@@ -141,11 +156,23 @@ public class PipelineDashboardHtmlHelper {
         sb.append("</tbody>").append(ls);
         sb.append("</table>").append(ls);
         
+        sb.append("<fieldset style='margin-top: 20px; padding: 15px; border: 1px solid #ccc; background: #f9f9f9;'>").append(ls);
+        sb.append("<legend style='font-weight: bold;'>Field Descriptions</legend>").append(ls);
+        sb.append("<dl style='display: table; border-collapse: collapse; width: 100%;'>").append(ls);
+        sb.append("<dt style='display: table-cell; border: 1px solid #ccc; padding: 8px; font-weight: bold; background: #f5f5f5;'>Days since SUCCESS</dt>").append(ls);
+        sb.append("<dd style='display: table-cell; border: 1px solid #ccc; padding: 8px; margin: 0;'>Number of days since the last successful run. 0 (SUCCESS) means the job passed today.</dd>").append(ls);
+        sb.append("<dt style='display: table-cell; border: 1px solid #ccc; padding: 8px; font-weight: bold; background: #f5f5f5;'>Job Pass %</dt>").append(ls);
+        sb.append("<dd style='display: table-cell; border: 1px solid #ccc; padding: 8px; margin: 0;'>Percentage of runs where every test in the job passed. Calculated as: (passing runs / total runs).</dd>").append(ls);
+        sb.append("<dt style='display: table-cell; border: 1px solid #ccc; padding: 8px; font-weight: bold; background: #f5f5f5;'>Test Pass %</dt>").append(ls);
+        sb.append("<dd style='display: table-cell; border: 1px solid #ccc; padding: 8px; margin: 0;'>Percentage of individual tests that passed. Calculated as: (passing tests / total tests) across all runs.</dd>").append(ls);
+        sb.append("</dl>").append(ls);
+        sb.append("</fieldset>").append(ls);
+        
         return sb.toString();
     }
 
     public static String renderPipelineDashboardMetrics(List<JobDashboardMetrics> metrics, io.github.ericdriggs.reportcard.model.pipeline.JobDashboardRequest request) {
         String title = request.getCompany() + "/" + request.getOrg();
-        return renderPipelineDashboard(metrics, title);
+        return renderPipelineDashboard(metrics, title, request.getDays());
     }
 }
