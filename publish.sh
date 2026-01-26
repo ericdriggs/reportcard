@@ -25,6 +25,9 @@ NAMESPACE="io.github.ericdriggs"  # TODO: update if your namespace changes
 BASE="https://ossrh-staging-api.central.sonatype.com"
 AUTH=$(printf '%s:%s' "$OSSRH_USER" "$OSSRH_PASSWORD" | base64)
 
+echo "📦 Publishing artifacts to staging..."
+./gradlew publishToSonatype
+
 echo "🔍 Searching for staging repo for $NAMESPACE ..."
 REPO_KEY_RAW=$(curl -fsS -H "Authorization: Bearer $AUTH" \
   "$BASE/manual/search/repositories?ip=any&profile_id=$NAMESPACE" \
@@ -41,7 +44,7 @@ echo "➡️  Uploading repository key: $REPO_KEY_RAW"
 # Perform the upload and display full response + status code.
 # jq prettifies JSON if possible, ignores plain-text responses.
 curl -w "\nHTTP %{http_code}\n" -X POST -H "Authorization: Bearer $AUTH" \
-  "$BASE/manual/upload/repository/${REPO_KEY}" \
+  "$BASE/manual/upload/repository/${REPO_KEY}?publishing_type=automatic" \
   | tee /dev/tty \
   | jq . 2>/dev/null || true
 
