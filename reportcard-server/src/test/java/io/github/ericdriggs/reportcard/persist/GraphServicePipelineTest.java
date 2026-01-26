@@ -23,7 +23,7 @@ public class GraphServicePipelineTest {
         JobDashboardRequest request = JobDashboardRequest.builder()
                 .company("test")
                 .org("test")
-                .jobInfo("pipeline:build_acceptance")
+                .jobInfo("pipeline", "build_acceptance")
                 .days(90)
                 .build();
         

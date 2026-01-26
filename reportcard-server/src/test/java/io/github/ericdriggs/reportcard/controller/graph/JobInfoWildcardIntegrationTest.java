@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:application-test.properties")
-public class JobDashboardEndpointsIntegrationTest {
+public class JobInfoWildcardIntegrationTest {
 
     @Autowired
     private GraphUIController graphUIController;
@@ -27,46 +27,49 @@ public class JobDashboardEndpointsIntegrationTest {
     private GraphJsonController graphJsonController;
 
     @Test
-    public void testJobDashboardUIEndpoint() {
-        ResponseEntity<String> response = graphUIController.getJobDashboard("hulu", "SubLife", null, 90);
+    public void testPrefixWildcard() {
+        ResponseEntity<List<JobDashboardMetrics>> response = graphJsonController.getJobDashboardJson("hulu", "SubLife",
+                List.of("pipeline:*cp3"), 90);
         assertEquals(200, response.getStatusCodeValue());
         assertNotNull(response.getBody());
     }
 
     @Test
-    public void testJobDashboardUIEndpointWithJobInfo() {
-        ResponseEntity<String> response = graphUIController.getJobDashboard("hulu", "SubLife", 
-                List.of("pipeline:dev-cp3"), 90);
-        assertEquals(200, response.getStatusCodeValue());
-        assertNotNull(response.getBody());
-    }
-
-    @Test
-    public void testJobDashboardUIEndpointWithDays() {
-        ResponseEntity<String> response = graphUIController.getJobDashboard("hulu", "SubLife", null, 30);
-        assertEquals(200, response.getStatusCodeValue());
-        assertNotNull(response.getBody());
-    }
-
-    @Test
-    public void testJobDashboardUIEndpointWithWildcard() {
-        ResponseEntity<String> response = graphUIController.getJobDashboard("hulu", "SubLife", 
+    public void testSuffixWildcard() {
+        ResponseEntity<List<JobDashboardMetrics>> response = graphJsonController.getJobDashboardJson("hulu", "SubLife",
                 List.of("pipeline:dev*"), 90);
         assertEquals(200, response.getStatusCodeValue());
         assertNotNull(response.getBody());
     }
 
     @Test
-    public void testJobDashboardJsonEndpoint() {
-        ResponseEntity<List<JobDashboardMetrics>> response = graphJsonController.getJobDashboardJson("hulu", "SubLife", null, 90);
+    public void testContainsWildcard() {
+        ResponseEntity<List<JobDashboardMetrics>> response = graphJsonController.getJobDashboardJson("hulu", "SubLife",
+                List.of("pipeline:*dev*"), 90);
         assertEquals(200, response.getStatusCodeValue());
         assertNotNull(response.getBody());
     }
 
     @Test
-    public void testJobDashboardJsonEndpointWithJobInfo() {
-        ResponseEntity<List<JobDashboardMetrics>> response = graphJsonController.getJobDashboardJson("hulu", "SubLife", 
+    public void testExactMatch() {
+        ResponseEntity<List<JobDashboardMetrics>> response = graphJsonController.getJobDashboardJson("hulu", "SubLife",
                 List.of("pipeline:dev-cp3"), 90);
+        assertEquals(200, response.getStatusCodeValue());
+        assertNotNull(response.getBody());
+    }
+
+    @Test
+    public void testMultipleFilters() {
+        ResponseEntity<List<JobDashboardMetrics>> response = graphJsonController.getJobDashboardJson("hulu", "SubLife",
+                List.of("pipeline:dev*", "application:*service"), 90);
+        assertEquals(200, response.getStatusCodeValue());
+        assertNotNull(response.getBody());
+    }
+
+    @Test
+    public void testUIEndpointWithWildcard() {
+        ResponseEntity<String> response = graphUIController.getJobDashboard("hulu", "SubLife",
+                List.of("pipeline:dev*"), 90);
         assertEquals(200, response.getStatusCodeValue());
         assertNotNull(response.getBody());
     }

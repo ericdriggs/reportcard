@@ -6,6 +6,7 @@ import io.github.ericdriggs.reportcard.model.pipeline.JobDashboardMetrics;
 import io.github.ericdriggs.reportcard.model.pipeline.JobDashboardRequest;
 import io.github.ericdriggs.reportcard.model.trend.JobStageTestTrend;
 import io.github.ericdriggs.reportcard.persist.GraphService;
+import io.github.ericdriggs.reportcard.controller.graph.JobInfoParser;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -105,21 +106,7 @@ public class GraphJsonController {
             @RequestParam(required = false) List<String> jobInfo,
             @RequestParam(required = false, defaultValue = "90") Integer days
     ) {
-        // Parse jobInfo params into Map
-        Map<String, String> jobInfoMap = new HashMap<>();
-        if (jobInfo != null) {
-            for (String info : jobInfo) {
-                String[] parts = info.split(":", 2);
-                if (parts.length == 2) {
-                    String key = parts[0].trim();
-                    String value = parts[1].trim();
-                    if (value.contains("*")) {
-                        value = value.replace("*", "%");
-                    }
-                    jobInfoMap.put(key, value);
-                }
-            }
-        }
+        Map<String, String> jobInfoMap = JobInfoParser.parseJobInfoParams(jobInfo);
         
         JobDashboardRequest request = JobDashboardRequest.builder()
                 .company(company)
