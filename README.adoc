@@ -40,7 +40,7 @@ TODOs:
 * pre-requisite: tag latest version
 
 === Automated (recommended)
-* ./deploy.sh
+* ./publish.sh
 
 === Manual steps
 1. upload files

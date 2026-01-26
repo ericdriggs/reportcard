@@ -660,8 +660,8 @@ service.password=test
 # Run server locally
 ./gradlew bootRun
 
-# Publish to Maven Central
-./deploy.sh
+# Publish to Maven Central (should be done by user not ai)
+./publish.sh
 ```
 
 ---
