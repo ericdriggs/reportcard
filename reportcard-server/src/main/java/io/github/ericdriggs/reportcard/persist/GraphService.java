@@ -6,6 +6,9 @@ import io.github.ericdriggs.reportcard.model.branch.BranchJobLatestRunMap;
 import io.github.ericdriggs.reportcard.model.metrics.company.MetricsIntervalRequest;
 import io.github.ericdriggs.reportcard.model.metrics.company.MetricsIntervalResultCount;
 import io.github.ericdriggs.reportcard.model.metrics.company.MetricsRequest;
+import io.github.ericdriggs.reportcard.model.pipeline.JobDashboardRequest;
+import io.github.ericdriggs.reportcard.model.pipeline.JobDashboardMetrics;
+
 import io.github.ericdriggs.reportcard.model.graph.CompanyGraph;
 import io.github.ericdriggs.reportcard.model.graph.TestSuiteGraph;
 import io.github.ericdriggs.reportcard.model.graph.TestSuiteGraphBuilder;
@@ -18,6 +21,8 @@ import lombok.SneakyThrows;
 import org.jooq.*;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
+
+import java.math.BigDecimal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +32,7 @@ import org.springframework.util.CollectionUtils;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 import static io.github.ericdriggs.reportcard.gen.db.Tables.*;
@@ -578,6 +584,66 @@ public class GraphService extends AbstractPersistService {
         final String testResultJson = getTestSuitesGraphJson(testResultId);
         updateTestResultJson(testResultId, testResultJson);
     }
+
+    public List<JobDashboardMetrics> getPipelineDashboard(JobDashboardRequest request) {
+        List<CompanyGraph> companyGraphs = getPipelineDashboardCompanyGraphs(request);
+        return JobDashboardMetrics.fromCompanyGraphs(companyGraphs, request);
+    }
+    
+    List<CompanyGraph> getPipelineDashboardCompanyGraphs(JobDashboardRequest request) {
+        TableConditionMap tableConditionMap = new TableConditionMap();
+        tableConditionMap.put(COMPANY, COMPANY.COMPANY_NAME.eq(request.getCompany()));
+        tableConditionMap.put(ORG, ORG.ORG_NAME.eq(request.getOrg()));
+        
+        // Build conditions for lightweight runIds query
+        Condition companyCondition = COMPANY.COMPANY_NAME.eq(request.getCompany());
+        Condition orgCondition = ORG.ORG_NAME.eq(request.getOrg());
+        Condition jobCondition = trueCondition();
+        Condition runCondition = trueCondition();
+        
+        // Filter by jobInfos (only if provided)
+        if (request.getJobInfos() != null && !request.getJobInfos().isEmpty()) {
+            for (Map.Entry<String, String> entry : request.getJobInfos().entrySet()) {
+                Condition jobInfoCondition = SqlJsonUtil.jobInfoContainsKeyValue(entry.getKey(), entry.getValue());
+                log.info("Setting JOB condition: key='{}', value='{}', condition={}", entry.getKey(), entry.getValue(), jobInfoCondition);
+                jobCondition = jobCondition.and(jobInfoCondition);
+            }
+            tableConditionMap.put(JOB, jobCondition);
+        }
+        
+        // Filter by days
+        if (request.getDays() != null) {
+            Instant cutoff = Instant.now().minus(request.getDays(), ChronoUnit.DAYS);
+            runCondition = runCondition.and(RUN.RUN_DATE.ge(cutoff));
+        }
+        
+        // Step 1: Get runIds with lightweight query (prevents LIKE from propagating to STAGE/TEST_RESULT)
+        // Optimized: Skip REPO/BRANCH joins since we don't filter on them
+        Long[] runIds = dsl.selectDistinct(RUN.RUN_ID.as("RUN_IDS"))
+                .from(RUN)
+                .innerJoin(JOB).on(JOB.JOB_ID.eq(RUN.JOB_FK))
+                .innerJoin(BRANCH).on(BRANCH.BRANCH_ID.eq(JOB.BRANCH_FK))
+                .innerJoin(REPO).on(REPO.REPO_ID.eq(BRANCH.REPO_FK))
+                .innerJoin(ORG).on(ORG.ORG_ID.eq(REPO.ORG_FK))
+                .innerJoin(COMPANY).on(COMPANY.COMPANY_ID.eq(ORG.COMPANY_FK))
+                .where(companyCondition.and(orgCondition).and(jobCondition).and(runCondition))
+                .orderBy(RUN.RUN_ID.desc())
+                .limit(10000)  // Safety limit to prevent excessive memory usage
+                .fetchArray("RUN_IDS", Long.class);
+        
+        log.info("Found {} runIds matching filter", runIds.length);
+        
+        // Step 2: Use runIds to limit expensive graph query
+        tableConditionMap.put(RUN, RUN.RUN_ID.in(runIds));
+        
+        // Include test data - but exclude testSuitesJson (only need aggregate counts)
+        tableConditionMap.put(TEST_RESULT, TEST_RESULT.TEST_RESULT_ID.isNotNull());
+        
+        // Pass false to exclude testSuitesJson - massive performance improvement
+        return getCompanyGraphs(tableConditionMap, false);
+    }
+
+
 
     @SuppressWarnings("rawtypes")
     protected Result getTestSuitesGraphResult(Long testResultId) {

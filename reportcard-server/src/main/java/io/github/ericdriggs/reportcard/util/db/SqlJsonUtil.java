@@ -13,7 +13,9 @@ import org.springframework.util.CollectionUtils;
 import java.util.List;
 import java.util.Map;
 
+import static io.github.ericdriggs.reportcard.gen.db.Tables.JOB;
 import static org.jooq.impl.DSL.condition;
+import static org.jooq.impl.DSL.inline;
 
 public enum SqlJsonUtil {
     ;//static methods only
@@ -50,6 +52,30 @@ public enum SqlJsonUtil {
     @SneakyThrows(JsonProcessingException.class)
     protected static String toJson(Map<String, String> map) {
         return mapper.writeValueAsString(map);
+    }
+
+    public static Condition jobInfoContainsKeyValue(String key, String value) {
+        if (ObjectUtils.isEmpty(key) || ObjectUtils.isEmpty(value)) {
+            return condition("true");
+        }
+        
+        // Validate key to prevent JSON path injection
+        if (!key.matches("^[a-zA-Z0-9_]+$")) {
+            throw new IllegalArgumentException("Invalid key format: " + key);
+        }
+        
+        // Use parameterized queries to prevent SQL injection
+        if (value.contains("%") || value.contains("_")) {
+            // Wildcard search - use JSON_EXTRACT with LIKE
+            return condition("JSON_EXTRACT(job_info, {0}) LIKE {1}",
+                    inline("$." + key),
+                    inline(value));
+        } else {
+            // Exact match - use JSON_EXTRACT with =
+            return condition("JSON_EXTRACT(job_info, {0}) = {1}",
+                    inline("$." + key),
+                    inline(value));
+        }
     }
 
     public static Condition jsonNotEqualsCondition(Field<?> field, String json) {

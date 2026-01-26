@@ -121,11 +121,13 @@ public class BrowseHtmlHelper {
                 <fieldset>
                 <legend>{orgName} links</legend>
                     {dashboardLink}<br>
+                    {jobDashboardLink}<br>
                     {metricsLink}
                 </fieldset>
                 """
                         .replace("{orgName}", org)
                         .replace("{dashboardLink}", getLink(org + " Dashboard 📊", orgPath.toUrlPath() + "/dashboard?days=30"))
+                        .replace("{jobDashboardLink}", "<a href='" + orgPath.toUrlPath() + "/pipelines?days=90' style='text-decoration: none;'>" + org + " Pipelines ⏲</a>" + System.lineSeparator())
                         .replace("{metricsLink}", getLink(org + " Metrics 🔢", "/metrics" + orgPath.toUrlPath() ))
                 ;
     }
@@ -740,7 +742,7 @@ public class BrowseHtmlHelper {
                 &nbsp;&nbsp;&nbsp;
                 <a href="/swagger-ui/index.html">swagger</a>&nbsp;&nbsp;&nbsp;
                 <a href="https://github.com/ericdriggs/reportcard">source</a>&nbsp;&nbsp;&nbsp;
-                <span style="color:white">ver: 0.1.22</span>
+                <span style="color:white">ver: 0.1.23</span>
               </span>
             </header>
             <nav aria-label="breadcrumb">

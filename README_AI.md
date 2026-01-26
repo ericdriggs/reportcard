@@ -72,28 +72,16 @@ For human-oriented documentation, see `README.adoc`.
 
 **Evidence Pattern:** `XPersistTest.java L15-45: PASS, test_method_name() L20-35`
 
-### Collaborative Development Integration
+### Workflow Requirements Plan Execute
 
-**When to Create collaboration_progress.md:**
+**When to Create worfklow_task.md:**
 - Any task requiring 3+ steps (MANDATORY per RULE_ sections)
 - Database schema changes
 - New feature implementation
 - Multi-file bug fixes
 - API endpoint additions
 
-**Collaboration File Structure:**
-```
-# Collaborative Development - [Task Name]
-
-| Status | Task | Actions | Evidence |
-|--------|------|---------|----------|
-| 📋 | 1. Gather requirements | | |
-| 📋 | 2. Collaborative agreement on requirements | | |
-| 📋 | 3. Create plan | | |
-| 📋 | 4. Collaborative agreement on plan | | |
-| 📋 | 5. Verify granular tasks and tests defined | | |
-[Implementation tasks follow]
-```
+see worfklow-requirements-plan-execute.md
 
 **Evidence Format Requirements:**
 - File modifications: `ClassName.java L45-67`
@@ -672,8 +660,8 @@ service.password=test
 # Run server locally
 ./gradlew bootRun
 
-# Publish to Maven Central
-./deploy.sh
+# Publish to Maven Central (should be done by user not ai)
+./publish.sh
 ```
 
 ---

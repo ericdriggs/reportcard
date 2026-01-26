@@ -22,33 +22,22 @@ TODOs:
 * size issues and assign to milestones
 
 
-versioning
+== tag latest version
 
 * git tag
-* replace tags in source code to match
+* determine <new-tag> by incrementing latest tag +1
+* find/replace in repo <previous-tag> with <latest-tag>
+  ** build.gradle
+  ** gradle.properties
+  ** BrowseHtmlHelper.java
+* commit
+* git tag <new-tag>
+* git push
+* git push --tags
 
 == publishing
 
+* pre-requisite: tag latest version
+
 === Automated (recommended)
-* ./deploy.sh
-
-=== Manual steps
-1. upload files
-*  ./gradlew publishToSonatype -Si
-
-2. move files to portal
-* ./gradlew uploadToPortal -Si
-
-3. publish
-* ./gradlew publishLatestDeployment
-* OR go to https://central.sonatype.com/publishing/deployments and click publish
-
-4. check deployment status (after release)
-* https://central.sonatype.com/publishing/deployments
-
-5. verify published artifacts
-* https://central.sonatype.com/artifact/io.github.ericdriggs/reportcard-server
-
-=== Utility tasks
-* ./gradlew listRepositories - see all staging repositories
-* ./gradlew cleanupRepositories - clean up open repositories
+* ./publish.sh

@@ -38,7 +38,7 @@ public enum NumberStringUtil {
         if (val == null) {
             return "";
         }
-        Long percent = val.setScale(1, RoundingMode.HALF_UP).toBigInteger().longValue();
+        Long percent = val.setScale(0, RoundingMode.HALF_UP).longValue();
         StringBuilder sb = new StringBuilder();
         sb.append("<span class='transparent'>");
         if (percent >= 100) {

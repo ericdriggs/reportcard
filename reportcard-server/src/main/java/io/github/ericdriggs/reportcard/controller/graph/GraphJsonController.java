@@ -2,8 +2,11 @@ package io.github.ericdriggs.reportcard.controller.graph;
 
 import io.github.ericdriggs.reportcard.model.metrics.company.MetricsIntervalRequest;
 import io.github.ericdriggs.reportcard.model.metrics.company.MetricsIntervalResultCount;
+import io.github.ericdriggs.reportcard.model.pipeline.JobDashboardMetrics;
+import io.github.ericdriggs.reportcard.model.pipeline.JobDashboardRequest;
 import io.github.ericdriggs.reportcard.model.trend.JobStageTestTrend;
 import io.github.ericdriggs.reportcard.persist.GraphService;
+import io.github.ericdriggs.reportcard.controller.graph.JobInfoParser;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,6 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.TreeSet;
 
 @RestController
@@ -89,6 +95,26 @@ public class GraphJsonController {
         return new ResponseEntity<>(metricsIntervalResultCounts, HttpStatus.OK);
     }
 
-
+    @GetMapping(path = "job_dashboard/company/{company}/org/{org}", produces = "application/json")
+    @Operation(summary = "Get job dashboard metrics",
+            description = "Individual job metrics with days since passing, job pass %, test pass %",
+            operationId = "getJobDashboardJson"
+    )
+    public ResponseEntity<List<JobDashboardMetrics>> getJobDashboardJson(
+            @PathVariable String company,
+            @PathVariable String org,
+            @RequestParam(required = false) List<String> jobInfo,
+            @RequestParam(required = false, defaultValue = "90") Integer days
+    ) {
+        Map<String, String> jobInfoMap = JobInfoParser.parseJobInfoParams(jobInfo);
+        
+        JobDashboardRequest request = JobDashboardRequest.builder()
+                .company(company)
+                .org(org)
+                .jobInfos(jobInfoMap)
+                .days(days)
+                .build();
+        return new ResponseEntity<>(graphService.getPipelineDashboard(request), HttpStatus.OK);
+    }
 
 }

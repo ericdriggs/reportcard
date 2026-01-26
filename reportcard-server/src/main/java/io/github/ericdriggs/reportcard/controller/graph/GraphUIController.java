@@ -4,8 +4,12 @@ import io.github.ericdriggs.reportcard.model.metrics.company.MetricsIntervalRequ
 import io.github.ericdriggs.reportcard.model.metrics.company.MetricsIntervalResultCount;
 import io.github.ericdriggs.reportcard.model.metrics.company.MetricsIntervalResultCountMaps;
 import io.github.ericdriggs.reportcard.model.orgdashboard.OrgDashboard;
+import io.github.ericdriggs.reportcard.model.pipeline.JobDashboardRequest;
+import io.github.ericdriggs.reportcard.model.pipeline.JobDashboardMetrics;
+
 import io.github.ericdriggs.reportcard.model.trend.JobStageTestTrend;
 import io.github.ericdriggs.reportcard.persist.GraphService;
+import io.github.ericdriggs.reportcard.controller.graph.JobInfoParser;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +18,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeSet;
 
 @RestController
@@ -199,5 +205,24 @@ public class GraphUIController {
         MetricsIntervalResultCountMaps metricsIntervalResultCountMaps = MetricsIntervalResultCountMaps.fromMetricsIntervalResultCount(metricsIntervalResultCounts);
         final String response = MetricsHtmlHelper.renderMetricsIntervalResultCountMaps(metricsIntervalResultCountMaps);
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "company/{company}/org/{org}/pipelines", produces = "text/html;charset=UTF-8")
+    public ResponseEntity<String> getJobDashboard(
+            @PathVariable String company,
+            @PathVariable String org,
+            @RequestParam(required = false) List<String> jobInfo,
+            @RequestParam(required = false, defaultValue = "90") Integer days
+    ) {
+        Map<String, String> jobInfoMap = JobInfoParser.parseJobInfoParams(jobInfo);
+        
+        JobDashboardRequest request = JobDashboardRequest.builder()
+                .company(company)
+                .org(org)
+                .jobInfos(jobInfoMap)
+                .days(days)
+                .build();
+        List<JobDashboardMetrics> metrics = graphService.getPipelineDashboard(request);
+        return new ResponseEntity<>(PipelineDashboardHtmlHelper.renderPipelineDashboardMetrics(metrics, request), HttpStatus.OK);
     }
 }
