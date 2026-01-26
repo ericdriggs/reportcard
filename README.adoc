@@ -41,24 +41,3 @@ TODOs:
 
 === Automated (recommended)
 * ./publish.sh
-
-=== Manual steps
-1. upload files
-*  ./gradlew publishToSonatype -Si
-
-2. move files to portal
-* ./gradlew uploadToPortal -Si
-
-3. publish
-* ./gradlew publishLatestDeployment
-* OR go to https://central.sonatype.com/publishing/deployments and click publish
-
-4. check deployment status (after release)
-* https://central.sonatype.com/publishing/deployments
-
-5. verify published artifacts
-* https://central.sonatype.com/artifact/io.github.ericdriggs/reportcard-server
-
-=== Utility tasks
-* ./gradlew listRepositories - see all staging repositories
-* ./gradlew cleanupRepositories - clean up open repositories
