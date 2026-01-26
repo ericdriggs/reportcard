@@ -1,9 +1,0 @@
-AC:
-
-implementable unambiguous plan for build acceptance pipelines
-should define what tests should and should not be included
-tests required for 80% confidence
-discuss phases (define, create pipelines, tags, get to green, pre-deploy gate)
-Done:
-
-see also: Build_Acceptance_Policy.adoc
