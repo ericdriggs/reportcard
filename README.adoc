@@ -22,12 +22,22 @@ TODOs:
 * size issues and assign to milestones
 
 
-versioning
+== tag latest version
 
 * git tag
-* replace tags in source code to match
+* determine <new-tag> by incrementing latest tag +1
+* find/replace in repo <previous-tag> with <latest-tag>
+  ** build.gradle
+  ** gradle.properties
+  ** BrowseHtmlHelper.java
+* commit
+* git tag <new-tag>
+* git push
+* git push --tags
 
 == publishing
+
+* pre-requisite: tag latest version
 
 === Automated (recommended)
 * ./deploy.sh
