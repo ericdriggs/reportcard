@@ -24,11 +24,11 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### API
 
-- [ ] **API-01**: Accept optional `karate.tar.gz` multipart parameter alongside JUnit XML
-- [ ] **API-02**: Validate at least one test result format present (JUnit or Karate)
-- [ ] **API-03**: Store Karate tar.gz contents in S3 with KARATE_JSON storage type
-- [ ] **API-04**: Persist `start_time` and `end_time` to run record when Karate JSON present
-- [ ] **API-05**: Existing JUnit-only uploads continue working unchanged (backwards compatible)
+- [x] **API-01**: Accept optional `karate.tar.gz` multipart parameter alongside JUnit XML ✓
+- [x] **API-02**: Validate at least one test result format present (JUnit or Karate) ✓
+- [x] **API-03**: Store Karate tar.gz contents in S3 with KARATE_JSON storage type ✓
+- [x] **API-04**: Persist `start_time` and `end_time` to run record when Karate JSON present ✓
+- [x] **API-05**: Existing JUnit-only uploads continue working unchanged (backwards compatible) ✓
 
 ### Client
 
@@ -85,11 +85,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PARS-03 | Phase 2 | Complete |
 | PARS-04 | Phase 2 | Complete |
 | PARS-05 | Phase 2 | Complete |
-| API-01 | Phase 3 | Pending |
-| API-02 | Phase 3 | Pending |
-| API-03 | Phase 3 | Pending |
-| API-04 | Phase 3 | Pending |
-| API-05 | Phase 3 | Pending |
+| API-01 | Phase 3 | Complete |
+| API-02 | Phase 3 | Complete |
+| API-03 | Phase 3 | Complete |
+| API-04 | Phase 3 | Complete |
+| API-05 | Phase 3 | Complete |
 | CLNT-01 | Phase 4 | Pending |
 | CLNT-02 | Phase 4 | Pending |
 | CLNT-03 | Phase 4 | Pending |
@@ -104,4 +104,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-01-26*
-*Last updated: 2026-01-27 after Phase 2 completion*
+*Last updated: 2026-01-27 after Phase 3 completion*

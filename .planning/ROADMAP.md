@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Schema Foundation** - Database changes for run timing and KARATE storage type ✓
 - [x] **Phase 2: Karate Parser** - JSON parsing and timing extraction from Karate summary files ✓
-- [ ] **Phase 3: API Integration** - Multipart upload handling and S3 storage
+- [x] **Phase 3: API Integration** - Multipart upload handling and S3 storage ✓
 - [ ] **Phase 4: Client Library** - Java client support for Karate JSON uploads
 - [ ] **Phase 5: Dashboard Display** - UI presentation of job duration vs test execution time
 
@@ -74,8 +74,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 03-01-PLAN.md — Infrastructure: KarateTarGzUtil, request model update, updateRunTiming persistence method
-- [ ] 03-02-PLAN.md — Controller integration: endpoint update, validation, timing processing, S3 storage, tests
+- [x] 03-01-PLAN.md — Infrastructure: KarateTarGzUtil, request model update, updateRunTiming persistence method ✓
+- [x] 03-02-PLAN.md — Controller integration: endpoint update, validation, timing processing, S3 storage, tests ✓
 
 ### Phase 4: Client Library
 **Goal**: Java client supports uploading Karate JSON files
@@ -120,6 +120,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. Schema Foundation | 1/1 | ✓ Complete | 2026-01-26 |
 | 2. Karate Parser | 1/1 | ✓ Complete | 2026-01-27 |
-| 3. API Integration | 0/2 | Planned | - |
+| 3. API Integration | 2/2 | ✓ Complete | 2026-01-27 |
 | 4. Client Library | 0/1 | Not started | - |
 | 5. Dashboard Display | 0/1 | Not started | - |
