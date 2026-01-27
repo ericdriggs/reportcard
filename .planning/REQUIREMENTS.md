@@ -16,11 +16,11 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Parsing
 
-- [ ] **PARS-01**: Parse Karate summary JSON (`karate-summary-json.txt`) to extract timing
-- [ ] **PARS-02**: Extract `elapsedTime` (milliseconds) from summary JSON
-- [ ] **PARS-03**: Extract `resultDate` (end timestamp) from summary JSON
-- [ ] **PARS-04**: Calculate `start_time` as `resultDate - elapsedTime`
-- [ ] **PARS-05**: Handle missing/malformed Karate JSON gracefully (log warning, continue)
+- [x] **PARS-01**: Parse Karate summary JSON (`karate-summary-json.txt`) to extract timing ✓
+- [x] **PARS-02**: Extract `elapsedTime` (milliseconds) from summary JSON ✓
+- [x] **PARS-03**: Extract `resultDate` (end timestamp) from summary JSON ✓
+- [x] **PARS-04**: Calculate `start_time` as `resultDate - elapsedTime` ✓
+- [x] **PARS-05**: Handle missing/malformed Karate JSON gracefully (log warning, continue) ✓
 
 ### API
 
@@ -80,11 +80,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SCHM-02 | Phase 1 | Complete |
 | SCHM-03 | Phase 1 | Complete |
 | SCHM-04 | Phase 1 | Complete |
-| PARS-01 | Phase 2 | Pending |
-| PARS-02 | Phase 2 | Pending |
-| PARS-03 | Phase 2 | Pending |
-| PARS-04 | Phase 2 | Pending |
-| PARS-05 | Phase 2 | Pending |
+| PARS-01 | Phase 2 | Complete |
+| PARS-02 | Phase 2 | Complete |
+| PARS-03 | Phase 2 | Complete |
+| PARS-04 | Phase 2 | Complete |
+| PARS-05 | Phase 2 | Complete |
 | API-01 | Phase 3 | Pending |
 | API-02 | Phase 3 | Pending |
 | API-03 | Phase 3 | Pending |
@@ -104,4 +104,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-01-26*
-*Last updated: 2026-01-26 after Phase 1 completion*
+*Last updated: 2026-01-27 after Phase 2 completion*
