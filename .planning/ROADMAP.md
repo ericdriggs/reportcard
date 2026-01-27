@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Schema Foundation** - Database changes for run timing and KARATE storage type ✓
 - [x] **Phase 2: Karate Parser** - JSON parsing and timing extraction from Karate summary files ✓
 - [x] **Phase 3: API Integration** - Multipart upload handling and S3 storage ✓
-- [ ] **Phase 4: Client Library** - Java client support for Karate JSON uploads
+- [x] **Phase 4: Client Library** - Java client support for Karate JSON uploads ✓
 - [ ] **Phase 5: Dashboard Display** - UI presentation of job duration vs test execution time
 
 ## Phase Details
@@ -92,7 +92,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 04-01-PLAN.md — Add KARATE_REPORT_PATH parameter, create TarGzUtil, update PostWebClient for tar.gz uploads, fix endpoint URL
+- [x] 04-01-PLAN.md — Add KARATE_REPORT_PATH parameter, create TarGzUtil, update PostWebClient for tar.gz uploads, fix endpoint URL ✓
 
 ### Phase 5: Dashboard Display
 **Goal**: UI shows job duration distinct from test execution time
@@ -121,5 +121,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 1. Schema Foundation | 1/1 | ✓ Complete | 2026-01-26 |
 | 2. Karate Parser | 1/1 | ✓ Complete | 2026-01-27 |
 | 3. API Integration | 2/2 | ✓ Complete | 2026-01-27 |
-| 4. Client Library | 0/1 | Not started | - |
+| 4. Client Library | 1/1 | ✓ Complete | 2026-01-27 |
 | 5. Dashboard Display | 0/1 | Not started | - |

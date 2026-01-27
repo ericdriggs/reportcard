@@ -32,9 +32,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Client
 
-- [ ] **CLNT-01**: Add optional `karateJsonFile` parameter to Java client upload builder
-- [ ] **CLNT-02**: Client handles multipart with both JUnit and Karate tar.gz files
-- [ ] **CLNT-03**: Client works with server whether Karate parameter is sent or not
+- [x] **CLNT-01**: Add optional `karateJsonFile` parameter to Java client upload builder ✓
+- [x] **CLNT-02**: Client handles multipart with both JUnit and Karate tar.gz files ✓
+- [x] **CLNT-03**: Client works with server whether Karate parameter is sent or not ✓
 
 ### Display
 
@@ -90,9 +90,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | API-03 | Phase 3 | Complete |
 | API-04 | Phase 3 | Complete |
 | API-05 | Phase 3 | Complete |
-| CLNT-01 | Phase 4 | Pending |
-| CLNT-02 | Phase 4 | Pending |
-| CLNT-03 | Phase 4 | Pending |
+| CLNT-01 | Phase 4 | Complete |
+| CLNT-02 | Phase 4 | Complete |
+| CLNT-03 | Phase 4 | Complete |
 | DISP-01 | Phase 5 | Pending |
 | DISP-02 | Phase 5 | Pending |
 | DISP-03 | Phase 5 | Pending |
@@ -104,4 +104,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-01-26*
-*Last updated: 2026-01-27 after Phase 3 completion*
+*Last updated: 2026-01-27 after Phase 4 completion*
