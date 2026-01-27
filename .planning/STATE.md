@@ -9,19 +9,19 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 
 ## Current Position
 
-Phase: 4.1 of 6 (Migrate Timing to Test Result)
-Plan: 1 of 1 in current phase
-Status: Phase complete
-Last activity: 2026-01-27 — Completed 04.1-01-PLAN.md
+Phase: 5 of 6 (Dashboard Display)
+Plan: 1 of 2 in current phase
+Status: In progress
+Last activity: 2026-01-27 — Completed 05-01-PLAN.md
 
-Progress: [█████████░] 75%
+Progress: [█████████░] 78%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 6
-- Average duration: 5.5 min
-- Total execution time: 0.55 hours
+- Total plans completed: 7
+- Average duration: 5.1 min
+- Total execution time: 0.60 hours
 
 **By Phase:**
 
@@ -32,10 +32,11 @@ Progress: [█████████░] 75%
 | 03-api-integration | 2 | 13 min | 6.5 min |
 | 04-client-library | 1 | 3 min | 3 min |
 | 04.1-migrate-timing | 1 | 10 min | 10 min |
+| 05-dashboard-display | 1 | 3 min | 3 min |
 
 **Recent Trend:**
-- Last 5 plans: 03-01 (5 min), 03-02 (8 min), 04-01 (3 min), 04.1-01 (10 min)
-- Trend: Excellent execution speed, schema migration completed with JOOQ regeneration
+- Last 5 plans: 03-02 (8 min), 04-01 (3 min), 04.1-01 (10 min), 05-01 (3 min)
+- Trend: Excellent execution speed, data layer extension completed cleanly
 
 *Updated after each plan completion*
 
@@ -66,14 +67,20 @@ Recent decisions affecting current work:
 - Timing migrated to test_result level (04.1-01) - Per-stage timing for multi-stage runs
 - Kept run.start_time/end_time columns (04.1-01) - Backward compatibility, additive-only migration
 - No dual-write for timing (04.1-01) - New uploads only write to test_result
+- Duration stored as BigDecimal seconds with 2 decimal places (05-01) - HALF_UP rounding provides sufficient precision
+- NULL timing values excluded from average (05-01) - Preserves meaningful average, handles old data gracefully
+- Multi-stage aggregation sums durations per run (05-01) - Aligns with Phase 4.1 per-stage timing design
 
 ### Pending Todos
 
-None.
+1. **SQL migration script for deployed databases** — Create a standalone .sql script users can run themselves on deployed/production databases to add test_result.start_time and test_result.end_time columns (Phase 4.1 schema changes). Currently only applied to local MySQL and one RDS instance.
+
+2. **reportcard-client-java support** — Add phase for sibling repository `reportcard-client-java` to support Karate JSON uploads. This is a separate codebase from the in-tree `reportcard-client` module.
 
 ### Roadmap Evolution
 
 - Phase 4.1 inserted after Phase 4: Migrate timing columns from run to test_result table (COMPLETED)
+- Phase 6 added: reportcard-client-java Support — Karate JSON upload support in sibling repository
   - Reason: Multi-stage runs need independent timing per stage, not shared run-level timing
   - Impact: Phase 5 now depends on 4.1; schema/parser/controller changes required
   - Result: test_result table now has start_time/end_time, controller writes there
@@ -86,6 +93,6 @@ Pre-existing test isolation issue: Two JunitControllerTest tests fail in full su
 
 ## Session Continuity
 
-Last session: 2026-01-27T18:42:04Z
-Stopped at: Completed 04.1-01-PLAN.md
+Last session: 2026-01-27T19:08:04Z
+Stopped at: Completed 05-01-PLAN.md
 Resume file: None
