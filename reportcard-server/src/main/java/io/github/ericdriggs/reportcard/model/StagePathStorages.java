@@ -84,6 +84,28 @@ public class StagePathStorages {
                 .build();
     }
 
+    /**
+     * Merges multiple StagePathStorages into one.
+     * All must have the same stagePath.
+     *
+     * @param storagesArray varargs of StagePathStorages to merge
+     * @return merged StagePathStorages
+     */
+    public static StagePathStorages merge(StagePathStorages... storagesArray) {
+        if (storagesArray == null || storagesArray.length == 0) {
+            throw new IllegalArgumentException("storagesArray cannot be null or empty");
+        }
+        if (storagesArray.length == 1) {
+            return storagesArray[0];
+        }
+
+        StagePathStorages result = storagesArray[0];
+        for (int i = 1; i < storagesArray.length; i++) {
+            result = merge(result, storagesArray[i]);
+        }
+        return result;
+    }
+
     protected static List<String> missingErrors(StagePathStorages stagePathStorages, String name) {
         List<String> missingErrors = new ArrayList<>();
         if (stagePathStorages == null) {
