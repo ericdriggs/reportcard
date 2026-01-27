@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-26)
 
 **Core value:** Capture wall clock execution time at run level so users can see how long their CI test jobs actually took
-**Current focus:** Phase 5 - Dashboard Display
+**Current focus:** Phase 4.1 - Migrate Timing to Test Result (COMPLETED)
 
 ## Current Position
 
-Phase: 5 of 5 (Dashboard Display)
-Plan: 0 of 1 in current phase
-Status: Ready to plan
-Last activity: 2026-01-27 — Phase 4 complete and verified
+Phase: 4.1 of 6 (Migrate Timing to Test Result)
+Plan: 1 of 1 in current phase
+Status: Phase complete
+Last activity: 2026-01-27 — Completed 04.1-01-PLAN.md
 
-Progress: [████████░░] 80%
+Progress: [█████████░] 75%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 5
-- Average duration: 4.6 min
-- Total execution time: 0.38 hours
+- Total plans completed: 6
+- Average duration: 5.5 min
+- Total execution time: 0.55 hours
 
 **By Phase:**
 
@@ -31,10 +31,11 @@ Progress: [████████░░] 80%
 | 02-karate-parser | 1 | 3 min | 3 min |
 | 03-api-integration | 2 | 13 min | 6.5 min |
 | 04-client-library | 1 | 3 min | 3 min |
+| 04.1-migrate-timing | 1 | 10 min | 10 min |
 
 **Recent Trend:**
-- Last 5 plans: 02-01 (3 min), 03-01 (5 min), 03-02 (8 min), 04-01 (3 min)
-- Trend: Excellent execution speed, Phase 4 completed efficiently
+- Last 5 plans: 03-01 (5 min), 03-02 (8 min), 04-01 (3 min), 04.1-01 (10 min)
+- Trend: Excellent execution speed, schema migration completed with JOOQ regeneration
 
 *Updated after each plan completion*
 
@@ -47,7 +48,7 @@ Recent decisions affecting current work:
 
 - Schema: start_time + end_time columns (not elapsed_time_millis) - Cleaner schema; duration derivable
 - Format: Karate JSON only (not standard cucumber) - Karate uses proprietary format
-- Timing: Run-level only (not test-level) - User wants job duration, not individual test times
+- Timing: Run-level only (not test-level) - User wants job duration, not individual test times — **REVISED in 4.1: moving to test_result level**
 - Upload: Multipart upload (not separate endpoint) - Keep related data together in single request
 - Schema: Additive changes only - Minimize migration risk, maintain backwards compatibility
 - JOOQ workflow: Manual DB update required before code generation (01-01) - Project doesn't use Flyway auto-migration
@@ -62,17 +63,29 @@ Recent decisions affecting current work:
 - Single-level directory scan in TarGzUtil (04-01) - Files.list() not Files.walk() matches existing behavior
 - Client endpoint changed to /v1/api/junit/storage/html/tar.gz (04-01) - Matches actual server implementation
 - Temporary tar.gz cleanup in finally block (04-01) - Prevent disk space leaks
+- Timing migrated to test_result level (04.1-01) - Per-stage timing for multi-stage runs
+- Kept run.start_time/end_time columns (04.1-01) - Backward compatibility, additive-only migration
+- No dual-write for timing (04.1-01) - New uploads only write to test_result
 
 ### Pending Todos
 
-None yet.
+None.
+
+### Roadmap Evolution
+
+- Phase 4.1 inserted after Phase 4: Migrate timing columns from run to test_result table (COMPLETED)
+  - Reason: Multi-stage runs need independent timing per stage, not shared run-level timing
+  - Impact: Phase 5 now depends on 4.1; schema/parser/controller changes required
+  - Result: test_result table now has start_time/end_time, controller writes there
 
 ### Blockers/Concerns
 
-Pre-existing build issue: Gradle build fails with Java 11/17 compatibility error in reportcard-server module (nu.studer:gradle-jooq-plugin:8.0). This existed before Phase 4 work. Doesn't block code verification or Phase 5 planning.
+Pre-existing build issue: Gradle build fails with Java 11/17 compatibility error in reportcard-server module (nu.studer:gradle-jooq-plugin:8.0). This existed before Phase 4 work. Doesn't block code verification or phase planning.
+
+Pre-existing test isolation issue: Two JunitControllerTest tests fail in full suite but pass individually. Unrelated to timing migration.
 
 ## Session Continuity
 
-Last session: 2026-01-27 — Phase 4 verified
-Stopped at: Phase 4 complete, ready for Phase 5 planning
+Last session: 2026-01-27T18:42:04Z
+Stopped at: Completed 04.1-01-PLAN.md
 Resume file: None
