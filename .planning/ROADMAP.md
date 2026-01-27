@@ -115,11 +115,18 @@ Plans:
 - [x] 04.1-01-PLAN.md — Add timing columns to test_result, regenerate JOOQ, update persistence and controller layers ✓
 
 ### Phase 5: Dashboard Display
-**Goal**: UI shows job duration distinct from test execution time
+**Goal**: Pipelines dashboard shows job duration calculated from test_result timing
 
 **Depends on**: Phase 4.1 (needs timing at test_result level)
 
-**Requirements**: DISP-01, DISP-02, DISP-03
+**Requirements**: DISP-03 (pipelines dashboard with duration)
+
+**Requirements Deferred**: DISP-01, DISP-02 (run detail view) - Deferred to future phase per user priority on pipelines dashboard
+
+**Scope Note**: Phase 5 focuses on the pipelines dashboard (`/company/{company}/org/{org}/pipelines`), which is the user's primary concern. Run detail view enhancements (DISP-01, DISP-02) are deferred for a future iteration after the main dashboard is validated. This scoping reflects:
+- User stated "Jobs dashboard is more important than run detail" in CONTEXT.md
+- Phase 4.1 changed timing from run-level to test_result-level, requiring reconsideration of run detail view design
+- Value-first delivery: Pipelines dashboard provides maximum user value for initial release
 
 **Success Criteria** (what must be TRUE):
   1. Pipelines dashboard displays "Avg Run Duration" calculated from test_result timing
