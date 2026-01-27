@@ -236,6 +236,8 @@ CREATE TABLE IF NOT EXISTS `reportcard`.`test_result` (
   `error` INT UNSIGNED NOT NULL,
   `failure` INT UNSIGNED NOT NULL,
   `time` DECIMAL(9,3) UNSIGNED NOT NULL,
+  `start_time` DATETIME NULL COMMENT 'Start time of stage execution (from Karate or other timing source)',
+  `end_time` DATETIME NULL COMMENT 'End time of stage execution (from Karate or other timing source)',
   `test_result_created` DATETIME NOT NULL DEFAULT (utc_timestamp()),
   `external_links` JSON NULL DEFAULT NULL,
   `is_success` TINYINT(1) GENERATED ALWAYS AS (`tests` > 0 && (`failure` + `error`) = 0) VIRTUAL,

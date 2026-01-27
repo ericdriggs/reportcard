@@ -14,8 +14,8 @@ import lombok.Generated;
 
 import org.jooq.Field;
 import org.jooq.Record1;
-import org.jooq.Record12;
-import org.jooq.Row12;
+import org.jooq.Record14;
+import org.jooq.Row14;
 import org.jooq.impl.UpdatableRecordImpl;
 
 
@@ -24,9 +24,9 @@ import org.jooq.impl.UpdatableRecordImpl;
  */
 @Generated
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> implements Record12<Long, Long, Integer, Integer, Integer, Integer, BigDecimal, Instant, String, Boolean, Boolean, String> {
+public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> implements Record14<Long, Long, Integer, Integer, Integer, Integer, BigDecimal, Instant, Instant, Instant, String, Boolean, Boolean, String> {
 
-    private static final long serialVersionUID = 1279309682;
+    private static final long serialVersionUID = 67618056;
 
     /**
      * Setter for <code>reportcard.test_result.test_result_id</code>.
@@ -134,10 +134,44 @@ public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> impl
     }
 
     /**
+     * Setter for <code>reportcard.test_result.start_time</code>. Start time of
+     * stage execution (from Karate or other timing source)
+     */
+    public TestResultRecord setStartTime(Instant value) {
+        set(7, value);
+        return this;
+    }
+
+    /**
+     * Getter for <code>reportcard.test_result.start_time</code>. Start time of
+     * stage execution (from Karate or other timing source)
+     */
+    public Instant getStartTime() {
+        return (Instant) get(7);
+    }
+
+    /**
+     * Setter for <code>reportcard.test_result.end_time</code>. End time of
+     * stage execution (from Karate or other timing source)
+     */
+    public TestResultRecord setEndTime(Instant value) {
+        set(8, value);
+        return this;
+    }
+
+    /**
+     * Getter for <code>reportcard.test_result.end_time</code>. End time of
+     * stage execution (from Karate or other timing source)
+     */
+    public Instant getEndTime() {
+        return (Instant) get(8);
+    }
+
+    /**
      * Setter for <code>reportcard.test_result.test_result_created</code>.
      */
     public TestResultRecord setTestResultCreated(Instant value) {
-        set(7, value);
+        set(9, value);
         return this;
     }
 
@@ -145,14 +179,14 @@ public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> impl
      * Getter for <code>reportcard.test_result.test_result_created</code>.
      */
     public Instant getTestResultCreated() {
-        return (Instant) get(7);
+        return (Instant) get(9);
     }
 
     /**
      * Setter for <code>reportcard.test_result.external_links</code>.
      */
     public TestResultRecord setExternalLinks(String value) {
-        set(8, value);
+        set(10, value);
         return this;
     }
 
@@ -160,14 +194,14 @@ public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> impl
      * Getter for <code>reportcard.test_result.external_links</code>.
      */
     public String getExternalLinks() {
-        return (String) get(8);
+        return (String) get(10);
     }
 
     /**
      * Setter for <code>reportcard.test_result.is_success</code>.
      */
     public TestResultRecord setIsSuccess(Boolean value) {
-        set(9, value);
+        set(11, value);
         return this;
     }
 
@@ -175,14 +209,14 @@ public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> impl
      * Getter for <code>reportcard.test_result.is_success</code>.
      */
     public Boolean getIsSuccess() {
-        return (Boolean) get(9);
+        return (Boolean) get(11);
     }
 
     /**
      * Setter for <code>reportcard.test_result.has_skip</code>.
      */
     public TestResultRecord setHasSkip(Boolean value) {
-        set(10, value);
+        set(12, value);
         return this;
     }
 
@@ -190,14 +224,14 @@ public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> impl
      * Getter for <code>reportcard.test_result.has_skip</code>.
      */
     public Boolean getHasSkip() {
-        return (Boolean) get(10);
+        return (Boolean) get(12);
     }
 
     /**
      * Setter for <code>reportcard.test_result.test_suites_json</code>.
      */
     public TestResultRecord setTestSuitesJson(String value) {
-        set(11, value);
+        set(13, value);
         return this;
     }
 
@@ -205,7 +239,7 @@ public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> impl
      * Getter for <code>reportcard.test_result.test_suites_json</code>.
      */
     public String getTestSuitesJson() {
-        return (String) get(11);
+        return (String) get(13);
     }
 
     // -------------------------------------------------------------------------
@@ -218,17 +252,17 @@ public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> impl
     }
 
     // -------------------------------------------------------------------------
-    // Record12 type implementation
+    // Record14 type implementation
     // -------------------------------------------------------------------------
 
     @Override
-    public Row12<Long, Long, Integer, Integer, Integer, Integer, BigDecimal, Instant, String, Boolean, Boolean, String> fieldsRow() {
-        return (Row12) super.fieldsRow();
+    public Row14<Long, Long, Integer, Integer, Integer, Integer, BigDecimal, Instant, Instant, Instant, String, Boolean, Boolean, String> fieldsRow() {
+        return (Row14) super.fieldsRow();
     }
 
     @Override
-    public Row12<Long, Long, Integer, Integer, Integer, Integer, BigDecimal, Instant, String, Boolean, Boolean, String> valuesRow() {
-        return (Row12) super.valuesRow();
+    public Row14<Long, Long, Integer, Integer, Integer, Integer, BigDecimal, Instant, Instant, Instant, String, Boolean, Boolean, String> valuesRow() {
+        return (Row14) super.valuesRow();
     }
 
     @Override
@@ -268,26 +302,36 @@ public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> impl
 
     @Override
     public Field<Instant> field8() {
+        return TestResultTable.TEST_RESULT.START_TIME;
+    }
+
+    @Override
+    public Field<Instant> field9() {
+        return TestResultTable.TEST_RESULT.END_TIME;
+    }
+
+    @Override
+    public Field<Instant> field10() {
         return TestResultTable.TEST_RESULT.TEST_RESULT_CREATED;
     }
 
     @Override
-    public Field<String> field9() {
+    public Field<String> field11() {
         return TestResultTable.TEST_RESULT.EXTERNAL_LINKS;
     }
 
     @Override
-    public Field<Boolean> field10() {
+    public Field<Boolean> field12() {
         return TestResultTable.TEST_RESULT.IS_SUCCESS;
     }
 
     @Override
-    public Field<Boolean> field11() {
+    public Field<Boolean> field13() {
         return TestResultTable.TEST_RESULT.HAS_SKIP;
     }
 
     @Override
-    public Field<String> field12() {
+    public Field<String> field14() {
         return TestResultTable.TEST_RESULT.TEST_SUITES_JSON;
     }
 
@@ -328,26 +372,36 @@ public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> impl
 
     @Override
     public Instant component8() {
+        return getStartTime();
+    }
+
+    @Override
+    public Instant component9() {
+        return getEndTime();
+    }
+
+    @Override
+    public Instant component10() {
         return getTestResultCreated();
     }
 
     @Override
-    public String component9() {
+    public String component11() {
         return getExternalLinks();
     }
 
     @Override
-    public Boolean component10() {
+    public Boolean component12() {
         return getIsSuccess();
     }
 
     @Override
-    public Boolean component11() {
+    public Boolean component13() {
         return getHasSkip();
     }
 
     @Override
-    public String component12() {
+    public String component14() {
         return getTestSuitesJson();
     }
 
@@ -388,26 +442,36 @@ public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> impl
 
     @Override
     public Instant value8() {
+        return getStartTime();
+    }
+
+    @Override
+    public Instant value9() {
+        return getEndTime();
+    }
+
+    @Override
+    public Instant value10() {
         return getTestResultCreated();
     }
 
     @Override
-    public String value9() {
+    public String value11() {
         return getExternalLinks();
     }
 
     @Override
-    public Boolean value10() {
+    public Boolean value12() {
         return getIsSuccess();
     }
 
     @Override
-    public Boolean value11() {
+    public Boolean value13() {
         return getHasSkip();
     }
 
     @Override
-    public String value12() {
+    public String value14() {
         return getTestSuitesJson();
     }
 
@@ -455,36 +519,48 @@ public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> impl
 
     @Override
     public TestResultRecord value8(Instant value) {
+        setStartTime(value);
+        return this;
+    }
+
+    @Override
+    public TestResultRecord value9(Instant value) {
+        setEndTime(value);
+        return this;
+    }
+
+    @Override
+    public TestResultRecord value10(Instant value) {
         setTestResultCreated(value);
         return this;
     }
 
     @Override
-    public TestResultRecord value9(String value) {
+    public TestResultRecord value11(String value) {
         setExternalLinks(value);
         return this;
     }
 
     @Override
-    public TestResultRecord value10(Boolean value) {
+    public TestResultRecord value12(Boolean value) {
         setIsSuccess(value);
         return this;
     }
 
     @Override
-    public TestResultRecord value11(Boolean value) {
+    public TestResultRecord value13(Boolean value) {
         setHasSkip(value);
         return this;
     }
 
     @Override
-    public TestResultRecord value12(String value) {
+    public TestResultRecord value14(String value) {
         setTestSuitesJson(value);
         return this;
     }
 
     @Override
-    public TestResultRecord values(Long value1, Long value2, Integer value3, Integer value4, Integer value5, Integer value6, BigDecimal value7, Instant value8, String value9, Boolean value10, Boolean value11, String value12) {
+    public TestResultRecord values(Long value1, Long value2, Integer value3, Integer value4, Integer value5, Integer value6, BigDecimal value7, Instant value8, Instant value9, Instant value10, String value11, Boolean value12, Boolean value13, String value14) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -497,6 +573,8 @@ public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> impl
         value10(value10);
         value11(value11);
         value12(value12);
+        value13(value13);
+        value14(value14);
         return this;
     }
 
@@ -514,7 +592,7 @@ public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> impl
     /**
      * Create a detached, initialised TestResultRecord
      */
-    public TestResultRecord(Long testResultId, Long stageFk, Integer tests, Integer skipped, Integer error, Integer failure, BigDecimal time, Instant testResultCreated, String externalLinks, Boolean isSuccess, Boolean hasSkip, String testSuitesJson) {
+    public TestResultRecord(Long testResultId, Long stageFk, Integer tests, Integer skipped, Integer error, Integer failure, BigDecimal time, Instant startTime, Instant endTime, Instant testResultCreated, String externalLinks, Boolean isSuccess, Boolean hasSkip, String testSuitesJson) {
         super(TestResultTable.TEST_RESULT);
 
         setTestResultId(testResultId);
@@ -524,6 +602,8 @@ public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> impl
         setError(error);
         setFailure(failure);
         setTime(time);
+        setStartTime(startTime);
+        setEndTime(endTime);
         setTestResultCreated(testResultCreated);
         setExternalLinks(externalLinks);
         setIsSuccess(isSuccess);
@@ -545,6 +625,8 @@ public class TestResultRecord extends UpdatableRecordImpl<TestResultRecord> impl
             setError(value.getError());
             setFailure(value.getFailure());
             setTime(value.getTime());
+            setStartTime(value.getStartTime());
+            setEndTime(value.getEndTime());
             setTestResultCreated(value.getTestResultCreated());
             setExternalLinks(value.getExternalLinks());
             setIsSuccess(value.getIsSuccess());

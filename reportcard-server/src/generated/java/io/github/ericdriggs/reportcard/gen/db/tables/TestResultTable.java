@@ -19,13 +19,13 @@ import lombok.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
-import org.jooq.Function12;
+import org.jooq.Function14;
 import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
-import org.jooq.Row12;
+import org.jooq.Row14;
 import org.jooq.Schema;
 import org.jooq.SelectField;
 import org.jooq.Table;
@@ -44,7 +44,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestResultTable extends TableImpl<TestResultRecord> {
 
-    private static final long serialVersionUID = 1868555271;
+    private static final long serialVersionUID = -472358480;
 
     /**
      * The reference instance of <code>reportcard.test_result</code>
@@ -93,6 +93,18 @@ public class TestResultTable extends TableImpl<TestResultRecord> {
      * The column <code>reportcard.test_result.time</code>.
      */
     public final TableField<TestResultRecord, BigDecimal> TIME = createField(DSL.name("time"), SQLDataType.DECIMAL(9, 3).nullable(false), this, "");
+
+    /**
+     * The column <code>reportcard.test_result.start_time</code>. Start time of
+     * stage execution (from Karate or other timing source)
+     */
+    public final TableField<TestResultRecord, Instant> START_TIME = createField(DSL.name("start_time"), SQLDataType.INSTANT, this, "Start time of stage execution (from Karate or other timing source)");
+
+    /**
+     * The column <code>reportcard.test_result.end_time</code>. End time of
+     * stage execution (from Karate or other timing source)
+     */
+    public final TableField<TestResultRecord, Instant> END_TIME = createField(DSL.name("end_time"), SQLDataType.INSTANT, this, "End time of stage execution (from Karate or other timing source)");
 
     /**
      * The column <code>reportcard.test_result.test_result_created</code>.
@@ -234,18 +246,18 @@ public class TestResultTable extends TableImpl<TestResultRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row12 type methods
+    // Row14 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row12<Long, Long, Integer, Integer, Integer, Integer, BigDecimal, Instant, String, Boolean, Boolean, String> fieldsRow() {
-        return (Row12) super.fieldsRow();
+    public Row14<Long, Long, Integer, Integer, Integer, Integer, BigDecimal, Instant, Instant, Instant, String, Boolean, Boolean, String> fieldsRow() {
+        return (Row14) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function12<? super Long, ? super Long, ? super Integer, ? super Integer, ? super Integer, ? super Integer, ? super BigDecimal, ? super Instant, ? super String, ? super Boolean, ? super Boolean, ? super String, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function14<? super Long, ? super Long, ? super Integer, ? super Integer, ? super Integer, ? super Integer, ? super BigDecimal, ? super Instant, ? super Instant, ? super Instant, ? super String, ? super Boolean, ? super Boolean, ? super String, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
@@ -253,7 +265,7 @@ public class TestResultTable extends TableImpl<TestResultRecord> {
      * Convenience mapping calling {@link SelectField#convertFrom(Class,
      * Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function12<? super Long, ? super Long, ? super Integer, ? super Integer, ? super Integer, ? super Integer, ? super BigDecimal, ? super Instant, ? super String, ? super Boolean, ? super Boolean, ? super String, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function14<? super Long, ? super Long, ? super Integer, ? super Integer, ? super Integer, ? super Integer, ? super BigDecimal, ? super Instant, ? super Instant, ? super Instant, ? super String, ? super Boolean, ? super Boolean, ? super String, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }
