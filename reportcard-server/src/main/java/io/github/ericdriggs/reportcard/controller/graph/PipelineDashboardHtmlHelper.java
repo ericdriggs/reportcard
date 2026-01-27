@@ -2,6 +2,7 @@ package io.github.ericdriggs.reportcard.controller.graph;
 
 import io.github.ericdriggs.reportcard.controller.browse.BrowseHtmlHelper;
 import io.github.ericdriggs.reportcard.model.pipeline.JobDashboardMetrics;
+import io.github.ericdriggs.reportcard.util.NumberStringUtil;
 
 import java.math.BigDecimal;
 import java.util.Collections;

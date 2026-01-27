@@ -75,6 +75,32 @@ Flyway is NOT used. Schema changes are manual:
 4. **No Spring Security** - Current auth is basic placeholder (username/password in application.properties)
 5. **Test vs Production** - Tests use Testcontainers/LocalStack; production uses real MySQL/S3
 
+## Database Safety Rules (CRITICAL)
+
+**NEVER modify RDS or any remote database.** Only localhost MySQL may be modified.
+
+| Operation | Localhost | RDS/Remote |
+|-----------|-----------|------------|
+| DDL (ALTER, CREATE, DROP) | ✅ Allowed | ❌ FORBIDDEN |
+| DML (INSERT, UPDATE, DELETE) | ✅ Allowed | ❌ FORBIDDEN |
+| SELECT queries | ✅ Allowed | ✅ Allowed (verification only) |
+
+**NEVER DROP ANY DATABASE without explicit user permission at execution time.**
+- A plan mentioning DROP is NOT permission
+- Must ask user and receive explicit "yes" BEFORE running DROP
+- This applies to ALL databases: localhost, RDS, test, production
+- No exceptions, no auto-fixes, no deviations
+
+**If JOOQ regeneration fails:**
+- STOP and ask the user
+- Do NOT auto-fix by running DDL
+- The fix is to manually update local MySQL schema, not remote
+
+**Schema change workflow:**
+1. User manually applies DDL to localhost MySQL only
+2. Run `./gradlew generateJooqSchemaSource`
+3. Never connect JOOQ generator to RDS
+
 ## Danger Zones
 
 These files require extra care:

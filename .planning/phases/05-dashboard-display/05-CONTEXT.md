@@ -1,7 +1,7 @@
 # Phase 5: Dashboard Display - Context
 
 **Gathered:** 2026-01-27
-**Status:** Blocked - schema decision needed
+**Status:** Ready (blocker resolved by Phase 4.1)
 
 <domain>
 ## Phase Boundary
@@ -47,24 +47,18 @@ Display job/run duration in dashboard views. Show wall clock execution time (fro
 
 </specifics>
 
-<blocker>
-## Blocker: Schema Decision Needed
+<resolved>
+## Blocker Resolved
 
-**Issue:** Timing columns (`start_time`, `end_time`) are on the `run` table, but user wants timing at the `test_result` level (1:1 with stage).
+**Original Issue:** Timing columns were on the `run` table, but user wanted timing at the `test_result` level (1:1 with stage).
 
-**Why this matters:**
-- A run can have multiple stages (each from a separate upload)
-- Current implementation: if multiple stages provide Karate timing, last one overwrites the run's timing
-- User expects each stage's timing to be independent
+**Resolution:** Phase 4.1 migrated timing to test_result table:
+- `test_result.start_time` (DATETIME NULL)
+- `test_result.end_time` (DATETIME NULL)
+- Controller now writes timing to test_result instead of run
+- Per-stage timing now supported for multi-stage runs
 
-**Resolution options:**
-1. **Migrate timing to test_result table** — requires schema change, parser update, controller update
-2. **Keep run-level timing** — simpler, but "last one wins" behavior for multi-stage runs
-3. **Add timing to BOTH tables** — most flexible but more complex
-
-**Before Phase 5 can proceed:** Decide on schema location for timing data. If moving to test_result, add a new phase (5.1?) for schema migration before display work.
-
-</blocker>
+</resolved>
 
 <deferred>
 ## Deferred Ideas

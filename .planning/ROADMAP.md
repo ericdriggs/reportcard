@@ -18,6 +18,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 4: Client Library** - Java client support for Karate JSON uploads ✓
 - [x] **Phase 4.1: Migrate Timing to Test Result** - Move timing columns from run to test_result table (INSERTED) ✓
 - [ ] **Phase 5: Dashboard Display** - UI presentation of job duration vs test execution time
+- [ ] **Phase 6: reportcard-client-java Support** - Karate JSON upload support in sibling repository
 
 ## Phase Details
 
@@ -140,10 +141,27 @@ Plans:
 - [ ] 05-02-PLAN.md — Frontend display: PipelineDashboardHtmlHelper rendering, column addition, field description
 - [ ] 05-03-PLAN.md — Human verification: functional testing of dashboard display
 
+### Phase 6: reportcard-client-java Support
+**Goal**: Sibling repository reportcard-client-java supports Karate JSON uploads
+
+**Depends on**: Phase 3 (needs server API endpoint)
+
+**Requirements**: TBD (mirror Phase 4 requirements for separate codebase)
+
+**Success Criteria** (what must be TRUE):
+  1. reportcard-client-java upload supports optional Karate JSON parameter
+  2. Client constructs multipart request with both JUnit and Karate tar.gz files
+  3. Client works with server whether Karate parameter is sent or not
+
+**Plans**: TBD
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 6 to break down)
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 4.1 → 5
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 4.1 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -153,3 +171,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 4.1 → 5
 | 4. Client Library | 1/1 | ✓ Complete | 2026-01-27 |
 | 4.1 Migrate Timing | 1/1 | ✓ Complete | 2026-01-27 |
 | 5. Dashboard Display | 0/3 | Not started | - |
+| 6. reportcard-client-java | 0/? | Not started | - |
