@@ -89,10 +89,10 @@ Plans:
   2. Client constructs multipart request with both JUnit and Karate tar.gz files
   3. Client works with server whether Karate parameter is sent or not
 
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 04-01: Client library updates
+- [ ] 04-01-PLAN.md — Add KARATE_REPORT_PATH parameter, create TarGzUtil, update PostWebClient for tar.gz uploads, fix endpoint URL
 
 ### Phase 5: Dashboard Display
 **Goal**: UI shows job duration distinct from test execution time
