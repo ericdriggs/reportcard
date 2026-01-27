@@ -71,11 +71,11 @@ Plans:
   4. Controller persists start_time and end_time to run record when Karate JSON present
   5. Existing JUnit-only uploads continue working unchanged (backwards compatible)
 
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 03-01: Controller multipart handling
-- [ ] 03-02: S3 storage integration
+- [ ] 03-01-PLAN.md — Infrastructure: KarateTarGzUtil, request model update, updateRunTiming persistence method
+- [ ] 03-02-PLAN.md — Controller integration: endpoint update, validation, timing processing, S3 storage, tests
 
 ### Phase 4: Client Library
 **Goal**: Java client supports uploading Karate JSON files
@@ -120,6 +120,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. Schema Foundation | 1/1 | ✓ Complete | 2026-01-26 |
 | 2. Karate Parser | 1/1 | ✓ Complete | 2026-01-27 |
-| 3. API Integration | 0/2 | Not started | - |
+| 3. API Integration | 0/2 | Planned | - |
 | 4. Client Library | 0/1 | Not started | - |
 | 5. Dashboard Display | 0/1 | Not started | - |
