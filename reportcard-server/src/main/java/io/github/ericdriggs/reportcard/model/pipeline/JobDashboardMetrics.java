@@ -81,13 +81,13 @@ public class JobDashboardMetrics {
                                 BigDecimal.valueOf(passingTests * 100.0 / totalTests) : BigDecimal.ZERO;
 
                             // Calculate average run duration
-                            // Strategy: For each run, sum all test_result durations (multi-stage support)
+                            // Strategy: For each run, find wall clock time as max(endTime) - min(startTime)
                             // Then average across all runs that have timing data
                             List<BigDecimal> runDurations = new ArrayList<>();
 
                             for (RunGraph run : runs) {
-                                BigDecimal runTotalSeconds = BigDecimal.ZERO;
-                                boolean hasAnyTiming = false;
+                                Instant minStart = null;
+                                Instant maxEnd = null;
 
                                 for (StageGraph stage : emptyIfNull(run.stages())) {
                                     for (TestResultGraph testResult : emptyIfNull(stage.testResults())) {
@@ -95,18 +95,22 @@ public class JobDashboardMetrics {
                                         Instant end = testResult.endTime();
 
                                         if (start != null && end != null) {
-                                            Duration duration = Duration.between(start, end);
-                                            BigDecimal seconds = BigDecimal.valueOf(duration.getSeconds())
-                                                .add(BigDecimal.valueOf(duration.getNano())
-                                                .divide(BigDecimal.valueOf(1_000_000_000), 2, RoundingMode.HALF_UP));
-                                            runTotalSeconds = runTotalSeconds.add(seconds);
-                                            hasAnyTiming = true;
+                                            if (minStart == null || start.isBefore(minStart)) {
+                                                minStart = start;
+                                            }
+                                            if (maxEnd == null || end.isAfter(maxEnd)) {
+                                                maxEnd = end;
+                                            }
                                         }
                                     }
                                 }
 
-                                if (hasAnyTiming) {
-                                    runDurations.add(runTotalSeconds);
+                                if (minStart != null && maxEnd != null) {
+                                    Duration duration = Duration.between(minStart, maxEnd);
+                                    BigDecimal seconds = BigDecimal.valueOf(duration.getSeconds())
+                                        .add(BigDecimal.valueOf(duration.getNano())
+                                        .divide(BigDecimal.valueOf(1_000_000_000), 2, RoundingMode.HALF_UP));
+                                    runDurations.add(seconds);
                                 }
                             }
 

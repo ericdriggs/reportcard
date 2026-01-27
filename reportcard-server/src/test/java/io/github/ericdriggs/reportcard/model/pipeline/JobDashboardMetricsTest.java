@@ -336,11 +336,12 @@ public class JobDashboardMetricsTest {
     }
 
     @Test
-    void testAvgRunDuration_multiStage() {
-        // Create CompanyGraph with 1 run containing 2 stages
-        // Stage 1 test_result: start=T0, end=T0+100s -> 100s
-        // Stage 2 test_result: start=T0, end=T0+50s -> 50s
-        // Expected avgRunDuration: 150.00 seconds (sum of both stages for the run)
+    void testAvgRunDuration_multiStageOverlapping() {
+        // Create CompanyGraph with 1 run containing 2 overlapping stages
+        // Stage 1 (build): start=T0, end=T0+60s
+        // Stage 2 (test):  start=T0+30s, end=T0+90s (starts while build still running)
+        // Wall clock time = max(end) - min(start) = T0+90s - T0 = 90s
+        // Expected avgRunDuration: 90.00 seconds
 
         Instant t0 = Instant.parse("2024-01-01T00:00:00Z");
 
@@ -352,10 +353,10 @@ public class JobDashboardMetricsTest {
                 .skipped(0)
                 .error(0)
                 .failure(0)
-                .time(BigDecimal.valueOf(100))
+                .time(BigDecimal.valueOf(60))
                 .testResultCreated(t0)
                 .startTime(t0)
-                .endTime(t0.plusSeconds(100))
+                .endTime(t0.plusSeconds(60))
                 .isSuccess(true)
                 .hasSkip(false)
                 .testSuites(Collections.emptyList())
@@ -369,10 +370,10 @@ public class JobDashboardMetricsTest {
                 .skipped(0)
                 .error(0)
                 .failure(0)
-                .time(BigDecimal.valueOf(50))
+                .time(BigDecimal.valueOf(60))
                 .testResultCreated(t0)
-                .startTime(t0)
-                .endTime(t0.plusSeconds(50))
+                .startTime(t0.plusSeconds(30))
+                .endTime(t0.plusSeconds(90))
                 .isSuccess(true)
                 .hasSkip(false)
                 .testSuites(Collections.emptyList())
@@ -417,7 +418,7 @@ public class JobDashboardMetricsTest {
         assertEquals(1, metrics.size());
         JobDashboardMetrics metric = metrics.get(0);
         assertNotNull(metric.getAvgRunDuration());
-        assertEquals(new BigDecimal("150.00"), metric.getAvgRunDuration());
+        assertEquals(new BigDecimal("90.00"), metric.getAvgRunDuration());
     }
 
     // Helper method to create CompanyGraph with given runs
