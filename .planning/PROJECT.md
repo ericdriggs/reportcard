@@ -73,10 +73,11 @@ Capture wall clock execution time at the run level so users can see how long the
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Karate format only (not standard cucumber) | Karate uses proprietary JSON format; our use case is Karate-specific | — Pending |
-| Run-level timing (not test-level) | User wants job duration, not individual test times | — Pending |
-| Multipart upload (not separate endpoint) | Keep related data together in single request | — Pending |
-| Additive schema changes | Minimize migration risk, maintain backwards compatibility | — Pending |
+| Karate format only (not standard cucumber) | Karate uses proprietary JSON format; our use case is Karate-specific | ✓ Decided |
+| Run-level timing (not test-level) | User wants job duration, not individual test times | ✓ Decided |
+| Multipart upload (not separate endpoint) | Keep related data together in single request | ✓ Decided |
+| Additive schema changes | Minimize migration risk, maintain backwards compatibility | ✓ Decided |
+| `start_time` + `end_time` columns (not elapsed_time_millis) | Cleaner schema; duration derivable from end - start | ✓ Decided |
 
 ---
 *Last updated: 2026-01-26 after initialization*
