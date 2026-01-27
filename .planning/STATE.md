@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 ## Current Position
 
 Phase: 5 of 6 (Dashboard Display)
-Plan: 1 of 2 in current phase
-Status: In progress
-Last activity: 2026-01-27 — Completed 05-01-PLAN.md
+Plan: 2 of 2 in current phase
+Status: Phase complete
+Last activity: 2026-01-27 — Completed 05-02-PLAN.md
 
-Progress: [█████████░] 78%
+Progress: [█████████░] 89%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 7
-- Average duration: 5.1 min
-- Total execution time: 0.60 hours
+- Total plans completed: 8
+- Average duration: 5.0 min
+- Total execution time: 0.67 hours
 
 **By Phase:**
 
@@ -32,11 +32,11 @@ Progress: [█████████░] 78%
 | 03-api-integration | 2 | 13 min | 6.5 min |
 | 04-client-library | 1 | 3 min | 3 min |
 | 04.1-migrate-timing | 1 | 10 min | 10 min |
-| 05-dashboard-display | 1 | 3 min | 3 min |
+| 05-dashboard-display | 2 | 7 min | 3.5 min |
 
 **Recent Trend:**
-- Last 5 plans: 03-02 (8 min), 04-01 (3 min), 04.1-01 (10 min), 05-01 (3 min)
-- Trend: Excellent execution speed, data layer extension completed cleanly
+- Last 5 plans: 04-01 (3 min), 04.1-01 (10 min), 05-01 (3 min), 05-02 (4 min)
+- Trend: Excellent execution speed, Phase 5 completed cleanly
 
 *Updated after each plan completion*
 
@@ -70,6 +70,9 @@ Recent decisions affecting current work:
 - Duration stored as BigDecimal seconds with 2 decimal places (05-01) - HALF_UP rounding provides sufficient precision
 - NULL timing values excluded from average (05-01) - Preserves meaningful average, handles old data gracefully
 - Multi-stage aggregation sums durations per run (05-01) - Aligns with Phase 4.1 per-stage timing design
+- NULL duration displays as dash '-' character (05-02) - Clear visual indicator for jobs without timing data
+- Use NumberStringUtil.fromSecondBigDecimalPadded (05-02) - Transparent padding for correct lexical sorting in HTML tables
+- Field description corrected to wall clock calculation (05-02) - Matches actual SQL implementation (max(endTime) - min(startTime))
 
 ### Pending Todos
 
@@ -93,6 +96,6 @@ Pre-existing test isolation issue: Two JunitControllerTest tests fail in full su
 
 ## Session Continuity
 
-Last session: 2026-01-27T19:08:04Z
-Stopped at: Completed 05-01-PLAN.md
+Last session: 2026-01-27T19:24:30Z
+Stopped at: Completed 05-02-PLAN.md (Phase 5 complete)
 Resume file: None
