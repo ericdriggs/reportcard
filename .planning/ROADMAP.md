@@ -52,10 +52,10 @@ Plans:
   4. Parser calculates start_time as resultDate minus elapsedTime
   5. Parser handles missing or malformed JSON gracefully (logs warning, continues processing)
 
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 02-01: Karate JSON parser implementation
+- [ ] 02-01-PLAN.md — KarateSummary POJO, KarateConvertersUtil parser, unit tests
 
 ### Phase 3: API Integration
 **Goal**: Controller accepts Karate JSON uploads and persists timing data
@@ -119,7 +119,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Schema Foundation | 1/1 | ✓ Complete | 2026-01-26 |
-| 2. Karate Parser | 0/1 | Not started | - |
+| 2. Karate Parser | 0/1 | Ready to execute | - |
 | 3. API Integration | 0/2 | Not started | - |
 | 4. Client Library | 0/1 | Not started | - |
 | 5. Dashboard Display | 0/1 | Not started | - |
