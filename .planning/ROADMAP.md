@@ -16,6 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: Karate Parser** - JSON parsing and timing extraction from Karate summary files ✓
 - [x] **Phase 3: API Integration** - Multipart upload handling and S3 storage ✓
 - [x] **Phase 4: Client Library** - Java client support for Karate JSON uploads ✓
+- [ ] **Phase 4.1: Migrate Timing to Test Result** - Move timing columns from run to test_result table (INSERTED)
 - [ ] **Phase 5: Dashboard Display** - UI presentation of job duration vs test execution time
 
 ## Phase Details
@@ -94,10 +95,29 @@ Plans:
 Plans:
 - [x] 04-01-PLAN.md — Add KARATE_REPORT_PATH parameter, create TarGzUtil, update PostWebClient for tar.gz uploads, fix endpoint URL ✓
 
+### Phase 4.1: Migrate Timing to Test Result (INSERTED)
+**Goal**: Move timing columns from run table to test_result table for stage-level timing
+
+**Depends on**: Phase 4 (timing currently on run table)
+
+**Requirements**: Schema migration, JOOQ regeneration, persistence layer update, controller update
+
+**Success Criteria** (what must be TRUE):
+  1. test_result table has start_time column (DATETIME, NULLable)
+  2. test_result table has end_time column (DATETIME, NULLable)
+  3. Controller updates test_result timing instead of run timing
+  4. Existing data handled gracefully
+  5. JOOQ generated classes include new test_result columns
+
+**Plans**: 1 plan
+
+Plans:
+- [ ] 04.1-01-PLAN.md — Add timing columns to test_result, regenerate JOOQ, update persistence and controller layers
+
 ### Phase 5: Dashboard Display
 **Goal**: UI shows job duration distinct from test execution time
 
-**Depends on**: Phase 4 (needs complete end-to-end flow for testing)
+**Depends on**: Phase 4.1 (needs timing at test_result level)
 
 **Requirements**: DISP-01, DISP-02, DISP-03
 
@@ -114,7 +134,7 @@ Plans:
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 4.1 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -122,4 +142,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 2. Karate Parser | 1/1 | ✓ Complete | 2026-01-27 |
 | 3. API Integration | 2/2 | ✓ Complete | 2026-01-27 |
 | 4. Client Library | 1/1 | ✓ Complete | 2026-01-27 |
+| 4.1 Migrate Timing | 0/1 | Ready to plan | - |
 | 5. Dashboard Display | 0/1 | Not started | - |
