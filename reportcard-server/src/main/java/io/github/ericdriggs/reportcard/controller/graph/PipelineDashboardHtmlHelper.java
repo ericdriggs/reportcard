@@ -168,6 +168,8 @@ public class PipelineDashboardHtmlHelper {
         sb.append("<dd style='display: table-cell; border: 1px solid #ccc; padding: 8px; margin: 0;'>Percentage of runs where every test in the job passed. Calculated as: (passing runs / total runs).</dd>").append(ls);
         sb.append("<dt style='display: table-cell; border: 1px solid #ccc; padding: 8px; font-weight: bold; background: #f5f5f5;'>Test Pass %</dt>").append(ls);
         sb.append("<dd style='display: table-cell; border: 1px solid #ccc; padding: 8px; margin: 0;'>Percentage of individual tests that passed. Calculated as: (passing tests / total tests) across all runs.</dd>").append(ls);
+        sb.append("<dt style='display: table-cell; border: 1px solid #ccc; padding: 8px; font-weight: bold; background: #f5f5f5;'>Avg Run Duration</dt>").append(ls);
+        sb.append("<dd style='display: table-cell; border: 1px solid #ccc; padding: 8px; margin: 0;'>Average wall clock execution time per run. Calculated as the time from earliest stage start to latest stage end for each run, then averaged across runs with timing data. Displays \"-\" for jobs without timing data.</dd>").append(ls);
         sb.append("</dl>").append(ls);
         sb.append("</fieldset>").append(ls);
         
