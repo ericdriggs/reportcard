@@ -9,10 +9,10 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Schema
 
-- [ ] **SCHM-01**: Add `start_time` DATETIME column to `run` table (NULLable)
-- [ ] **SCHM-02**: Add `end_time` DATETIME column to `run` table (NULLable)
-- [ ] **SCHM-03**: Add `KARATE` storage type to `storage_type` reference table
-- [ ] **SCHM-04**: Regenerate JOOQ classes after schema changes
+- [x] **SCHM-01**: Add `start_time` DATETIME column to `run` table (NULLable) ✓
+- [x] **SCHM-02**: Add `end_time` DATETIME column to `run` table (NULLable) ✓
+- [x] **SCHM-03**: Add `KARATE_JSON` storage type to `storage_type` reference table ✓
+- [x] **SCHM-04**: Regenerate JOOQ classes after schema changes ✓
 
 ### Parsing
 
@@ -26,7 +26,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [ ] **API-01**: Accept optional `karate.tar.gz` multipart parameter alongside JUnit XML
 - [ ] **API-02**: Validate at least one test result format present (JUnit or Karate)
-- [ ] **API-03**: Store Karate tar.gz contents in S3 with KARATE storage type
+- [ ] **API-03**: Store Karate tar.gz contents in S3 with KARATE_JSON storage type
 - [ ] **API-04**: Persist `start_time` and `end_time` to run record when Karate JSON present
 - [ ] **API-05**: Existing JUnit-only uploads continue working unchanged (backwards compatible)
 
@@ -76,10 +76,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SCHM-01 | Phase 1 | Pending |
-| SCHM-02 | Phase 1 | Pending |
-| SCHM-03 | Phase 1 | Pending |
-| SCHM-04 | Phase 1 | Pending |
+| SCHM-01 | Phase 1 | Complete |
+| SCHM-02 | Phase 1 | Complete |
+| SCHM-03 | Phase 1 | Complete |
+| SCHM-04 | Phase 1 | Complete |
 | PARS-01 | Phase 2 | Pending |
 | PARS-02 | Phase 2 | Pending |
 | PARS-03 | Phase 2 | Pending |
@@ -104,4 +104,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-01-26*
-*Last updated: 2026-01-26 after schema decision (start_time + end_time)*
+*Last updated: 2026-01-26 after Phase 1 completion*
