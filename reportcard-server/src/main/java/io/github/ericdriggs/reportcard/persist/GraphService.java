@@ -504,6 +504,8 @@ public class GraphService extends AbstractPersistService {
                     key("failure").value(TEST_RESULT.FAILURE),
                     key("time").value(TEST_RESULT.TIME),
                     key("testResultCreated").value(isoDateFormat(TEST_RESULT.TEST_RESULT_CREATED)),
+                    key("startTime").value(isoDateFormat(TEST_RESULT.START_TIME)),
+                    key("endTime").value(isoDateFormat(TEST_RESULT.END_TIME)),
                     key("externalLinks").value(TEST_RESULT.EXTERNAL_LINKS),
                     key("isSuccess").value(TEST_RESULT.IS_SUCCESS),
                     key("hasSkip").value(TEST_RESULT.HAS_SKIP),
@@ -519,6 +521,8 @@ public class GraphService extends AbstractPersistService {
                     key("failure").value(TEST_RESULT.FAILURE),
                     key("time").value(TEST_RESULT.TIME),
                     key("testResultCreated").value(isoDateFormat(TEST_RESULT.TEST_RESULT_CREATED)),
+                    key("startTime").value(isoDateFormat(TEST_RESULT.START_TIME)),
+                    key("endTime").value(isoDateFormat(TEST_RESULT.END_TIME)),
                     key("externalLinks").value(TEST_RESULT.EXTERNAL_LINKS),
                     key("isSuccess").value(TEST_RESULT.IS_SUCCESS),
                     key("hasSkip").value(TEST_RESULT.HAS_SKIP)
