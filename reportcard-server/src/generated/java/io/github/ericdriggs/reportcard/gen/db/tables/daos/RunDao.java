@@ -162,4 +162,34 @@ public class RunDao extends DAOImpl<RunRecord, RunPojo, Long> {
     public List<RunPojo> fetchByIsSuccessTable(Boolean... values) {
         return fetch(RunTable.RUN.IS_SUCCESS, values);
     }
+
+    /**
+     * Fetch records that have <code>start_time BETWEEN lowerInclusive AND
+     * upperInclusive</code>
+     */
+    public List<RunPojo> fetchRangeOfStartTimeTable(Instant lowerInclusive, Instant upperInclusive) {
+        return fetchRange(RunTable.RUN.START_TIME, lowerInclusive, upperInclusive);
+    }
+
+    /**
+     * Fetch records that have <code>start_time IN (values)</code>
+     */
+    public List<RunPojo> fetchByStartTimeTable(Instant... values) {
+        return fetch(RunTable.RUN.START_TIME, values);
+    }
+
+    /**
+     * Fetch records that have <code>end_time BETWEEN lowerInclusive AND
+     * upperInclusive</code>
+     */
+    public List<RunPojo> fetchRangeOfEndTimeTable(Instant lowerInclusive, Instant upperInclusive) {
+        return fetchRange(RunTable.RUN.END_TIME, lowerInclusive, upperInclusive);
+    }
+
+    /**
+     * Fetch records that have <code>end_time IN (values)</code>
+     */
+    public List<RunPojo> fetchByEndTimeTable(Instant... values) {
+        return fetch(RunTable.RUN.END_TIME, values);
+    }
 }
