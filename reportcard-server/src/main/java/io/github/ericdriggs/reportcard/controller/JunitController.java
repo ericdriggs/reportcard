@@ -254,11 +254,11 @@ public class JunitController {
         StagePathTestResult stagePathTestResult = testResultPersistService.insertTestResult(req.getStageDetails(), testResultModel);
         StagePath stagePath = stagePathTestResult.getStagePath();
         final Long stageId = stagePath.getStage().getStageId();
-        final Long runId = stagePath.getRun().getRunId();
+        final Long testResultId = stagePathTestResult.getTestResult().getTestResultId();
 
         // Process Karate timing data
         if (hasKarate) {
-            processKarateTiming(runId, req.getKarateTarGz());
+            processKarateTiming(testResultId, req.getKarateTarGz());
         }
 
         // Store files in S3
@@ -323,22 +323,22 @@ public class JunitController {
     }
 
     /**
-     * Processes Karate timing data and updates run record.
+     * Processes Karate timing data and updates test_result record.
      */
-    private void processKarateTiming(Long runId, MultipartFile karateTarGz) {
+    private void processKarateTiming(Long testResultId, MultipartFile karateTarGz) {
         if (karateTarGz == null || karateTarGz.isEmpty()) {
             return;
         }
 
         String summaryJson = KarateTarGzUtil.extractKarateSummaryJson(karateTarGz);
         if (summaryJson == null) {
-            log.warn("karate-summary-json.txt not found in karate.tar.gz for runId: {}", runId);
+            log.warn("karate-summary-json.txt not found in karate.tar.gz for testResultId: {}", testResultId);
             return;
         }
 
         KarateSummary summary = KarateConvertersUtil.parseKarateSummary(summaryJson);
         if (summary == null) {
-            log.warn("Failed to parse karate-summary-json.txt for runId: {}", runId);
+            log.warn("Failed to parse karate-summary-json.txt for testResultId: {}", testResultId);
             return;
         }
 
@@ -348,7 +348,7 @@ public class JunitController {
         Instant startInstant = toInstant(startTime);
         Instant endInstant = toInstant(endTime);
 
-        stagePathPersistService.updateRunTiming(runId, startInstant, endInstant);
+        stagePathPersistService.updateTestResultTiming(testResultId, startInstant, endInstant);
     }
 
     private Instant toInstant(LocalDateTime localDateTime) {
