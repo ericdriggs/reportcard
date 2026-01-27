@@ -360,6 +360,35 @@ public class StagePathPersistService extends AbstractPersistService {
         }
     }
 
+    /**
+     * Updates run record with start and end times from Karate timing data.
+     * Does nothing if both times are null.
+     *
+     * @param runId the run ID to update
+     * @param startTime the start time (nullable)
+     * @param endTime the end time (nullable)
+     */
+    public void updateRunTiming(Long runId, Instant startTime, Instant endTime) {
+        if (runId == null) {
+            log.warn("Cannot update run timing: runId is null");
+            return;
+        }
+        if (startTime == null && endTime == null) {
+            log.debug("No timing data to update for runId: {}", runId);
+            return;
+        }
+
+        int rowsUpdated = dsl.update(RUN)
+                .set(RUN.START_TIME, startTime)
+                .set(RUN.END_TIME, endTime)
+                .where(RUN.RUN_ID.eq(runId))
+                .execute();
+
+        if (rowsUpdated != 1) {
+            log.warn("Expected 1 row updated for run timing, actual: {} for runId: {}", rowsUpdated, runId);
+        }
+    }
+
     //TOMAYBE: consolidate into single sql query
     public boolean isRunSuccess(StagePath stagePath) {
         int testResultFailures = dsl.fetchCount(
