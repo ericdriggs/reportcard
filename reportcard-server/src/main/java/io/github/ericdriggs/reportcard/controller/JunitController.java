@@ -3,10 +3,14 @@ package io.github.ericdriggs.reportcard.controller;
 import io.github.ericdriggs.reportcard.controller.model.JunitHtmlPostRequest;
 import io.github.ericdriggs.reportcard.controller.model.StagePathStorageResultCountResponse;
 import io.github.ericdriggs.reportcard.controller.model.StagePathTestResultResponse;
+import io.github.ericdriggs.reportcard.controller.util.KarateTarGzUtil;
 import io.github.ericdriggs.reportcard.controller.util.TestXmlTarGzUtil;
 import io.github.ericdriggs.reportcard.lock.LockService;
 import io.github.ericdriggs.reportcard.model.*;
 import io.github.ericdriggs.reportcard.model.converter.JunitSurefireXmlParseUtil;
+import io.github.ericdriggs.reportcard.model.converter.karate.KarateConvertersUtil;
+import io.github.ericdriggs.reportcard.model.converter.karate.KarateSummary;
+import io.github.ericdriggs.reportcard.persist.StagePathPersistService;
 import io.github.ericdriggs.reportcard.persist.StoragePersistService;
 import io.github.ericdriggs.reportcard.persist.StorageType;
 import io.github.ericdriggs.reportcard.persist.TestResultPersistService;
@@ -22,7 +26,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,15 +46,21 @@ public class JunitController {
     public static String storageKeyPath = "/v1/api/storage/key";
 
     @Autowired
-    public JunitController(StoragePersistService storagePersistService, TestResultPersistService testResultPersistService, S3Service s3Service, LockService lockService) {
+    public JunitController(StoragePersistService storagePersistService,
+                           TestResultPersistService testResultPersistService,
+                           StagePathPersistService stagePathPersistService,
+                           S3Service s3Service,
+                           LockService lockService) {
         this.storagePersistService = storagePersistService;
         this.testResultPersistService = testResultPersistService;
+        this.stagePathPersistService = stagePathPersistService;
         this.lockService = lockService;
         this.s3Service = s3Service;
     }
 
     private final StoragePersistService storagePersistService;
     private final LockService lockService;
+    private final StagePathPersistService stagePathPersistService;
 
     private final TestResultPersistService testResultPersistService;
     private final S3Service s3Service;
@@ -172,10 +187,13 @@ public class JunitController {
             @RequestParam(value = "externalLinks", required = false)
             String externalLinks,
 
-            @Parameter(description = "Junit and/or surefire xml files in the root of a .tar.gz file. " +
-                                     "Used to generate a single test result. Test results contain test suites. Test suites contain test cases.")
-            @RequestPart("junit.tar.gz")
+            @Parameter(description = "Junit and/or surefire xml files. Required if karate.tar.gz not provided.")
+            @RequestPart(value = "junit.tar.gz", required = false)
             MultipartFile junitXmls,
+
+            @Parameter(description = "Karate test reports tar.gz containing karate-summary-json.txt for timing data.")
+            @RequestPart(value = "karate.tar.gz", required = false)
+            MultipartFile karateTarGz,
 
             @Parameter(description = "Files and folders to store in s3. Usually combination of html/css/js.")
             @RequestPart("storage.tar.gz")
@@ -198,6 +216,7 @@ public class JunitController {
                 .label(label)
                 .indexFile(indexFile)
                 .junitXmls(junitXmls)
+                .karateTarGz(karateTarGz)
                 .reports(reports)
                 .build();
         try {
@@ -212,22 +231,54 @@ public class JunitController {
     }
 
     public StagePathStorageResultCountResponse doPostStageJunitStorageTarGZ(JunitHtmlPostRequest req) {
+        // Validate at least one test result source
+        boolean hasJunit = req.getJunitXmls() != null && !req.getJunitXmls().isEmpty();
+        boolean hasKarate = req.getKarateTarGz() != null && !req.getKarateTarGz().isEmpty();
 
-        List<String> testXmlContents = TestXmlTarGzUtil.getFileContentsFromTarGz(req.getJunitXmls());
-        TestResultModel testResultModel = JunitSurefireXmlParseUtil.parseTestXml(testXmlContents);
+        if (!hasJunit && !hasKarate) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                "At least one of junit.tar.gz or karate.tar.gz must be provided");
+        }
+
+        // Parse JUnit if present (existing behavior)
+        TestResultModel testResultModel;
+        if (hasJunit) {
+            List<String> testXmlContents = TestXmlTarGzUtil.getFileContentsFromTarGz(req.getJunitXmls());
+            testResultModel = JunitSurefireXmlParseUtil.parseTestXml(testXmlContents);
+        } else {
+            // Empty test result when only Karate provided
+            testResultModel = new TestResultModel();
+            testResultModel.setTestSuites(new ArrayList<>()); // Initialize totals to zeros
+        }
 
         StagePathTestResult stagePathTestResult = testResultPersistService.insertTestResult(req.getStageDetails(), testResultModel);
         StagePath stagePath = stagePathTestResult.getStagePath();
         final Long stageId = stagePath.getStage().getStageId();
+        final Long runId = stagePath.getRun().getRunId();
 
-        StagePathStorages stagePathStorages;
-        {
-            StagePathStorages junitStorage = storeJunit(stageId, req.getJunitXmls());
-            StagePathStorages htmlStorage = storeHtml(stageId, req.getLabel(), req.getReports(), req.getIndexFile());
-            stagePathStorages = StagePathStorages.merge(junitStorage, htmlStorage);
+        // Process Karate timing data
+        if (hasKarate) {
+            processKarateTiming(runId, req.getKarateTarGz());
         }
 
-        StagePathStorageResultCount stagePathStorageResultCount = new StagePathStorageResultCount(stagePathStorages.getStagePath(), stagePathStorages.getStorages(), stagePathTestResult);
+        // Store files in S3
+        StagePathStorages stagePathStorages;
+        {
+            List<StagePathStorages> storagesList = new ArrayList<>();
+
+            if (hasJunit) {
+                storagesList.add(storeJunit(stageId, req.getJunitXmls()));
+            }
+            if (hasKarate) {
+                storagesList.add(storeKarate(stageId, req.getKarateTarGz()));
+            }
+            storagesList.add(storeHtml(stageId, req.getLabel(), req.getReports(), req.getIndexFile()));
+
+            stagePathStorages = StagePathStorages.merge(storagesList.toArray(new StagePathStorages[0]));
+        }
+
+        StagePathStorageResultCount stagePathStorageResultCount =
+            new StagePathStorageResultCount(stagePathStorages.getStagePath(), stagePathStorages.getStorages(), stagePathTestResult);
         return StagePathStorageResultCountResponse.created(stagePathStorageResultCount);
     }
 
@@ -268,6 +319,61 @@ public class JunitController {
             stagePathStorages.setComplete();
         }
 
+        return stagePathStorages;
+    }
+
+    /**
+     * Processes Karate timing data and updates run record.
+     */
+    private void processKarateTiming(Long runId, MultipartFile karateTarGz) {
+        if (karateTarGz == null || karateTarGz.isEmpty()) {
+            return;
+        }
+
+        String summaryJson = KarateTarGzUtil.extractKarateSummaryJson(karateTarGz);
+        if (summaryJson == null) {
+            log.warn("karate-summary-json.txt not found in karate.tar.gz for runId: {}", runId);
+            return;
+        }
+
+        KarateSummary summary = KarateConvertersUtil.parseKarateSummary(summaryJson);
+        if (summary == null) {
+            log.warn("Failed to parse karate-summary-json.txt for runId: {}", runId);
+            return;
+        }
+
+        LocalDateTime endTime = KarateConvertersUtil.parseResultDate(summary.getResultDate());
+        LocalDateTime startTime = KarateConvertersUtil.calculateStartTime(endTime, summary.getElapsedTime());
+
+        Instant startInstant = toInstant(startTime);
+        Instant endInstant = toInstant(endTime);
+
+        stagePathPersistService.updateRunTiming(runId, startInstant, endInstant);
+    }
+
+    private Instant toInstant(LocalDateTime localDateTime) {
+        if (localDateTime == null) {
+            return null;
+        }
+        return localDateTime.atZone(ZoneOffset.UTC).toInstant();
+    }
+
+    /**
+     * Stores Karate tar.gz in S3 with KARATE_JSON storage type.
+     */
+    protected StagePathStorages storeKarate(Long stageId, MultipartFile tarGz) {
+        final String label = "karate";
+        StorageType storageType = StorageType.KARATE_JSON;
+
+        final StagePath stagePath = storagePersistService.getStagePath(stageId);
+        final String prefix = new StoragePath(stagePath, label).getPrefix();
+
+        StagePathStorages stagePathStorages = storagePersistService.upsertStoragePath(null, label, prefix, stageId, storageType);
+        if (!stagePathStorages.isComplete()) {
+            s3Service.uploadTarGz(prefix, false, tarGz);  // false = don't expand
+            storagePersistService.setUploadCompleted(null, label, prefix, stageId);
+            stagePathStorages.setComplete();
+        }
         return stagePathStorages;
     }
 
