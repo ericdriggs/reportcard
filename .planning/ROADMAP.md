@@ -16,7 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: Karate Parser** - JSON parsing and timing extraction from Karate summary files ✓
 - [x] **Phase 3: API Integration** - Multipart upload handling and S3 storage ✓
 - [x] **Phase 4: Client Library** - Java client support for Karate JSON uploads ✓
-- [ ] **Phase 4.1: Migrate Timing to Test Result** - Move timing columns from run to test_result table (INSERTED)
+- [x] **Phase 4.1: Migrate Timing to Test Result** - Move timing columns from run to test_result table (INSERTED) ✓
 - [ ] **Phase 5: Dashboard Display** - UI presentation of job duration vs test execution time
 
 ## Phase Details
@@ -112,7 +112,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 04.1-01-PLAN.md — Add timing columns to test_result, regenerate JOOQ, update persistence and controller layers
+- [x] 04.1-01-PLAN.md — Add timing columns to test_result, regenerate JOOQ, update persistence and controller layers ✓
 
 ### Phase 5: Dashboard Display
 **Goal**: UI shows job duration distinct from test execution time
@@ -122,14 +122,16 @@ Plans:
 **Requirements**: DISP-01, DISP-02, DISP-03
 
 **Success Criteria** (what must be TRUE):
-  1. Run detail view displays "Job Duration" calculated from end_time minus start_time
-  2. Run detail view displays "Test Execution Time" (existing time field) alongside Job Duration
-  3. UI gracefully handles NULL timing values (displays "N/A" or omits section)
+  1. Pipelines dashboard displays "Avg Run Duration" calculated from test_result timing
+  2. Duration displays in human-readable format (XXh XXm XXs) with sortable transparent padding
+  3. UI gracefully handles NULL timing values (displays "-")
 
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 05-01: Dashboard timing display
+- [ ] 05-01-PLAN.md — Backend data layer: TestResultGraph timing fields, GraphService query, JobDashboardMetrics calculation
+- [ ] 05-02-PLAN.md — Frontend display: PipelineDashboardHtmlHelper rendering, column addition, field description
+- [ ] 05-03-PLAN.md — Human verification: functional testing of dashboard display
 
 ## Progress
 
@@ -142,5 +144,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 4.1 → 5
 | 2. Karate Parser | 1/1 | ✓ Complete | 2026-01-27 |
 | 3. API Integration | 2/2 | ✓ Complete | 2026-01-27 |
 | 4. Client Library | 1/1 | ✓ Complete | 2026-01-27 |
-| 4.1 Migrate Timing | 0/1 | Ready to plan | - |
-| 5. Dashboard Display | 0/1 | Not started | - |
+| 4.1 Migrate Timing | 1/1 | ✓ Complete | 2026-01-27 |
+| 5. Dashboard Display | 0/3 | Not started | - |
