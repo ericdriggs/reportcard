@@ -33,10 +33,10 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. storage_type table contains KARATE entry
   4. JOOQ generated classes include new columns and storage type
 
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 01-01: Schema changes and JOOQ regeneration
+- [ ] 01-01-PLAN.md — Add run timing columns, KARATE storage type, regenerate JOOQ code
 
 ### Phase 2: Karate Parser
 **Goal**: Parse Karate JSON summary files and extract timing data
