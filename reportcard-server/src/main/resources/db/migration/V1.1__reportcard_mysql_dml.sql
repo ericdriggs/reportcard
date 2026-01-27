@@ -22,7 +22,7 @@ VALUES (1, 'HTML'),
        (6, 'XML'),
        (7, 'ZIP'),
        (8, 'JUNIT'),
-       (9, 'KARATE');
+       (9, 'KARATE_JSON');
 
 
 INSERT `reportcard`.`fault_context`
