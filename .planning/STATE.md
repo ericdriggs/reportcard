@@ -76,9 +76,11 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-1. **SQL migration script for deployed databases** — Create a standalone .sql script users can run themselves on deployed/production databases to add test_result.start_time and test_result.end_time columns (Phase 4.1 schema changes). Currently only applied to local MySQL and one RDS instance.
+1. ~~**SQL migration script for deployed databases**~~ — DONE: Created V1.2__add_test_result_timing.sql
 
 2. **reportcard-client-java support** — Add phase for sibling repository `reportcard-client-java` to support Karate JSON uploads. This is a separate codebase from the in-tree `reportcard-client` module.
+
+3. **Remove dead run timing code** — Remove unused `run.start_time` and `run.end_time` columns from V1.0 DDL, and remove dead `updateRunTiming()` method from StagePathPersistService.java. These are leftovers from Phase 1 before Phase 4.1 moved timing to test_result.
 
 ### Roadmap Evolution
 
