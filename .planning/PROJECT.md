@@ -34,6 +34,7 @@ Capture wall clock execution time at the run level so users can see how long the
 - [ ] Update Java client to support uploading Karate JSON
 - [ ] Display wall clock timing in dashboard views
 - [ ] Backwards compatible: Karate JSON is optional, existing uploads unchanged
+- [ ] Extract and store scenario tags from Karate JSON for searchability and functional traceability
 
 ### Out of Scope
 
@@ -55,6 +56,7 @@ Capture wall clock execution time at the run level so users can see how long the
 - Karate outputs `.karate-json.txt` files (not standard cucumber JSON)
 - Summary file contains: `elapsedTime` (wall clock), `totalTime` (sum of all tests), `resultDate`
 - Individual feature files contain `startTime`/`endTime` epoch millis
+- Scenario-level tags in `scenarioResults[].tags` arrays (e.g., `["smoke", "env=staging"]`) - not available in JUnit XML
 
 **Technical Notes:**
 - Current `test_result.time` is sum of test durations from JUnit XML

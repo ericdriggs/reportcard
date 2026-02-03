@@ -19,6 +19,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 4.1: Migrate Timing to Test Result** - Move timing columns from run to test_result table (INSERTED) ✓
 - [ ] **Phase 5: Dashboard Display** - UI presentation of job duration vs test execution time
 - [ ] **Phase 6: reportcard-client-java Support** - Karate JSON upload support in sibling repository
+- [ ] **Phase 7: Tags Investigation** - Research extracting scenario tags from Karate JSON for test_result storage and searchability
 
 ## Phase Details
 
@@ -139,7 +140,7 @@ Plans:
 Plans:
 - [ ] 05-01-PLAN.md — Backend data layer: TestResultGraph timing fields, GraphService query, JobDashboardMetrics calculation
 - [ ] 05-02-PLAN.md — Frontend display: PipelineDashboardHtmlHelper rendering, column addition, field description
-- [ ] 05-03-PLAN.md — Human verification: functional testing of dashboard display
+- [ ] 05-03-PLAN.md — Automated test: PipelineDashboardTest for timing display, NULL handling, field description
 
 ### Phase 6: reportcard-client-java Support
 **Goal**: Sibling repository reportcard-client-java supports Karate JSON uploads
@@ -158,10 +159,44 @@ Plans:
 Plans:
 - [ ] TBD (run /gsd:plan-phase 6 to break down)
 
+### Phase 7: Tags Investigation
+**Goal**: Research extracting scenario tags from Karate JSON into test_result JSON structure, and indexing strategy for tag-based search
+
+**Depends on**: Phase 3 (Karate JSON parsing infrastructure)
+
+**Requirements**: Research-focused phase to inform future implementation
+
+**Research Questions**:
+  1. How to extract tags from Karate JSON `scenarioResults[].tags` arrays
+  2. Model Mapper patterns for mapping Karate JSON tags into existing test_result JSON structure
+  3. MySQL JSON indexing options for tag searchability (functional indexes, generated columns, etc.)
+  4. Index design tradeoffs: query flexibility vs index maintenance cost vs storage
+  5. API design for tag-based search queries
+
+**Context**:
+- Tags go into existing test_result JSON structure (not a separate column or table)
+- JUnit XML does not support tags - this is Karate-specific metadata
+- Tags enable functional traceability (e.g., `@smoke`, `@regression`, `@feature-xyz`)
+- Tags can be simple (`smoke`) or key-value (`env=staging`)
+- Nested call results also have tags that may need aggregation
+- Main challenge: how to efficiently index JSON array for search queries
+
+**Success Criteria** (what must be TRUE):
+  1. Model Mapper patterns documented for Karate JSON → test_result JSON mapping
+  2. Clear understanding of MySQL JSON indexing options and limitations
+  3. Recommendation on indexing strategy (or decision to defer indexing)
+  4. API design proposal for tag-based queries
+  5. Decision on whether to split into multiple implementation phases
+
+**Plans**: TBD
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 7 to break down)
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 4.1 → 5 → 6
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 4.1 → 5 → 6 → 7
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -172,3 +207,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 4.1 → 5 → 6
 | 4.1 Migrate Timing | 1/1 | ✓ Complete | 2026-01-27 |
 | 5. Dashboard Display | 0/3 | Not started | - |
 | 6. reportcard-client-java | 0/? | Not started | - |
+| 7. Tags Investigation | 0/? | Not started | - |
