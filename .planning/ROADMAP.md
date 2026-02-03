@@ -17,7 +17,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 3: API Integration** - Multipart upload handling and S3 storage ✓
 - [x] **Phase 4: Client Library** - Java client support for Karate JSON uploads ✓
 - [x] **Phase 4.1: Migrate Timing to Test Result** - Move timing columns from run to test_result table (INSERTED) ✓
-- [ ] **Phase 5: Dashboard Display** - UI presentation of job duration vs test execution time
+- [x] **Phase 5: Dashboard Display** - UI presentation of job duration vs test execution time ✓
 - [ ] **Phase 6: reportcard-client-java Support** - Karate JSON upload support in sibling repository
 - [ ] **Phase 7: Tags Investigation** - Research extracting scenario tags from Karate JSON for test_result storage and searchability
 
@@ -138,9 +138,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 05-01-PLAN.md — Backend data layer: TestResultGraph timing fields, GraphService query, JobDashboardMetrics calculation
-- [ ] 05-02-PLAN.md — Frontend display: PipelineDashboardHtmlHelper rendering, column addition, field description
-- [ ] 05-03-PLAN.md — Automated test: PipelineDashboardTest for timing display, NULL handling, field description
+- [x] 05-01-PLAN.md — Backend data layer: TestResultGraph timing fields, GraphService query, JobDashboardMetrics calculation ✓
+- [x] 05-02-PLAN.md — Frontend display: PipelineDashboardHtmlHelper rendering, column addition, field description ✓
+- [x] 05-03-PLAN.md — Automated test: PipelineDashboardTest for timing display, NULL handling, field description ✓
 
 ### Phase 6: reportcard-client-java Support
 **Goal**: Sibling repository reportcard-client-java supports Karate JSON uploads
@@ -205,6 +205,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 4.1 → 5 → 6 → 7
 | 3. API Integration | 2/2 | ✓ Complete | 2026-01-27 |
 | 4. Client Library | 1/1 | ✓ Complete | 2026-01-27 |
 | 4.1 Migrate Timing | 1/1 | ✓ Complete | 2026-01-27 |
-| 5. Dashboard Display | 0/3 | Not started | - |
+| 5. Dashboard Display | 3/3 | ✓ Complete | 2026-02-03 |
 | 6. reportcard-client-java | 0/? | Not started | - |
 | 7. Tags Investigation | 0/? | Not started | - |
