@@ -9,36 +9,36 @@
 
 **Core Value:** CI/CD pipelines can hit a stable JSON endpoint to get the latest test result for a specific job and stage
 
-**Current Focus:** Phase 2 complete - Latest Endpoints fully implemented and verified
+**Current Focus:** Phase 3 complete - Query Parameter Parity implemented
 
 ---
 
 ## Current Position
 
-**Phase:** 2 of 4 (Latest Endpoints) - COMPLETE
-**Plan:** 03 of 03 in phase - COMPLETE
+**Phase:** 3 of 4 (Query Parameter Parity) - COMPLETE
+**Plan:** 01 of 01 in phase - COMPLETE
 **Status:** Phase complete
-**Last activity:** 2026-02-05 - Completed Phase 2, all 3 plans executed and verified
+**Last activity:** 2026-02-05 - Completed Phase 3, runs parameter added to JSON endpoints
 
-**Progress:** [████████████████░░░░] 86% (6/7 plans complete overall)
+**Progress:** [████████████████████] 100% (7/7 plans complete overall)
 
-**Next Action:** Plan Phase 3 (Query Parameter Parity)
+**Next Action:** Execute Phase 4 (API Exposure) - Remove @Hidden annotation
 
 ---
 
 ## Performance Metrics
 
 ### Velocity
-- **Phases completed:** 2
-- **Requirements delivered:** 5/7
-- **Phase 2 completed:** 2026-02-05
-- **Estimated completion:** TBD
+- **Phases completed:** 3
+- **Requirements delivered:** 6/7
+- **Phase 3 completed:** 2026-02-05
+- **Estimated completion:** Phase 4 remaining (final phase)
 
 ### Quality
-- **Test coverage:** Comprehensive (Phase 1 + Phase 2 with 8 new tests)
+- **Test coverage:** Comprehensive (Phase 1-3 with 14 new tests total)
 - **Rework incidents:** 0
 - **Blocked plans:** 0
-- **Verification score:** 9/9 must-haves (100%)
+- **Verification score:** All must-haves (100%)
 
 ### Efficiency
 - **Average phase duration:** TBD
@@ -63,6 +63,8 @@
 | getBranch/getRunFromReference error handling needs improvement | These methods don't properly throw ResponseStatusException on not found | 2026-02-05 |
 | Direct RUN table query for getLatestRunId | Simpler/faster than JOIN through hierarchy - jobId already validated | 2026-02-05 |
 | Delegate latest endpoints to ID-based endpoints | Ensures identical response shapes between /run/latest and /run/{runId} | 2026-02-05 |
+| Post-filter cache for runs parameter | Avoid cache explosion from N run values; cached data is superset | 2026-02-05 |
+| Handle null in validateRuns for JSON controller | JSON controller receives nullable Integer from @RequestParam | 2026-02-05 |
 
 ### Open Questions
 
@@ -81,6 +83,8 @@
 - [x] Plan 02-01: Add getLatestRunId service method (COMPLETE)
 - [x] Plan 02-02: Add /run/latest controller endpoint (COMPLETE)
 - [x] Plan 02-03: Add /run/latest/stage/{stage} controller endpoint (COMPLETE)
+- [x] Plan 03-01: Add ?runs=N parameter to JSON endpoints (COMPLETE)
+- [ ] Plan 04-01: Remove @Hidden annotation from BrowseJsonController
 - [ ] Document path audit findings for UI vs JSON controllers
 
 ### Known Blockers
@@ -94,32 +98,34 @@ None currently.
 ### Last Session Summary
 
 **Date:** 2026-02-05
-**Activity:** Phase 2 completion (all three plans executed)
-**Outcome:** Latest endpoints fully implemented with 100% verification score
+**Activity:** Phase 3 completion (Plan 03-01 executed)
+**Outcome:** Query parameter parity achieved with 100% verification score
 
 **Key outputs:**
-- BrowseService.getLatestRunId(Long jobId) using MAX(RUN.RUN_ID)
-- GET /job/{jobId}/run/latest endpoint returning run stages
-- GET /job/{jobId}/run/latest/stage/{stage} endpoint returning StageTestResultModel
-- 8 new tests: 2 service layer, 6 controller layer
-- Task commits: 6c28fdf, 50ba5e2, 562b217, a1fcf05, c21232a
+- validateRuns() helper method for parameter validation
+- limitRunsPerJob() helper for branch-level filtering
+- limitRunsInJob() helper for job-level filtering
+- Updated getBranchJobsRuns and getJobRunsStages endpoints
+- 6 new tests for runs parameter behavior
+- Task commits: 722f370, d7f09d7
 
 **Handoff notes:**
-- Phase 2 complete with full verification
-- Ready to start Phase 3: Query Parameter Parity
-- Phase 3 adds ?runs=N parameter to JSON endpoints
+- Phase 3 complete with full verification
+- Ready to start Phase 4: API Exposure
+- Phase 4 removes @Hidden annotation from BrowseJsonController
 
 ### Context for Next Session
 
-**If continuing to Phase 3:**
-- FILTER-01: Add ?runs=N parameter to JSON endpoints
-- Reference BrowseUIController.validateRuns() for parameter validation
-- Follow established test patterns from Phase 1 and 2
+**If continuing to Phase 4:**
+- API-01: Remove @Hidden from BrowseJsonController
+- All prerequisite features (validation, latest, filtering) complete
+- Comprehensive test coverage in place
+- Final step to expose JSON API publicly
 
 **If revising roadmap:**
 - Requirement coverage is 100% (7/7), no gaps
 - Phase dependencies are sequential: 1->2->3->4
-- Phases 1 and 2 complete, Phases 3 and 4 pending
+- Phases 1, 2, and 3 complete, Phase 4 pending
 
 ---
 
@@ -131,7 +137,7 @@ None currently.
 |-------|--------|--------------|------------|
 | 1 - Foundation & Validation | Complete | 3 | 100% |
 | 2 - Latest Endpoints | Complete | 2 | 100% (3/3 plans) |
-| 3 - Query Parameter Parity | Pending | 1 | 0% |
+| 3 - Query Parameter Parity | Complete | 1 | 100% (1/1 plan) |
 | 4 - API Exposure | Pending | 1 | 0% |
 
 ### Requirement Status
@@ -142,7 +148,7 @@ None currently.
 | API-02 | All JSON endpoints return valid JSON | 1 | Complete |
 | LATEST-01 | Add /job/{id}/run/latest endpoint | 2 | Complete |
 | LATEST-02 | Add /run/latest/stage/{stage} endpoint | 2 | Complete |
-| FILTER-01 | ?runs=N parameter works on JSON endpoints | 3 | Pending |
+| FILTER-01 | ?runs=N parameter works on JSON endpoints | 3 | Complete |
 | TEST-01 | Integration tests for all JSON endpoints | 1 | Complete |
 | TEST-02 | Tests validate JSON serialization | 1 | Complete |
 
@@ -162,6 +168,7 @@ None currently.
 
 **Research flags:**
 - Phase 2: Cache invalidation not needed (latest-run-ID skips cache, uses existing cache after resolution)
+- Phase 3: Post-filter pattern avoids cache explosion
 - All other phases: Standard Spring Boot patterns, skip phase research
 
 **Implications:**
@@ -174,3 +181,4 @@ None currently.
 *State initialized: 2026-02-05*
 *Phase 1 complete: 2026-02-05*
 *Phase 2 complete: 2026-02-05*
+*Phase 3 complete: 2026-02-05*
