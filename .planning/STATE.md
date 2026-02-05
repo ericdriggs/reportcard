@@ -9,39 +9,39 @@
 
 **Core Value:** CI/CD pipelines can hit a stable JSON endpoint to get the latest test result for a specific job and stage
 
-**Current Focus:** Phase 1 complete - Foundation & Validation established with comprehensive test coverage
+**Current Focus:** Phase 2 in progress - Latest Endpoints service layer complete
 
 ---
 
 ## Current Position
 
-**Phase:** 1 of 4 (Foundation & Validation)
-**Plan:** 03 of 03 in phase - COMPLETE
-**Status:** Phase 1 complete
-**Last activity:** 2026-02-05 - Completed 01-03-PLAN.md
+**Phase:** 2 of 4 (Latest Endpoints)
+**Plan:** 01 of 03 in phase - COMPLETE
+**Status:** In progress
+**Last activity:** 2026-02-05 - Completed 02-01-PLAN.md
 
-**Progress:** [████████████████████] 100% (3/3 plans complete in current phase)
+**Progress:** [████████████░░░░░░░░] 57% (4/7 plans complete overall)
 
-**Next Action:** Begin Phase 2 planning (Latest Endpoints)
+**Next Action:** Execute 02-02-PLAN.md (Add /run/latest controller endpoint)
 
 ---
 
 ## Performance Metrics
 
 ### Velocity
-- **Phases completed:** 0
-- **Requirements delivered:** 0/7
-- **Current phase started:** Not started
-- **Estimated completion:** TBD (after Phase 1 planning)
+- **Phases completed:** 1
+- **Requirements delivered:** 3/7
+- **Current phase started:** 2026-02-05
+- **Estimated completion:** TBD
 
 ### Quality
-- **Test coverage:** Baseline (existing tests)
+- **Test coverage:** Comprehensive (Phase 1 + service layer tests)
 - **Rework incidents:** 0
 - **Blocked plans:** 0
 
 ### Efficiency
 - **Average phase duration:** TBD
-- **Planning accuracy:** TBD
+- **Planning accuracy:** HIGH (02-01 executed exactly as planned)
 - **Research effectiveness:** HIGH confidence (comprehensive codebase analysis)
 
 ---
@@ -52,7 +52,7 @@
 
 | Decision | Rationale | Date |
 |----------|-----------|------|
-| 4-phase roadmap structure | Natural boundaries: foundation → core feature → parity → exposure | 2026-02-05 |
+| 4-phase roadmap structure | Natural boundaries: foundation -> core feature -> parity -> exposure | 2026-02-05 |
 | Phase 1 focuses on validation | Must validate safety before implementing features or removing @Hidden | 2026-02-05 |
 | Latest resolution via max(run_id) | Follows auto-incrementing run_id pattern in existing schema | 2026-02-05 |
 | Testcontainers for all integration tests | Consistent with existing test patterns in codebase | 2026-02-05 |
@@ -60,6 +60,7 @@
 | Deep validation of StageTestResultModel | Verify testSuites and testCases presence, not just model existence | 2026-02-05 |
 | Error tests call browseService directly | ResponseStatusException propagates from service layer to Spring's global exception handling | 2026-02-05 |
 | getBranch/getRunFromReference error handling needs improvement | These methods don't properly throw ResponseStatusException on not found | 2026-02-05 |
+| Direct RUN table query for getLatestRunId | Simpler/faster than JOIN through hierarchy - jobId already validated | 2026-02-05 |
 
 ### Open Questions
 
@@ -75,8 +76,10 @@
 - [x] Plan Phase 1: Foundation & Validation (COMPLETE)
 - [x] Verify BrowseJsonController current state (@Hidden annotation present) (COMPLETE)
 - [x] Review existing test patterns in AbstractBrowseServiceTest (COMPLETE)
+- [x] Plan 02-01: Add getLatestRunId service method (COMPLETE)
+- [ ] Plan 02-02: Add /run/latest controller endpoint
+- [ ] Plan 02-03: Add /run/latest/stage/{stage} controller endpoint
 - [ ] Document path audit findings for UI vs JSON controllers
-- [ ] Plan Phase 2: Latest Endpoints
 
 ### Known Blockers
 
@@ -89,34 +92,32 @@ None currently.
 ### Last Session Summary
 
 **Date:** 2026-02-05
-**Activity:** Plan 01-03 execution (SHA lookup and error case tests)
-**Outcome:** Added 7 tests to BrowseJsonControllerTest - all 15 tests pass, Phase 1 complete
+**Activity:** Plan 02-01 execution (getLatestRunId service method)
+**Outcome:** Added getLatestRunId method to BrowseService with full test coverage
 
 **Key outputs:**
-- 01-03-SUMMARY.md documenting completion
-- BrowseJsonControllerTest now has 15 passing tests (10 success + 5 error)
-- Test commit: 91884ba
+- 02-01-SUMMARY.md documenting completion
+- BrowseService.getLatestRunId(Long jobId) using MAX(RUN.RUN_ID)
+- BrowseServiceTest: getLatestRunIdSuccessTest, getLatestRunIdNotFoundTest
+- Task commits: 6c28fdf (feat), 50ba5e2 (test)
 
 **Handoff notes:**
-- Phase 1 Foundation & Validation complete
-- BrowseJsonController test coverage comprehensive (all 10 endpoints + error cases)
-- Discovered error handling gaps in getBranch and getRunFromReference methods
-- Ready for Phase 2 (Latest Endpoints)
+- Service layer method ready for controller endpoints
+- Plan 02-02 can now implement /run/latest endpoint calling getLatestRunId
+- Plan 02-03 can implement /run/latest/stage/{stage} endpoint
 
 ### Context for Next Session
 
-**If planning Phase 2:**
-- Examine BrowseService for latest run query patterns
-- Review AbstractAsyncCache implementation for cache integration
-- Consider database index verification for efficient latest-run resolution
-- Design service layer method signature for getLatestRunId()
-- Use SHA lookup test patterns from Plan 01-03 for latest endpoint tests
+**If continuing Phase 2:**
+- getLatestRunId method available in BrowseService
+- Add endpoint to BrowseJsonController that calls getLatestRunId then delegates to existing getStagesByIds
+- Follow test patterns from BrowseJsonControllerTest for endpoint tests
+- Spring MVC literal paths match before path variables (no conflict with /run/{runId})
 
 **If revising roadmap:**
 - Requirement coverage is 100% (7/7), no gaps
-- Phase dependencies are sequential: 1→2→3→4
-- Research already comprehensive, minimal additional research needed
-- Phase 1 requirements (API-02, TEST-01, TEST-02) validated
+- Phase dependencies are sequential: 1->2->3->4
+- Phase 2 service layer (02-01) complete, controller layer (02-02, 02-03) pending
 
 ---
 
@@ -127,7 +128,7 @@ None currently.
 | Phase | Status | Requirements | Completion |
 |-------|--------|--------------|------------|
 | 1 - Foundation & Validation | Complete | 3 | 100% |
-| 2 - Latest Endpoints | Pending | 2 | 0% |
+| 2 - Latest Endpoints | In Progress | 2 | 33% (1/3 plans) |
 | 3 - Query Parameter Parity | Pending | 1 | 0% |
 | 4 - API Exposure | Pending | 1 | 0% |
 
@@ -137,7 +138,7 @@ None currently.
 |----|-------------|-------|--------|
 | API-01 | Remove @Hidden from BrowseJsonController | 4 | Pending |
 | API-02 | All JSON endpoints return valid JSON | 1 | Complete |
-| LATEST-01 | Add /job/{id}/run/latest endpoint | 2 | Pending |
+| LATEST-01 | Add /job/{id}/run/latest endpoint | 2 | In Progress |
 | LATEST-02 | Add /run/latest/stage/{stage} endpoint | 2 | Pending |
 | FILTER-01 | ?runs=N parameter works on JSON endpoints | 3 | Pending |
 | TEST-01 | Integration tests for all JSON endpoints | 1 | Complete |
@@ -170,4 +171,4 @@ None currently.
 ---
 *State initialized: 2026-02-05*
 *Phase 1 complete: 2026-02-05*
-*Ready for Phase 2 planning*
+*Phase 2 plan 01 complete: 2026-02-05*
