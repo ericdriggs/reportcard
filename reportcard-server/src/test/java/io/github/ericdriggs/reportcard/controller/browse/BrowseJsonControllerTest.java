@@ -214,9 +214,9 @@ public class BrowseJsonControllerTest extends AbstractBrowseServiceTest {
 
     @Test
     void getBranchJobsRunsJsonSuccessTest() {
-        // Call controller endpoint (jobInfoFilters not implemented yet, pass null)
+        // Call controller endpoint (runs=null uses default, jobInfoFilters=null)
         ResponseEntity<Map<BranchPojo, Map<JobPojo, Set<RunPojo>>>> response =
-            controller.getBranchJobsRuns(TestData.company, TestData.org, TestData.repo, TestData.branch, null);
+            controller.getBranchJobsRuns(TestData.company, TestData.org, TestData.repo, TestData.branch, null, null);
 
         // Verify HTTP response
         assertNotNull(response);
@@ -258,9 +258,9 @@ public class BrowseJsonControllerTest extends AbstractBrowseServiceTest {
 
     @Test
     void getJobRunsStagesJsonSuccessTest() {
-        // Call controller endpoint
+        // Call controller endpoint (runs=null uses default)
         ResponseEntity<Map<JobPojo, Map<RunPojo, Set<StagePojo>>>> response =
-            controller.getJobRunsStages(TestData.company, TestData.org, TestData.repo, TestData.branch, TestData.jobId);
+            controller.getJobRunsStages(TestData.company, TestData.org, TestData.repo, TestData.branch, TestData.jobId, null);
 
         // Verify HTTP response
         assertNotNull(response);
@@ -711,5 +711,127 @@ public class BrowseJsonControllerTest extends AbstractBrowseServiceTest {
         assertNotNull(ex.getMessage());
         assertTrue(ex.getMessage().contains("MISSING_COMPANY"),
             "Error message should contain missing company name");
+    }
+
+    // ==================== Runs Parameter Tests ====================
+
+    @Test
+    void getBranchJobsRunsWithRunsParameterTest() {
+        // Test with explicit runs parameter (limit to 10)
+        ResponseEntity<Map<BranchPojo, Map<JobPojo, Set<RunPojo>>>> response =
+            controller.getBranchJobsRuns(TestData.company, TestData.org, TestData.repo,
+                TestData.branch, 10, null);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        Map<BranchPojo, Map<JobPojo, Set<RunPojo>>> result = response.getBody();
+        assertNotNull(result);
+        assertFalse(result.isEmpty());
+
+        // Verify runs per job limited to 10
+        for (Map<JobPojo, Set<RunPojo>> jobRuns : result.values()) {
+            for (Set<RunPojo> runs : jobRuns.values()) {
+                assertTrue(runs.size() <= 10, "Each job should have at most 10 runs");
+            }
+        }
+    }
+
+    @Test
+    void getBranchJobsRunsDefaultRunsTest() {
+        // Test without runs parameter (should use default 60)
+        // Note: Updated signature requires runs parameter, pass null to test default behavior
+        ResponseEntity<Map<BranchPojo, Map<JobPojo, Set<RunPojo>>>> response =
+            controller.getBranchJobsRuns(TestData.company, TestData.org, TestData.repo,
+                TestData.branch, null, null);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        Map<BranchPojo, Map<JobPojo, Set<RunPojo>>> result = response.getBody();
+        assertNotNull(result);
+        assertFalse(result.isEmpty());
+
+        // Verify runs per job limited to 60 (default)
+        for (Map<JobPojo, Set<RunPojo>> jobRuns : result.values()) {
+            for (Set<RunPojo> runs : jobRuns.values()) {
+                assertTrue(runs.size() <= 60, "Each job should have at most 60 runs (default)");
+            }
+        }
+    }
+
+    @Test
+    void getBranchJobsRunsWithZeroRunsUsesDefaultTest() {
+        // Test with runs=0 (should use default 60)
+        ResponseEntity<Map<BranchPojo, Map<JobPojo, Set<RunPojo>>>> response =
+            controller.getBranchJobsRuns(TestData.company, TestData.org, TestData.repo,
+                TestData.branch, 0, null);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        // Should return results (not empty due to invalid runs value)
+        assertFalse(response.getBody().isEmpty());
+
+        // Verify runs per job limited to 60 (default because 0 < 1)
+        for (Map<JobPojo, Set<RunPojo>> jobRuns : response.getBody().values()) {
+            for (Set<RunPojo> runs : jobRuns.values()) {
+                assertTrue(runs.size() <= 60, "Each job should have at most 60 runs (default for runs=0)");
+            }
+        }
+    }
+
+    @Test
+    void getBranchJobsRunsWithNegativeRunsUsesDefaultTest() {
+        // Test with runs=-1 (should use default 60)
+        ResponseEntity<Map<BranchPojo, Map<JobPojo, Set<RunPojo>>>> response =
+            controller.getBranchJobsRuns(TestData.company, TestData.org, TestData.repo,
+                TestData.branch, -1, null);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        // Should return results (not empty due to invalid runs value)
+        assertFalse(response.getBody().isEmpty());
+    }
+
+    @Test
+    void getJobRunsStagesWithRunsParameterTest() {
+        // Test job-level runs parameter
+        ResponseEntity<Map<JobPojo, Map<RunPojo, Set<StagePojo>>>> response =
+            controller.getJobRunsStages(TestData.company, TestData.org, TestData.repo,
+                TestData.branch, TestData.jobId, 5);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        Map<JobPojo, Map<RunPojo, Set<StagePojo>>> result = response.getBody();
+        assertNotNull(result);
+        assertFalse(result.isEmpty());
+
+        // Verify runs limited to 5
+        for (Map<RunPojo, Set<StagePojo>> runStages : result.values()) {
+            assertTrue(runStages.size() <= 5, "Job should have at most 5 runs");
+        }
+    }
+
+    @Test
+    void getJobRunsStagesDefaultRunsTest() {
+        // Test without runs parameter (null should use default 60)
+        ResponseEntity<Map<JobPojo, Map<RunPojo, Set<StagePojo>>>> response =
+            controller.getJobRunsStages(TestData.company, TestData.org, TestData.repo,
+                TestData.branch, TestData.jobId, null);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        Map<JobPojo, Map<RunPojo, Set<StagePojo>>> result = response.getBody();
+        assertNotNull(result);
+        assertFalse(result.isEmpty());
+
+        // Verify runs limited to 60 (default)
+        for (Map<RunPojo, Set<StagePojo>> runStages : result.values()) {
+            assertTrue(runStages.size() <= 60, "Job should have at most 60 runs (default)");
+        }
     }
 }
