@@ -387,6 +387,160 @@ public class BrowseJsonControllerTest extends AbstractBrowseServiceTest {
         assertTrue(hasTestCases, "At least one test suite should contain test cases");
     }
 
+    // ==================== Latest Run Endpoint Tests ====================
+
+    @Test
+    void getLatestRunStagesJsonSuccessTest() {
+        // Call latest run endpoint
+        ResponseEntity<Map<RunPojo, Map<StagePojo, Set<TestResultPojo>>>> response =
+            controller.getLatestRunStages(TestData.company, TestData.org, TestData.repo,
+                TestData.branch, TestData.jobId);
+
+        // Verify HTTP response
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        // Verify response body
+        Map<RunPojo, Map<StagePojo, Set<TestResultPojo>>> runStagesTestResults = response.getBody();
+        assertNotNull(runStagesTestResults);
+        assertFalse(runStagesTestResults.isEmpty());
+
+        // Verify this is indeed the latest run
+        RunPojo latestRun = runStagesTestResults.keySet().iterator().next();
+        assertNotNull(latestRun.getRunId(), "Run ID should not be null");
+
+        // Verify stages are present
+        Map<StagePojo, Set<TestResultPojo>> stageTestResults = runStagesTestResults.get(latestRun);
+        assertNotNull(stageTestResults);
+        assertFalse(stageTestResults.isEmpty());
+
+        // Verify expected stage exists
+        boolean stageFound = false;
+        for (StagePojo stage : stageTestResults.keySet()) {
+            if (stage.getStageName().equals(TestData.stage)) {
+                stageFound = true;
+                break;
+            }
+        }
+        assertTrue(stageFound, "Expected stage '" + TestData.stage + "' not found in response");
+    }
+
+    @Test
+    void getLatestRunStagesJsonSameAsIdBasedTest() {
+        // Get latest run ID directly
+        Long latestRunId = browseService.getLatestRunId(TestData.jobId);
+
+        // Call latest endpoint
+        ResponseEntity<Map<RunPojo, Map<StagePojo, Set<TestResultPojo>>>> latestResponse =
+            controller.getLatestRunStages(TestData.company, TestData.org, TestData.repo,
+                TestData.branch, TestData.jobId);
+
+        // Call ID-based endpoint with resolved run ID
+        ResponseEntity<Map<RunPojo, Map<StagePojo, Set<TestResultPojo>>>> idBasedResponse =
+            controller.getStagesByIds(TestData.company, TestData.org, TestData.repo,
+                TestData.branch, TestData.jobId, latestRunId);
+
+        // Verify both responses return same run
+        assertNotNull(latestResponse.getBody());
+        assertNotNull(idBasedResponse.getBody());
+
+        RunPojo latestRun = latestResponse.getBody().keySet().iterator().next();
+        RunPojo idBasedRun = idBasedResponse.getBody().keySet().iterator().next();
+
+        assertEquals(idBasedRun.getRunId(), latestRun.getRunId(),
+            "Latest endpoint should return same run ID as ID-based endpoint");
+    }
+
+    @Test
+    void getLatestRunStagesJsonNotFoundTest() {
+        // Job ID with no runs
+        Long nonExistentJobId = 999999L;
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> {
+            controller.getLatestRunStages(TestData.company, TestData.org, TestData.repo,
+                TestData.branch, nonExistentJobId);
+        });
+
+        assertEquals(404, ex.getStatus().value(), "Expected 404 status for job with no runs");
+    }
+
+    // ==================== Latest Run Stage Endpoint Tests ====================
+
+    @Test
+    void getLatestRunStageTestResultsJsonSuccessTest() {
+        // Call latest stage endpoint
+        ResponseEntity<StageTestResultModel> response =
+            controller.getLatestRunStageTestResults(TestData.company, TestData.org, TestData.repo,
+                TestData.branch, TestData.jobId, TestData.stage);
+
+        // Verify HTTP response
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        // Verify response body
+        StageTestResultModel stageTestResultModel = response.getBody();
+        assertNotNull(stageTestResultModel, "StageTestResultModel should not be null");
+
+        // Verify stage details
+        assertNotNull(stageTestResultModel.getStage(), "Stage should not be null");
+        assertEquals(TestData.stage, stageTestResultModel.getStage().getStageName(),
+            "Stage name should match TestData.stage");
+
+        // Verify test result data
+        assertNotNull(stageTestResultModel.getTestResult(), "TestResult should not be null");
+        assertNotNull(stageTestResultModel.getTestResult().getTestSuites(),
+            "Test suites should not be null");
+        assertFalse(stageTestResultModel.getTestResult().getTestSuites().isEmpty(),
+            "Test suites should not be empty");
+
+        // Verify test cases exist
+        boolean hasTestCases = stageTestResultModel.getTestResult().getTestSuites().stream()
+            .anyMatch(suite -> suite.getTestCases() != null && !suite.getTestCases().isEmpty());
+        assertTrue(hasTestCases, "At least one test suite should contain test cases");
+    }
+
+    @Test
+    void getLatestRunStageTestResultsJsonSameAsIdBasedTest() {
+        // Get latest run ID directly
+        Long latestRunId = browseService.getLatestRunId(TestData.jobId);
+
+        // Call latest endpoint
+        ResponseEntity<StageTestResultModel> latestResponse =
+            controller.getLatestRunStageTestResults(TestData.company, TestData.org, TestData.repo,
+                TestData.branch, TestData.jobId, TestData.stage);
+
+        // Call ID-based endpoint with resolved run ID
+        ResponseEntity<StageTestResultModel> idBasedResponse =
+            controller.getStageTestResultsTestSuites(TestData.company, TestData.org, TestData.repo,
+                TestData.branch, TestData.jobId, latestRunId, TestData.stage);
+
+        // Verify both responses return same stage
+        assertNotNull(latestResponse.getBody());
+        assertNotNull(idBasedResponse.getBody());
+
+        StageTestResultModel latestModel = latestResponse.getBody();
+        StageTestResultModel idBasedModel = idBasedResponse.getBody();
+
+        assertEquals(idBasedModel.getStage().getStageId(), latestModel.getStage().getStageId(),
+            "Latest endpoint should return same stage ID as ID-based endpoint");
+        assertEquals(idBasedModel.getTestResult().getTestResultId(),
+            latestModel.getTestResult().getTestResultId(),
+            "Latest endpoint should return same test result ID as ID-based endpoint");
+    }
+
+    @Test
+    void getLatestRunStageTestResultsJsonNotFoundTest() {
+        // Job ID with no runs
+        Long nonExistentJobId = 999999L;
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> {
+            controller.getLatestRunStageTestResults(TestData.company, TestData.org, TestData.repo,
+                TestData.branch, nonExistentJobId, TestData.stage);
+        });
+
+        assertEquals(404, ex.getStatus().value(), "Expected 404 status for job with no runs");
+    }
+
     // ==================== SHA Lookup Endpoint Tests ====================
 
     @Test
