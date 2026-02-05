@@ -11,22 +11,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import org.springframework.web.server.ResponseStatusException;
+
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Integration tests for BrowseJsonController hierarchy endpoints.
  * Tests validate JSON serialization and HTTP responses for company, org, repo, and branch level endpoints.
+ * Includes SHA lookup tests and error case validation.
  */
 public class BrowseJsonControllerTest extends AbstractBrowseServiceTest {
 
     private final BrowseJsonController controller;
+    private final BrowseService browseService;
 
     @Autowired
     public BrowseJsonControllerTest(BrowseService browseService, BrowseJsonController browseJsonController) {
         super(browseService);
+        this.browseService = browseService;
         this.controller = browseJsonController;
     }
 
@@ -379,5 +385,177 @@ public class BrowseJsonControllerTest extends AbstractBrowseServiceTest {
         boolean hasTestCases = stageTestResultModel.getTestResult().getTestSuites().stream()
             .anyMatch(suite -> suite.getTestCases() != null && !suite.getTestCases().isEmpty());
         assertTrue(hasTestCases, "At least one test suite should contain test cases");
+    }
+
+    // ==================== SHA Lookup Endpoint Tests ====================
+
+    @Test
+    void getRunsForShaJsonSuccessTest() {
+        // Call controller endpoint with SHA - use TestData.sha constant
+        ResponseEntity<Map<BranchPojo, Map<JobPojo, Set<RunPojo>>>> response =
+            controller.getRuns(TestData.company, TestData.org, TestData.repo, TestData.branch, TestData.sha, null);
+
+        // Verify HTTP response
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        // Verify response body
+        Map<BranchPojo, Map<JobPojo, Set<RunPojo>>> branchJobsRuns = response.getBody();
+        assertNotNull(branchJobsRuns);
+        assertFalse(branchJobsRuns.isEmpty());
+
+        // Verify test data appears in response
+        boolean testDataFound = false;
+        for (Map.Entry<BranchPojo, Map<JobPojo, Set<RunPojo>>> branchEntry : branchJobsRuns.entrySet()) {
+            final BranchPojo branch = branchEntry.getKey();
+            final Map<JobPojo, Set<RunPojo>> jobRuns = branchEntry.getValue();
+            assertNotNull(jobRuns);
+            assertFalse(jobRuns.isEmpty());
+
+            if (branch.getBranchName().equals(TestData.branch)) {
+                for (Map.Entry<JobPojo, Set<RunPojo>> jobEntry : jobRuns.entrySet()) {
+                    final Set<RunPojo> runs = jobEntry.getValue();
+                    assertNotNull(runs);
+                    assertFalse(runs.isEmpty());
+
+                    // Verify at least one run matches TestData.sha
+                    for (RunPojo run : runs) {
+                        if (TestData.sha.equals(run.getSha())) {
+                            testDataFound = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        assertTrue(testDataFound, "Expected run with SHA '" + TestData.sha + "' not found in response");
+    }
+
+    @Test
+    void getRunForReferenceJsonSuccessTest() {
+        // Call controller endpoint with SHA and runReference - use TestData constants
+        ResponseEntity<RunPojo> response =
+            controller.getRunForReference(TestData.company, TestData.org, TestData.repo,
+                TestData.branch, TestData.sha, TestData.runReference, null);
+
+        // Verify HTTP response
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        // Verify response body
+        RunPojo run = response.getBody();
+        assertNotNull(run, "Run should not be null");
+
+        // Verify run matches expected test data
+        assertEquals(TestData.sha, run.getSha(), "Run SHA should match TestData.sha");
+        assertEquals(TestData.runReference.toString(), run.getRunReference(),
+            "Run reference should match TestData.runReference");
+    }
+
+    // ==================== Error Case Validation Tests ====================
+    // Per research findings, error tests call browseService methods directly (not controller)
+    // ResponseStatusException propagates from service layer to Spring's global exception handling
+
+    @Test
+    void getOrgNotFoundTest() {
+        // Test missing org - service should throw ResponseStatusException with 404
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> {
+            browseService.getOrg(TestData.company, "MISSING_ORG");
+        });
+
+        // Verify 404 status
+        assertEquals(404, ex.getStatus().value(), "Expected 404 status for missing org");
+
+        // Verify hierarchical error message format contains all path segments
+        assertNotNull(ex.getMessage());
+        assertTrue(ex.getMessage().contains(TestData.company),
+            "Error message should contain company: " + TestData.company);
+        assertTrue(ex.getMessage().contains("MISSING_ORG"),
+            "Error message should contain missing org name");
+    }
+
+    @Test
+    void getRepoWithMissingParentOrgNotFoundTest() {
+        // Test missing repo with missing parent org - service should throw ResponseStatusException with 404
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> {
+            browseService.getRepo(TestData.company, "MISSING_ORG", "MISSING_REPO");
+        });
+
+        // Verify 404 status
+        assertEquals(404, ex.getStatus().value(), "Expected 404 status for missing repo");
+
+        // Verify hierarchical error message format contains all three path segments
+        assertNotNull(ex.getMessage());
+        assertTrue(ex.getMessage().contains(TestData.company),
+            "Error message should contain company: " + TestData.company);
+        assertTrue(ex.getMessage().contains("MISSING_ORG"),
+            "Error message should contain missing org name");
+        assertTrue(ex.getMessage().contains("MISSING_REPO"),
+            "Error message should contain missing repo name");
+    }
+
+    @Test
+    void getRepoWithValidOrgNotFoundTest() {
+        // Test missing repo with valid org - service should throw ResponseStatusException with 404
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> {
+            browseService.getRepo(TestData.company, TestData.org, "MISSING_REPO");
+        });
+
+        // Verify 404 status
+        assertEquals(404, ex.getStatus().value(), "Expected 404 status for missing repo");
+
+        // Verify hierarchical error message format contains all path segments
+        assertNotNull(ex.getMessage());
+        assertTrue(ex.getMessage().contains(TestData.company),
+            "Error message should contain company: " + TestData.company);
+        assertTrue(ex.getMessage().contains(TestData.org),
+            "Error message should contain org: " + TestData.org);
+        assertTrue(ex.getMessage().contains("MISSING_REPO"),
+            "Error message should contain missing repo name");
+    }
+
+    @Test
+    void getJobNotFoundTest() {
+        // Test missing job - service should throw ResponseStatusException with 404
+        java.util.TreeMap<String, String> missingJobInfo = new java.util.TreeMap<>();
+        missingJobInfo.put("host", "nonexistent.jenkins.com");
+        missingJobInfo.put("application", "missingapp");
+        missingJobInfo.put("pipeline", "missingpipeline");
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> {
+            browseService.getJob(TestData.company, TestData.org, TestData.repo, TestData.branch, missingJobInfo);
+        });
+
+        // Verify 404 status
+        assertEquals(404, ex.getStatus().value(), "Expected 404 status for missing job");
+
+        // Verify hierarchical error message format contains all path segments including jobInfo
+        assertNotNull(ex.getMessage());
+        assertTrue(ex.getMessage().contains(TestData.company),
+            "Error message should contain company: " + TestData.company);
+        assertTrue(ex.getMessage().contains(TestData.org),
+            "Error message should contain org: " + TestData.org);
+        assertTrue(ex.getMessage().contains(TestData.repo),
+            "Error message should contain repo: " + TestData.repo);
+        assertTrue(ex.getMessage().contains(TestData.branch),
+            "Error message should contain branch: " + TestData.branch);
+        assertTrue(ex.getMessage().contains("jobInfo"),
+            "Error message should contain jobInfo");
+    }
+
+    @Test
+    void getCompanyNotFoundTest() {
+        // Test missing company - service should throw ResponseStatusException with 404
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> {
+            browseService.getCompany("MISSING_COMPANY");
+        });
+
+        // Verify 404 status
+        assertEquals(404, ex.getStatus().value(), "Expected 404 status for missing company");
+
+        // Verify error message contains company name
+        assertNotNull(ex.getMessage());
+        assertTrue(ex.getMessage().contains("MISSING_COMPANY"),
+            "Error message should contain missing company name");
     }
 }
