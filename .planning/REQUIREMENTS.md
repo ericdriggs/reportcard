@@ -42,19 +42,19 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| API-01 | TBD | Pending |
-| API-02 | TBD | Pending |
-| LATEST-01 | TBD | Pending |
-| LATEST-02 | TBD | Pending |
-| FILTER-01 | TBD | Pending |
-| TEST-01 | TBD | Pending |
-| TEST-02 | TBD | Pending |
+| API-01 | Phase 4 | Pending |
+| API-02 | Phase 1 | Pending |
+| LATEST-01 | Phase 2 | Pending |
+| LATEST-02 | Phase 2 | Pending |
+| FILTER-01 | Phase 3 | Pending |
+| TEST-01 | Phase 1 | Pending |
+| TEST-02 | Phase 1 | Pending |
 
 **Coverage:**
 - v1 requirements: 7 total
-- Mapped to phases: 0
-- Unmapped: 7 ⚠️
+- Mapped to phases: 7
+- Unmapped: 0
 
 ---
 *Requirements defined: 2025-02-05*
-*Last updated: 2025-02-05 after initial definition*
+*Last updated: 2026-02-05 after roadmap creation*
