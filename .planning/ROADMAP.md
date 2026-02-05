@@ -13,12 +13,12 @@ This roadmap delivers production-ready JSON API endpoints by validating existing
 
 | Phase | Goal | Requirements | Status |
 |-------|------|--------------|--------|
-| 1 - Foundation & Validation | Validate existing JSON endpoints work correctly | API-02, TEST-01, TEST-02 | Pending |
-| 2 - Latest Endpoints | Enable latest run resolution for jobs and stages | LATEST-01, LATEST-02 | Pending |
+| 1 - Foundation & Validation | Validate existing JSON endpoints work correctly | API-02, TEST-01, TEST-02 | **Complete** |
+| 2 - Latest Endpoints | Enable latest run resolution for jobs and stages | LATEST-01, LATEST-02 | Planned |
 | 3 - Query Parameter Parity | Complete feature parity with HTML browse endpoints | FILTER-01 | Pending |
 | 4 - API Exposure | Safely expose JSON API to production clients | API-01 | Pending |
 
-**Overall:** 0/4 phases complete (0%)
+**Overall:** 1/4 phases complete (25%)
 
 ---
 
@@ -44,9 +44,9 @@ This roadmap delivers production-ready JSON API endpoints by validating existing
 5. User can confirm JOOQ POJOs serialize without circular reference failures
 
 Plans:
-- [ ] 01-01-PLAN.md — Test hierarchy endpoints (company → org → repo → branch)
-- [ ] 01-02-PLAN.md — Test job/run/stage endpoints
-- [ ] 01-03-PLAN.md — Test SHA lookups and error cases
+- [x] 01-01-PLAN.md — Test hierarchy endpoints (company -> org -> repo -> branch)
+- [x] 01-02-PLAN.md — Test job/run/stage endpoints
+- [x] 01-03-PLAN.md — Test SHA lookups and error cases
 
 **Notes:**
 - Foundation phase addresses path conflicts (Pitfall 1), serialization failures (Pitfall 2), and establishes testing patterns
@@ -61,6 +61,8 @@ Plans:
 
 **Dependencies:** Phase 1 (validation patterns established)
 
+**Plans:** 3 plans
+
 **Requirements:**
 - LATEST-01: Add `/job/{jobId}/run/latest` endpoint — returns latest run for job
 - LATEST-02: Add `/job/{jobId}/run/latest/stage/{stage}` endpoint — returns latest run's specific stage test results
@@ -72,10 +74,15 @@ Plans:
 3. User can observe that latest endpoints return identical JSON structure to ID-based endpoints
 4. User can verify latest resolution uses max(run_id) query with proper database indexing
 
+Plans:
+- [ ] 02-01-PLAN.md — Add getLatestRunId service method (Wave 1)
+- [ ] 02-02-PLAN.md — Add latest run endpoint (Wave 2)
+- [ ] 02-03-PLAN.md — Add latest stage endpoint (Wave 2)
+
 **Notes:**
 - Core feature enabling CI/CD automation without knowing run IDs upfront
 - Implements dedicated /latest path pattern (Spring MVC literal segment matching)
-- Cache integration follows existing AbstractAsyncCache pattern with consideration for staleness
+- Skip caching for latest-run-ID resolution for freshness; use existing cache after resolution
 - Service layer adds reusable BrowseService.getLatestRunId() method
 
 ---
@@ -129,13 +136,13 @@ Plans:
 ## Coverage
 
 All 7 v1 requirements mapped:
-- API-01 → Phase 4
-- API-02 → Phase 1
-- LATEST-01 → Phase 2
-- LATEST-02 → Phase 2
-- FILTER-01 → Phase 3
-- TEST-01 → Phase 1
-- TEST-02 → Phase 1
+- API-01 -> Phase 4
+- API-02 -> Phase 1
+- LATEST-01 -> Phase 2
+- LATEST-02 -> Phase 2
+- FILTER-01 -> Phase 3
+- TEST-01 -> Phase 1
+- TEST-02 -> Phase 1
 
 No orphaned requirements.
 
