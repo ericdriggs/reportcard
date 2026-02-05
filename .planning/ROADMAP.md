@@ -28,6 +28,8 @@ This roadmap delivers production-ready JSON API endpoints by validating existing
 
 **Dependencies:** None (foundation phase)
 
+**Plans:** 3 plans
+
 **Requirements:**
 - API-02: All existing JSON endpoints return valid JSON (verified by tests)
 - TEST-01: Tests for each browse JSON endpoint using Testcontainers MySQL
@@ -40,6 +42,11 @@ This roadmap delivers production-ready JSON API endpoints by validating existing
 3. User can examine integration test suite showing coverage for each JSON endpoint with Testcontainers
 4. User can observe consistent error responses across all JSON endpoints using ResponseDetails wrapper
 5. User can confirm JOOQ POJOs serialize without circular reference failures
+
+Plans:
+- [ ] 01-01-PLAN.md — Test hierarchy endpoints (company → org → repo → branch)
+- [ ] 01-02-PLAN.md — Test job/run/stage endpoints
+- [ ] 01-03-PLAN.md — Test SHA lookups and error cases
 
 **Notes:**
 - Foundation phase addresses path conflicts (Pitfall 1), serialization failures (Pitfall 2), and establishes testing patterns
