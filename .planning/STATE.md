@@ -9,20 +9,20 @@
 
 **Core Value:** CI/CD pipelines can hit a stable JSON endpoint to get the latest test result for a specific job and stage
 
-**Current Focus:** Foundation & Validation phase - establishing safety before implementing new features
+**Current Focus:** Phase 1 complete - Foundation & Validation established with comprehensive test coverage
 
 ---
 
 ## Current Position
 
 **Phase:** 1 of 4 (Foundation & Validation)
-**Plan:** 02 of 03 in phase
-**Status:** In progress
-**Last activity:** 2026-02-05 - Completed 01-02-PLAN.md
+**Plan:** 03 of 03 in phase - COMPLETE
+**Status:** Phase 1 complete
+**Last activity:** 2026-02-05 - Completed 01-03-PLAN.md
 
-**Progress:** [█████████████░░░░░░░] 67% (2/3 plans complete in current phase)
+**Progress:** [████████████████████] 100% (3/3 plans complete in current phase)
 
-**Next Action:** Execute 01-03-PLAN.md (Error handling tests)
+**Next Action:** Begin Phase 2 planning (Latest Endpoints)
 
 ---
 
@@ -58,6 +58,8 @@
 | Testcontainers for all integration tests | Consistent with existing test patterns in codebase | 2026-02-05 |
 | Use runId=1L for run-level tests | Known test data ID from TestData setup | 2026-02-05 |
 | Deep validation of StageTestResultModel | Verify testSuites and testCases presence, not just model existence | 2026-02-05 |
+| Error tests call browseService directly | ResponseStatusException propagates from service layer to Spring's global exception handling | 2026-02-05 |
+| getBranch/getRunFromReference error handling needs improvement | These methods don't properly throw ResponseStatusException on not found | 2026-02-05 |
 
 ### Open Questions
 
@@ -66,13 +68,15 @@
 | Cache TTL strategy for latest endpoints | Research suggests shorter TTL for latest-run-id lookups | Medium |
 | Database index verification for job_id | Need to confirm efficient latest-run queries | Medium |
 | OpenAPI documentation completion scope | Determine level of detail needed before exposure | Low |
+| Fix getBranch/getRunFromReference error handling | These methods use LEFT JOINs or throw NPE instead of ResponseStatusException | Low |
 
 ### Active TODOs
 
-- [ ] Plan Phase 1: Foundation & Validation
-- [ ] Verify BrowseJsonController current state (@Hidden annotation present)
-- [ ] Review existing test patterns in AbstractBrowseServiceTest
+- [x] Plan Phase 1: Foundation & Validation (COMPLETE)
+- [x] Verify BrowseJsonController current state (@Hidden annotation present) (COMPLETE)
+- [x] Review existing test patterns in AbstractBrowseServiceTest (COMPLETE)
 - [ ] Document path audit findings for UI vs JSON controllers
+- [ ] Plan Phase 2: Latest Endpoints
 
 ### Known Blockers
 
@@ -85,37 +89,34 @@ None currently.
 ### Last Session Summary
 
 **Date:** 2026-02-05
-**Activity:** Plan 01-02 execution (Job/Run/Stage endpoint integration tests)
-**Outcome:** Added 4 integration tests to BrowseJsonControllerTest - all 8 tests pass
+**Activity:** Plan 01-03 execution (SHA lookup and error case tests)
+**Outcome:** Added 7 tests to BrowseJsonControllerTest - all 15 tests pass, Phase 1 complete
 
 **Key outputs:**
-- 01-02-SUMMARY.md documenting completion
-- BrowseJsonControllerTest now has 8 passing tests (4 hierarchy + 4 job/run/stage)
-- Test commit: 0bd20e6
+- 01-03-SUMMARY.md documenting completion
+- BrowseJsonControllerTest now has 15 passing tests (10 success + 5 error)
+- Test commit: 91884ba
 
 **Handoff notes:**
-- Success path testing complete for all hierarchy levels
-- Ready for Plan 01-03 (error handling tests)
-- Test patterns established for nested JSON response validation
+- Phase 1 Foundation & Validation complete
+- BrowseJsonController test coverage comprehensive (all 10 endpoints + error cases)
+- Discovered error handling gaps in getBranch and getRunFromReference methods
+- Ready for Phase 2 (Latest Endpoints)
 
 ### Context for Next Session
-
-**If planning Phase 1:**
-- Focus on integration testing patterns from AbstractBrowseServiceTest
-- Review BrowseJsonController existing endpoints for test coverage
-- Consider MockMvc addition for HTTP layer validation (not currently used in codebase)
-- Validate JOOQ POJO serialization with real Testcontainers data
 
 **If planning Phase 2:**
 - Examine BrowseService for latest run query patterns
 - Review AbstractAsyncCache implementation for cache integration
 - Consider database index verification for efficient latest-run resolution
 - Design service layer method signature for getLatestRunId()
+- Use SHA lookup test patterns from Plan 01-03 for latest endpoint tests
 
 **If revising roadmap:**
 - Requirement coverage is 100% (7/7), no gaps
 - Phase dependencies are sequential: 1→2→3→4
 - Research already comprehensive, minimal additional research needed
+- Phase 1 requirements (API-02, TEST-01, TEST-02) validated
 
 ---
 
@@ -125,7 +126,7 @@ None currently.
 
 | Phase | Status | Requirements | Completion |
 |-------|--------|--------------|------------|
-| 1 - Foundation & Validation | Pending | 3 | 0% |
+| 1 - Foundation & Validation | Complete | 3 | 100% |
 | 2 - Latest Endpoints | Pending | 2 | 0% |
 | 3 - Query Parameter Parity | Pending | 1 | 0% |
 | 4 - API Exposure | Pending | 1 | 0% |
@@ -135,12 +136,12 @@ None currently.
 | ID | Description | Phase | Status |
 |----|-------------|-------|--------|
 | API-01 | Remove @Hidden from BrowseJsonController | 4 | Pending |
-| API-02 | All JSON endpoints return valid JSON | 1 | Pending |
+| API-02 | All JSON endpoints return valid JSON | 1 | Complete |
 | LATEST-01 | Add /job/{id}/run/latest endpoint | 2 | Pending |
 | LATEST-02 | Add /run/latest/stage/{stage} endpoint | 2 | Pending |
 | FILTER-01 | ?runs=N parameter works on JSON endpoints | 3 | Pending |
-| TEST-01 | Integration tests for all JSON endpoints | 1 | Pending |
-| TEST-02 | Tests validate JSON serialization | 1 | Pending |
+| TEST-01 | Integration tests for all JSON endpoints | 1 | Complete |
+| TEST-02 | Tests validate JSON serialization | 1 | Complete |
 
 ---
 
@@ -168,4 +169,5 @@ None currently.
 
 ---
 *State initialized: 2026-02-05*
-*Ready for phase planning*
+*Phase 1 complete: 2026-02-05*
+*Ready for Phase 2 planning*
