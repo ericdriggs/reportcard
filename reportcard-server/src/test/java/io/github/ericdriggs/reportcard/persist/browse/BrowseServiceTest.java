@@ -186,6 +186,34 @@ public class BrowseServiceTest extends AbstractBrowseServiceTest {
     }
 
     @Test
+    void getLatestRunIdSuccessTest() {
+        // TestData.jobId has known runs
+        Long latestRunId = browseService.getLatestRunId(TestData.jobId);
+        assertNotNull(latestRunId);
+        assertTrue(latestRunId > 0, "Latest run ID should be positive");
+
+        // Verify it matches the known run (runId 1 is the only run for jobId 1 in test data)
+        assertEquals(1L, latestRunId, "Expected latest run ID to be 1 for test job");
+    }
+
+    @Test
+    void getLatestRunIdNotFoundTest() {
+        // Use a job ID that definitely has no runs (very large number)
+        Long nonExistentJobId = 999999L;
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> {
+            browseService.getLatestRunId(nonExistentJobId);
+        });
+
+        assertEquals(404, ex.getStatus().value(), "Expected 404 status for job with no runs");
+        assertNotNull(ex.getMessage());
+        assertTrue(ex.getMessage().contains(nonExistentJobId.toString()),
+            "Error message should contain job ID");
+        assertTrue(ex.getMessage().contains("no runs found"),
+            "Error message should indicate no runs found");
+    }
+
+    @Test
     void getRunStagesTestResultsTest() {
         Map<RunPojo, Map<StagePojo, Set<TestResultPojo>>> runStageResults = browseService.getRunStagesTestResults(TestData.company, TestData.org, TestData.repo, TestData.branch, 1l, 1l);
         final RunPojo run = getTestRun(runStageResults.keySet(), TestData.runReference);
