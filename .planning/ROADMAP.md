@@ -15,10 +15,10 @@ This roadmap delivers production-ready JSON API endpoints by validating existing
 |-------|------|--------------|--------|
 | 1 - Foundation & Validation | Validate existing JSON endpoints work correctly | API-02, TEST-01, TEST-02 | **Complete** |
 | 2 - Latest Endpoints | Enable latest run resolution for jobs and stages | LATEST-01, LATEST-02 | **Complete** |
-| 3 - Query Parameter Parity | Complete feature parity with HTML browse endpoints | FILTER-01 | Planned |
+| 3 - Query Parameter Parity | Complete feature parity with HTML browse endpoints | FILTER-01 | **Complete** |
 | 4 - API Exposure | Safely expose JSON API to production clients | API-01 | Pending |
 
-**Overall:** 2/4 phases complete (50%)
+**Overall:** 3/4 phases complete (75%)
 
 ---
 
@@ -105,7 +105,7 @@ Plans:
 3. User can observe consistent parameter handling across both HTML and JSON endpoints
 
 Plans:
-- [ ] 03-01-PLAN.md — Add ?runs=N parameter to getBranchJobsRuns and getJobRunsStages endpoints
+- [x] 03-01-PLAN.md — Add ?runs=N parameter to getBranchJobsRuns and getJobRunsStages endpoints
 
 **Notes:**
 - Achieves feature parity between /v1/browse/* (HTML) and /v1/api/* (JSON)
@@ -173,4 +173,4 @@ No orphaned requirements.
 ---
 *Last updated: 2026-02-05*
 *Phase 2 complete: 2026-02-05*
-*Phase 3 planned: 2026-02-05*
+*Phase 3 complete: 2026-02-05*

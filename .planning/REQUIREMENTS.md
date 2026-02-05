@@ -8,21 +8,21 @@
 ### API Exposure
 
 - [ ] **API-01**: Remove `@Hidden` annotation from BrowseJsonController to expose `/v1/api/*` endpoints
-- [ ] **API-02**: All existing JSON endpoints return valid JSON (verified by tests)
+- [x] **API-02**: All existing JSON endpoints return valid JSON (verified by tests)
 
 ### Latest Endpoints
 
-- [ ] **LATEST-01**: Add `/job/{jobId}/run/latest` endpoint — returns latest run for job
-- [ ] **LATEST-02**: Add `/job/{jobId}/run/latest/stage/{stage}` endpoint — returns latest run's specific stage test results
+- [x] **LATEST-01**: Add `/job/{jobId}/run/latest` endpoint — returns latest run for job
+- [x] **LATEST-02**: Add `/job/{jobId}/run/latest/stage/{stage}` endpoint — returns latest run's specific stage test results
 
 ### Query Parameters
 
-- [ ] **FILTER-01**: `?runs=N` parameter works on JSON run endpoints (parity with HTML browse)
+- [x] **FILTER-01**: `?runs=N` parameter works on JSON run endpoints (parity with HTML browse)
 
 ### Testing
 
-- [ ] **TEST-01**: Tests for each browse JSON endpoint using Testcontainers MySQL
-- [ ] **TEST-02**: Tests validate actual JSON serialization output
+- [x] **TEST-01**: Tests for each browse JSON endpoint using Testcontainers MySQL
+- [x] **TEST-02**: Tests validate actual JSON serialization output
 
 ## v2 Requirements
 
@@ -43,12 +43,12 @@
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | API-01 | Phase 4 | Pending |
-| API-02 | Phase 1 | Pending |
-| LATEST-01 | Phase 2 | Pending |
-| LATEST-02 | Phase 2 | Pending |
-| FILTER-01 | Phase 3 | Pending |
-| TEST-01 | Phase 1 | Pending |
-| TEST-02 | Phase 1 | Pending |
+| API-02 | Phase 1 | Complete |
+| LATEST-01 | Phase 2 | Complete |
+| LATEST-02 | Phase 2 | Complete |
+| FILTER-01 | Phase 3 | Complete |
+| TEST-01 | Phase 1 | Complete |
+| TEST-02 | Phase 1 | Complete |
 
 **Coverage:**
 - v1 requirements: 7 total
@@ -57,4 +57,5 @@
 
 ---
 *Requirements defined: 2025-02-05*
-*Last updated: 2026-02-05 after roadmap creation*
+*Last updated: 2026-02-05*
+*Phase 3 complete: FILTER-01 marked Complete*
