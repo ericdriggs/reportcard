@@ -2,6 +2,7 @@ package io.github.ericdriggs.reportcard.controller.browse;
 
 import io.github.ericdriggs.reportcard.gen.db.TestData;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.*;
+import io.github.ericdriggs.reportcard.model.StageTestResultModel;
 import io.github.ericdriggs.reportcard.persist.BrowseService;
 import io.github.ericdriggs.reportcard.persist.browse.AbstractBrowseServiceTest;
 import io.github.ericdriggs.reportcard.util.JsonCompare;
@@ -203,5 +204,180 @@ public class BrowseJsonControllerTest extends AbstractBrowseServiceTest {
         }
         assertTrue(testDataFound, "Expected test data (repo: " + TestData.repo +
             ", branch: " + TestData.branch + ", jobInfo: " + TestData.jobInfo + ") not found in response");
+    }
+
+    @Test
+    void getBranchJobsRunsJsonSuccessTest() {
+        // Call controller endpoint (jobInfoFilters not implemented yet, pass null)
+        ResponseEntity<Map<BranchPojo, Map<JobPojo, Set<RunPojo>>>> response =
+            controller.getBranchJobsRuns(TestData.company, TestData.org, TestData.repo, TestData.branch, null);
+
+        // Verify HTTP response
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        // Verify response body
+        Map<BranchPojo, Map<JobPojo, Set<RunPojo>>> branchJobsRuns = response.getBody();
+        assertNotNull(branchJobsRuns);
+        assertFalse(branchJobsRuns.isEmpty());
+
+        // Verify test data appears in response
+        boolean testDataFound = false;
+        for (Map.Entry<BranchPojo, Map<JobPojo, Set<RunPojo>>> branchEntry : branchJobsRuns.entrySet()) {
+            final BranchPojo branch = branchEntry.getKey();
+            final Map<JobPojo, Set<RunPojo>> jobRuns = branchEntry.getValue();
+            assertNotNull(jobRuns);
+            assertFalse(jobRuns.isEmpty());
+
+            if (branch.getBranchName().equals(TestData.branch)) {
+                for (Map.Entry<JobPojo, Set<RunPojo>> jobEntry : jobRuns.entrySet()) {
+                    final JobPojo job = jobEntry.getKey();
+                    final Set<RunPojo> runs = jobEntry.getValue();
+                    assertNotNull(runs);
+                    assertFalse(runs.isEmpty());
+
+                    // Verify jobId matches TestData.jobId
+                    if (job.getJobId().equals(TestData.jobId)) {
+                        testDataFound = true;
+                        // Verify at least one run exists
+                        assertTrue(runs.size() > 0, "Expected at least one run for jobId: " + TestData.jobId);
+                        break;
+                    }
+                }
+            }
+        }
+        assertTrue(testDataFound, "Expected test data (branch: " + TestData.branch +
+            ", jobId: " + TestData.jobId + ") not found in response");
+    }
+
+    @Test
+    void getJobRunsStagesJsonSuccessTest() {
+        // Call controller endpoint
+        ResponseEntity<Map<JobPojo, Map<RunPojo, Set<StagePojo>>>> response =
+            controller.getJobRunsStages(TestData.company, TestData.org, TestData.repo, TestData.branch, TestData.jobId);
+
+        // Verify HTTP response
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        // Verify response body
+        Map<JobPojo, Map<RunPojo, Set<StagePojo>>> jobRunsStages = response.getBody();
+        assertNotNull(jobRunsStages);
+        assertFalse(jobRunsStages.isEmpty());
+
+        // Verify test data appears in response
+        boolean testDataFound = false;
+        for (Map.Entry<JobPojo, Map<RunPojo, Set<StagePojo>>> jobEntry : jobRunsStages.entrySet()) {
+            final JobPojo job = jobEntry.getKey();
+            final Map<RunPojo, Set<StagePojo>> runStages = jobEntry.getValue();
+            assertNotNull(runStages);
+            assertFalse(runStages.isEmpty());
+
+            // Verify job matches TestData.jobId
+            if (job.getJobId().equals(TestData.jobId)) {
+                // Verify at least one run and stage exist
+                assertTrue(runStages.size() > 0, "Expected at least one run for jobId: " + TestData.jobId);
+
+                for (Map.Entry<RunPojo, Set<StagePojo>> runEntry : runStages.entrySet()) {
+                    final Set<StagePojo> stages = runEntry.getValue();
+                    assertNotNull(stages);
+                    assertFalse(stages.isEmpty());
+
+                    // Verify stage name matches TestData.stage
+                    for (StagePojo stage : stages) {
+                        if (stage.getStageName().equals(TestData.stage)) {
+                            testDataFound = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        assertTrue(testDataFound, "Expected test data (jobId: " + TestData.jobId +
+            ", stage: " + TestData.stage + ") not found in response");
+    }
+
+    @Test
+    void getStagesByIdsJsonSuccessTest() {
+        // Use runId 1L as mentioned in plan
+        Long runId = 1L;
+
+        // Call controller endpoint
+        ResponseEntity<Map<RunPojo, Map<StagePojo, Set<TestResultPojo>>>> response =
+            controller.getStagesByIds(TestData.company, TestData.org, TestData.repo, TestData.branch, TestData.jobId, runId);
+
+        // Verify HTTP response
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        // Verify response body
+        Map<RunPojo, Map<StagePojo, Set<TestResultPojo>>> runStagesTestResults = response.getBody();
+        assertNotNull(runStagesTestResults);
+        assertFalse(runStagesTestResults.isEmpty());
+
+        // Verify test data appears in response
+        boolean testDataFound = false;
+        for (Map.Entry<RunPojo, Map<StagePojo, Set<TestResultPojo>>> runEntry : runStagesTestResults.entrySet()) {
+            final RunPojo run = runEntry.getKey();
+            final Map<StagePojo, Set<TestResultPojo>> stageTestResults = runEntry.getValue();
+            assertNotNull(stageTestResults);
+            assertFalse(stageTestResults.isEmpty());
+
+            // Verify run exists
+            assertNotNull(run.getRunId(), "Run ID should not be null");
+
+            // Verify stages contain TestData.stage
+            for (Map.Entry<StagePojo, Set<TestResultPojo>> stageEntry : stageTestResults.entrySet()) {
+                final StagePojo stage = stageEntry.getKey();
+                final Set<TestResultPojo> testResults = stageEntry.getValue();
+
+                if (stage.getStageName().equals(TestData.stage)) {
+                    testDataFound = true;
+                    // Verify test results are present
+                    assertNotNull(testResults);
+                    assertFalse(testResults.isEmpty(), "Test results should not be empty for stage: " + TestData.stage);
+                    break;
+                }
+            }
+        }
+        assertTrue(testDataFound, "Expected test data (stage: " + TestData.stage +
+            ") not found in response");
+    }
+
+    @Test
+    void getStageTestResultsTestSuitesJsonSuccessTest() {
+        // Use runId 1L
+        Long runId = 1L;
+
+        // Call controller endpoint
+        ResponseEntity<StageTestResultModel> response =
+            controller.getStageTestResultsTestSuites(TestData.company, TestData.org, TestData.repo,
+                TestData.branch, TestData.jobId, runId, TestData.stage);
+
+        // Verify HTTP response
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        // Verify response body
+        StageTestResultModel stageTestResultModel = response.getBody();
+        assertNotNull(stageTestResultModel, "StageTestResultModel should not be null");
+
+        // Verify stage details contain test suites
+        assertNotNull(stageTestResultModel.getStage(), "Stage should not be null");
+        assertEquals(TestData.stage, stageTestResultModel.getStage().getStageName(),
+            "Stage name should match TestData.stage");
+
+        assertNotNull(stageTestResultModel.getTestResult(), "TestResult should not be null");
+
+        // Verify test suites contain test cases
+        assertNotNull(stageTestResultModel.getTestResult().getTestSuites(),
+            "Test suites should not be null");
+        assertFalse(stageTestResultModel.getTestResult().getTestSuites().isEmpty(),
+            "Test suites should not be empty");
+
+        // Verify test cases exist in at least one test suite
+        boolean hasTestCases = stageTestResultModel.getTestResult().getTestSuites().stream()
+            .anyMatch(suite -> suite.getTestCases() != null && !suite.getTestCases().isEmpty());
+        assertTrue(hasTestCases, "At least one test suite should contain test cases");
     }
 }
