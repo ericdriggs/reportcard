@@ -89,6 +89,18 @@ public class BrowseJsonController {
         return new ResponseEntity<>(RunStagesTestResultsCacheMap.INSTANCE.getValue(new CompanyOrgRepoBranchJobRunDTO(company, org, repo, branch, jobId, runId)), HttpStatus.OK);
     }
 
+    @GetMapping(path = "company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/latest",
+                produces = "application/json")
+    public ResponseEntity<Map<RunPojo, Map<StagePojo, Set<io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestResultPojo>>>> getLatestRunStages(
+            @PathVariable String company,
+            @PathVariable String org,
+            @PathVariable String repo,
+            @PathVariable String branch,
+            @PathVariable Long jobId) {
+        Long latestRunId = browseService.getLatestRunId(jobId);
+        return getStagesByIds(company, org, repo, branch, jobId, latestRunId);
+    }
+
     @GetMapping(path = "company/{company}/{org}/repo/{repo}/branch/{branch}/sha/{sha}/run", produces = "application/json")
     public ResponseEntity<Map<BranchPojo, Map<JobPojo, Set<RunPojo>>>> getRuns(
             @PathVariable String company,
@@ -123,5 +135,18 @@ public class BrowseJsonController {
             @PathVariable Long runId,
             @PathVariable String stage) {
         return new ResponseEntity<>(browseService.getStageTestResultMap(company, org, repo, branch, jobId, runId, stage), HttpStatus.OK);
+    }
+
+    @GetMapping(path = "company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/latest/stage/{stage}",
+                produces = "application/json")
+    public ResponseEntity<StageTestResultModel> getLatestRunStageTestResults(
+            @PathVariable String company,
+            @PathVariable String org,
+            @PathVariable String repo,
+            @PathVariable String branch,
+            @PathVariable Long jobId,
+            @PathVariable String stage) {
+        Long latestRunId = browseService.getLatestRunId(jobId);
+        return getStageTestResultsTestSuites(company, org, repo, branch, jobId, latestRunId, stage);
     }
 }
