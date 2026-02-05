@@ -14,11 +14,11 @@ This roadmap delivers production-ready JSON API endpoints by validating existing
 | Phase | Goal | Requirements | Status |
 |-------|------|--------------|--------|
 | 1 - Foundation & Validation | Validate existing JSON endpoints work correctly | API-02, TEST-01, TEST-02 | **Complete** |
-| 2 - Latest Endpoints | Enable latest run resolution for jobs and stages | LATEST-01, LATEST-02 | Planned |
+| 2 - Latest Endpoints | Enable latest run resolution for jobs and stages | LATEST-01, LATEST-02 | **Complete** |
 | 3 - Query Parameter Parity | Complete feature parity with HTML browse endpoints | FILTER-01 | Pending |
 | 4 - API Exposure | Safely expose JSON API to production clients | API-01 | Pending |
 
-**Overall:** 1/4 phases complete (25%)
+**Overall:** 2/4 phases complete (50%)
 
 ---
 
@@ -75,9 +75,9 @@ Plans:
 4. User can verify latest resolution uses max(run_id) query with proper database indexing
 
 Plans:
-- [ ] 02-01-PLAN.md — Add getLatestRunId service method (Wave 1)
-- [ ] 02-02-PLAN.md — Add latest run endpoint (Wave 2)
-- [ ] 02-03-PLAN.md — Add latest stage endpoint (Wave 2)
+- [x] 02-01-PLAN.md — Add getLatestRunId service method (Wave 1)
+- [x] 02-02-PLAN.md — Add latest run endpoint (Wave 2)
+- [x] 02-03-PLAN.md — Add latest stage endpoint (Wave 2)
 
 **Notes:**
 - Core feature enabling CI/CD automation without knowing run IDs upfront
@@ -167,3 +167,4 @@ No orphaned requirements.
 
 ---
 *Last updated: 2026-02-05*
+*Phase 2 complete: 2026-02-05*
