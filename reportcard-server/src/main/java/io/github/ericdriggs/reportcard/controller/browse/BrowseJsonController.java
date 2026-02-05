@@ -11,9 +11,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 //TODO: add reports endpoint after stages
 @RestController
@@ -61,8 +65,12 @@ public class BrowseJsonController {
             @PathVariable String org,
             @PathVariable String repo,
             @PathVariable String branch,
+            @RequestParam(required = false, defaultValue = "60") Integer runs,
             @RequestParam(required = false) Map<String, String> jobInfoFilters) {
-        return new ResponseEntity<>(BranchJobsRunsCacheMap.INSTANCE.getValue(new CompanyOrgRepoBranchDTO(company, org, repo, branch)), HttpStatus.OK);
+        runs = validateRuns(runs);
+        Map<BranchPojo, Map<JobPojo, Set<RunPojo>>> fullResult =
+            BranchJobsRunsCacheMap.INSTANCE.getValue(new CompanyOrgRepoBranchDTO(company, org, repo, branch));
+        return new ResponseEntity<>(limitRunsPerJob(fullResult, runs), HttpStatus.OK);
         //TODO: use jobInfoFilters), HttpStatus.OK);
     }
 
@@ -73,8 +81,12 @@ public class BrowseJsonController {
             @PathVariable String org,
             @PathVariable String repo,
             @PathVariable String branch,
-            @PathVariable Long jobId) {
-        return new ResponseEntity<>(JobRunsStagesCacheMap.INSTANCE.getValue(new CompanyOrgRepoBranchJobDTO(company, org, repo, branch, jobId)), HttpStatus.OK);
+            @PathVariable Long jobId,
+            @RequestParam(required = false, defaultValue = "60") Integer runs) {
+        runs = validateRuns(runs);
+        Map<JobPojo, Map<RunPojo, Set<StagePojo>>> fullResult =
+            JobRunsStagesCacheMap.INSTANCE.getValue(new CompanyOrgRepoBranchJobDTO(company, org, repo, branch, jobId));
+        return new ResponseEntity<>(limitRunsInJob(fullResult, runs), HttpStatus.OK);
     }
 
     @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/{runId}",
@@ -148,5 +160,60 @@ public class BrowseJsonController {
             @PathVariable String stage) {
         Long latestRunId = browseService.getLatestRunId(jobId);
         return getStageTestResultsTestSuites(company, org, repo, branch, jobId, latestRunId, stage);
+    }
+
+    // ==================== Helper Methods ====================
+
+    /**
+     * Validates runs parameter. Returns 60 as default for null or invalid values.
+     */
+    Integer validateRuns(Integer runs) {
+        if (runs == null || runs < 1) {
+            return 60;
+        }
+        return runs;
+    }
+
+    /**
+     * Limits the number of runs per job for branch-level endpoints.
+     * Preserves original Map structure while applying run limit.
+     */
+    private <K> Map<K, Map<JobPojo, Set<RunPojo>>> limitRunsPerJob(
+            Map<K, Map<JobPojo, Set<RunPojo>>> input, int maxRuns) {
+        Map<K, Map<JobPojo, Set<RunPojo>>> result = new LinkedHashMap<>();
+        for (Map.Entry<K, Map<JobPojo, Set<RunPojo>>> outerEntry : input.entrySet()) {
+            Map<JobPojo, Set<RunPojo>> limitedJobs = new TreeMap<>(PojoComparators.JOB_CASE_INSENSITIVE_ORDER);
+            for (Map.Entry<JobPojo, Set<RunPojo>> jobEntry : outerEntry.getValue().entrySet()) {
+                Set<RunPojo> limitedRuns = jobEntry.getValue().stream()
+                    .sorted(PojoComparators.RUN_DESCENDING)
+                    .limit(maxRuns)
+                    .collect(Collectors.toCollection(() ->
+                        new TreeSet<>(PojoComparators.RUN_CASE_INSENSITIVE_ORDER)));
+                limitedJobs.put(jobEntry.getKey(), limitedRuns);
+            }
+            result.put(outerEntry.getKey(), limitedJobs);
+        }
+        return result;
+    }
+
+    /**
+     * Limits the number of runs for job-level endpoints.
+     * Preserves original Map structure while applying run limit.
+     */
+    private Map<JobPojo, Map<RunPojo, Set<StagePojo>>> limitRunsInJob(
+            Map<JobPojo, Map<RunPojo, Set<StagePojo>>> input, int maxRuns) {
+        Map<JobPojo, Map<RunPojo, Set<StagePojo>>> result = new TreeMap<>(PojoComparators.JOB_CASE_INSENSITIVE_ORDER);
+        for (Map.Entry<JobPojo, Map<RunPojo, Set<StagePojo>>> jobEntry : input.entrySet()) {
+            Map<RunPojo, Set<StagePojo>> limitedRuns = jobEntry.getValue().entrySet().stream()
+                .sorted(Map.Entry.comparingByKey(PojoComparators.RUN_DESCENDING))
+                .limit(maxRuns)
+                .collect(Collectors.toMap(
+                    Map.Entry::getKey,
+                    Map.Entry::getValue,
+                    (e1, e2) -> e1,
+                    () -> new TreeMap<>(PojoComparators.RUN_CASE_INSENSITIVE_ORDER)));
+            result.put(jobEntry.getKey(), limitedRuns);
+        }
+        return result;
     }
 }
