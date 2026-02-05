@@ -120,6 +120,8 @@ Plans:
 
 **Dependencies:** Phase 3 (all features complete and tested)
 
+**Plans:** 1 plan
+
 **Requirements:**
 - API-01: Remove @Hidden annotation from BrowseJsonController to expose /v1/api/* endpoints
 
@@ -129,6 +131,9 @@ Plans:
 2. User can access /v1/api/* endpoints without @Hidden restriction
 3. User can verify no path routing conflicts exist between HTML and JSON controllers
 4. User can observe OpenAPI documentation with operation summaries and parameter descriptions
+
+Plans:
+- [ ] 04-01-PLAN.md — Remove @Hidden annotation and verify API exposure
 
 **Notes:**
 - Final phase after all validation and implementation complete
