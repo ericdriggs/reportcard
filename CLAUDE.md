@@ -2,11 +2,15 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+* see .planning/codebase for a deeper analysis on code base than this document
+
 ## Project Overview
 
 Reportcard is a test result metrics API and dashboard application. It stores, analyzes, and reports on test results (JUnit XML, TestNG, Surefire) with trend analysis.
 
 **Tech Stack:** Java 17, Spring Boot 2.6.15, JOOQ (database access), MySQL 8.0, Gradle, AWS S3, Testcontainers
+
+
 
 ## Build Commands
 
