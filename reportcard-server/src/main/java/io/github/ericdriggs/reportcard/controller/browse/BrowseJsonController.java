@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 //TODO: add reports endpoint after stages
 @RestController
-@RequestMapping("/v1/api")
+@RequestMapping("/json")
 @SuppressWarnings("unused")
 public class BrowseJsonController {
 
