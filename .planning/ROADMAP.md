@@ -33,12 +33,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. GET /v1/api/company/{company}/org/{org} returns JSON with nested repos and branches
   4. All three endpoints use consistent naming convention (camelCase, singular entity + plural children)
   5. Jackson serializes DTOs without custom serializers (standard @JsonProperty annotations suffice)
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 05-01: Create base DTO classes and CompanyOrgsResponse
-- [ ] 05-02: Create CompanyOrgsReposResponse and OrgReposBranchesResponse
-- [ ] 05-03: Wire DTOs to controller endpoints
+- [ ] 05-01-PLAN.md — Create three Response DTO classes (CompanyOrgsResponse, CompanyOrgsReposResponse, OrgReposBranchesResponse)
+- [ ] 05-02-PLAN.md — Wire DTOs to controller endpoints and update tests
 
 ### Phase 6: Complete DTOs
 **Goal**: Convert remaining four endpoints to use Response DTOs
@@ -79,7 +78,7 @@ Phases execute in numeric order: 5 -> 6 -> 7
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
-| 5. Foundation DTOs | 0.1.24 | 0/3 | Not started | - |
+| 5. Foundation DTOs | 0.1.24 | 0/2 | Planned | - |
 | 6. Complete DTOs | 0.1.24 | 0/3 | Not started | - |
 | 7. Validation | 0.1.24 | 0/2 | Not started | - |
 
