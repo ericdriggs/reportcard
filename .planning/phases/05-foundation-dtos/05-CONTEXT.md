@@ -14,7 +14,8 @@ Create Response DTOs that transform internal `Map<Pojo, Map<Pojo, Set<Pojo>>>` s
 ## Implementation Decisions
 
 ### DTO Structure
-- Parent object + children array format: `{"company": {...}, "orgs": [{"org": {...}, "repos": [...]}]}`
+- Entity fields + children array at same level: `{"companyId": 3, "companyName": "hulu", "orgs": [{"orgId": 1, "orgName": "foo", "repos": [...]}]}`
+- No redundant wrapper objects — parent array name makes type clear
 - Match Pojo field names (camelCase): `companyId`, `companyName`, `orgId`, etc.
 - Match endpoint depth: `/company/{company}` returns company + orgs + repos (2 levels of children)
 - Preserve ordering from internal Maps (TreeMap/TreeSet order carries through to JSON arrays)
