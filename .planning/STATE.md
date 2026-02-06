@@ -1,4 +1,4 @@
-# Project State: Reportcard Browse JSON API
+/# Project State: Reportcard Browse JSON API
 
 **Last updated:** 2026-02-05
 **Project:** reportcard-browse-json
@@ -9,7 +9,7 @@
 
 **Core Value:** CI/CD pipelines can hit a stable JSON endpoint to get the latest test result for a specific job and stage
 
-**Current Focus:** PROJECT COMPLETE - All 4 phases delivered
+**Current Focus:** v1.0 SHIPPED - Milestone archived, ready for next milestone
 
 ---
 
@@ -22,7 +22,7 @@
 
 **Progress:** [████████████████████] 100% (8/8 plans complete overall)
 
-**Next Action:** None - all requirements delivered
+**Next Action:** `/gsd:new-milestone` to start next milestone
 
 ---
 
@@ -180,4 +180,5 @@ None - project complete.
 *Phase 2 complete: 2026-02-05*
 *Phase 3 complete: 2026-02-05*
 *Phase 4 complete: 2026-02-05*
-*PROJECT COMPLETE: 2026-02-05*
+*v1.0 SHIPPED: 2026-02-05*
+*Milestone archived: 2026-02-05*
