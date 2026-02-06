@@ -1,8 +1,6 @@
 package io.github.ericdriggs.reportcard.controller.browse;
 
-import io.github.ericdriggs.reportcard.controller.browse.response.CompanyOrgsReposResponse;
-import io.github.ericdriggs.reportcard.controller.browse.response.CompanyOrgsResponse;
-import io.github.ericdriggs.reportcard.controller.browse.response.OrgReposBranchesResponse;
+import io.github.ericdriggs.reportcard.controller.browse.response.*;
 import io.github.ericdriggs.reportcard.gen.db.TestData;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.*;
 import io.github.ericdriggs.reportcard.model.StageTestResultModel;
@@ -164,7 +162,7 @@ public class BrowseJsonControllerTest extends AbstractBrowseServiceTest {
     @Test
     void getRepoBranchesJobsJsonSuccessTest() {
         // Call controller endpoint
-        ResponseEntity<Map<RepoPojo, Map<BranchPojo, Set<JobPojo>>>> response =
+        ResponseEntity<RepoBranchesJobsResponse> response =
             controller.getRepoBranchesJobs(TestData.company, TestData.org, TestData.repo);
 
         // Verify HTTP response
@@ -172,33 +170,25 @@ public class BrowseJsonControllerTest extends AbstractBrowseServiceTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
         // Verify response body
-        Map<RepoPojo, Map<BranchPojo, Set<JobPojo>>> repoBranchesJobs = response.getBody();
+        RepoBranchesJobsResponse repoBranchesJobs = response.getBody();
         assertNotNull(repoBranchesJobs);
-        assertFalse(repoBranchesJobs.isEmpty());
+        assertNotNull(repoBranchesJobs.getRepoName());
+        assertEquals(TestData.repo, repoBranchesJobs.getRepoName());
+        assertNotNull(repoBranchesJobs.getBranches());
+        assertFalse(repoBranchesJobs.getBranches().isEmpty());
 
         // Verify test data appears in response
         boolean testDataFound = false;
-        for (Map.Entry<RepoPojo, Map<BranchPojo, Set<JobPojo>>> repoEntry : repoBranchesJobs.entrySet()) {
-            final RepoPojo repo = repoEntry.getKey();
-            final Map<BranchPojo, Set<JobPojo>> branchJobs = repoEntry.getValue();
-            assertNotNull(branchJobs);
-            assertFalse(branchJobs.isEmpty());
+        for (RepoBranchesJobsResponse.BranchJobsEntry branchEntry : repoBranchesJobs.getBranches()) {
+            assertNotNull(branchEntry.getJobs());
+            assertFalse(branchEntry.getJobs().isEmpty());
 
-            if (repo.getRepoName().equals(TestData.repo)) {
-                for (Map.Entry<BranchPojo, Set<JobPojo>> branchEntry : branchJobs.entrySet()) {
-                    final BranchPojo branch = branchEntry.getKey();
-                    final Set<JobPojo> jobs = branchEntry.getValue();
-                    assertNotNull(jobs);
-                    assertFalse(jobs.isEmpty());
-
-                    if (branch.getBranchName().equals(TestData.branch)) {
-                        // Verify expected job exists (matching jobInfo)
-                        for (JobPojo job : jobs) {
-                            if (JsonCompare.equalsMap(job.getJobInfo(), TestData.jobInfo)) {
-                                testDataFound = true;
-                                break;
-                            }
-                        }
+            if (branchEntry.getBranchName().equals(TestData.branch)) {
+                // Verify expected job exists (matching jobInfo contains application)
+                for (RepoBranchesJobsResponse.JobEntry job : branchEntry.getJobs()) {
+                    if (job.getJobInfo() != null && job.getJobInfo().toString().contains("fooapp")) {
+                        testDataFound = true;
+                        break;
                     }
                 }
             }
@@ -210,7 +200,7 @@ public class BrowseJsonControllerTest extends AbstractBrowseServiceTest {
     @Test
     void getBranchJobsRunsJsonSuccessTest() {
         // Call controller endpoint (runs=null uses default, jobInfoFilters=null)
-        ResponseEntity<Map<BranchPojo, Map<JobPojo, Set<RunPojo>>>> response =
+        ResponseEntity<BranchJobsRunsResponse> response =
             controller.getBranchJobsRuns(TestData.company, TestData.org, TestData.repo, TestData.branch, null, null);
 
         // Verify HTTP response
@@ -218,33 +208,24 @@ public class BrowseJsonControllerTest extends AbstractBrowseServiceTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
         // Verify response body
-        Map<BranchPojo, Map<JobPojo, Set<RunPojo>>> branchJobsRuns = response.getBody();
+        BranchJobsRunsResponse branchJobsRuns = response.getBody();
         assertNotNull(branchJobsRuns);
-        assertFalse(branchJobsRuns.isEmpty());
+        assertEquals(TestData.branch, branchJobsRuns.getBranchName());
+        assertNotNull(branchJobsRuns.getJobs());
+        assertFalse(branchJobsRuns.getJobs().isEmpty());
 
         // Verify test data appears in response
         boolean testDataFound = false;
-        for (Map.Entry<BranchPojo, Map<JobPojo, Set<RunPojo>>> branchEntry : branchJobsRuns.entrySet()) {
-            final BranchPojo branch = branchEntry.getKey();
-            final Map<JobPojo, Set<RunPojo>> jobRuns = branchEntry.getValue();
-            assertNotNull(jobRuns);
-            assertFalse(jobRuns.isEmpty());
+        for (BranchJobsRunsResponse.JobRunsEntry jobEntry : branchJobsRuns.getJobs()) {
+            assertNotNull(jobEntry.getRuns());
+            assertFalse(jobEntry.getRuns().isEmpty());
 
-            if (branch.getBranchName().equals(TestData.branch)) {
-                for (Map.Entry<JobPojo, Set<RunPojo>> jobEntry : jobRuns.entrySet()) {
-                    final JobPojo job = jobEntry.getKey();
-                    final Set<RunPojo> runs = jobEntry.getValue();
-                    assertNotNull(runs);
-                    assertFalse(runs.isEmpty());
-
-                    // Verify jobId matches TestData.jobId
-                    if (job.getJobId().equals(TestData.jobId)) {
-                        testDataFound = true;
-                        // Verify at least one run exists
-                        assertTrue(runs.size() > 0, "Expected at least one run for jobId: " + TestData.jobId);
-                        break;
-                    }
-                }
+            // Verify jobId matches TestData.jobId
+            if (jobEntry.getJobId().equals(TestData.jobId)) {
+                testDataFound = true;
+                // Verify at least one run exists
+                assertTrue(jobEntry.getRuns().size() > 0, "Expected at least one run for jobId: " + TestData.jobId);
+                break;
             }
         }
         assertTrue(testDataFound, "Expected test data (branch: " + TestData.branch +
@@ -254,7 +235,7 @@ public class BrowseJsonControllerTest extends AbstractBrowseServiceTest {
     @Test
     void getJobRunsStagesJsonSuccessTest() {
         // Call controller endpoint (runs=null uses default)
-        ResponseEntity<Map<JobPojo, Map<RunPojo, Set<StagePojo>>>> response =
+        ResponseEntity<JobRunsStagesResponse> response =
             controller.getJobRunsStages(TestData.company, TestData.org, TestData.repo, TestData.branch, TestData.jobId, null);
 
         // Verify HTTP response
@@ -262,35 +243,23 @@ public class BrowseJsonControllerTest extends AbstractBrowseServiceTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
         // Verify response body
-        Map<JobPojo, Map<RunPojo, Set<StagePojo>>> jobRunsStages = response.getBody();
+        JobRunsStagesResponse jobRunsStages = response.getBody();
         assertNotNull(jobRunsStages);
-        assertFalse(jobRunsStages.isEmpty());
+        assertEquals(TestData.jobId, jobRunsStages.getJobId());
+        assertNotNull(jobRunsStages.getRuns());
+        assertFalse(jobRunsStages.getRuns().isEmpty());
 
         // Verify test data appears in response
         boolean testDataFound = false;
-        for (Map.Entry<JobPojo, Map<RunPojo, Set<StagePojo>>> jobEntry : jobRunsStages.entrySet()) {
-            final JobPojo job = jobEntry.getKey();
-            final Map<RunPojo, Set<StagePojo>> runStages = jobEntry.getValue();
-            assertNotNull(runStages);
-            assertFalse(runStages.isEmpty());
+        for (JobRunsStagesResponse.RunStagesEntry runEntry : jobRunsStages.getRuns()) {
+            assertNotNull(runEntry.getStages());
+            assertFalse(runEntry.getStages().isEmpty());
 
-            // Verify job matches TestData.jobId
-            if (job.getJobId().equals(TestData.jobId)) {
-                // Verify at least one run and stage exist
-                assertTrue(runStages.size() > 0, "Expected at least one run for jobId: " + TestData.jobId);
-
-                for (Map.Entry<RunPojo, Set<StagePojo>> runEntry : runStages.entrySet()) {
-                    final Set<StagePojo> stages = runEntry.getValue();
-                    assertNotNull(stages);
-                    assertFalse(stages.isEmpty());
-
-                    // Verify stage name matches TestData.stage
-                    for (StagePojo stage : stages) {
-                        if (stage.getStageName().equals(TestData.stage)) {
-                            testDataFound = true;
-                            break;
-                        }
-                    }
+            // Verify stage name matches TestData.stage
+            for (JobRunsStagesResponse.StageEntry stage : runEntry.getStages()) {
+                if (stage.getStageName().equals(TestData.stage)) {
+                    testDataFound = true;
+                    break;
                 }
             }
         }
@@ -304,7 +273,7 @@ public class BrowseJsonControllerTest extends AbstractBrowseServiceTest {
         Long runId = 1L;
 
         // Call controller endpoint
-        ResponseEntity<Map<RunPojo, Map<StagePojo, Set<TestResultPojo>>>> response =
+        ResponseEntity<RunStagesTestResultsResponse> response =
             controller.getStagesByIds(TestData.company, TestData.org, TestData.repo, TestData.branch, TestData.jobId, runId);
 
         // Verify HTTP response
@@ -312,33 +281,21 @@ public class BrowseJsonControllerTest extends AbstractBrowseServiceTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
         // Verify response body
-        Map<RunPojo, Map<StagePojo, Set<TestResultPojo>>> runStagesTestResults = response.getBody();
+        RunStagesTestResultsResponse runStagesTestResults = response.getBody();
         assertNotNull(runStagesTestResults);
-        assertFalse(runStagesTestResults.isEmpty());
+        assertNotNull(runStagesTestResults.getRunId(), "Run ID should not be null");
+        assertNotNull(runStagesTestResults.getStages());
+        assertFalse(runStagesTestResults.getStages().isEmpty());
 
         // Verify test data appears in response
         boolean testDataFound = false;
-        for (Map.Entry<RunPojo, Map<StagePojo, Set<TestResultPojo>>> runEntry : runStagesTestResults.entrySet()) {
-            final RunPojo run = runEntry.getKey();
-            final Map<StagePojo, Set<TestResultPojo>> stageTestResults = runEntry.getValue();
-            assertNotNull(stageTestResults);
-            assertFalse(stageTestResults.isEmpty());
-
-            // Verify run exists
-            assertNotNull(run.getRunId(), "Run ID should not be null");
-
-            // Verify stages contain TestData.stage
-            for (Map.Entry<StagePojo, Set<TestResultPojo>> stageEntry : stageTestResults.entrySet()) {
-                final StagePojo stage = stageEntry.getKey();
-                final Set<TestResultPojo> testResults = stageEntry.getValue();
-
-                if (stage.getStageName().equals(TestData.stage)) {
-                    testDataFound = true;
-                    // Verify test results are present
-                    assertNotNull(testResults);
-                    assertFalse(testResults.isEmpty(), "Test results should not be empty for stage: " + TestData.stage);
-                    break;
-                }
+        for (RunStagesTestResultsResponse.StageTestResultsEntry stageEntry : runStagesTestResults.getStages()) {
+            if (stageEntry.getStageName().equals(TestData.stage)) {
+                testDataFound = true;
+                // Verify test results are present
+                assertNotNull(stageEntry.getTestResults());
+                assertFalse(stageEntry.getTestResults().isEmpty(), "Test results should not be empty for stage: " + TestData.stage);
+                break;
             }
         }
         assertTrue(testDataFound, "Expected test data (stage: " + TestData.stage +
@@ -387,7 +344,7 @@ public class BrowseJsonControllerTest extends AbstractBrowseServiceTest {
     @Test
     void getLatestRunStagesJsonSuccessTest() {
         // Call latest run endpoint
-        ResponseEntity<Map<RunPojo, Map<StagePojo, Set<TestResultPojo>>>> response =
+        ResponseEntity<RunStagesTestResultsResponse> response =
             controller.getLatestRunStages(TestData.company, TestData.org, TestData.repo,
                 TestData.branch, TestData.jobId);
 
@@ -396,22 +353,15 @@ public class BrowseJsonControllerTest extends AbstractBrowseServiceTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
         // Verify response body
-        Map<RunPojo, Map<StagePojo, Set<TestResultPojo>>> runStagesTestResults = response.getBody();
+        RunStagesTestResultsResponse runStagesTestResults = response.getBody();
         assertNotNull(runStagesTestResults);
-        assertFalse(runStagesTestResults.isEmpty());
-
-        // Verify this is indeed the latest run
-        RunPojo latestRun = runStagesTestResults.keySet().iterator().next();
-        assertNotNull(latestRun.getRunId(), "Run ID should not be null");
-
-        // Verify stages are present
-        Map<StagePojo, Set<TestResultPojo>> stageTestResults = runStagesTestResults.get(latestRun);
-        assertNotNull(stageTestResults);
-        assertFalse(stageTestResults.isEmpty());
+        assertNotNull(runStagesTestResults.getRunId(), "Run ID should not be null");
+        assertNotNull(runStagesTestResults.getStages());
+        assertFalse(runStagesTestResults.getStages().isEmpty());
 
         // Verify expected stage exists
         boolean stageFound = false;
-        for (StagePojo stage : stageTestResults.keySet()) {
+        for (RunStagesTestResultsResponse.StageTestResultsEntry stage : runStagesTestResults.getStages()) {
             if (stage.getStageName().equals(TestData.stage)) {
                 stageFound = true;
                 break;
@@ -426,12 +376,12 @@ public class BrowseJsonControllerTest extends AbstractBrowseServiceTest {
         Long latestRunId = browseService.getLatestRunId(TestData.jobId);
 
         // Call latest endpoint
-        ResponseEntity<Map<RunPojo, Map<StagePojo, Set<TestResultPojo>>>> latestResponse =
+        ResponseEntity<RunStagesTestResultsResponse> latestResponse =
             controller.getLatestRunStages(TestData.company, TestData.org, TestData.repo,
                 TestData.branch, TestData.jobId);
 
         // Call ID-based endpoint with resolved run ID
-        ResponseEntity<Map<RunPojo, Map<StagePojo, Set<TestResultPojo>>>> idBasedResponse =
+        ResponseEntity<RunStagesTestResultsResponse> idBasedResponse =
             controller.getStagesByIds(TestData.company, TestData.org, TestData.repo,
                 TestData.branch, TestData.jobId, latestRunId);
 
@@ -439,10 +389,7 @@ public class BrowseJsonControllerTest extends AbstractBrowseServiceTest {
         assertNotNull(latestResponse.getBody());
         assertNotNull(idBasedResponse.getBody());
 
-        RunPojo latestRun = latestResponse.getBody().keySet().iterator().next();
-        RunPojo idBasedRun = idBasedResponse.getBody().keySet().iterator().next();
-
-        assertEquals(idBasedRun.getRunId(), latestRun.getRunId(),
+        assertEquals(idBasedResponse.getBody().getRunId(), latestResponse.getBody().getRunId(),
             "Latest endpoint should return same run ID as ID-based endpoint");
     }
 
@@ -541,7 +488,7 @@ public class BrowseJsonControllerTest extends AbstractBrowseServiceTest {
     @Test
     void getRunsForShaJsonSuccessTest() {
         // Call controller endpoint with SHA - use TestData.sha constant
-        ResponseEntity<Map<BranchPojo, Map<JobPojo, Set<RunPojo>>>> response =
+        ResponseEntity<BranchJobsRunsResponse> response =
             controller.getRuns(TestData.company, TestData.org, TestData.repo, TestData.branch, TestData.sha, null);
 
         // Verify HTTP response
@@ -549,31 +496,23 @@ public class BrowseJsonControllerTest extends AbstractBrowseServiceTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
         // Verify response body
-        Map<BranchPojo, Map<JobPojo, Set<RunPojo>>> branchJobsRuns = response.getBody();
+        BranchJobsRunsResponse branchJobsRuns = response.getBody();
         assertNotNull(branchJobsRuns);
-        assertFalse(branchJobsRuns.isEmpty());
+        assertEquals(TestData.branch, branchJobsRuns.getBranchName());
+        assertNotNull(branchJobsRuns.getJobs());
+        assertFalse(branchJobsRuns.getJobs().isEmpty());
 
         // Verify test data appears in response
         boolean testDataFound = false;
-        for (Map.Entry<BranchPojo, Map<JobPojo, Set<RunPojo>>> branchEntry : branchJobsRuns.entrySet()) {
-            final BranchPojo branch = branchEntry.getKey();
-            final Map<JobPojo, Set<RunPojo>> jobRuns = branchEntry.getValue();
-            assertNotNull(jobRuns);
-            assertFalse(jobRuns.isEmpty());
+        for (BranchJobsRunsResponse.JobRunsEntry jobEntry : branchJobsRuns.getJobs()) {
+            assertNotNull(jobEntry.getRuns());
+            assertFalse(jobEntry.getRuns().isEmpty());
 
-            if (branch.getBranchName().equals(TestData.branch)) {
-                for (Map.Entry<JobPojo, Set<RunPojo>> jobEntry : jobRuns.entrySet()) {
-                    final Set<RunPojo> runs = jobEntry.getValue();
-                    assertNotNull(runs);
-                    assertFalse(runs.isEmpty());
-
-                    // Verify at least one run matches TestData.sha
-                    for (RunPojo run : runs) {
-                        if (TestData.sha.equals(run.getSha())) {
-                            testDataFound = true;
-                            break;
-                        }
-                    }
+            // Verify at least one run matches TestData.sha
+            for (BranchJobsRunsResponse.RunEntry run : jobEntry.getRuns()) {
+                if (TestData.sha.equals(run.getSha())) {
+                    testDataFound = true;
+                    break;
                 }
             }
         }
@@ -713,22 +652,21 @@ public class BrowseJsonControllerTest extends AbstractBrowseServiceTest {
     @Test
     void getBranchJobsRunsWithRunsParameterTest() {
         // Test with explicit runs parameter (limit to 10)
-        ResponseEntity<Map<BranchPojo, Map<JobPojo, Set<RunPojo>>>> response =
+        ResponseEntity<BranchJobsRunsResponse> response =
             controller.getBranchJobsRuns(TestData.company, TestData.org, TestData.repo,
                 TestData.branch, 10, null);
 
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        Map<BranchPojo, Map<JobPojo, Set<RunPojo>>> result = response.getBody();
+        BranchJobsRunsResponse result = response.getBody();
         assertNotNull(result);
-        assertFalse(result.isEmpty());
+        assertNotNull(result.getJobs());
+        assertFalse(result.getJobs().isEmpty());
 
         // Verify runs per job limited to 10
-        for (Map<JobPojo, Set<RunPojo>> jobRuns : result.values()) {
-            for (Set<RunPojo> runs : jobRuns.values()) {
-                assertTrue(runs.size() <= 10, "Each job should have at most 10 runs");
-            }
+        for (BranchJobsRunsResponse.JobRunsEntry job : result.getJobs()) {
+            assertTrue(job.getRuns().size() <= 10, "Each job should have at most 10 runs");
         }
     }
 
@@ -736,29 +674,28 @@ public class BrowseJsonControllerTest extends AbstractBrowseServiceTest {
     void getBranchJobsRunsDefaultRunsTest() {
         // Test without runs parameter (should use default 60)
         // Note: Updated signature requires runs parameter, pass null to test default behavior
-        ResponseEntity<Map<BranchPojo, Map<JobPojo, Set<RunPojo>>>> response =
+        ResponseEntity<BranchJobsRunsResponse> response =
             controller.getBranchJobsRuns(TestData.company, TestData.org, TestData.repo,
                 TestData.branch, null, null);
 
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        Map<BranchPojo, Map<JobPojo, Set<RunPojo>>> result = response.getBody();
+        BranchJobsRunsResponse result = response.getBody();
         assertNotNull(result);
-        assertFalse(result.isEmpty());
+        assertNotNull(result.getJobs());
+        assertFalse(result.getJobs().isEmpty());
 
         // Verify runs per job limited to 60 (default)
-        for (Map<JobPojo, Set<RunPojo>> jobRuns : result.values()) {
-            for (Set<RunPojo> runs : jobRuns.values()) {
-                assertTrue(runs.size() <= 60, "Each job should have at most 60 runs (default)");
-            }
+        for (BranchJobsRunsResponse.JobRunsEntry job : result.getJobs()) {
+            assertTrue(job.getRuns().size() <= 60, "Each job should have at most 60 runs (default)");
         }
     }
 
     @Test
     void getBranchJobsRunsWithZeroRunsUsesDefaultTest() {
         // Test with runs=0 (should use default 60)
-        ResponseEntity<Map<BranchPojo, Map<JobPojo, Set<RunPojo>>>> response =
+        ResponseEntity<BranchJobsRunsResponse> response =
             controller.getBranchJobsRuns(TestData.company, TestData.org, TestData.repo,
                 TestData.branch, 0, null);
 
@@ -766,20 +703,18 @@ public class BrowseJsonControllerTest extends AbstractBrowseServiceTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
         // Should return results (not empty due to invalid runs value)
-        assertFalse(response.getBody().isEmpty());
+        assertFalse(response.getBody().getJobs().isEmpty());
 
         // Verify runs per job limited to 60 (default because 0 < 1)
-        for (Map<JobPojo, Set<RunPojo>> jobRuns : response.getBody().values()) {
-            for (Set<RunPojo> runs : jobRuns.values()) {
-                assertTrue(runs.size() <= 60, "Each job should have at most 60 runs (default for runs=0)");
-            }
+        for (BranchJobsRunsResponse.JobRunsEntry job : response.getBody().getJobs()) {
+            assertTrue(job.getRuns().size() <= 60, "Each job should have at most 60 runs (default for runs=0)");
         }
     }
 
     @Test
     void getBranchJobsRunsWithNegativeRunsUsesDefaultTest() {
         // Test with runs=-1 (should use default 60)
-        ResponseEntity<Map<BranchPojo, Map<JobPojo, Set<RunPojo>>>> response =
+        ResponseEntity<BranchJobsRunsResponse> response =
             controller.getBranchJobsRuns(TestData.company, TestData.org, TestData.repo,
                 TestData.branch, -1, null);
 
@@ -787,46 +722,44 @@ public class BrowseJsonControllerTest extends AbstractBrowseServiceTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
         // Should return results (not empty due to invalid runs value)
-        assertFalse(response.getBody().isEmpty());
+        assertFalse(response.getBody().getJobs().isEmpty());
     }
 
     @Test
     void getJobRunsStagesWithRunsParameterTest() {
         // Test job-level runs parameter
-        ResponseEntity<Map<JobPojo, Map<RunPojo, Set<StagePojo>>>> response =
+        ResponseEntity<JobRunsStagesResponse> response =
             controller.getJobRunsStages(TestData.company, TestData.org, TestData.repo,
                 TestData.branch, TestData.jobId, 5);
 
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        Map<JobPojo, Map<RunPojo, Set<StagePojo>>> result = response.getBody();
+        JobRunsStagesResponse result = response.getBody();
         assertNotNull(result);
-        assertFalse(result.isEmpty());
+        assertNotNull(result.getRuns());
+        assertFalse(result.getRuns().isEmpty());
 
         // Verify runs limited to 5
-        for (Map<RunPojo, Set<StagePojo>> runStages : result.values()) {
-            assertTrue(runStages.size() <= 5, "Job should have at most 5 runs");
-        }
+        assertTrue(result.getRuns().size() <= 5, "Job should have at most 5 runs");
     }
 
     @Test
     void getJobRunsStagesDefaultRunsTest() {
         // Test without runs parameter (null should use default 60)
-        ResponseEntity<Map<JobPojo, Map<RunPojo, Set<StagePojo>>>> response =
+        ResponseEntity<JobRunsStagesResponse> response =
             controller.getJobRunsStages(TestData.company, TestData.org, TestData.repo,
                 TestData.branch, TestData.jobId, null);
 
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        Map<JobPojo, Map<RunPojo, Set<StagePojo>>> result = response.getBody();
+        JobRunsStagesResponse result = response.getBody();
         assertNotNull(result);
-        assertFalse(result.isEmpty());
+        assertNotNull(result.getRuns());
+        assertFalse(result.getRuns().isEmpty());
 
         // Verify runs limited to 60 (default)
-        for (Map<RunPojo, Set<StagePojo>> runStages : result.values()) {
-            assertTrue(runStages.size() <= 60, "Job should have at most 60 runs (default)");
-        }
+        assertTrue(result.getRuns().size() <= 60, "Job should have at most 60 runs (default)");
     }
 }
