@@ -16,9 +16,9 @@ This roadmap delivers production-ready JSON API endpoints by validating existing
 | 1 - Foundation & Validation | Validate existing JSON endpoints work correctly | API-02, TEST-01, TEST-02 | **Complete** |
 | 2 - Latest Endpoints | Enable latest run resolution for jobs and stages | LATEST-01, LATEST-02 | **Complete** |
 | 3 - Query Parameter Parity | Complete feature parity with HTML browse endpoints | FILTER-01 | **Complete** |
-| 4 - API Exposure | Safely expose JSON API to production clients | API-01 | Pending |
+| 4 - API Exposure | Safely expose JSON API to production clients | API-01 | **Complete** |
 
-**Overall:** 3/4 phases complete (75%)
+**Overall:** 4/4 phases complete (100%)
 
 ---
 
@@ -133,7 +133,7 @@ Plans:
 4. User can observe OpenAPI documentation with operation summaries and parameter descriptions
 
 Plans:
-- [ ] 04-01-PLAN.md — Remove @Hidden annotation and verify API exposure
+- [x] 04-01-PLAN.md — Remove @Hidden annotation and verify API exposure
 
 **Notes:**
 - Final phase after all validation and implementation complete
@@ -179,3 +179,5 @@ No orphaned requirements.
 *Last updated: 2026-02-05*
 *Phase 2 complete: 2026-02-05*
 *Phase 3 complete: 2026-02-05*
+*Phase 4 complete: 2026-02-05*
+*PROJECT COMPLETE: 2026-02-05*

@@ -7,7 +7,7 @@
 
 ### API Exposure
 
-- [ ] **API-01**: Remove `@Hidden` annotation from BrowseJsonController to expose `/v1/api/*` endpoints
+- [x] **API-01**: Remove `@Hidden` annotation from BrowseJsonController to expose `/v1/api/*` endpoints
 - [x] **API-02**: All existing JSON endpoints return valid JSON (verified by tests)
 
 ### Latest Endpoints
@@ -42,7 +42,7 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| API-01 | Phase 4 | Pending |
+| API-01 | Phase 4 | Complete |
 | API-02 | Phase 1 | Complete |
 | LATEST-01 | Phase 2 | Complete |
 | LATEST-02 | Phase 2 | Complete |
@@ -59,3 +59,5 @@
 *Requirements defined: 2025-02-05*
 *Last updated: 2026-02-05*
 *Phase 3 complete: FILTER-01 marked Complete*
+*Phase 4 complete: API-01 marked Complete*
+*PROJECT COMPLETE: All 7 requirements delivered*
