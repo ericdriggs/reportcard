@@ -55,25 +55,25 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DTO-01 | TBD | Pending |
-| DTO-02 | TBD | Pending |
-| DTO-03 | TBD | Pending |
-| DTO-04 | TBD | Pending |
-| DTO-05 | TBD | Pending |
-| DTO-06 | TBD | Pending |
-| DTO-07 | TBD | Pending |
-| JSON-01 | TBD | Pending |
-| JSON-02 | TBD | Pending |
-| JSON-03 | TBD | Pending |
-| TEST-01 | TBD | Pending |
-| TEST-02 | TBD | Pending |
-| TEST-03 | TBD | Pending |
+| DTO-01 | Phase 5 | Pending |
+| DTO-02 | Phase 5 | Pending |
+| DTO-03 | Phase 5 | Pending |
+| DTO-04 | Phase 6 | Pending |
+| DTO-05 | Phase 6 | Pending |
+| DTO-06 | Phase 6 | Pending |
+| DTO-07 | Phase 6 | Pending |
+| JSON-01 | Phase 5 | Pending |
+| JSON-02 | Phase 5 | Pending |
+| JSON-03 | Phase 5 | Pending |
+| TEST-01 | Phase 7 | Pending |
+| TEST-02 | Phase 7 | Pending |
+| TEST-03 | Phase 7 | Pending |
 
 **Coverage:**
 - 0.1.24 requirements: 13 total
-- Mapped to phases: 0
-- Unmapped: 13 ⚠️
+- Mapped to phases: 13
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-06*
-*Last updated: 2026-02-06 after initial definition*
+*Last updated: 2026-02-06 after roadmap creation*
