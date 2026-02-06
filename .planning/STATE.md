@@ -17,34 +17,34 @@ See: .planning/PROJECT.md (updated 2026-02-06)
 ## Current Position
 
 **Phase:** 5 of 7 (Foundation DTOs)
-**Plan:** 1 of 3 in current phase
+**Plan:** 2 of 3 in current phase
 **Status:** In progress
-**Last activity:** 2026-02-06 — Completed 05-01-PLAN.md (Foundation DTOs)
+**Last activity:** 2026-02-06 — Completed 05-02-PLAN.md (Wire DTOs to Controller)
 
-**Progress:** [██░░░░░░░░░░░░░░░░░░] 12.5% (1/8 plans)
+**Progress:** [████░░░░░░░░░░░░░░░░] 25% (2/8 plans)
 
-**Next Action:** Execute 05-02-PLAN.md (Remaining DTOs)
+**Next Action:** Execute 05-03-PLAN.md (Remaining DTOs) or Phase 6
 
 ---
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 1
-- Average duration: 12 min
-- Total execution time: 0.2 hours
+- Total plans completed: 2
+- Average duration: 10 min
+- Total execution time: 0.33 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 5 | 1/3 | 12m | 12m |
+| 5 | 2/3 | 20m | 10m |
 | 6 | 0/3 | - | - |
 | 7 | 0/2 | - | - |
 
 **Recent Trend:**
-- Last 5 plans: 05-01 (12m)
-- Trend: Started
+- Last 5 plans: 05-01 (12m), 05-02 (8m)
+- Trend: Improving
 
 *Updated after each plan completion*
 
@@ -62,6 +62,8 @@ Recent decisions affecting current work:
 - [05-01]: Used inner static classes for entity wrappers to keep related types together
 - [05-01]: Single-entry extraction pattern for filtered endpoints
 - [05-01]: BranchEntry includes Instant lastRun field - Jackson handles ISO-8601 automatically
+- [05-02]: Transform at controller boundary - service/cache return Map, controller returns DTO
+- [05-02]: Test assertions navigate nested structure via getCompanies()/getOrgs()/getRepos()
 
 ### Pending Todos
 
@@ -76,7 +78,7 @@ None.
 ## Session Continuity
 
 **Last session:** 2026-02-06
-**Stopped at:** Completed 05-01-PLAN.md
+**Stopped at:** Completed 05-02-PLAN.md
 **Resume file:** None
 
 ---
