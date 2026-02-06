@@ -17,7 +17,7 @@ Transform internal Map structures into clean JSON responses. The current BrowseJ
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 5: Foundation DTOs** - Establish DTO pattern and convert first 3 endpoints
+- [x] **Phase 5: Foundation DTOs** - Establish DTO pattern and convert first 3 endpoints
 - [ ] **Phase 6: Complete DTOs** - Convert remaining 4 endpoints using established pattern
 - [ ] **Phase 7: Validation** - Test JSON quality and ensure backward compatibility
 
@@ -36,8 +36,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 2 plans
 
 Plans:
-- [ ] 05-01-PLAN.md — Create three Response DTO classes (CompanyOrgsResponse, CompanyOrgsReposResponse, OrgReposBranchesResponse)
-- [ ] 05-02-PLAN.md — Wire DTOs to controller endpoints and update tests
+- [x] 05-01-PLAN.md — Create three Response DTO classes (CompanyOrgsResponse, CompanyOrgsReposResponse, OrgReposBranchesResponse)
+- [x] 05-02-PLAN.md — Wire DTOs to controller endpoints and update tests
 
 ### Phase 6: Complete DTOs
 **Goal**: Convert remaining four endpoints to use Response DTOs
@@ -78,7 +78,7 @@ Phases execute in numeric order: 5 -> 6 -> 7
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
-| 5. Foundation DTOs | 0.1.24 | 0/2 | Planned | - |
+| 5. Foundation DTOs | 0.1.24 | 2/2 | Complete | 2026-02-06 |
 | 6. Complete DTOs | 0.1.24 | 0/3 | Not started | - |
 | 7. Validation | 0.1.24 | 0/2 | Not started | - |
 
