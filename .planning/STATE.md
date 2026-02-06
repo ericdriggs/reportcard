@@ -9,39 +9,38 @@
 
 **Core Value:** CI/CD pipelines can hit a stable JSON endpoint to get the latest test result for a specific job and stage
 
-**Current Focus:** Phase 3 complete - Query Parameter Parity implemented
+**Current Focus:** PROJECT COMPLETE - All 4 phases delivered
 
 ---
 
 ## Current Position
 
-**Phase:** 3 of 4 (Query Parameter Parity) - COMPLETE
+**Phase:** 4 of 4 (API Exposure) - COMPLETE
 **Plan:** 01 of 01 in phase - COMPLETE
-**Status:** Phase complete
-**Last activity:** 2026-02-05 - Completed Phase 3, runs parameter added to JSON endpoints
+**Status:** Project complete
+**Last activity:** 2026-02-05 - Completed Phase 4, @Hidden annotation removed from BrowseJsonController
 
-**Progress:** [████████████████████] 100% (7/7 plans complete overall)
+**Progress:** [████████████████████] 100% (8/8 plans complete overall)
 
-**Next Action:** Execute Phase 4 (API Exposure) - Remove @Hidden annotation
+**Next Action:** None - all requirements delivered
 
 ---
 
 ## Performance Metrics
 
 ### Velocity
-- **Phases completed:** 3
-- **Requirements delivered:** 6/7
-- **Phase 3 completed:** 2026-02-05
-- **Estimated completion:** Phase 4 remaining (final phase)
+- **Phases completed:** 4/4
+- **Requirements delivered:** 7/7
+- **Phase 4 completed:** 2026-02-05
+- **Project status:** COMPLETE
 
 ### Quality
-- **Test coverage:** Comprehensive (Phase 1-3 with 14 new tests total)
+- **Test coverage:** Comprehensive (Phases 1-3 with 14 new tests total)
 - **Rework incidents:** 0
 - **Blocked plans:** 0
 - **Verification score:** All must-haves (100%)
 
 ### Efficiency
-- **Average phase duration:** TBD
 - **Planning accuracy:** HIGH (all plans executed exactly as planned)
 - **Research effectiveness:** HIGH confidence (comprehensive codebase analysis)
 
@@ -65,6 +64,7 @@
 | Delegate latest endpoints to ID-based endpoints | Ensures identical response shapes between /run/latest and /run/{runId} | 2026-02-05 |
 | Post-filter cache for runs parameter | Avoid cache explosion from N run values; cached data is superset | 2026-02-05 |
 | Handle null in validateRuns for JSON controller | JSON controller receives nullable Integer from @RequestParam | 2026-02-05 |
+| Remove @Hidden without adding @Operation annotations | Keep change minimal - OpenAPI documentation enhancement out of scope | 2026-02-05 |
 
 ### Open Questions
 
@@ -72,7 +72,7 @@
 |----------|---------|----------|
 | Cache TTL strategy for latest endpoints | Research suggests shorter TTL for latest-run-id lookups | Medium |
 | Database index verification for job_id | Need to confirm efficient latest-run queries | Medium |
-| OpenAPI documentation completion scope | Determine level of detail needed before exposure | Low |
+| OpenAPI documentation enhancement | @Operation annotations could improve Swagger UI usability | Low |
 | Fix getBranch/getRunFromReference error handling | These methods use LEFT JOINs or throw NPE instead of ResponseStatusException | Low |
 
 ### Active TODOs
@@ -84,12 +84,12 @@
 - [x] Plan 02-02: Add /run/latest controller endpoint (COMPLETE)
 - [x] Plan 02-03: Add /run/latest/stage/{stage} controller endpoint (COMPLETE)
 - [x] Plan 03-01: Add ?runs=N parameter to JSON endpoints (COMPLETE)
-- [ ] Plan 04-01: Remove @Hidden annotation from BrowseJsonController
-- [ ] Document path audit findings for UI vs JSON controllers
+- [x] Plan 04-01: Remove @Hidden annotation from BrowseJsonController (COMPLETE)
+- [ ] Document path audit findings for UI vs JSON controllers (future improvement)
 
 ### Known Blockers
 
-None currently.
+None - project complete.
 
 ---
 
@@ -98,34 +98,31 @@ None currently.
 ### Last Session Summary
 
 **Date:** 2026-02-05
-**Activity:** Phase 3 completion (Plan 03-01 executed)
-**Outcome:** Query parameter parity achieved with 100% verification score
+**Activity:** Phase 4 completion (Plan 04-01 executed)
+**Outcome:** API exposure achieved - BrowseJsonController now visible in Swagger UI
 
 **Key outputs:**
-- validateRuns() helper method for parameter validation
-- limitRunsPerJob() helper for branch-level filtering
-- limitRunsInJob() helper for job-level filtering
-- Updated getBranchJobsRuns and getJobRunsStages endpoints
-- 6 new tests for runs parameter behavior
-- Task commits: 722f370, d7f09d7
+- Removed @Hidden annotation from BrowseJsonController
+- Removed unused Hidden import
+- Verified no path conflicts (AmbiguousMappingException check passed)
+- Verified pattern matches exposed GraphJsonController
+- Task commit: 77c68d1
 
 **Handoff notes:**
-- Phase 3 complete with full verification
-- Ready to start Phase 4: API Exposure
-- Phase 4 removes @Hidden annotation from BrowseJsonController
+- PROJECT COMPLETE
+- All 7 requirements delivered
+- JSON API now publicly accessible at /v1/api/*
+- Endpoints discoverable via Swagger UI at /swagger-ui.html
 
 ### Context for Next Session
 
-**If continuing to Phase 4:**
-- API-01: Remove @Hidden from BrowseJsonController
-- All prerequisite features (validation, latest, filtering) complete
-- Comprehensive test coverage in place
-- Final step to expose JSON API publicly
+**Project status:**
+- All phases (1-4) complete
+- All requirements (7/7) delivered
+- Ready for production deployment
 
-**If revising roadmap:**
-- Requirement coverage is 100% (7/7), no gaps
-- Phase dependencies are sequential: 1->2->3->4
-- Phases 1, 2, and 3 complete, Phase 4 pending
+**Known issues:**
+- Pre-existing test failures in JunitControllerTest and StorageControllerTest (4 tests) - unrelated to browse-json feature
 
 ---
 
@@ -138,13 +135,13 @@ None currently.
 | 1 - Foundation & Validation | Complete | 3 | 100% |
 | 2 - Latest Endpoints | Complete | 2 | 100% (3/3 plans) |
 | 3 - Query Parameter Parity | Complete | 1 | 100% (1/1 plan) |
-| 4 - API Exposure | Pending | 1 | 0% |
+| 4 - API Exposure | Complete | 1 | 100% (1/1 plan) |
 
 ### Requirement Status
 
 | ID | Description | Phase | Status |
 |----|-------------|-------|--------|
-| API-01 | Remove @Hidden from BrowseJsonController | 4 | Pending |
+| API-01 | Remove @Hidden from BrowseJsonController | 4 | Complete |
 | API-02 | All JSON endpoints return valid JSON | 1 | Complete |
 | LATEST-01 | Add /job/{id}/run/latest endpoint | 2 | Complete |
 | LATEST-02 | Add /run/latest/stage/{stage} endpoint | 2 | Complete |
@@ -172,13 +169,15 @@ None currently.
 - All other phases: Standard Spring Boot patterns, skip phase research
 
 **Implications:**
-- Foundation phase (1) must address path conflicts before any exposure
-- Latest endpoint implementation (2) is core feature enabling CI/CD automation
-- Testing hardens (1) before feature expansion (2-3)
-- Exposure finalizes (4) only after comprehensive validation
+- Foundation phase (1) addressed path conflicts before any exposure
+- Latest endpoint implementation (2) enables CI/CD automation
+- Testing hardened (1) before feature expansion (2-3)
+- Exposure finalized (4) after comprehensive validation
 
 ---
 *State initialized: 2026-02-05*
 *Phase 1 complete: 2026-02-05*
 *Phase 2 complete: 2026-02-05*
 *Phase 3 complete: 2026-02-05*
+*Phase 4 complete: 2026-02-05*
+*PROJECT COMPLETE: 2026-02-05*
