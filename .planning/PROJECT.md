@@ -8,11 +8,16 @@ Enable programmatic JSON API access to browse test results in Reportcard. The br
 
 CI/CD pipelines can hit a stable JSON endpoint to get the latest test result for a specific job and stage without knowing the run ID upfront.
 
-## Current State (v1.0 Shipped)
+## Current Milestone: 0.1.24 Response DTOs
 
-**Version:** v1.0 Browse JSON API
-**Shipped:** 2026-02-05
-**Codebase:** ~9,800 lines of Java added (47 files modified)
+**Goal:** Transform internal Map structures into clean JSON responses without changing service/cache logic.
+
+**Target features:**
+- Response DTOs that wrap internal `Map<Pojo, Map<Pojo, Set<Pojo>>>` structures
+- Proper JSON serialization (keys as values, not toString())
+- All BrowseJsonController endpoints return usable JSON
+
+## Previous: 0.1.23 Browse JSON API (Shipped: 2026-02-05)
 
 **What shipped:**
 - 12+ JSON browse endpoints exposed at `/v1/api/*`
@@ -35,7 +40,9 @@ CI/CD pipelines can hit a stable JSON endpoint to get the latest test result for
 
 ### Active
 
-(None — planning next milestone)
+- [ ] DTO-01: Response DTOs for all BrowseJsonController endpoints
+- [ ] DTO-02: JSON keys are field values (not toString())
+- [ ] DTO-03: Existing tests pass with new response structure
 
 ### Out of Scope
 
@@ -77,4 +84,4 @@ CI/CD pipelines can hit a stable JSON endpoint to get the latest test result for
 | 4-phase roadmap structure | Natural boundaries: foundation → feature → parity → exposure | Good |
 
 ---
-*Last updated: 2026-02-05 after v1.0 milestone*
+*Last updated: 2026-02-06 after 0.1.24 milestone start*
