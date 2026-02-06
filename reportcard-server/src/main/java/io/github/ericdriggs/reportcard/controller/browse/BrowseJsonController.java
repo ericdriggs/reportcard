@@ -1,11 +1,11 @@
 package io.github.ericdriggs.reportcard.controller.browse;
 
-import io.github.ericdriggs.reportcard.cache.dto.*;
-import io.github.ericdriggs.reportcard.cache.model.*;
+import io.github.ericdriggs.reportcard.cache.model.BranchStageViewResponse;
 import io.github.ericdriggs.reportcard.controller.browse.response.*;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.*;
 import io.github.ericdriggs.reportcard.model.StageTestResultModel;
 import io.github.ericdriggs.reportcard.persist.BrowseService;
+import io.github.ericdriggs.reportcard.persist.GraphService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,27 +26,29 @@ import java.util.stream.Collectors;
 public class BrowseJsonController {
 
     private final BrowseService browseService;
+    private final GraphService graphService;
 
     @Autowired
-    public BrowseJsonController(BrowseService browseService) {
+    public BrowseJsonController(BrowseService browseService, GraphService graphService) {
         this.browseService = browseService;
+        this.graphService = graphService;
     }
 
     @GetMapping(path = "", produces = "application/json")
     public ResponseEntity<CompanyOrgsResponse> getCompanyOrgs() {
-        return new ResponseEntity<>(CompanyOrgsResponse.fromMap(CompanyOrgsCache.INSTANCE.getCache()), HttpStatus.OK);
+        return new ResponseEntity<>(CompanyOrgsResponse.fromMap(browseService.getCompanyOrgs()), HttpStatus.OK);
     }
 
     @GetMapping(path = {"company/{company}", "company/{company}/org"}, produces = "application/json")
     public ResponseEntity<CompanyOrgsReposResponse> getCompanyOrgsRepos(@PathVariable String company) {
-        return new ResponseEntity<>(CompanyOrgsReposResponse.fromMap(CompanyOrgsReposCacheMap.INSTANCE.getValue(new CompanyDTO(company))), HttpStatus.OK);
+        return new ResponseEntity<>(CompanyOrgsReposResponse.fromMap(browseService.getCompanyOrgsRepos(company)), HttpStatus.OK);
     }
 
     @GetMapping(path = {"company/{company}/org/{org}", "org/{org}/repo"}, produces = "application/json")
     public ResponseEntity<OrgReposBranchesResponse> getOrgReposBranches(
             @PathVariable String company,
             @PathVariable String org) {
-        return new ResponseEntity<>(OrgReposBranchesResponse.fromMap(OrgReposBranchesCacheMap.INSTANCE.getValue(CompanyOrgDTO.builder().company(company).org(org).build())), HttpStatus.OK);
+        return new ResponseEntity<>(OrgReposBranchesResponse.fromMap(browseService.getOrgReposBranches(company, org)), HttpStatus.OK);
     }
 
     @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}", "org/{org}/repo/{repo}/branch"}, produces = "application/json")
@@ -54,7 +56,7 @@ public class BrowseJsonController {
             @PathVariable String company,
             @PathVariable String org,
             @PathVariable String repo) {
-        return new ResponseEntity<>(RepoBranchesJobsResponse.fromMap(RepoBranchesJobsCacheMap.INSTANCE.getValue(CompanyOrgRepoDTO.builder().company(company).org(org).repo(repo).build())), HttpStatus.OK);
+        return new ResponseEntity<>(RepoBranchesJobsResponse.fromMap(browseService.getRepoBranchesJobs(company, org, repo)), HttpStatus.OK);
     }
 
     @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}/branch/{branch}",
@@ -68,9 +70,8 @@ public class BrowseJsonController {
             @RequestParam(required = false) Map<String, String> jobInfoFilters) {
         runs = validateRuns(runs);
         Map<BranchPojo, Map<JobPojo, Set<RunPojo>>> fullResult =
-            BranchJobsRunsCacheMap.INSTANCE.getValue(new CompanyOrgRepoBranchDTO(company, org, repo, branch));
+            browseService.getBranchJobsRuns(company, org, repo, branch, jobInfoFilters);
         return new ResponseEntity<>(BranchJobsRunsResponse.fromMap(limitRunsPerJob(fullResult, runs)), HttpStatus.OK);
-        //TODO: use jobInfoFilters
     }
 
     @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}",
@@ -84,7 +85,7 @@ public class BrowseJsonController {
             @RequestParam(required = false, defaultValue = "60") Integer runs) {
         runs = validateRuns(runs);
         Map<JobPojo, Map<RunPojo, Set<StagePojo>>> fullResult =
-            JobRunsStagesCacheMap.INSTANCE.getValue(new CompanyOrgRepoBranchJobDTO(company, org, repo, branch, jobId));
+            browseService.getJobRunsStages(company, org, repo, branch, jobId);
         return new ResponseEntity<>(JobRunsStagesResponse.fromMap(limitRunsInJob(fullResult, runs)), HttpStatus.OK);
     }
 
@@ -97,7 +98,8 @@ public class BrowseJsonController {
             @PathVariable String branch,
             @PathVariable Long jobId,
             @PathVariable Long runId) {
-        return new ResponseEntity<>(RunStagesTestResultsResponse.fromMap(RunStagesTestResultsCacheMap.INSTANCE.getValue(new CompanyOrgRepoBranchJobRunDTO(company, org, repo, branch, jobId, runId))), HttpStatus.OK);
+        BranchStageViewResponse result = graphService.getRunBranchStageViewResponse(company, org, repo, branch, jobId, runId);
+        return new ResponseEntity<>(RunStagesTestResultsResponse.fromBranchStageViewResponse(result), HttpStatus.OK);
     }
 
     @GetMapping(path = "company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/latest",

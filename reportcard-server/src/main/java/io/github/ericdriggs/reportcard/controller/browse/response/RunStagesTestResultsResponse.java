@@ -1,9 +1,13 @@
 package io.github.ericdriggs.reportcard.controller.browse.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.github.ericdriggs.reportcard.cache.model.BranchStageViewResponse;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.RunPojo;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.StagePojo;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.StoragePojo;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.TestResultPojo;
+import io.github.ericdriggs.reportcard.model.StageTestResultPojo;
+import io.github.ericdriggs.reportcard.cache.model.JobRun;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -134,6 +138,49 @@ public class RunStagesTestResultsResponse {
                 .sha(runPojo.getSha())
                 .runDate(runPojo.getRunDate())
                 .isSuccess(runPojo.getIsSuccess())
+                .stages(stages)
+                .build();
+    }
+
+    public static RunStagesTestResultsResponse fromBranchStageViewResponse(BranchStageViewResponse response) {
+        if (response == null || response.getJobRun_StageTestResult_StoragesMap() == null
+                || response.getJobRun_StageTestResult_StoragesMap().isEmpty()) {
+            return RunStagesTestResultsResponse.builder()
+                    .stages(new ArrayList<>())
+                    .build();
+        }
+
+        Map.Entry<JobRun, Map<StageTestResultPojo, Set<StoragePojo>>> entry =
+                response.getJobRun_StageTestResult_StoragesMap().entrySet().iterator().next();
+
+        JobRun jobRun = entry.getKey();
+        RunPojo runPojo = jobRun.getRun();
+        Map<StageTestResultPojo, Set<StoragePojo>> stageMap = entry.getValue();
+
+        List<StageTestResultsEntry> stages = new ArrayList<>();
+        if (stageMap != null) {
+            for (Map.Entry<StageTestResultPojo, Set<StoragePojo>> stageEntry : stageMap.entrySet()) {
+                StageTestResultPojo stageTestResult = stageEntry.getKey();
+                StagePojo stagePojo = stageTestResult.getStage();
+                TestResultPojo testResultPojo = stageTestResult.getTestResultPojo();
+
+                List<TestResultEntry> testResults = new ArrayList<>();
+                if (testResultPojo != null) {
+                    testResults.add(TestResultEntry.fromPojo(testResultPojo));
+                }
+
+                stages.add(StageTestResultsEntry.fromPojo(stagePojo, testResults));
+            }
+        }
+
+        return RunStagesTestResultsResponse.builder()
+                .runId(runPojo != null ? runPojo.getRunId() : null)
+                .runReference(runPojo != null ? runPojo.getRunReference() : null)
+                .jobFk(runPojo != null ? runPojo.getJobFk() : null)
+                .jobRunCount(runPojo != null ? runPojo.getJobRunCount() : null)
+                .sha(runPojo != null ? runPojo.getSha() : null)
+                .runDate(runPojo != null ? runPojo.getRunDate() : null)
+                .isSuccess(runPojo != null ? runPojo.getIsSuccess() : null)
                 .stages(stages)
                 .build();
     }
