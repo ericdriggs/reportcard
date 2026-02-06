@@ -25,34 +25,12 @@ import java.util.Set;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CompanyOrgsReposResponse {
 
-    private CompanyEntry company;
+    private Integer companyId;
+    private String companyName;
     private List<OrgReposEntry> orgs;
 
     /**
-     * Company fields copied from CompanyPojo.
-     */
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    public static class CompanyEntry {
-        private Integer companyId;
-        private String companyName;
-
-        public static CompanyEntry fromPojo(CompanyPojo pojo) {
-            if (pojo == null) {
-                return null;
-            }
-            return CompanyEntry.builder()
-                    .companyId(pojo.getCompanyId())
-                    .companyName(pojo.getCompanyName())
-                    .build();
-        }
-    }
-
-    /**
-     * Entry containing an organization and its repositories.
+     * Entry containing org fields and its repositories.
      */
     @Data
     @Builder
@@ -60,31 +38,20 @@ public class CompanyOrgsReposResponse {
     @AllArgsConstructor
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class OrgReposEntry {
-        private OrgEntry org;
-        private List<RepoEntry> repos;
-    }
-
-    /**
-     * Organization fields copied from OrgPojo.
-     */
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    public static class OrgEntry {
         private Integer orgId;
         private String orgName;
         private Integer companyFk;
+        private List<RepoEntry> repos;
 
-        public static OrgEntry fromPojo(OrgPojo pojo) {
+        public static OrgReposEntry fromPojo(OrgPojo pojo, List<RepoEntry> repos) {
             if (pojo == null) {
                 return null;
             }
-            return OrgEntry.builder()
+            return OrgReposEntry.builder()
                     .orgId(pojo.getOrgId())
                     .orgName(pojo.getOrgName())
                     .companyFk(pojo.getCompanyFk())
+                    .repos(repos)
                     .build();
         }
     }
@@ -146,16 +113,13 @@ public class CompanyOrgsReposResponse {
                     }
                 }
 
-                OrgReposEntry orgReposEntry = OrgReposEntry.builder()
-                        .org(OrgEntry.fromPojo(orgPojo))
-                        .repos(repos)
-                        .build();
-                orgs.add(orgReposEntry);
+                orgs.add(OrgReposEntry.fromPojo(orgPojo, repos));
             }
         }
 
         return CompanyOrgsReposResponse.builder()
-                .company(CompanyEntry.fromPojo(companyPojo))
+                .companyId(companyPojo.getCompanyId())
+                .companyName(companyPojo.getCompanyName())
                 .orgs(orgs)
                 .build();
     }

@@ -27,7 +27,7 @@ public class CompanyOrgsResponse {
     private List<CompanyEntry> companies;
 
     /**
-     * Entry containing a company and its organizations.
+     * Entry containing company fields and its organizations.
      */
     @Data
     @Builder
@@ -35,29 +35,18 @@ public class CompanyOrgsResponse {
     @AllArgsConstructor
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class CompanyEntry {
-        private Company company;
-        private List<OrgEntry> orgs;
-    }
-
-    /**
-     * Company fields copied from CompanyPojo.
-     */
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    public static class Company {
         private Integer companyId;
         private String companyName;
+        private List<OrgEntry> orgs;
 
-        public static Company fromPojo(CompanyPojo pojo) {
+        public static CompanyEntry fromPojo(CompanyPojo pojo, List<OrgEntry> orgs) {
             if (pojo == null) {
                 return null;
             }
-            return Company.builder()
+            return CompanyEntry.builder()
                     .companyId(pojo.getCompanyId())
                     .companyName(pojo.getCompanyName())
+                    .orgs(orgs)
                     .build();
         }
     }
@@ -110,11 +99,7 @@ public class CompanyOrgsResponse {
                 }
             }
 
-            CompanyEntry companyEntry = CompanyEntry.builder()
-                    .company(Company.fromPojo(companyPojo))
-                    .orgs(orgs)
-                    .build();
-            companies.add(companyEntry);
+            companies.add(CompanyEntry.fromPojo(companyPojo, orgs));
         }
 
         return CompanyOrgsResponse.builder()

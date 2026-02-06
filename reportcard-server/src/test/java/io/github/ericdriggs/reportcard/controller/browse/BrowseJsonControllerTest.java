@@ -57,11 +57,11 @@ public class BrowseJsonControllerTest extends AbstractBrowseServiceTest {
         // Verify test data appears in response
         boolean companyWasFound = false;
         for (CompanyOrgsResponse.CompanyEntry entry : companyOrgsResponse.getCompanies()) {
-            assertNotNull(entry.getCompany());
+            assertNotNull(entry.getCompanyName());
             assertNotNull(entry.getOrgs());
             assertFalse(entry.getOrgs().isEmpty());
 
-            if (entry.getCompany().getCompanyName().equalsIgnoreCase(TestData.company)) {
+            if (entry.getCompanyName().equalsIgnoreCase(TestData.company)) {
                 companyWasFound = true;
                 // Verify expected org exists
                 boolean orgFound = false;
@@ -90,22 +90,22 @@ public class BrowseJsonControllerTest extends AbstractBrowseServiceTest {
         // Verify response body
         CompanyOrgsReposResponse companyOrgsReposResponse = response.getBody();
         assertNotNull(companyOrgsReposResponse);
-        assertNotNull(companyOrgsReposResponse.getCompany());
+        assertNotNull(companyOrgsReposResponse.getCompanyName());
         assertNotNull(companyOrgsReposResponse.getOrgs());
         assertFalse(companyOrgsReposResponse.getOrgs().isEmpty());
 
         // Verify company matches test data
-        assertTrue(companyOrgsReposResponse.getCompany().getCompanyName().equalsIgnoreCase(TestData.company),
+        assertTrue(companyOrgsReposResponse.getCompanyName().equalsIgnoreCase(TestData.company),
             "Expected company '" + TestData.company + "' in response");
 
         // Verify test data appears in response
         boolean testDataFound = false;
         for (CompanyOrgsReposResponse.OrgReposEntry orgEntry : companyOrgsReposResponse.getOrgs()) {
-            assertNotNull(orgEntry.getOrg());
+            assertNotNull(orgEntry.getOrgName());
             assertNotNull(orgEntry.getRepos());
             assertFalse(orgEntry.getRepos().isEmpty());
 
-            if (orgEntry.getOrg().getOrgName().equals(TestData.org)) {
+            if (orgEntry.getOrgName().equals(TestData.org)) {
                 // Verify expected repo exists
                 for (CompanyOrgsReposResponse.RepoEntry repo : orgEntry.getRepos()) {
                     if (repo.getRepoName().equals(TestData.repo)) {
@@ -132,22 +132,22 @@ public class BrowseJsonControllerTest extends AbstractBrowseServiceTest {
         // Verify response body
         OrgReposBranchesResponse orgReposBranchesResponse = response.getBody();
         assertNotNull(orgReposBranchesResponse);
-        assertNotNull(orgReposBranchesResponse.getOrg());
+        assertNotNull(orgReposBranchesResponse.getOrgName());
         assertNotNull(orgReposBranchesResponse.getRepos());
         assertFalse(orgReposBranchesResponse.getRepos().isEmpty());
 
         // Verify org matches test data
-        assertEquals(TestData.org, orgReposBranchesResponse.getOrg().getOrgName(),
+        assertEquals(TestData.org, orgReposBranchesResponse.getOrgName(),
             "Expected org '" + TestData.org + "' in response");
 
         // Verify test data appears in response
         boolean testDataFound = false;
         for (OrgReposBranchesResponse.RepoBranchesEntry repoEntry : orgReposBranchesResponse.getRepos()) {
-            assertNotNull(repoEntry.getRepo());
+            assertNotNull(repoEntry.getRepoName());
             assertNotNull(repoEntry.getBranches());
             assertFalse(repoEntry.getBranches().isEmpty());
 
-            if (repoEntry.getRepo().getRepoName().equals(TestData.repo)) {
+            if (repoEntry.getRepoName().equals(TestData.repo)) {
                 // Verify expected branch exists
                 for (OrgReposBranchesResponse.BranchEntry branch : repoEntry.getBranches()) {
                     if (branch.getBranchName().equals(TestData.branch)) {

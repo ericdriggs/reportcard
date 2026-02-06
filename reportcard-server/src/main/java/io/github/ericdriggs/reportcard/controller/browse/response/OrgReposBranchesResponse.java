@@ -26,36 +26,13 @@ import java.util.Set;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class OrgReposBranchesResponse {
 
-    private OrgEntry org;
+    private Integer orgId;
+    private String orgName;
+    private Integer companyFk;
     private List<RepoBranchesEntry> repos;
 
     /**
-     * Organization fields copied from OrgPojo.
-     */
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    public static class OrgEntry {
-        private Integer orgId;
-        private String orgName;
-        private Integer companyFk;
-
-        public static OrgEntry fromPojo(OrgPojo pojo) {
-            if (pojo == null) {
-                return null;
-            }
-            return OrgEntry.builder()
-                    .orgId(pojo.getOrgId())
-                    .orgName(pojo.getOrgName())
-                    .companyFk(pojo.getCompanyFk())
-                    .build();
-        }
-    }
-
-    /**
-     * Entry containing a repository and its branches.
+     * Entry containing repo fields and its branches.
      */
     @Data
     @Builder
@@ -63,31 +40,20 @@ public class OrgReposBranchesResponse {
     @AllArgsConstructor
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class RepoBranchesEntry {
-        private RepoEntry repo;
-        private List<BranchEntry> branches;
-    }
-
-    /**
-     * Repository fields copied from RepoPojo.
-     */
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    public static class RepoEntry {
         private Integer repoId;
         private String repoName;
         private Integer orgFk;
+        private List<BranchEntry> branches;
 
-        public static RepoEntry fromPojo(RepoPojo pojo) {
+        public static RepoBranchesEntry fromPojo(RepoPojo pojo, List<BranchEntry> branches) {
             if (pojo == null) {
                 return null;
             }
-            return RepoEntry.builder()
+            return RepoBranchesEntry.builder()
                     .repoId(pojo.getRepoId())
                     .repoName(pojo.getRepoName())
                     .orgFk(pojo.getOrgFk())
+                    .branches(branches)
                     .build();
         }
     }
@@ -151,16 +117,14 @@ public class OrgReposBranchesResponse {
                     }
                 }
 
-                RepoBranchesEntry repoBranchesEntry = RepoBranchesEntry.builder()
-                        .repo(RepoEntry.fromPojo(repoPojo))
-                        .branches(branches)
-                        .build();
-                repos.add(repoBranchesEntry);
+                repos.add(RepoBranchesEntry.fromPojo(repoPojo, branches));
             }
         }
 
         return OrgReposBranchesResponse.builder()
-                .org(OrgEntry.fromPojo(orgPojo))
+                .orgId(orgPojo.getOrgId())
+                .orgName(orgPojo.getOrgName())
+                .companyFk(orgPojo.getCompanyFk())
                 .repos(repos)
                 .build();
     }
