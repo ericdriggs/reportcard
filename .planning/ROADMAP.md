@@ -18,7 +18,7 @@ Transform internal Map structures into clean JSON responses. The current BrowseJ
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 5: Foundation DTOs** - Establish DTO pattern and convert first 3 endpoints
-- [ ] **Phase 6: Complete DTOs** - Convert remaining 4 endpoints using established pattern
+- [x] **Phase 6: Complete DTOs** - Convert remaining 4 endpoints using established pattern
 - [ ] **Phase 7: Validation** - Test JSON quality and ensure backward compatibility
 
 ## Phase Details
@@ -79,7 +79,7 @@ Phases execute in numeric order: 5 -> 6 -> 7
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 5. Foundation DTOs | 0.1.24 | 2/2 | Complete | 2026-02-06 |
-| 6. Complete DTOs | 0.1.24 | 0/3 | Not started | - |
+| 6. Complete DTOs | 0.1.24 | 1/1 | Complete | 2026-02-06 |
 | 7. Validation | 0.1.24 | 0/2 | Not started | - |
 
 ---
