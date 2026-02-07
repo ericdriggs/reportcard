@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Slf4j
 public class JobRunsStagesResponse {
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
@@ -43,6 +45,8 @@ public class JobRunsStagesResponse {
         try {
             return MAPPER.readTree(jobInfoStr);
         } catch (JsonProcessingException e) {
+            log.warn("Failed to parse jobInfo as JSON, returning as text. jobInfo='{}', error='{}'",
+                    jobInfoStr, e.getMessage());
             return MAPPER.getNodeFactory().textNode(jobInfoStr);
         }
     }

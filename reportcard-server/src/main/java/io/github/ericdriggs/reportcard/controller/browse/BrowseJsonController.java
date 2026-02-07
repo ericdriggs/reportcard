@@ -114,7 +114,7 @@ public class BrowseJsonController {
         return getStagesByIds(company, org, repo, branch, jobId, latestRunId);
     }
 
-    @GetMapping(path = "company/{company}/{org}/repo/{repo}/branch/{branch}/sha/{sha}/run", produces = "application/json")
+    @GetMapping(path = "company/{company}/org/{org}/repo/{repo}/branch/{branch}/sha/{sha}/run", produces = "application/json")
     public ResponseEntity<BranchJobsRunsResponse> getRuns(
             @PathVariable String company,
             @PathVariable String org,
@@ -126,7 +126,7 @@ public class BrowseJsonController {
         return new ResponseEntity<>(BranchJobsRunsResponse.fromMap(browseService.getBranchJobsRunsForSha(company, org, repo, branch, sha)), HttpStatus.OK);
     }
 
-    @GetMapping(path = "company/{company}/{org}/repo/{repo}/branch/{branch}/sha/{sha}/run/{runReference}", produces = "application/json")
+    @GetMapping(path = "company/{company}/org/{org}/repo/{repo}/branch/{branch}/sha/{sha}/run/{runReference}", produces = "application/json")
     public ResponseEntity<RunPojo> getRunForReference(
             @PathVariable String company,
             @PathVariable String org,

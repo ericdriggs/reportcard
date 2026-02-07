@@ -500,7 +500,7 @@ public class BrowseService extends AbstractPersistService {
                 try {
                     testResult = record.into(TestResultPojo.class);
                 } catch (Exception ex) {
-                    //NO-OP. allowed to be null. Would prefer more elegant handling of null
+                    log.debug("TestResultPojo conversion returned null (expected for runs without test results): {}", ex.getMessage());
                 }
                 StageTestResultPojo stageTestResult = StageTestResultPojo.builder().stage(stage).testResultPojo(testResult).build();
                 stageTestResult_StorageMap.putIfAbsent(stageTestResult, new TreeSet<>(PojoComparators.STORAGE_CASE_INSENSITIVE_ORDER));
@@ -512,7 +512,7 @@ public class BrowseService extends AbstractPersistService {
                         stageTestResult_StorageMap.get(stageTestResult).add(storage);
                     }
                 } catch (Exception ex) {
-                    //NO-OP. allowed to be null. Would prefer more elegant handling of null
+                    log.debug("StoragePojo conversion returned null (expected for stages without storage): {}", ex.getMessage());
                 }
             }
         }

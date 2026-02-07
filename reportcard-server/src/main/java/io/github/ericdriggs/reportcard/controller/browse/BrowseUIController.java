@@ -98,10 +98,10 @@ public class BrowseUIController {
         BranchStageViewResponse branchStageViewResponse  = browseService.getStageViewForJobInfo(company, org, repo, branch, jobInfoMap);
         final Set<Long> jobIds = branchStageViewResponse.getJobIds();
         if (jobIds.isEmpty()) {
-            throw new IllegalArgumentException("no job found matching: " + jobInfo);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "no job found matching: " + jobInfo);
         }
         if (jobIds.size() > 1) {
-            throw new IllegalArgumentException("multiple jobIds: " + jobIds + "  found matching: " + jobInfo);
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "multiple jobIds: " + jobIds + " found matching: " + jobInfo);
         }
         final Long jobId = jobIds.iterator().next();
         BranchJobLatestRunMap branchJobLatestRunMap = graphService.getBranchJobLatestRunMap(company, org, repo, branch, jobId);
