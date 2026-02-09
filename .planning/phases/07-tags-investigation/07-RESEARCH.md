@@ -2,15 +2,69 @@
 
 **Researched:** 2026-02-09
 **Domain:** MySQL 8.0 JSON indexing for tag-based search
-**Confidence:** HIGH
+**Confidence:** INCOMPLETE — requires EXPLAIN verification
 
 ## Summary
 
-MySQL 8.0 provides four indexing strategies for JSON columns: functional indexes, generated columns, multi-value indexes (8.0.17+), and junction tables (normalized). For the tag search use cases defined (OR list on keys, OR/AND on key=value pairs), **multi-value indexes on JSON arrays are the optimal choice** for direct tag queries, with generated columns providing backup for complex filtering.
+MySQL 8.0 provides four indexing strategies for JSON columns: functional indexes, generated columns, multi-value indexes (8.0.17+), and junction tables (normalized). Documentation suggests multi-value indexes may be suitable for tag queries, but **no indexing recommendation can be made without actual EXPLAIN output** verifying index usage for the three query patterns.
 
 Karate JSON reports include tags at both feature and scenario levels with structure `{"name": "@tagname", "line": N}`. Tags can be simple (`@smoke`) or key-value pairs (`@env=staging`). The test_result table's `test_suites_json` column can store these tags with proper JSON path extraction.
 
-**Primary recommendation:** Use multi-value indexes on JSON tag arrays for the three core query patterns. Benchmark at 10K-100K scale to validate performance vs. junction table normalization. For expression parsing (`smoke AND (env=staging OR env=prod)`), use ANTLR4 or hand-rolled recursive descent parser.
+**Status:** Indexing strategy is UNVERIFIED. The benchmark task below must be completed before any recommendation.
+
+## REQUIRED: Benchmark with EXPLAIN Output
+
+**Why this is required:** Without actual `EXPLAIN FORMAT=JSON` output, we cannot know:
+- Whether MySQL uses the multi-value index or falls back to table scan
+- How the optimizer handles multiple `MEMBER OF` conditions (OR vs AND)
+- Whether index intersection works or if it scans after first condition
+- Actual cost at 10K-100K rows with realistic tag distribution
+
+**Benchmark must verify these three query patterns:**
+
+### Query Pattern 1: OR list on tag keys
+```sql
+EXPLAIN FORMAT=JSON
+SELECT * FROM test_suite
+WHERE 'smoke' MEMBER OF(JSON_EXTRACT(tags, '$[*].name'))
+   OR 'regression' MEMBER OF(JSON_EXTRACT(tags, '$[*].name'))
+   OR 'critical' MEMBER OF(JSON_EXTRACT(tags, '$[*].name'));
+```
+**What to look for:** Does each MEMBER OF use index lookup, or only the first?
+
+### Query Pattern 2: OR list on key=value pairs
+```sql
+EXPLAIN FORMAT=JSON
+SELECT * FROM test_suite
+WHERE 'env=staging' MEMBER OF(JSON_EXTRACT(tags, '$[*].name'))
+   OR 'env=prod' MEMBER OF(JSON_EXTRACT(tags, '$[*].name'));
+```
+**What to look for:** Same key with different values — index behavior?
+
+### Query Pattern 3: AND list on key=value pairs
+```sql
+EXPLAIN FORMAT=JSON
+SELECT * FROM test_suite
+WHERE 'env=staging' MEMBER OF(JSON_EXTRACT(tags, '$[*].name'))
+  AND 'browser=chrome' MEMBER OF(JSON_EXTRACT(tags, '$[*].name'));
+```
+**What to look for:** Does AND use index intersection or scan after first match?
+
+### Benchmark Execution Plan
+
+1. **Create test table** in Testcontainers MySQL 8.0.33
+2. **Add multi-value index** with correct collation
+3. **Load 10K rows** with realistic tag distribution (5-15 tags per row)
+4. **Run EXPLAIN FORMAT=JSON** for each query pattern
+5. **Document actual query plans** — index usage, rows examined, cost
+6. **Compare to junction table** — same queries with normalized schema
+
+**Acceptance criteria for multi-value index recommendation:**
+- All three query patterns show index usage (not table scan)
+- Rows examined < 10% of total rows for selective queries
+- Cost acceptable compared to junction table alternative
+
+**If benchmark fails:** Junction table (normalized) becomes the recommendation.
 
 ## Standard Stack
 
@@ -562,6 +616,7 @@ Things that couldn't be fully resolved:
 - Standard stack: HIGH - MySQL 8.0.33 confirmed, JOOQ/Jackson already in use, versions verified in gradle.properties
 - Architecture: HIGH - All patterns from official MySQL docs with syntax verified, JOOQ integration standard
 - Pitfalls: MEDIUM - Multi-value index limits documented, collation issues verified, tag hierarchy and expression precedence are logical concerns based on standard patterns but not project-specific tested
+- **Indexing recommendation: UNVERIFIED** - No EXPLAIN output captured. Benchmark required before any indexing decision.
 
 **Research date:** 2026-02-09
-**Valid until:** 2026-03-09 (30 days — MySQL JSON indexing is stable, unlikely to change)
+**Valid until:** Indexing section invalid until benchmark completed
