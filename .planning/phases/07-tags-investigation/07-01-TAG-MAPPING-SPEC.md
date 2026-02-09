@@ -61,24 +61,51 @@ Tags are **case-sensitive** (MEMBER OF uses binary comparison). Lowercase is enf
 ### 4. Deduplication
 All tags (from features and scenarios) are collected into a single deduplicated set per test_result.
 
-## Target: test_result.tags Column
+## Target Model: Three Levels
 
-### Schema Change
+Tags are stored at three levels:
+
+### 1. test_result.tags (for indexing/querying)
 ```sql
 ALTER TABLE test_result ADD COLUMN tags JSON;
 ```
-
-### Stored Format
-Union of all feature and scenario tags, deduplicated, @ stripped:
+Flattened union of all feature + scenario tags, deduplicated:
 ```json
 ["smoke", "regression", "env=staging", "browser=chrome"]
 ```
 
-### Multi-Value Index
+Multi-value index:
 ```sql
 CREATE INDEX idx_test_result_tags ON test_result (
     (CAST(tags AS CHAR(100) ARRAY))
 );
+```
+
+### 2. TestSuiteModel.tags (feature-level, in test_suites_json)
+```java
+private List<String> tags;  // Feature-level tags, @ stripped
+```
+
+### 3. TestCaseModel.tags (scenario-level, in test_suites_json)
+```java
+private List<String> tags;  // Scenario-level tags, @ stripped
+```
+
+### Resulting test_suites_json Structure
+```json
+[
+  {
+    "name": "delorean-create-dss-test.feature",
+    "tags": ["smoke", "regression"],
+    "testCases": [
+      {
+        "name": "create dss account",
+        "tags": ["smoke", "env=staging"],
+        "time": 19.3
+      }
+    ]
+  }
+]
 ```
 
 ## Query Patterns
@@ -108,63 +135,67 @@ WHERE 'env=staging' MEMBER OF(tags)
 public class KarateTagExtractor {
 
     /**
-     * Extract all tags from a Karate JSON result.
-     * Collects feature-level and scenario-level tags into one deduplicated set.
+     * Extract tags from a Karate tag array node.
+     * Strips @ prefix, deduplicates.
      */
-    public List<String> extractAllTags(JsonNode karateJson) {
-        Set<String> allTags = new LinkedHashSet<>();
-
-        for (JsonNode feature : karateJson) {
-            // Feature-level tags
-            collectTags(feature.path("tags"), allTags);
-
-            // Scenario-level tags
-            for (JsonNode scenario : feature.path("elements")) {
-                collectTags(scenario.path("tags"), allTags);
-            }
-        }
-
-        return new ArrayList<>(allTags);
-    }
-
-    private void collectTags(JsonNode tagsArray, Set<String> target) {
+    public List<String> extractTags(JsonNode tagsArray) {
         if (tagsArray == null || !tagsArray.isArray()) {
-            return;
+            return List.of();
         }
+        Set<String> tags = new LinkedHashSet<>();
         for (JsonNode tagObj : tagsArray) {
             String name = tagObj.path("name").asText("");
             if (!name.isEmpty()) {
-                // Strip @ prefix only (case handled by convention)
                 String tag = name.startsWith("@") ? name.substring(1) : name;
-                target.add(tag);
+                tags.add(tag);
             }
         }
+        return new ArrayList<>(tags);
     }
 }
 ```
 
 ### Integration Point
-When persisting a test result:
+When parsing Karate JSON, populate all three levels:
 
 ```java
-// Extract tags from Karate JSON
-List<String> tags = extractor.extractAllTags(karateJsonNode);
+Set<String> allTags = new LinkedHashSet<>();  // For test_result.tags
 
-// Store on test_result entity
-testResult.setTags(objectMapper.writeValueAsString(tags));
+for (JsonNode feature : karateJson) {
+    TestSuiteModel suite = new TestSuiteModel();
+
+    // Level 2: Feature tags
+    List<String> featureTags = extractor.extractTags(feature.path("tags"));
+    suite.setTags(featureTags);
+    allTags.addAll(featureTags);
+
+    for (JsonNode scenario : feature.path("elements")) {
+        TestCaseModel testCase = new TestCaseModel();
+
+        // Level 3: Scenario tags
+        List<String> scenarioTags = extractor.extractTags(scenario.path("tags"));
+        testCase.setTags(scenarioTags);
+        allTags.addAll(scenarioTags);
+    }
+}
+
+// Level 1: Flattened tags for indexing
+testResult.setTags(objectMapper.writeValueAsString(new ArrayList<>(allTags)));
 ```
 
 ## Summary
 
-| Source | Target | Transformation |
-|--------|--------|----------------|
-| `$[*].tags[*].name` | `test_result.tags` | Strip @ only, dedupe |
-| `$[*].elements[*].tags[*].name` | `test_result.tags` | Strip @ only, dedupe |
+| Source | Target | Purpose |
+|--------|--------|---------|
+| `$[*].tags[*].name` | `TestSuiteModel.tags` | Feature-level display |
+| `$[*].elements[*].tags[*].name` | `TestCaseModel.tags` | Scenario-level display |
+| All of the above | `test_result.tags` | Flattened for indexing |
 
 **Key decisions:**
-- Tags stored as JSON array column on `test_result` (not nested in test_suites_json)
-- All feature + scenario tags flattened into single deduplicated array
+- Tags stored at 3 levels: test_result.tags (indexed), TestSuiteModel.tags, TestCaseModel.tags
+- test_result.tags: flattened union of all tags, deduplicated, for MEMBER OF queries
+- Nested tags in test_suites_json: preserve feature/scenario attribution
 - @ prefix stripped, case preserved as-is
 - Key=value format preserved as literal string
 - Case-sensitive matching (lowercase enforced by convention, not code)
-- Multi-value index enables MEMBER OF queries
+- Multi-value index on test_result.tags enables MEMBER OF queries
