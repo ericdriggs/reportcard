@@ -67,16 +67,38 @@ SELECT * FROM test_suite WHERE 'browser=chrome' MEMBER OF(tags->'$[*]');
 
 ### Key Finding: JSON_OVERLAPS Does NOT Use Index
 
-Despite MySQL documentation suggesting JSON_OVERLAPS works with multi-value indexes, **EXPLAIN shows full table scan** even with correct CAST syntax:
+Despite MySQL documentation suggesting JSON_OVERLAPS works with multi-value indexes, **EXPLAIN shows full table scan**. This is **expected optimizer behavior**, not a bug.
+
+Per [MySQL Bug #108194](https://bugs.mysql.com/bug.php?id=108194): the optimizer determines "it is cheaper to perform a table scan than using the index" due to predicate selectivity. The index IS recognized in `possible_keys`, but the optimizer chooses not to use it.
 
 ```sql
--- ❌ Does NOT use index (tested with various syntax variations)
+-- ❌ Does NOT use index (optimizer decision, not syntax issue)
 SELECT * FROM test_suite
-WHERE JSON_OVERLAPS(tags->'$[*]', CAST('["smoke", "regression"]' AS JSON));
--- EXPLAIN: type=ALL, key=null, rows=1000
+WHERE JSON_OVERLAPS(tags, CAST('["smoke", "regression"]' AS JSON));
+-- EXPLAIN: type=ALL, possible_keys=idx_tags, key=null, rows=1000
 ```
 
-Use UNION with MEMBER OF instead.
+**MEMBER OF reliably uses the index** in the same conditions where JSON_OVERLAPS doesn't. Use UNION with MEMBER OF instead.
+
+### Key=Value Tags Work
+
+MEMBER OF treats `"env=staging"` as a simple string — the `=` has no special meaning:
+
+```sql
+-- ✅ Works: key=value is just a string element in the array
+SELECT * FROM test_suite
+WHERE 'env=staging' MEMBER OF(tags)
+  AND 'browser=chrome' MEMBER OF(tags);
+-- EXPLAIN: type=ref, key=idx_tags, rows=431
+```
+
+### Collation Notes
+
+MySQL multi-value indexes support only two collations:
+1. `binary` charset with `binary` collation
+2. `utf8mb4` charset with `utf8mb4_0900_as_cs` collation (case-sensitive)
+
+The default `utf8mb4_0900_ai_ci` (case-insensitive) works with MEMBER OF but may affect case matching. For case-insensitive tag search, normalize tags to lowercase before storage.
 
 ### Recommendation Summary
 

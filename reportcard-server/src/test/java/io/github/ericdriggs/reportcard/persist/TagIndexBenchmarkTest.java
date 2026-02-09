@@ -57,20 +57,20 @@ public class TagIndexBenchmarkTest {
         System.out.println("-".repeat(80));
         runExplainQuery("""
             SELECT * FROM tag_benchmark
-            WHERE 'smoke' MEMBER OF(tags->'$[*]')
-               OR 'regression' MEMBER OF(tags->'$[*]')
-               OR 'critical' MEMBER OF(tags->'$[*]')
+            WHERE 'smoke' MEMBER OF(tags)
+               OR 'regression' MEMBER OF(tags)
+               OR 'critical' MEMBER OF(tags)
             """);
 
         System.out.println("\n" + "-".repeat(80));
         System.out.println("QUERY PATTERN 1b: OR via UNION (each leg uses index)");
         System.out.println("-".repeat(80));
         runExplainQuery("""
-            SELECT * FROM tag_benchmark WHERE 'smoke' MEMBER OF(tags->'$[*]')
+            SELECT * FROM tag_benchmark WHERE 'smoke' MEMBER OF(tags)
             UNION
-            SELECT * FROM tag_benchmark WHERE 'regression' MEMBER OF(tags->'$[*]')
+            SELECT * FROM tag_benchmark WHERE 'regression' MEMBER OF(tags)
             UNION
-            SELECT * FROM tag_benchmark WHERE 'critical' MEMBER OF(tags->'$[*]')
+            SELECT * FROM tag_benchmark WHERE 'critical' MEMBER OF(tags)
             """);
 
         System.out.println("\n" + "-".repeat(80));
@@ -78,8 +78,8 @@ public class TagIndexBenchmarkTest {
         System.out.println("-".repeat(80));
         runExplainQuery("""
             SELECT * FROM tag_benchmark
-            WHERE 'env=staging' MEMBER OF(tags->'$[*]')
-               OR 'env=prod' MEMBER OF(tags->'$[*]')
+            WHERE 'env=staging' MEMBER OF(tags)
+               OR 'env=prod' MEMBER OF(tags)
             """);
 
         System.out.println("\n" + "-".repeat(80));
@@ -87,17 +87,17 @@ public class TagIndexBenchmarkTest {
         System.out.println("-".repeat(80));
         runExplainQuery("""
             SELECT * FROM tag_benchmark
-            WHERE 'env=staging' MEMBER OF(tags->'$[*]')
-              AND 'browser=chrome' MEMBER OF(tags->'$[*]')
+            WHERE 'env=staging' MEMBER OF(tags)
+              AND 'browser=chrome' MEMBER OF(tags)
             """);
 
         System.out.println("\n" + "-".repeat(80));
         System.out.println("QUERY PATTERN 3b: AND via INTERSECT (each leg uses index)");
         System.out.println("-".repeat(80));
         runExplainQuery("""
-            SELECT * FROM tag_benchmark WHERE 'env=staging' MEMBER OF(tags->'$[*]')
+            SELECT * FROM tag_benchmark WHERE 'env=staging' MEMBER OF(tags)
             INTERSECT
-            SELECT * FROM tag_benchmark WHERE 'browser=chrome' MEMBER OF(tags->'$[*]')
+            SELECT * FROM tag_benchmark WHERE 'browser=chrome' MEMBER OF(tags)
             """);
 
         // 5. Test JSON_OVERLAPS (documented to work better with multi-value index)
@@ -110,11 +110,27 @@ public class TagIndexBenchmarkTest {
             """);
 
         System.out.println("\n" + "-".repeat(80));
-        System.out.println("QUERY PATTERN 5: JSON_OVERLAPS with CAST (correct syntax)");
+        System.out.println("QUERY PATTERN 5a: JSON_OVERLAPS with $[*] path (matches idx_tags_path)");
         System.out.println("-".repeat(80));
         runExplainQuery("""
             SELECT * FROM tag_benchmark
-            WHERE JSON_OVERLAPS(tags->'$[*]', CAST('["smoke", "regression", "critical"]' AS JSON))
+            WHERE JSON_OVERLAPS(tags, CAST('["smoke", "regression", "critical"]' AS JSON))
+            """);
+
+        System.out.println("\n" + "-".repeat(80));
+        System.out.println("QUERY PATTERN 5b: JSON_OVERLAPS on tags directly (matches idx_tags_direct)");
+        System.out.println("-".repeat(80));
+        runExplainQuery("""
+            SELECT * FROM tag_benchmark
+            WHERE JSON_OVERLAPS(tags, CAST('["smoke", "regression", "critical"]' AS JSON))
+            """);
+
+        System.out.println("\n" + "-".repeat(80));
+        System.out.println("QUERY PATTERN 5c: MEMBER OF on tags directly");
+        System.out.println("-".repeat(80));
+        runExplainQuery("""
+            SELECT * FROM tag_benchmark
+            WHERE 'smoke' MEMBER OF(tags)
             """);
 
         System.out.println("\n" + "-".repeat(80));
@@ -122,7 +138,7 @@ public class TagIndexBenchmarkTest {
         System.out.println("-".repeat(80));
         runExplainQuery("""
             SELECT * FROM tag_benchmark
-            WHERE 'smoke' MEMBER OF(tags->'$[*]')
+            WHERE 'smoke' MEMBER OF(tags)
             """);
 
         System.out.println("\n" + "-".repeat(80));
@@ -130,7 +146,7 @@ public class TagIndexBenchmarkTest {
         System.out.println("-".repeat(80));
         runExplainQuery("""
             SELECT * FROM tag_benchmark
-            WHERE JSON_CONTAINS(tags->'$[*]', CAST('["smoke", "regression"]' AS JSON))
+            WHERE JSON_CONTAINS(tags, CAST('["smoke", "regression"]' AS JSON))
             """);
 
         // 6. Also test actual query execution times
@@ -139,19 +155,19 @@ public class TagIndexBenchmarkTest {
         System.out.println("-".repeat(80));
         runTimedQuery("OR on tag keys", """
             SELECT COUNT(*) FROM tag_benchmark
-            WHERE 'smoke' MEMBER OF(tags->'$[*]')
-               OR 'regression' MEMBER OF(tags->'$[*]')
-               OR 'critical' MEMBER OF(tags->'$[*]')
+            WHERE 'smoke' MEMBER OF(tags)
+               OR 'regression' MEMBER OF(tags)
+               OR 'critical' MEMBER OF(tags)
             """);
         runTimedQuery("OR on key=value", """
             SELECT COUNT(*) FROM tag_benchmark
-            WHERE 'env=staging' MEMBER OF(tags->'$[*]')
-               OR 'env=prod' MEMBER OF(tags->'$[*]')
+            WHERE 'env=staging' MEMBER OF(tags)
+               OR 'env=prod' MEMBER OF(tags)
             """);
         runTimedQuery("AND on key=value", """
             SELECT COUNT(*) FROM tag_benchmark
-            WHERE 'env=staging' MEMBER OF(tags->'$[*]')
-              AND 'browser=chrome' MEMBER OF(tags->'$[*]')
+            WHERE 'env=staging' MEMBER OF(tags)
+              AND 'browser=chrome' MEMBER OF(tags)
             """);
 
         // Cleanup
@@ -164,39 +180,54 @@ public class TagIndexBenchmarkTest {
 
     private void createTestTable() {
         System.out.println("Creating test table...");
+
+        // Set connection collation to match what multi-value index requires
+        dsl.execute("SET NAMES utf8mb4 COLLATE utf8mb4_0900_as_cs");
+        System.out.println("Connection collation set to utf8mb4_0900_as_cs");
+
         dsl.execute("DROP TABLE IF EXISTS tag_benchmark");
+        // Use utf8mb4_0900_as_cs collation per MySQL multi-value index requirements
         dsl.execute("""
             CREATE TABLE tag_benchmark (
                 id BIGINT AUTO_INCREMENT PRIMARY KEY,
                 name VARCHAR(255),
                 tags JSON DEFAULT NULL
-            )
+            ) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_as_cs
             """);
-        System.out.println("Test table created.");
+        System.out.println("Test table created (utf8mb4_0900_as_cs).");
     }
 
     private void createMultiValueIndex() {
         System.out.println("Creating multi-value index...");
+
+        // Simple syntax - table collation set to utf8mb4_0900_as_cs
         try {
             dsl.execute("""
                 CREATE INDEX idx_tags ON tag_benchmark (
-                    (CAST(tags->'$[*]' AS CHAR(100) ARRAY))
+                    (CAST(tags AS CHAR(100) ARRAY))
                 )
                 """);
-            System.out.println("Multi-value index created successfully.");
+            System.out.println("Index idx_tags created");
         } catch (Exception e) {
-            System.out.println("ERROR creating index: " + e.getMessage());
-            // Try with explicit collation
-            try {
-                dsl.execute("""
-                    CREATE INDEX idx_tags ON tag_benchmark (
-                        (CAST(tags->'$[*]' AS CHAR(100) COLLATE utf8mb4_0900_ai_ci ARRAY))
-                    )
-                    """);
-                System.out.println("Multi-value index created with explicit collation.");
-            } catch (Exception e2) {
-                System.out.println("ERROR creating index with collation: " + e2.getMessage());
-            }
+            System.out.println("ERROR creating idx_tags: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        // Show MySQL version and index details
+        try {
+            var result = dsl.fetch("SELECT VERSION() as ver");
+            System.out.println("MySQL version: " + result.get(0).get("ver"));
+
+            // Show index definition including collation
+            var indexInfo = dsl.fetch("SHOW CREATE TABLE tag_benchmark");
+            System.out.println("Table definition:\n" + indexInfo.get(0).get(1));
+
+            // Show default collation
+            var collation = dsl.fetch("SELECT @@collation_database as db_collation, @@collation_connection as conn_collation");
+            System.out.println("DB collation: " + collation.get(0).get("db_collation"));
+            System.out.println("Connection collation: " + collation.get(0).get("conn_collation"));
+        } catch (Exception e) {
+            System.out.println("Could not get MySQL info: " + e.getMessage());
         }
     }
 
