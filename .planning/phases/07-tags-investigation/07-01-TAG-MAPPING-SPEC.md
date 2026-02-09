@@ -48,13 +48,21 @@ Tags appear at two levels in Karate/Cucumber JSON:
 ### 1. Strip @ Prefix
 Remove leading `@` from all tags.
 
-### 2. Expand Comma-Separated Values
+### 2. Trim All Whitespace
+Remove all whitespace from tag strings:
+```
+@ smoke       → smoke
+@env = dev    → env=dev
+@smoke        → smoke  (trailing space removed)
+```
+
+### 3. Expand Comma-Separated Values
 Split on `,` only. If the first part contains `=`, propagate that prefix to bare parts:
 ```
-@env=dev,test     → ["env=dev", "env=test"]   (prefix "env=" propagates to "test")
-@env=dev, test    → ["env=dev", "env=test"]   (trim whitespace)
-@env=staging      → ["env=staging"]           (no comma, no expansion)
-@foo=bar=baz      → ["foo=bar=baz"]           (no comma, stored as-is)
+@env=dev,test     → ["env=dev", "env=test"]
+@env=dev, test    → ["env=dev", "env=test"]
+@env=staging      → ["env=staging"]
+@foo=bar=baz      → ["foo=bar=baz"]
 ```
 
 Comma without `=` is invalid:
@@ -157,18 +165,21 @@ public class KarateTagExtractor {
     }
 
     /**
-     * Strip @, split on comma, propagate prefix to bare parts.
+     * Strip @, remove all whitespace, split on comma, propagate prefix.
      */
     private List<String> expandTag(String raw) {
+        // Strip @ and remove all whitespace
         String tag = raw.startsWith("@") ? raw.substring(1) : raw;
+        tag = tag.replaceAll("\\s+", "");
+
         String[] parts = tag.split(",");
 
         if (parts.length == 1) {
-            return List.of(tag.trim());
+            return List.of(tag);
         }
 
         // Find prefix (everything up to and including first =)
-        String firstPart = parts[0].trim();
+        String firstPart = parts[0];
         int eqIndex = firstPart.indexOf('=');
         if (eqIndex < 0) {
             throw new IllegalArgumentException("Comma without =: " + raw);
@@ -177,11 +188,10 @@ public class KarateTagExtractor {
 
         List<String> expanded = new ArrayList<>();
         for (String part : parts) {
-            String trimmed = part.trim();
-            if (trimmed.contains("=")) {
-                expanded.add(trimmed);
+            if (part.contains("=")) {
+                expanded.add(part);
             } else {
-                expanded.add(prefix + trimmed);
+                expanded.add(prefix + part);
             }
         }
         return expanded;
