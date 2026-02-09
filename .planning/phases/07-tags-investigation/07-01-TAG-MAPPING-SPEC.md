@@ -56,57 +56,49 @@ Input:  "@envnot=staging"  → Output: "envnot=staging"
 Key-value tags like `@env=staging` are stored as the literal string `"env=staging"` after @ removal. The `=` has no special meaning in storage.
 
 ### 3. Case Sensitivity
-Tags are **case-sensitive** (MEMBER OF uses binary comparison). Convention: normalize to lowercase during ingestion.
-
-```
-Input:  "@Smoke"    → Output: "smoke" (normalized)
-Input:  "@ENV=Prod" → Output: "env=prod" (normalized)
-```
+Tags are **case-sensitive** (MEMBER OF uses binary comparison). Lowercase is enforced by **convention** (team agreement), not application code.
 
 ### 4. Deduplication
-If a tag appears multiple times (e.g., inherited from feature to scenario), store once per level.
+All tags (from features and scenarios) are collected into a single deduplicated set per test_result.
 
-## Target Model Mapping
+## Target: test_result.tags Column
 
-### Current Model Structure
-```
-TestResult
-  └── testSuitesJson: String (JSON array of TestSuiteModel)
-        └── TestSuiteModel (Feature)
-              ├── name, tests, error, failure, etc.
-              └── testCases: List<TestCaseModel> (Scenarios)
-                    └── TestCaseModel
-                          └── name, className, time, etc.
+### Schema Change
+```sql
+ALTER TABLE test_result ADD COLUMN tags JSON;
 ```
 
-### Proposed Model Changes
-
-**TestSuite/TestSuiteModel** - add:
-```java
-private List<String> tags;  // Feature-level tags, @ stripped, lowercase
-```
-
-**TestCase/TestCaseModel** - add:
-```java
-private List<String> tags;  // Scenario-level tags, @ stripped, lowercase
-```
-
-### Resulting JSON Structure
+### Stored Format
+Union of all feature and scenario tags, deduplicated, @ stripped:
 ```json
-[
-  {
-    "name": "delorean-create-dss-test.feature",
-    "tags": ["smoke", "regression"],
-    "tests": 5,
-    "testCases": [
-      {
-        "name": "create dss account",
-        "tags": ["smoke", "env=staging"],
-        "time": 19.3
-      }
-    ]
-  }
-]
+["smoke", "regression", "env=staging", "browser=chrome"]
+```
+
+### Multi-Value Index
+```sql
+CREATE INDEX idx_test_result_tags ON test_result (
+    (CAST(tags AS CHAR(100) ARRAY))
+);
+```
+
+## Query Patterns
+
+Simple MEMBER OF queries with index support:
+
+```sql
+-- Single tag (uses index)
+SELECT * FROM test_result
+WHERE 'smoke' MEMBER OF(tags);
+
+-- OR semantics: use UNION (each leg uses index)
+SELECT * FROM test_result WHERE 'smoke' MEMBER OF(tags)
+UNION
+SELECT * FROM test_result WHERE 'regression' MEMBER OF(tags);
+
+-- AND semantics: single WHERE (uses index)
+SELECT * FROM test_result
+WHERE 'env=staging' MEMBER OF(tags)
+  AND 'browser=chrome' MEMBER OF(tags);
 ```
 
 ## Extraction Logic
@@ -115,89 +107,64 @@ private List<String> tags;  // Scenario-level tags, @ stripped, lowercase
 ```java
 public class KarateTagExtractor {
 
-    public List<String> extractTags(JsonNode tagsArray) {
-        if (tagsArray == null || !tagsArray.isArray()) {
-            return List.of();
+    /**
+     * Extract all tags from a Karate JSON result.
+     * Collects feature-level and scenario-level tags into one deduplicated set.
+     */
+    public List<String> extractAllTags(JsonNode karateJson) {
+        Set<String> allTags = new LinkedHashSet<>();
+
+        for (JsonNode feature : karateJson) {
+            // Feature-level tags
+            collectTags(feature.path("tags"), allTags);
+
+            // Scenario-level tags
+            for (JsonNode scenario : feature.path("elements")) {
+                collectTags(scenario.path("tags"), allTags);
+            }
         }
 
-        Set<String> uniqueTags = new LinkedHashSet<>();
+        return new ArrayList<>(allTags);
+    }
+
+    private void collectTags(JsonNode tagsArray, Set<String> target) {
+        if (tagsArray == null || !tagsArray.isArray()) {
+            return;
+        }
         for (JsonNode tagObj : tagsArray) {
             String name = tagObj.path("name").asText("");
             if (!name.isEmpty()) {
-                // Strip @ prefix and normalize to lowercase
-                String normalized = name.startsWith("@")
-                    ? name.substring(1).toLowerCase(Locale.ROOT)
-                    : name.toLowerCase(Locale.ROOT);
-                uniqueTags.add(normalized);
+                // Strip @ prefix only (case handled by convention)
+                String tag = name.startsWith("@") ? name.substring(1) : name;
+                target.add(tag);
             }
         }
-        return new ArrayList<>(uniqueTags);
     }
 }
 ```
 
 ### Integration Point
-In existing Karate JSON parsing (likely in model mappers or converters):
+When persisting a test result:
 
 ```java
-// When parsing feature JSON
-TestSuiteModel suite = new TestSuiteModel();
-suite.setName(featureNode.path("name").asText());
-suite.setTags(extractTags(featureNode.path("tags")));  // NEW
+// Extract tags from Karate JSON
+List<String> tags = extractor.extractAllTags(karateJsonNode);
 
-// When parsing scenario JSON
-TestCaseModel testCase = new TestCaseModel();
-testCase.setName(scenarioNode.path("name").asText());
-testCase.setTags(extractTags(scenarioNode.path("tags")));  // NEW
+// Store on test_result entity
+testResult.setTags(objectMapper.writeValueAsString(tags));
 ```
-
-## Query Patterns
-
-Once tags are stored, queries use MEMBER OF with multi-value index:
-
-```sql
--- Find tests with "smoke" tag (feature OR scenario level)
-SELECT * FROM test_result
-WHERE 'smoke' MEMBER OF(
-    JSON_EXTRACT(test_suites_json, '$[*].tags')
-)
-UNION
-SELECT * FROM test_result
-WHERE 'smoke' MEMBER OF(
-    JSON_EXTRACT(test_suites_json, '$[*].testCases[*].tags')
-);
-```
-
-**Note:** The nested JSON path `$[*].testCases[*].tags` may require flattening for efficient indexing. Consider extracting all tags to a top-level `tags` field on `test_result` for simpler queries.
-
-## Alternative: Flattened Tags on test_result
-
-For simpler querying, consider adding a denormalized `tags` column directly on `test_result`:
-
-```sql
-ALTER TABLE test_result ADD COLUMN tags JSON;
--- Contains union of all feature and scenario tags for this result
--- ["smoke", "regression", "env=staging", "browser=chrome"]
-```
-
-This trades storage for query simplicity:
-```sql
--- Simple query without nested JSON paths
-SELECT * FROM test_result
-WHERE 'smoke' MEMBER OF(tags);
-```
-
-**Tradeoff:** Loses distinction between feature-level and scenario-level tags, but simplifies most common queries.
 
 ## Summary
 
 | Source | Target | Transformation |
 |--------|--------|----------------|
-| `$[*].tags[*].name` | `TestSuiteModel.tags` | Strip @, lowercase |
-| `$[*].elements[*].tags[*].name` | `TestCaseModel.tags` | Strip @, lowercase |
+| `$[*].tags[*].name` | `test_result.tags` | Strip @ only, dedupe |
+| `$[*].elements[*].tags[*].name` | `test_result.tags` | Strip @ only, dedupe |
 
 **Key decisions:**
-- Tags stored as `List<String>` in model, serialized to JSON array
-- @ prefix stripped, normalized to lowercase
+- Tags stored as JSON array column on `test_result` (not nested in test_suites_json)
+- All feature + scenario tags flattened into single deduplicated array
+- @ prefix stripped, case preserved as-is
 - Key=value format preserved as literal string
-- Case-sensitive matching (convention enforces lowercase)
+- Case-sensitive matching (lowercase enforced by convention, not code)
+- Multi-value index enables MEMBER OF queries
