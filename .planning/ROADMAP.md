@@ -190,10 +190,12 @@ Plans:
   4. API design proposal for tag-based queries
   5. Decision on whether to split into multiple implementation phases
 
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] TBD (run /gsd:plan-phase 7 to break down)
+- [ ] 07-01-PLAN.md — Document Model Mapper patterns for Karate JSON tag extraction
+- [ ] 07-02-PLAN.md — Synthesize indexing research into actionable recommendation
+- [ ] 07-03-PLAN.md — Design tag search API and define future implementation phases
 
 ## Progress
 
@@ -209,4 +211,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 4.1 → 5 → 6 → 7
 | 4.1 Migrate Timing | 1/1 | ✓ Complete | 2026-01-27 |
 | 5. Dashboard Display | 3/3 | ✓ Complete | 2026-02-03 |
 | 6. reportcard-client-java | 1/1 | ✓ Complete | 2026-02-09 |
-| 7. Tags Investigation | 0/? | Not started | - |
+| 7. Tags Investigation | 0/3 | Not started | - |
