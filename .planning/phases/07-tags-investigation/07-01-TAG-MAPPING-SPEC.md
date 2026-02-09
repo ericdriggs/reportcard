@@ -93,7 +93,7 @@ Flattened union of all feature + scenario tags, deduplicated:
 Multi-value index:
 ```sql
 CREATE INDEX idx_test_result_tags ON test_result (
-    (CAST(tags AS CHAR(100) ARRAY))
+    (CAST(tags AS VARCHAR(100) ARRAY))
 );
 ```
 
