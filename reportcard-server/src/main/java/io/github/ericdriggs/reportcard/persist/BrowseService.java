@@ -23,6 +23,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentSkipListMap;
 
 import static io.github.ericdriggs.reportcard.gen.db.Tables.*;
+import static org.jooq.impl.DSL.max;
 
 /**
  * Main db service class.
@@ -499,7 +500,7 @@ public class BrowseService extends AbstractPersistService {
                 try {
                     testResult = record.into(TestResultPojo.class);
                 } catch (Exception ex) {
-                    //NO-OP. allowed to be null. Would prefer more elegant handling of null
+                    log.debug("TestResultPojo conversion returned null (expected for runs without test results): {}", ex.getMessage());
                 }
                 StageTestResultPojo stageTestResult = StageTestResultPojo.builder().stage(stage).testResultPojo(testResult).build();
                 stageTestResult_StorageMap.putIfAbsent(stageTestResult, new TreeSet<>(PojoComparators.STORAGE_CASE_INSENSITIVE_ORDER));
@@ -511,7 +512,7 @@ public class BrowseService extends AbstractPersistService {
                         stageTestResult_StorageMap.get(stageTestResult).add(storage);
                     }
                 } catch (Exception ex) {
-                    //NO-OP. allowed to be null. Would prefer more elegant handling of null
+                    log.debug("StoragePojo conversion returned null (expected for stages without storage): {}", ex.getMessage());
                 }
             }
         }
@@ -576,6 +577,24 @@ public class BrowseService extends AbstractPersistService {
             throwNotFound("company: " + companyName + ", org: " + orgName, "repo: " + repoName, "branch: " + branchName, "jobId: " + Long.toString(jobId), "runId: " + Long.toString(runId));
         }
         return ret;
+    }
+
+    /**
+     * Get the latest (highest) run_id for a given job.
+     * @param jobId the job ID
+     * @return the latest run ID
+     * @throws ResponseStatusException 404 if job has no runs
+     */
+    public Long getLatestRunId(Long jobId) {
+        Long result = dsl.select(max(RUN.RUN_ID))
+                .from(RUN)
+                .where(RUN.JOB_FK.eq(jobId))
+                .fetchOne(0, Long.class);
+
+        if (result == null) {
+            throwNotFound("jobId: " + jobId, "no runs found");
+        }
+        return result;
     }
 
     public Map<BranchPojo, Map<JobPojo, Set<RunPojo>>> getBranchJobsRunsForSha(String companyName, String orgName, String repoName, String branchName, String sha) {

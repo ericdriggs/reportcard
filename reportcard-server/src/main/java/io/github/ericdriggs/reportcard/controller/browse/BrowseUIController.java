@@ -98,10 +98,10 @@ public class BrowseUIController {
         BranchStageViewResponse branchStageViewResponse  = browseService.getStageViewForJobInfo(company, org, repo, branch, jobInfoMap);
         final Set<Long> jobIds = branchStageViewResponse.getJobIds();
         if (jobIds.isEmpty()) {
-            throw new IllegalArgumentException("no job found matching: " + jobInfo);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "no job found matching: " + jobInfo);
         }
         if (jobIds.size() > 1) {
-            throw new IllegalArgumentException("multiple jobIds: " + jobIds + "  found matching: " + jobInfo);
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "multiple jobIds: " + jobIds + " found matching: " + jobInfo);
         }
         final Long jobId = jobIds.iterator().next();
         BranchJobLatestRunMap branchJobLatestRunMap = graphService.getBranchJobLatestRunMap(company, org, repo, branch, jobId);
@@ -144,6 +144,17 @@ public class BrowseUIController {
     }
 
 
+    @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/latest"}, produces = "text/html;charset=UTF-8")
+    public ResponseEntity<String> getLatestRunStages(
+            @PathVariable String company,
+            @PathVariable String org,
+            @PathVariable String repo,
+            @PathVariable String branch,
+            @PathVariable Long jobId) {
+        Long latestRunId = browseService.getLatestRunId(jobId);
+        return getStageTestResults(company, org, repo, branch, jobId, latestRunId);
+    }
+
     @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/{runId}/stage/{stage}"}, produces = "text/html;charset=UTF-8")
     public ResponseEntity<String> getTestResult(
             @PathVariable String company,
@@ -155,6 +166,18 @@ public class BrowseUIController {
             @PathVariable String stage) {
         StageTestResultModel stageTestResultModel = browseService.getStageTestResultMap(company, org, repo, branch , jobId, runId, stage);
         return new ResponseEntity<>(TestResultHtmlHelper.getTestResult(stageTestResultModel.getTestResult()), HttpStatus.OK);
+    }
+
+    @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/latest/stage/{stage}"}, produces = "text/html;charset=UTF-8")
+    public ResponseEntity<String> getLatestRunStageTestResult(
+            @PathVariable String company,
+            @PathVariable String org,
+            @PathVariable String repo,
+            @PathVariable String branch,
+            @PathVariable Long jobId,
+            @PathVariable String stage) {
+        Long latestRunId = browseService.getLatestRunId(jobId);
+        return getTestResult(company, org, repo, branch, jobId, latestRunId, stage);
     }
 
     @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}/branch/{branch}/jobinfo/{jobInfo}/runcount/{runCount}/stage/{stage}"}, produces = "text/html;charset=UTF-8")
