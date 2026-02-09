@@ -18,7 +18,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 4: Client Library** - Java client support for Karate JSON uploads ✓
 - [x] **Phase 4.1: Migrate Timing to Test Result** - Move timing columns from run to test_result table (INSERTED) ✓
 - [x] **Phase 5: Dashboard Display** - UI presentation of job duration vs test execution time ✓
-- [ ] **Phase 6: reportcard-client-java Support** - Karate JSON upload support in sibling repository
+- [x] **Phase 6: reportcard-client-java Support** - Karate JSON upload support in sibling repository ✓
 - [ ] **Phase 7: Tags Investigation** - Research extracting scenario tags from Karate JSON for test_result storage and searchability
 
 ## Phase Details
@@ -159,7 +159,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 06-01-PLAN.md — Add optional karateFolderPath to JunitHtmlPostRequest, JSON file filter, WireMock mock tests
+- [x] 06-01-PLAN.md — Add optional karateFolderPath to JunitHtmlPostRequest, JSON file filter, WireMock mock tests ✓
 
 ### Phase 7: Tags Investigation
 **Goal**: Research extracting scenario tags from Karate JSON into test_result JSON structure, and indexing strategy for tag-based search
@@ -208,5 +208,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 4.1 → 5 → 6 → 7
 | 4. Client Library | 1/1 | ✓ Complete | 2026-01-27 |
 | 4.1 Migrate Timing | 1/1 | ✓ Complete | 2026-01-27 |
 | 5. Dashboard Display | 3/3 | ✓ Complete | 2026-02-03 |
-| 6. reportcard-client-java | 0/1 | Ready | - |
+| 6. reportcard-client-java | 1/1 | ✓ Complete | 2026-02-09 |
 | 7. Tags Investigation | 0/? | Not started | - |
