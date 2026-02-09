@@ -147,17 +147,19 @@ Plans:
 
 **Depends on**: Phase 3 (needs server API endpoint)
 
-**Requirements**: TBD (mirror Phase 4 requirements for separate codebase)
+**Requirements**: Add optional Karate JSON upload to external reportcard-client-java library
 
 **Success Criteria** (what must be TRUE):
   1. reportcard-client-java upload supports optional Karate JSON parameter
   2. Client constructs multipart request with both JUnit and Karate tar.gz files
   3. Client works with server whether Karate parameter is sent or not
+  4. WireMock tests verify multipart structure without real server
+  5. Backwards compatible with existing client usage
 
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] TBD (run /gsd:plan-phase 6 to break down)
+- [ ] 06-01-PLAN.md — Add optional karateFolderPath to JunitHtmlPostRequest, JSON file filter, WireMock mock tests
 
 ### Phase 7: Tags Investigation
 **Goal**: Research extracting scenario tags from Karate JSON into test_result JSON structure, and indexing strategy for tag-based search
@@ -206,5 +208,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 4.1 → 5 → 6 → 7
 | 4. Client Library | 1/1 | ✓ Complete | 2026-01-27 |
 | 4.1 Migrate Timing | 1/1 | ✓ Complete | 2026-01-27 |
 | 5. Dashboard Display | 3/3 | ✓ Complete | 2026-02-03 |
-| 6. reportcard-client-java | 0/? | Not started | - |
+| 6. reportcard-client-java | 0/1 | Ready | - |
 | 7. Tags Investigation | 0/? | Not started | - |
