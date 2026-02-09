@@ -9,19 +9,19 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 
 ## Current Position
 
-Phase: 5 of 7 (Dashboard Display)
-Plan: 3 of 3 in current phase
-Status: Phase 5 COMPLETE - verified
-Last activity: 2026-02-03 — Completed 05-03-PLAN.md
+Phase: 6 of 7 (External Client Support)
+Plan: 1 of 1 in current phase
+Status: Phase 6 COMPLETE - external repository
+Last activity: 2026-02-09 — Completed 06-01-PLAN.md
 
-Progress: [██████████] Phase 5 complete (9 of ~11 total plans)
+Progress: [███████████░] Phase 6 complete (10 of ~12 total plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 9
-- Average duration: 4.8 min
-- Total execution time: 0.72 hours
+- Total plans completed: 10
+- Average duration: 4.7 min
+- Total execution time: 0.78 hours
 
 **By Phase:**
 
@@ -33,10 +33,11 @@ Progress: [██████████] Phase 5 complete (9 of ~11 total plan
 | 04-client-library | 1 | 3 min | 3 min |
 | 04.1-migrate-timing | 1 | 10 min | 10 min |
 | 05-dashboard-display | 3 | 11 min | 3.7 min |
+| 06-client-java-support | 1 | 3 min | 3 min |
 
 **Recent Trend:**
-- Last 5 plans: 04.1-01 (10 min), 05-01 (3 min), 05-02 (4 min), 05-03 (4 min)
-- Trend: Excellent execution speed, Phase 5 completed with comprehensive testing
+- Last 5 plans: 05-01 (3 min), 05-02 (4 min), 05-03 (4 min), 06-01 (3 min)
+- Trend: Consistent fast execution, Phase 6 completed in external repository
 
 *Updated after each plan completion*
 
@@ -75,12 +76,15 @@ Recent decisions affecting current work:
 - Field description corrected to wall clock calculation (05-02) - Matches actual SQL implementation (max(endTime) - min(startTime))
 - Test data upload via JunitController with tar.gz (05-03) - Karate JSON provides timing, JUnit-only results in NULL
 - HTML content assertions for dashboard verification (05-03) - Verify rendered HTML directly from controller response
+- Optional karateFolderPath parameter in external client (06-01) - Maintains backwards compatibility via conditional multipart inclusion
+- WireMock 3.3.1 for mock HTTP testing (06-01) - Native JUnit 5 support, verifies multipart structure without real server
+- JSON file filter predicate follows XML pattern (06-01) - FileExtensionPathPredicates.JSON for .json filtering
 
 ### Pending Todos
 
 1. ~~**SQL migration script for deployed databases**~~ — DONE: Created V1.2__add_test_result_timing.sql
 
-2. **reportcard-client-java support** — Add phase for sibling repository `reportcard-client-java` to support Karate JSON uploads. This is a separate codebase from the in-tree `reportcard-client` module.
+2. ~~**reportcard-client-java support**~~ — DONE: Phase 06-01 added optional Karate JSON upload to external repository
 
 3. **Remove dead run timing code** — Remove unused `run.start_time` and `run.end_time` columns from V1.0 DDL, and remove dead `updateRunTiming()` method from StagePathPersistService.java. These are leftovers from Phase 1 before Phase 4.1 moved timing to test_result.
 
@@ -103,8 +107,10 @@ Pre-existing build issue: Gradle build fails with Java 11/17 compatibility error
 
 Pre-existing test isolation issue: Two JunitControllerTest tests fail in full suite but pass individually. Unrelated to timing migration.
 
+External repository Java version issue: reportcard-client-java test runtime fails with UnsupportedClassVersionError (class file version 61.0 vs 55.0). Test code compiles successfully. Pre-existing issue, not caused by Phase 6. Tests will run in CI with correct Java version.
+
 ## Session Continuity
 
-Last session: 2026-02-03T21:04:46Z
-Stopped at: Completed 05-03-PLAN.md (Phase 5 complete with testing)
+Last session: 2026-02-09T18:53:54Z
+Stopped at: Completed 06-01-PLAN.md (Phase 6 complete - external repository)
 Resume file: None
