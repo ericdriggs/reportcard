@@ -46,14 +46,22 @@ Tags appear at two levels in Karate/Cucumber JSON:
 ## Tag Transformation Rules
 
 ### 1. Strip @ Prefix
+Remove leading `@` from all tags.
+
+### 2. Expand Comma-Separated Values
+Split on `,` only. If the first part contains `=`, propagate that prefix to bare parts:
 ```
-Input:  "@smoke"           → Output: "smoke"
-Input:  "@env=staging"     → Output: "env=staging"
-Input:  "@envnot=staging"  → Output: "envnot=staging"
+@env=dev,test     → ["env=dev", "env=test"]   (prefix "env=" propagates to "test")
+@env=dev, test    → ["env=dev", "env=test"]   (trim whitespace)
+@env=staging      → ["env=staging"]           (no comma, no expansion)
+@foo=bar=baz      → ["foo=bar=baz"]           (no comma, stored as-is)
 ```
 
-### 2. Preserve Key=Value Format
-Key-value tags like `@env=staging` are stored as the literal string `"env=staging"` after @ removal. The `=` has no special meaning in storage.
+Comma without `=` is invalid:
+```
+@smoke            → ["smoke"]
+@smoke,regression → INVALID
+```
 
 ### 3. Case Sensitivity
 Tags are **case-sensitive** (MEMBER OF uses binary comparison). Lowercase is enforced by **convention** (team agreement), not application code.
@@ -134,10 +142,6 @@ WHERE 'env=staging' MEMBER OF(tags)
 ```java
 public class KarateTagExtractor {
 
-    /**
-     * Extract tags from a Karate tag array node.
-     * Strips @ prefix, deduplicates.
-     */
     public List<String> extractTags(JsonNode tagsArray) {
         if (tagsArray == null || !tagsArray.isArray()) {
             return List.of();
@@ -146,11 +150,41 @@ public class KarateTagExtractor {
         for (JsonNode tagObj : tagsArray) {
             String name = tagObj.path("name").asText("");
             if (!name.isEmpty()) {
-                String tag = name.startsWith("@") ? name.substring(1) : name;
-                tags.add(tag);
+                tags.addAll(expandTag(name));
             }
         }
         return new ArrayList<>(tags);
+    }
+
+    /**
+     * Strip @, split on comma, propagate prefix to bare parts.
+     */
+    private List<String> expandTag(String raw) {
+        String tag = raw.startsWith("@") ? raw.substring(1) : raw;
+        String[] parts = tag.split(",");
+
+        if (parts.length == 1) {
+            return List.of(tag.trim());
+        }
+
+        // Find prefix (everything up to and including first =)
+        String firstPart = parts[0].trim();
+        int eqIndex = firstPart.indexOf('=');
+        if (eqIndex < 0) {
+            throw new IllegalArgumentException("Comma without =: " + raw);
+        }
+        String prefix = firstPart.substring(0, eqIndex + 1);
+
+        List<String> expanded = new ArrayList<>();
+        for (String part : parts) {
+            String trimmed = part.trim();
+            if (trimmed.contains("=")) {
+                expanded.add(trimmed);
+            } else {
+                expanded.add(prefix + trimmed);
+            }
+        }
+        return expanded;
     }
 }
 ```
