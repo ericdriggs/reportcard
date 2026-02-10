@@ -93,7 +93,7 @@ Recent decisions affecting current work:
 - Tags passed to persistence layer (08-05) - Storage pending DDL (08-03), embedded in test_suites_json
 - Time values not expected to match between formats (08-06) - JUnit wall clock vs Cucumber step sum
 - Tag expansion in tests (08-06) - Comma-separated values expand per KarateTagExtractor
-- Multi-value index uses CHAR(50) ARRAY (08-fix) - VARCHAR not supported; must be separate CREATE INDEX, not inline
+- Multi-value index uses CHAR(25) ARRAY (08-fix) - VARCHAR not supported; must be separate CREATE INDEX, not inline
 - Multi-value index path is '$[*]' (08-fix) - For root-level JSON array, extract all elements
 
 ### Pending Todos
