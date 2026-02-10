@@ -5,8 +5,7 @@
 -- Step 1: Add tags column
 ALTER TABLE test_result
   ADD COLUMN tags JSON NULL DEFAULT NULL
-  COMMENT 'Flattened array of all feature and scenario tags, deduplicated, for MEMBER OF queries'
-  ALGORITHM=INPLACE, LOCK=NONE;
+  COMMENT 'Flattened array of all feature and scenario tags, deduplicated, for MEMBER OF queries';
 
 -- Step 2: Create multi-value index for tag search
 -- Index uses CHAR(25) ARRAY - each tag element indexed individually

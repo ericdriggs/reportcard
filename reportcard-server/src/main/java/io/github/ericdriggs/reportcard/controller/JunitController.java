@@ -241,34 +241,32 @@ public class JunitController {
                 "At least one of junit.tar.gz or karate.tar.gz must be provided");
         }
 
-        // CHANGED: Karate is primary source when present (contains tags)
+        // JUnit is primary source for test structure (reliable per-stage)
+        // Karate provides tags when available (merged in)
         TestResultModel testResultModel;
         List<String> allTags = null;
 
-        if (hasKarate) {
-            // Extract Cucumber JSON from karate.tar.gz
-            String cucumberJson = KarateTarGzUtil.extractCucumberJson(req.getKarateTarGz());
-            if (cucumberJson != null && !cucumberJson.isBlank()) {
-                List<TestSuiteModel> suites = KarateCucumberConverter.fromCucumberJson(cucumberJson);
-                testResultModel = new TestResultModel(suites);
-                allTags = KarateCucumberConverter.collectAllTags(suites);
-                log.info("Using Karate JSON as primary source: {} suites, {} tags",
-                        suites.size(), allTags.size());
-            } else {
-                // Karate tar.gz present but no Cucumber JSON found - fall back to JUnit
-                log.warn("Karate tar.gz provided but no Cucumber JSON found, falling back to JUnit");
-                if (hasJunit) {
-                    List<String> testXmlContents = TestXmlTarGzUtil.getFileContentsFromTarGz(req.getJunitXmls());
-                    testResultModel = JunitSurefireXmlParseUtil.parseTestXml(testXmlContents);
-                } else {
-                    testResultModel = new TestResultModel();
-                    testResultModel.setTestSuites(new ArrayList<>());
-                }
-            }
-        } else {
-            // JUnit only (existing behavior, no tags)
+        if (hasJunit) {
             List<String> testXmlContents = TestXmlTarGzUtil.getFileContentsFromTarGz(req.getJunitXmls());
             testResultModel = JunitSurefireXmlParseUtil.parseTestXml(testXmlContents);
+        } else {
+            // Karate-only upload (no JUnit XML)
+            testResultModel = new TestResultModel();
+            testResultModel.setTestSuites(new ArrayList<>());
+        }
+
+        // Merge tags from Karate Cucumber JSON when available (graceful failure)
+        if (hasKarate) {
+            try {
+                String cucumberJson = KarateTarGzUtil.extractCucumberJson(req.getKarateTarGz());
+                if (cucumberJson != null && !cucumberJson.isBlank()) {
+                    List<TestSuiteModel> karateSuites = KarateCucumberConverter.fromCucumberJson(cucumberJson);
+                    allTags = KarateCucumberConverter.collectAllTags(karateSuites);
+                    log.info("Extracted {} tags from Karate JSON", allTags.size());
+                }
+            } catch (Exception e) {
+                log.warn("Failed to extract tags from Karate JSON, continuing without tags", e);
+            }
         }
 
         // Insert test result (tags passed to persistence layer for future storage)
