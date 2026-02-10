@@ -171,7 +171,7 @@ class KarateCucumberConverterTest {
 
         TestCaseModel testCase = suite.getTestCases().get(0);
         assertEquals(TestStatus.SKIPPED, testCase.getTestStatus());
-        assertEquals(BigDecimal.ZERO, testCase.getTime());
+        assertEquals(0, testCase.getTime().compareTo(BigDecimal.ZERO));
     }
 
     @Test
@@ -312,10 +312,10 @@ class KarateCucumberConverterTest {
         List<TestSuiteModel> suites = KarateCucumberConverter.fromCucumberJson(json);
 
         TestSuiteModel suite = suites.get(0);
-        assertEquals(BigDecimal.ZERO, suite.getTime());
+        assertEquals(0, suite.getTime().compareTo(BigDecimal.ZERO));
 
         TestCaseModel testCase = suite.getTestCases().get(0);
-        assertEquals(BigDecimal.ZERO, testCase.getTime());
+        assertEquals(0, testCase.getTime().compareTo(BigDecimal.ZERO));
     }
 
     @Test
