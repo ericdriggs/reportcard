@@ -256,7 +256,7 @@ COLLATE = utf8mb4_0900_ai_ci;
 
 -- Multi-value index for tag search (must be separate CREATE INDEX, not inline)
 CREATE INDEX idx_test_result_tags ON test_result (
-    (CAST(tags->'$[*]' AS CHAR(50) ARRAY))
+    (CAST(tags->'$[*]' AS CHAR(25) ARRAY))
 );
 
 -- -----------------------------------------------------
