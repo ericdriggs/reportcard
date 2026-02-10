@@ -19,7 +19,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 4.1: Migrate Timing to Test Result** - Move timing columns from run to test_result table (INSERTED) ✓
 - [x] **Phase 5: Dashboard Display** - UI presentation of job duration vs test execution time ✓
 - [x] **Phase 6: reportcard-client-java Support** - Karate JSON upload support in sibling repository ✓
-- [ ] **Phase 7: Tags Investigation** - Research extracting scenario tags from Karate JSON for test_result storage and searchability
+- [x] **Phase 7: Tags Investigation** - Research extracting scenario tags from Karate JSON for test_result storage and searchability ✓
+- [ ] **Phase 8: Tags Implementation** - Implement tag extraction, storage, and query API
 
 ## Phase Details
 
@@ -190,17 +191,48 @@ Plans:
   4. API design proposal for tag-based queries
   5. Decision on whether to split into multiple implementation phases
 
-**Plans**: 3 plans
+**Plans**: 3 specs (research deliverables)
 
 Plans:
-- [ ] 07-01-PLAN.md — Document Model Mapper patterns for Karate JSON tag extraction
-- [ ] 07-02-PLAN.md — Synthesize indexing research into actionable recommendation
-- [ ] 07-03-PLAN.md — Design tag search API and define future implementation phases
+- [x] 07-01-TAG-MAPPING-SPEC.md — Tag extraction and storage specification ✓
+- [x] 07-02-RESEARCH.md — MySQL JSON indexing benchmarks and recommendations ✓
+- [x] 07-03-API-DESIGN.md — Tag query API design with boolean syntax ✓
+
+### Phase 8: Tags Implementation
+**Goal**: Implement tag extraction, storage, and query API based on Phase 7 research
+
+**Depends on**: Phase 7 (needs specs and research)
+
+**Requirements**:
+- Tag extraction from Karate JSON (strip @, remove whitespace, expand commas)
+- Storage at 3 levels: test_result.tags, TestSuiteModel.tags, TestCaseModel.tags
+- Multi-value index on test_result.tags (VARCHAR(100))
+- Tag query controller with boolean expression parsing (AND, OR, parentheses)
+- Unit tests with mocks for all layers
+
+**Success Criteria** (what must be TRUE):
+  1. Tags extracted from Karate JSON per 07-01-TAG-MAPPING-SPEC.md
+  2. Tags stored at all 3 levels with deduplication
+  3. Multi-value index created on test_result.tags
+  4. Tag query API returns tests grouped by hierarchy, latest run per job
+  5. Boolean query parser handles AND, OR, parentheses
+  6. Unit tests pass for parser, matcher, response builder, controller
+
+**Plans**: 7 plans
+
+Plans:
+- [ ] 08-01-PLAN.md — KarateTagExtractor class with TDD (tag extraction logic)
+- [ ] 08-02-PLAN.md — Add tags field to TestSuiteModel and TestCaseModel
+- [ ] 08-03-PLAN.md — Schema: add tags column to test_result with multi-value index
+- [ ] 08-04-PLAN.md — TagExpressionParser with TDD (boolean expression parsing)
+- [ ] 08-05-PLAN.md — Integrate tag extraction into Karate upload flow
+- [ ] 08-06-PLAN.md — TagQueryService and TagQueryBuilder (SQL generation)
+- [ ] 08-07-PLAN.md — TagQueryController REST API
 
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 4.1 → 5 → 6 → 7
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 4.1 → 5 → 6 → 7 → 8
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -211,4 +243,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 4.1 → 5 → 6 → 7
 | 4.1 Migrate Timing | 1/1 | ✓ Complete | 2026-01-27 |
 | 5. Dashboard Display | 3/3 | ✓ Complete | 2026-02-03 |
 | 6. reportcard-client-java | 1/1 | ✓ Complete | 2026-02-09 |
-| 7. Tags Investigation | 0/3 | Not started | - |
+| 7. Tags Investigation | 3/3 | ✓ Complete | 2026-02-09 |
+| 8. Tags Implementation | 0/7 | Not started | - |
