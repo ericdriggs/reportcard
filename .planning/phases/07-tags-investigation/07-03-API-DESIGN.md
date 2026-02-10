@@ -97,3 +97,37 @@ AND 'env=prod' MEMBER OF(tags)
 - Reuse existing `StoragePath` for hierarchy context
 - Query parser: simple recursive descent or library
 - Latest run per job: `MAX(run_id)` grouped by job
+
+## Testing Strategy
+
+Unit tests with mocks. No integration tests for initial implementation.
+
+### Query Parser Tests
+- Single tag: `smoke`
+- AND: `smoke AND env=prod`
+- OR: `smoke OR regression`
+- Parentheses: `(smoke OR regression) AND env=prod`
+- Nested: `((a AND b) OR c) AND d`
+- Precedence: `a OR b AND c` → `a OR (b AND c)`
+- Invalid: `AND smoke`, `smoke AND`, `((smoke)`, empty string
+- Edge cases: whitespace handling, case preservation
+
+### Tag Matcher Tests (mocked repository)
+- Single tag match
+- AND: both tags present
+- AND: one tag missing → no match
+- OR: either tag present
+- OR: neither tag present → no match
+- Key=value tags: `env=prod` exact match
+
+### Response Builder Tests (mocked data)
+- Grouping by hierarchy levels
+- Latest run selection per job
+- Empty results
+- Single result
+- Multiple branches/jobs
+
+### Controller Tests (mocked service)
+- Each hierarchy level endpoint
+- Query param parsing
+- Error responses for invalid queries
