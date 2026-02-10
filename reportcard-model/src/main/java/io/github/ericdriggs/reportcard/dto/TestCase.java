@@ -4,12 +4,15 @@
 package io.github.ericdriggs.reportcard.dto;
 
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.SuperBuilder;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @SuperBuilder(builderMethodName = "testCaseBuilder", toBuilder = true)
@@ -30,4 +33,7 @@ public class TestCase implements Serializable {
     protected String assertions;
     protected String systemOut;
     protected String systemErr;
+
+    @Builder.Default
+    protected List<String> tags = new ArrayList<>();
 }
