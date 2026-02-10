@@ -9,11 +9,11 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 
 ## Current Position
 
-Phase: 8 of 8 (Tags Implementation - IN PROGRESS)
+Phase: 8 of 9 (Tags Implementation - COMPLETE)
 Plan: 6 of 6 in current phase
-Status: In progress - 08-06 complete (Comprehensive test coverage)
-Last activity: 2026-02-10 — Completed 08-06-PLAN.md (KarateCucumberConverter tests)
-Next: Phase 8 complete, DDL pending (08-03)
+Status: Complete - All plans executed, schema and tests verified
+Last activity: 2026-02-10 — Fixed multi-value index syntax, all tests passing
+Next: Phase 9 (Tag Query API) or apply DDL to RDS
 
 Progress: [███████████████] 08-06 complete (15 of ~16 total plans)
 
@@ -93,6 +93,8 @@ Recent decisions affecting current work:
 - Tags passed to persistence layer (08-05) - Storage pending DDL (08-03), embedded in test_suites_json
 - Time values not expected to match between formats (08-06) - JUnit wall clock vs Cucumber step sum
 - Tag expansion in tests (08-06) - Comma-separated values expand per KarateTagExtractor
+- Multi-value index uses CHAR(50) ARRAY (08-fix) - VARCHAR not supported; must be separate CREATE INDEX, not inline
+- Multi-value index path is '$[*]' (08-fix) - For root-level JSON array, extract all elements
 
 ### Pending Todos
 
