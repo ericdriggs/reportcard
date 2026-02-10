@@ -9,6 +9,7 @@ import io.github.ericdriggs.reportcard.lock.LockService;
 import io.github.ericdriggs.reportcard.model.*;
 import io.github.ericdriggs.reportcard.model.converter.JunitSurefireXmlParseUtil;
 import io.github.ericdriggs.reportcard.model.converter.karate.KarateConvertersUtil;
+import io.github.ericdriggs.reportcard.model.converter.karate.KarateCucumberConverter;
 import io.github.ericdriggs.reportcard.model.converter.karate.KarateSummary;
 import io.github.ericdriggs.reportcard.persist.StagePathPersistService;
 import io.github.ericdriggs.reportcard.persist.StoragePersistService;
@@ -240,18 +241,39 @@ public class JunitController {
                 "At least one of junit.tar.gz or karate.tar.gz must be provided");
         }
 
-        // Parse JUnit if present (existing behavior)
+        // CHANGED: Karate is primary source when present (contains tags)
         TestResultModel testResultModel;
-        if (hasJunit) {
+        List<String> allTags = null;
+
+        if (hasKarate) {
+            // Extract Cucumber JSON from karate.tar.gz
+            String cucumberJson = KarateTarGzUtil.extractCucumberJson(req.getKarateTarGz());
+            if (cucumberJson != null && !cucumberJson.isBlank()) {
+                List<TestSuiteModel> suites = KarateCucumberConverter.fromCucumberJson(cucumberJson);
+                testResultModel = new TestResultModel(suites);
+                allTags = KarateCucumberConverter.collectAllTags(suites);
+                log.info("Using Karate JSON as primary source: {} suites, {} tags",
+                        suites.size(), allTags.size());
+            } else {
+                // Karate tar.gz present but no Cucumber JSON found - fall back to JUnit
+                log.warn("Karate tar.gz provided but no Cucumber JSON found, falling back to JUnit");
+                if (hasJunit) {
+                    List<String> testXmlContents = TestXmlTarGzUtil.getFileContentsFromTarGz(req.getJunitXmls());
+                    testResultModel = JunitSurefireXmlParseUtil.parseTestXml(testXmlContents);
+                } else {
+                    testResultModel = new TestResultModel();
+                    testResultModel.setTestSuites(new ArrayList<>());
+                }
+            }
+        } else {
+            // JUnit only (existing behavior, no tags)
             List<String> testXmlContents = TestXmlTarGzUtil.getFileContentsFromTarGz(req.getJunitXmls());
             testResultModel = JunitSurefireXmlParseUtil.parseTestXml(testXmlContents);
-        } else {
-            // Empty test result when only Karate provided
-            testResultModel = new TestResultModel();
-            testResultModel.setTestSuites(new ArrayList<>()); // Initialize totals to zeros
         }
 
-        StagePathTestResult stagePathTestResult = testResultPersistService.insertTestResult(req.getStageDetails(), testResultModel);
+        // Insert test result (tags passed to persistence layer for future storage)
+        StagePathTestResult stagePathTestResult = testResultPersistService.insertTestResult(
+                req.getStageDetails(), testResultModel, allTags);
         StagePath stagePath = stagePathTestResult.getStagePath();
         final Long stageId = stagePath.getStage().getStageId();
         final Long testResultId = stagePathTestResult.getTestResult().getTestResultId();
