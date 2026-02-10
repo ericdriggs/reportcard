@@ -1,5 +1,7 @@
 package io.github.ericdriggs.reportcard.config;
 
+
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
@@ -8,6 +10,7 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.TestPropertySource;
 import org.testcontainers.containers.MySQLContainer;
+import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.MountableFile;
 
@@ -50,7 +53,7 @@ public class MyEmbeddedMysql {
                 .withCopyFileToContainer(MountableFile.forClasspathResource(ddlsql), "/docker-entrypoint-initdb.d/0_schema.sql")
                 .withCopyFileToContainer(MountableFile.forClasspathResource(dmlsql), "/docker-entrypoint-initdb.d/1_config.sql")
                 .withCopyFileToContainer(MountableFile.forClasspathResource("db/test/test-data.dml.sql"), "/docker-entrypoint-initdb.d/2_data.sql")
-
+                .withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger(MyEmbeddedMysql.class)))
         ;
         mySQLContainer.start();
         this.driverClassName = driverClassName;

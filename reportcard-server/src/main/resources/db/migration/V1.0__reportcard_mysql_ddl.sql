@@ -243,6 +243,7 @@ CREATE TABLE IF NOT EXISTS `reportcard`.`test_result` (
   `is_success` TINYINT(1) GENERATED ALWAYS AS (`tests` > 0 && (`failure` + `error`) = 0) VIRTUAL,
   `has_skip` TINYINT(1) GENERATED ALWAYS AS (`tests` = 0 || `skipped` > 0) VIRTUAL,
   `test_suites_json` JSON DEFAULT NULL,
+  `tags` JSON NULL DEFAULT NULL COMMENT 'Flattened array of all feature and scenario tags for MEMBER OF queries',
   PRIMARY KEY (`test_result_id`),
   INDEX `test_result_stage_fk_idx` (`stage_fk` ASC) VISIBLE,
   UNIQUE INDEX `stage_fk_UNIQUE` (`stage_fk` ASC) VISIBLE,
@@ -253,6 +254,10 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
+-- Multi-value index for tag search (must be separate CREATE INDEX, not inline)
+CREATE INDEX idx_test_result_tags ON test_result (
+    (CAST(tags->'$[*]' AS CHAR(50) ARRAY))
+);
 
 -- -----------------------------------------------------
 -- Table `reportcard`.`test_suite`

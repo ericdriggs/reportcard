@@ -24,8 +24,10 @@ Reportcard is a test result metrics API and dashboard application. It stores, an
 
 To run a single test class:
 ```bash
-./gradlew test --tests "fully.qualified.TestClassName"
+./gradlew test --tests "fully.qualified.TestClassName" -Si
 ```
+
+**IMPORTANT:** Always use `-Si` flags when running tests (stacktrace + info). Never use `--info` alone - it's much slower.
 
 ## Module Structure
 

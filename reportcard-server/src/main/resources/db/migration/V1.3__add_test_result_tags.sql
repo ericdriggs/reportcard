@@ -9,9 +9,8 @@ ALTER TABLE test_result
   ALGORITHM=INPLACE, LOCK=NONE;
 
 -- Step 2: Create multi-value index for tag search
--- Index uses VARCHAR(100) ARRAY - each tag element indexed individually
+-- Index uses CHAR(50) ARRAY - each tag element indexed individually
 -- IMPORTANT: OR queries must use UNION (single WHERE with OR does NOT use index)
--- IMPORTANT: ALGORITHM=COPY required for multi-value indexes (table rebuild)
 CREATE INDEX idx_test_result_tags ON test_result (
-    (CAST(tags->'$[*]' AS VARCHAR(100) ARRAY))
+    (CAST(tags->'$[*]' AS CHAR(50) ARRAY))
 ) COMMENT 'Multi-value index enables MEMBER OF queries on tag names';
