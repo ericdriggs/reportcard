@@ -10,19 +10,19 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 ## Current Position
 
 Phase: 9 of 9 (Tag Query API)
-Plan: 1 of ~3 in current phase
+Plan: 2 of ~3 in current phase
 Status: In progress
-Last activity: 2026-02-10 — Completed 09-01 (TagExpressionParser)
-Next: 09-02 (SQL generation from AST)
+Last activity: 2026-02-10 — Completed 09-02 (TagQueryService & TagQueryBuilder)
+Next: 09-03 (Tag Query Controller)
 
-Progress: [████████████████] 09-01 complete (16 of ~18 total plans)
+Progress: [█████████████████] 09-02 complete (17 of ~18 total plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 16
+- Total plans completed: 17
 - Average duration: 4.2 min
-- Total execution time: 1.12 hours
+- Total execution time: 1.19 hours
 
 **By Phase:**
 
@@ -36,11 +36,11 @@ Progress: [████████████████] 09-01 complete (16 
 | 05-dashboard-display | 3 | 11 min | 3.7 min |
 | 06-client-java-support | 1 | 3 min | 3 min |
 | 08-tags-implementation | 5 | 21 min | 4.2 min |
-| 09-tag-query-api | 1 | 5 min | 5 min |
+| 09-tag-query-api | 2 | 9 min | 4.5 min |
 
 **Recent Trend:**
-- Last 5 plans: 08-04 (3 min), 08-05 (5 min), 08-06 (8 min), 09-01 (5 min)
-- Trend: TDD plans efficient, parser implementation straightforward
+- Last 5 plans: 08-05 (5 min), 08-06 (8 min), 09-01 (5 min), 09-02 (4 min)
+- Trend: Service layer implementation efficient with existing patterns
 
 *Updated after each plan completion*
 
@@ -99,6 +99,8 @@ Recent decisions affecting current work:
 - AND/OR operators case-sensitive (09-01) - Lowercase 'and'/'or' are valid tag names, not operators
 - Sealed interface for AST nodes (09-01) - Java 17 pattern for type-safe matching
 - Records for AST nodes (09-01) - Immutable with free equals/hashCode/toString
+- UNION required for OR queries (09-02) - Single WHERE with OR does NOT use multi-value index
+- buildCondition throws for OR (09-02) - Forces callers to use buildQuery for proper UNION handling
 
 ### Pending Todos
 
@@ -135,6 +137,6 @@ External repository Java version issue: reportcard-client-java test runtime fail
 
 ## Session Continuity
 
-Last session: 2026-02-10T18:36:00Z
-Stopped at: Completed 09-01-PLAN.md (TagExpressionParser)
+Last session: 2026-02-10T18:49:05Z
+Stopped at: Completed 09-02-PLAN.md (TagQueryService & TagQueryBuilder)
 Resume file: None
