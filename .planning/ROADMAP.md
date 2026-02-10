@@ -20,7 +20,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 5: Dashboard Display** - UI presentation of job duration vs test execution time ✓
 - [x] **Phase 6: reportcard-client-java Support** - Karate JSON upload support in sibling repository ✓
 - [x] **Phase 7: Tags Investigation** - Research extracting scenario tags from Karate JSON for test_result storage and searchability ✓
-- [ ] **Phase 8: Tags Implementation** - Implement tag extraction, storage, and query API
+- [ ] **Phase 8: Karate Mapper + Tag Storage** - Full Karate JSON mapper with tag extraction and storage
+- [ ] **Phase 9: Tag Query API** - REST API for searching tests by tag expressions
 
 ## Phase Details
 
@@ -198,41 +199,75 @@ Plans:
 - [x] 07-02-RESEARCH.md — MySQL JSON indexing benchmarks and recommendations ✓
 - [x] 07-03-API-DESIGN.md — Tag query API design with boolean syntax ✓
 
-### Phase 8: Tags Implementation
-**Goal**: Implement tag extraction, storage, and query API based on Phase 7 research
+### Phase 8: Karate Mapper + Tag Storage
+**Goal**: Full Karate/Cucumber JSON to Reportcard model mapper with tag extraction and storage
 
 **Depends on**: Phase 7 (needs specs and research)
 
+**Scope Change**: Phase 8 now implements a **complete Karate JSON mapper** (similar to JunitConvertersUtil) rather than just tag overlay. When Karate JSON is uploaded, it becomes the primary source of truth for test structure and tags. This enables:
+- Karate-only uploads (no JUnit XML required)
+- Full feature/scenario data from Karate JSON
+- Tags naturally associated with their source data
+- Phased rollout with comprehensive mapper testing
+
 **Requirements**:
 - Tag extraction from Karate JSON (strip @, remove whitespace, expand commas)
+- Full Karate JSON → TestSuiteModel/TestCaseModel mapper (Feature → Suite, Scenario → Case)
 - Storage at 3 levels: test_result.tags, TestSuiteModel.tags, TestCaseModel.tags
 - Multi-value index on test_result.tags (VARCHAR(100))
-- Tag query controller with boolean expression parsing (AND, OR, parentheses)
-- Unit tests with mocks for all layers
+- Karate JSON as primary source when present in upload
+- Comprehensive mapper tests for edge cases
 
 **Success Criteria** (what must be TRUE):
-  1. Tags extracted from Karate JSON per 07-01-TAG-MAPPING-SPEC.md
-  2. Tags stored at all 3 levels with deduplication
-  3. Multi-value index created on test_result.tags
-  4. Tag query API returns tests grouped by hierarchy, latest run per job
-  5. Boolean query parser handles AND, OR, parentheses
-  6. Unit tests pass for parser, matcher, response builder, controller
+  1. KarateCucumberConverter maps Feature → TestSuiteModel, Scenario → TestCaseModel
+  2. Tags extracted from Karate JSON per 07-01-TAG-MAPPING-SPEC.md
+  3. Tags stored at all 3 levels with deduplication
+  4. Multi-value index created on test_result.tags
+  5. Karate-only uploads produce valid TestResultModel
+  6. When both JUnit and Karate provided, Karate is primary source
+  7. Mapper handles edge cases (empty features, missing fields, scenario outlines)
+  8. Comprehensive unit tests for mapper
 
-**Plans**: 7 plans
+**Plans**: 6 plans
 
 Plans:
 - [ ] 08-01-PLAN.md — KarateTagExtractor class with TDD (tag extraction logic)
 - [ ] 08-02-PLAN.md — Add tags field to TestSuiteModel and TestCaseModel
 - [ ] 08-03-PLAN.md — Schema: add tags column to test_result with multi-value index
-- [ ] 08-04-PLAN.md — TagExpressionParser with TDD (boolean expression parsing)
-- [ ] 08-05-PLAN.md — Integrate tag extraction into Karate upload flow
-- [ ] 08-06-PLAN.md — TagQueryService and TagQueryBuilder (SQL generation)
-- [ ] 08-07-PLAN.md — TagQueryController REST API
+- [ ] 08-04-PLAN.md — KarateCucumberConverter with TDD (full mapper: Feature→Suite, Scenario→Case)
+- [ ] 08-05-PLAN.md — Integrate Karate mapper into upload flow (Karate as primary source)
+- [ ] 08-06-PLAN.md — Karate mapper comprehensive tests (edge cases, real JSON samples)
+
+### Phase 9: Tag Query API
+**Goal**: REST API for searching tests by tag expressions with boolean syntax
+
+**Depends on**: Phase 8 (needs tags stored in test_result)
+
+**Requirements**:
+- Boolean expression parser (AND, OR, parentheses)
+- SQL query generation using MEMBER OF with multi-value index
+- OR queries use UNION for index efficiency
+- REST endpoints at each hierarchy level
+- Response groups tests by hierarchy, latest run per job
+
+**Success Criteria** (what must be TRUE):
+  1. TagExpressionParser parses boolean expressions to AST
+  2. TagQueryBuilder generates efficient SQL (UNION for OR, single WHERE for AND)
+  3. TagQueryController exposes endpoints at company/org/repo/branch/sha levels
+  4. Invalid expressions return 400 Bad Request
+  5. Unit tests pass for parser, query builder, controller
+
+**Plans**: 3 plans
+
+Plans:
+- [ ] 09-01-PLAN.md — TagExpressionParser with TDD (boolean expression parsing)
+- [ ] 09-02-PLAN.md — TagQueryService and TagQueryBuilder (SQL generation)
+- [ ] 09-03-PLAN.md — TagQueryController REST API
 
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 4.1 → 5 → 6 → 7 → 8
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 4.1 → 5 → 6 → 7 → 8 → 9
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -244,4 +279,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 4.1 → 5 → 6 → 7 �
 | 5. Dashboard Display | 3/3 | ✓ Complete | 2026-02-03 |
 | 6. reportcard-client-java | 1/1 | ✓ Complete | 2026-02-09 |
 | 7. Tags Investigation | 3/3 | ✓ Complete | 2026-02-09 |
-| 8. Tags Implementation | 0/7 | Not started | - |
+| 8. Karate Mapper + Tags | 0/6 | Not started | - |
+| 9. Tag Query API | 0/3 | Not started | - |
