@@ -1,0 +1,15 @@
+[
+  {
+    "name": "failed-feature.feature",
+    "elements": [
+      {
+        "name": "failing scenario",
+        "type": "scenario",
+        "steps": [
+          {"name": "Given setup", "result": {"status": "passed", "duration": 1000000}},
+          {"name": "When action", "result": {"status": "failed", "duration": 500000, "error_message": "Expected 200 but got 500"}}
+        ]
+      }
+    ]
+  }
+]

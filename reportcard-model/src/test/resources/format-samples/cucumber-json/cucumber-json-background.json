@@ -1,0 +1,22 @@
+[
+  {
+    "name": "feature-with-background.feature",
+    "elements": [
+      {
+        "name": "Background setup",
+        "type": "background",
+        "steps": [
+          {"name": "Given common setup", "result": {"status": "passed", "duration": 500000}}
+        ]
+      },
+      {
+        "name": "actual test scenario",
+        "type": "scenario",
+        "steps": [
+          {"name": "When action", "result": {"status": "passed", "duration": 1000000}},
+          {"name": "Then verify", "result": {"status": "passed", "duration": 500000}}
+        ]
+      }
+    ]
+  }
+]

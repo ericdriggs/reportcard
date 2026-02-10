@@ -1,0 +1,39 @@
+[
+  {
+    "name": "mixed-results-feature-1.feature",
+    "tags": [{"name": "@regression", "line": 1}],
+    "elements": [
+      {
+        "name": "passing scenario 1",
+        "type": "scenario",
+        "tags": [{"name": "@priority=high", "line": 3}],
+        "steps": [
+          {"name": "Given setup", "result": {"status": "passed", "duration": 100000000}},
+          {"name": "Then verify", "result": {"status": "passed", "duration": 50000000}}
+        ]
+      },
+      {
+        "name": "failing scenario 2",
+        "type": "scenario",
+        "tags": [{"name": "@priority=low", "line": 8}],
+        "steps": [
+          {"name": "Given setup", "result": {"status": "passed", "duration": 200000000}},
+          {"name": "When action", "result": {"status": "failed", "duration": 100000000, "error_message": "Assertion failed"}}
+        ]
+      }
+    ]
+  },
+  {
+    "name": "mixed-results-feature-2.feature",
+    "tags": [{"name": "@smoke", "line": 1}],
+    "elements": [
+      {
+        "name": "skipped scenario",
+        "type": "scenario",
+        "steps": [
+          {"name": "Given prerequisite", "result": {"status": "skipped", "duration": 0}}
+        ]
+      }
+    ]
+  }
+]
