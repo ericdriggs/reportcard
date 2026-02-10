@@ -171,6 +171,196 @@ public class TagQueryService {
     }
 
     /**
+     * Find test results matching a tag expression within a path-based scope.
+     *
+     * <p>Resolves path names to IDs and executes a scoped query.
+     * Returns results grouped by remaining hierarchy levels.
+     *
+     * @param expression Boolean tag expression (e.g., "smoke AND env=prod")
+     * @param company Company name (required)
+     * @param org Org name (nullable)
+     * @param repo Repo name (nullable)
+     * @param branch Branch name (nullable)
+     * @param sha SHA value (nullable) - filters by run.sha column
+     * @return Results grouped by hierarchy: branch -> sha -> job -> JobResult
+     * @throws ParseException if the expression is invalid
+     */
+    public Map<String, Map<String, Map<String, io.github.ericdriggs.reportcard.model.TagQueryResponse.JobResult>>> findByTagExpressionByPath(
+            String expression,
+            String company,
+            String org,
+            String repo,
+            String branch,
+            String sha) {
+
+        // Resolve path to IDs
+        Integer companyId = resolveCompanyId(company);
+        Integer orgId = (org != null) ? resolveOrgId(companyId, org) : null;
+        Integer repoId = (repo != null && orgId != null) ? resolveRepoId(orgId, repo) : null;
+        Integer branchId = (branch != null && repoId != null) ? resolveBranchId(repoId, branch) : null;
+
+        // Execute tag query with scope
+        List<TestResultRecord> results = findByTagExpression(expression, companyId, orgId, repoId, branchId);
+
+        // Filter by SHA if specified (sha is a column on run table)
+        if (sha != null && !sha.isBlank()) {
+            results = filterBySha(results, sha);
+        }
+
+        // Group results by hierarchy
+        return groupResultsByHierarchy(results);
+    }
+
+    private Integer resolveCompanyId(String company) {
+        return dsl.select(COMPANY.COMPANY_ID)
+            .from(COMPANY)
+            .where(COMPANY.COMPANY_NAME.eq(company))
+            .fetchOne(COMPANY.COMPANY_ID);
+    }
+
+    private Integer resolveOrgId(Integer companyId, String org) {
+        if (companyId == null) return null;
+        return dsl.select(ORG.ORG_ID)
+            .from(ORG)
+            .where(ORG.COMPANY_FK.eq(companyId))
+            .and(ORG.ORG_NAME.eq(org))
+            .fetchOne(ORG.ORG_ID);
+    }
+
+    private Integer resolveRepoId(Integer orgId, String repo) {
+        if (orgId == null) return null;
+        return dsl.select(REPO.REPO_ID)
+            .from(REPO)
+            .where(REPO.ORG_FK.eq(orgId))
+            .and(REPO.REPO_NAME.eq(repo))
+            .fetchOne(REPO.REPO_ID);
+    }
+
+    private Integer resolveBranchId(Integer repoId, String branch) {
+        if (repoId == null) return null;
+        return dsl.select(BRANCH.BRANCH_ID)
+            .from(BRANCH)
+            .where(BRANCH.REPO_FK.eq(repoId))
+            .and(BRANCH.BRANCH_NAME.eq(branch))
+            .fetchOne(BRANCH.BRANCH_ID);
+    }
+
+    private List<TestResultRecord> filterBySha(List<TestResultRecord> results, String sha) {
+        if (sha == null || results.isEmpty()) return results;
+
+        // Get test_result_ids for runs with matching sha
+        Set<Long> testResultIdsInSha = new HashSet<>(
+            dsl.select(TEST_RESULT.TEST_RESULT_ID)
+                .from(TEST_RESULT)
+                .join(STAGE).on(STAGE.STAGE_ID.eq(TEST_RESULT.STAGE_FK))
+                .join(RUN).on(RUN.RUN_ID.eq(STAGE.RUN_FK))
+                .where(RUN.SHA.eq(sha))
+                .fetch(TEST_RESULT.TEST_RESULT_ID)
+        );
+
+        List<TestResultRecord> filtered = new ArrayList<>();
+        for (TestResultRecord r : results) {
+            if (testResultIdsInSha.contains(r.getTestResultId())) {
+                filtered.add(r);
+            }
+        }
+        return filtered;
+    }
+
+    private Map<String, Map<String, Map<String, io.github.ericdriggs.reportcard.model.TagQueryResponse.JobResult>>> groupResultsByHierarchy(
+            List<TestResultRecord> results) {
+
+        // Result structure: branch -> sha -> jobInfo -> JobResult
+        Map<String, Map<String, Map<String, io.github.ericdriggs.reportcard.model.TagQueryResponse.JobResult>>> grouped = new LinkedHashMap<>();
+
+        // For each result, get its hierarchy info and group
+        for (TestResultRecord tr : results) {
+            // Query hierarchy for this test result
+            var hierarchyInfo = dsl.select(
+                    BRANCH.BRANCH_NAME,
+                    RUN.SHA,
+                    JOB.JOB_INFO,
+                    RUN.RUN_DATE,
+                    TEST_RESULT.TEST_SUITES_JSON
+                )
+                .from(TEST_RESULT)
+                .join(STAGE).on(STAGE.STAGE_ID.eq(TEST_RESULT.STAGE_FK))
+                .join(RUN).on(RUN.RUN_ID.eq(STAGE.RUN_FK))
+                .join(JOB).on(JOB.JOB_ID.eq(RUN.JOB_FK))
+                .join(BRANCH).on(BRANCH.BRANCH_ID.eq(JOB.BRANCH_FK))
+                .where(TEST_RESULT.TEST_RESULT_ID.eq(tr.getTestResultId()))
+                .fetchOne();
+
+            if (hierarchyInfo == null) continue;
+
+            String branchName = hierarchyInfo.get(BRANCH.BRANCH_NAME);
+            String shaValue = hierarchyInfo.get(RUN.SHA);
+            String jobInfo = hierarchyInfo.get(JOB.JOB_INFO);
+            java.time.Instant runDate = hierarchyInfo.get(RUN.RUN_DATE);
+            String testSuitesJson = hierarchyInfo.get(TEST_RESULT.TEST_SUITES_JSON);
+
+            // Use "default" for null jobInfo or sha
+            String jobKey = (jobInfo != null && !jobInfo.isBlank()) ? jobInfo : "default";
+            String shaKey = (shaValue != null && !shaValue.isBlank()) ? shaValue : "unknown";
+
+            // Extract test names from test_suites_json
+            List<String> tests = extractTestNames(testSuitesJson);
+
+            // Group into structure
+            grouped
+                .computeIfAbsent(branchName, k -> new LinkedHashMap<>())
+                .computeIfAbsent(shaKey, k -> new LinkedHashMap<>())
+                .merge(jobKey,
+                    io.github.ericdriggs.reportcard.model.TagQueryResponse.JobResult.builder()
+                        .runDate(runDate)
+                        .tests(tests)
+                        .build(),
+                    (existing, newResult) -> {
+                        // Merge tests, keep latest runDate
+                        List<String> mergedTests = new ArrayList<>(existing.getTests());
+                        mergedTests.addAll(newResult.getTests());
+                        return io.github.ericdriggs.reportcard.model.TagQueryResponse.JobResult.builder()
+                            .runDate(existing.getRunDate() != null && newResult.getRunDate() != null &&
+                                    existing.getRunDate().isAfter(newResult.getRunDate())
+                                    ? existing.getRunDate() : newResult.getRunDate())
+                            .tests(mergedTests)
+                            .build();
+                    });
+        }
+
+        return grouped;
+    }
+
+    private List<String> extractTestNames(String testSuitesJson) {
+        if (testSuitesJson == null || testSuitesJson.isBlank()) return Collections.emptyList();
+
+        List<String> testNames = new ArrayList<>();
+        try {
+            // Parse JSON to extract test names
+            com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+            com.fasterxml.jackson.databind.JsonNode root = mapper.readTree(testSuitesJson);
+
+            // Navigate: testSuites array -> testCases array -> name
+            if (root.isArray()) {
+                for (com.fasterxml.jackson.databind.JsonNode suite : root) {
+                    com.fasterxml.jackson.databind.JsonNode testCases = suite.get("testCases");
+                    if (testCases != null && testCases.isArray()) {
+                        for (com.fasterxml.jackson.databind.JsonNode testCase : testCases) {
+                            com.fasterxml.jackson.databind.JsonNode name = testCase.get("name");
+                            if (name != null && !name.isNull()) {
+                                testNames.add(name.asText());
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            // Return empty on parse failure
+        }
+        return testNames;
+    }
+
+    /**
      * Get the query builder for advanced usage.
      *
      * @return the TagQueryBuilder instance
