@@ -25,10 +25,10 @@ Decimal phases appear between their surrounding integers in numeric order.
   1. User can access jobs dashboard at `/company/{company}/org/{org}/jobs`
   2. Old `/company/{company}/org/{org}/pipelines` URLs automatically redirect to `/jobs` endpoint
   3. Dashboard UI displays "Jobs" instead of "Pipelines" in titles and navigation
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] TBD (will be defined during plan-phase)
+- [ ] 01-01-PLAN.md — Rename URLs and UI from "pipelines" to "jobs" with redirect
 
 ### Phase 2: Add Company-Level Dashboard
 **Goal**: Company-level dashboard shows jobs grouped by org
@@ -50,7 +50,7 @@ Phases execute in numeric order: 1 → 2
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Rename Org-Level Dashboard | 0/TBD | Not started | - |
+| 1. Rename Org-Level Dashboard | 0/1 | Ready to execute | - |
 | 2. Add Company-Level Dashboard | 0/TBD | Not started | - |
 
 ---
