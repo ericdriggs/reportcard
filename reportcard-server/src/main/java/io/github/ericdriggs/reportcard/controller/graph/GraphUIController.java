@@ -229,6 +229,27 @@ public class GraphUIController {
         return new ResponseEntity<>(PipelineDashboardHtmlHelper.renderPipelineDashboardMetrics(metrics, request), HttpStatus.OK);
     }
 
+    @GetMapping(path = "company/{company}/jobs", produces = "text/html;charset=UTF-8")
+    public ResponseEntity<String> getCompanyJobDashboard(
+            @PathVariable String company,
+            @RequestParam(required = false) List<String> jobInfo,
+            @RequestParam(required = false, defaultValue = "90") Integer days
+    ) {
+        Map<String, String> jobInfoMap = JobInfoParser.parseJobInfoParams(jobInfo);
+
+        JobDashboardRequest request = JobDashboardRequest.builder()
+                .company(company)
+                // org is null for company-level view
+                .jobInfos(jobInfoMap)
+                .days(days)
+                .build();
+        List<JobDashboardMetrics> metrics = graphService.getPipelineDashboard(request);
+        return new ResponseEntity<>(
+            PipelineDashboardHtmlHelper.renderPipelineDashboardMetrics(metrics, request),
+            HttpStatus.OK
+        );
+    }
+
     @GetMapping(path = "company/{company}/org/{org}/pipelines", produces = "text/html;charset=UTF-8")
     public RedirectView redirectPipelinesToJobs(
             @PathVariable String company,
