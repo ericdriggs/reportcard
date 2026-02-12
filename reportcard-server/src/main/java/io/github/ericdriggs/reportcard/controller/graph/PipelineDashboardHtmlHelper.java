@@ -21,8 +21,8 @@ public class PipelineDashboardHtmlHelper {
 
     private static String renderPipelineDashboardMain(List<JobDashboardMetrics> metrics, String pipeline, Integer days) {
         StringBuilder sb = new StringBuilder();
-        String title = pipeline != null && !pipeline.trim().isEmpty() ? pipeline : "All Pipelines";
-        sb.append("<h1>Org Pipelines - ").append(title).append("</h1>").append(ls);
+        String title = pipeline != null && !pipeline.trim().isEmpty() ? pipeline : "All Jobs";
+        sb.append("<h1>Org Jobs - ").append(title).append("</h1>").append(ls);
         String daysText = days != null ? days.toString() : "90";
         sb.append("<p style='margin-left: 20px; font-size: 1.1em;'>Metrics calculated from runs in the last <strong>").append(daysText).append(" days</strong></p>").append(ls);
         sb.append(renderFilterForm());
@@ -172,7 +172,9 @@ public class PipelineDashboardHtmlHelper {
     }
 
     public static String renderPipelineDashboardMetrics(List<JobDashboardMetrics> metrics, io.github.ericdriggs.reportcard.model.pipeline.JobDashboardRequest request) {
-        String title = request.getCompany() + "/" + request.getOrg();
+        String title = request.getOrg() != null ?
+            request.getCompany() + "/" + request.getOrg() :
+            request.getCompany();
         return renderPipelineDashboard(metrics, title, request.getDays());
     }
 }

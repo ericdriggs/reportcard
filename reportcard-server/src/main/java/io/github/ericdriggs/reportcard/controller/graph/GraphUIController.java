@@ -16,6 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
+
+import javax.servlet.http.HttpServletRequest;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -207,7 +210,7 @@ public class GraphUIController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping(path = "company/{company}/org/{org}/pipelines", produces = "text/html;charset=UTF-8")
+    @GetMapping(path = "company/{company}/org/{org}/jobs", produces = "text/html;charset=UTF-8")
     public ResponseEntity<String> getJobDashboard(
             @PathVariable String company,
             @PathVariable String org,
@@ -215,7 +218,7 @@ public class GraphUIController {
             @RequestParam(required = false, defaultValue = "90") Integer days
     ) {
         Map<String, String> jobInfoMap = JobInfoParser.parseJobInfoParams(jobInfo);
-        
+
         JobDashboardRequest request = JobDashboardRequest.builder()
                 .company(company)
                 .org(org)
@@ -224,5 +227,42 @@ public class GraphUIController {
                 .build();
         List<JobDashboardMetrics> metrics = graphService.getPipelineDashboard(request);
         return new ResponseEntity<>(PipelineDashboardHtmlHelper.renderPipelineDashboardMetrics(metrics, request), HttpStatus.OK);
+    }
+
+    @GetMapping(path = "company/{company}/jobs", produces = "text/html;charset=UTF-8")
+    public ResponseEntity<String> getCompanyJobDashboard(
+            @PathVariable String company,
+            @RequestParam(required = false) List<String> jobInfo,
+            @RequestParam(required = false, defaultValue = "90") Integer days
+    ) {
+        Map<String, String> jobInfoMap = JobInfoParser.parseJobInfoParams(jobInfo);
+
+        JobDashboardRequest request = JobDashboardRequest.builder()
+                .company(company)
+                // org is null for company-level view
+                .jobInfos(jobInfoMap)
+                .days(days)
+                .build();
+        List<JobDashboardMetrics> metrics = graphService.getPipelineDashboard(request);
+        return new ResponseEntity<>(
+            PipelineDashboardHtmlHelper.renderPipelineDashboardMetrics(metrics, request),
+            HttpStatus.OK
+        );
+    }
+
+    @GetMapping(path = "company/{company}/org/{org}/pipelines", produces = "text/html;charset=UTF-8")
+    public RedirectView redirectPipelinesToJobs(
+            @PathVariable String company,
+            @PathVariable String org,
+            HttpServletRequest request
+    ) {
+        String redirectUrl = String.format("/company/%s/org/%s/jobs", company, org);
+        String queryString = request.getQueryString();
+        if (queryString != null && !queryString.isEmpty()) {
+            redirectUrl += "?" + queryString;
+        }
+        RedirectView redirectView = new RedirectView(redirectUrl);
+        redirectView.setStatusCode(HttpStatus.MOVED_PERMANENTLY);
+        return redirectView;
     }
 }
