@@ -7,15 +7,15 @@
 
 ### URL Changes
 
-- [ ] **URL-01**: Rename `/pipelines` to `/jobs` at org level (`/company/{company}/org/{org}/jobs`)
-- [ ] **URL-02**: Add redirect from old `/pipelines` URLs to `/jobs`
+- [x] **URL-01**: Rename `/pipelines` to `/jobs` at org level (`/company/{company}/org/{org}/jobs`)
+- [x] **URL-02**: Add redirect from old `/pipelines` URLs to `/jobs`
 - [ ] **URL-03**: Add company-level endpoint at `/company/{company}/jobs`
 - [ ] **URL-04**: Support `?days=N` query parameter at company level
 
 ### UI Changes
 
-- [ ] **UI-01**: Update dashboard title from "Pipelines" to "Jobs"
-- [ ] **UI-02**: Update navigation links from "pipelines" to "jobs"
+- [x] **UI-01**: Update dashboard title from "Pipelines" to "Jobs"
+- [x] **UI-02**: Update navigation links from "pipelines" to "jobs"
 
 ## v2 Requirements
 
@@ -33,12 +33,12 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| URL-01 | Phase 1 | Pending |
-| URL-02 | Phase 1 | Pending |
+| URL-01 | Phase 1 | Complete |
+| URL-02 | Phase 1 | Complete |
 | URL-03 | Phase 2 | Pending |
 | URL-04 | Phase 2 | Pending |
-| UI-01 | Phase 1 | Pending |
-| UI-02 | Phase 1 | Pending |
+| UI-01 | Phase 1 | Complete |
+| UI-02 | Phase 1 | Complete |
 
 **Coverage:**
 - v1 requirements: 6 total
@@ -47,4 +47,4 @@
 
 ---
 *Requirements defined: 2025-02-11*
-*Last updated: 2026-02-11 after roadmap creation*
+*Last updated: 2026-02-11 after Phase 1 completion*

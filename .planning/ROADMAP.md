@@ -12,7 +12,7 @@ This roadmap transforms the existing "pipelines" dashboard into a properly-named
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Rename Org-Level Dashboard** - Update URLs and UI from "pipelines" to "jobs"
+- [x] **Phase 1: Rename Org-Level Dashboard** - Update URLs and UI from "pipelines" to "jobs"
 - [ ] **Phase 2: Add Company-Level Dashboard** - Extend dashboard to company level with org grouping
 
 ## Phase Details
@@ -28,7 +28,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 1 plan
 
 Plans:
-- [ ] 01-01-PLAN.md — Rename URLs and UI from "pipelines" to "jobs" with redirect
+- [x] 01-01-PLAN.md — Rename URLs and UI from "pipelines" to "jobs" with redirect
 
 ### Phase 2: Add Company-Level Dashboard
 **Goal**: Company-level dashboard shows jobs grouped by org
@@ -50,9 +50,9 @@ Phases execute in numeric order: 1 → 2
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Rename Org-Level Dashboard | 0/1 | Ready to execute | - |
+| 1. Rename Org-Level Dashboard | 1/1 | ✓ Complete | 2026-02-11 |
 | 2. Add Company-Level Dashboard | 0/TBD | Not started | - |
 
 ---
 *Roadmap created: 2026-02-11*
-*Last updated: 2026-02-11*
+*Last updated: 2026-02-11 after Phase 1 completion*
