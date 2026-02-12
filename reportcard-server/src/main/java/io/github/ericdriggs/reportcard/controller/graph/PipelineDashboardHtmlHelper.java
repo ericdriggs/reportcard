@@ -172,7 +172,9 @@ public class PipelineDashboardHtmlHelper {
     }
 
     public static String renderPipelineDashboardMetrics(List<JobDashboardMetrics> metrics, io.github.ericdriggs.reportcard.model.pipeline.JobDashboardRequest request) {
-        String title = request.getCompany() + "/" + request.getOrg();
+        String title = request.getOrg() != null ?
+            request.getCompany() + "/" + request.getOrg() :
+            request.getCompany();
         return renderPipelineDashboard(metrics, title, request.getDays());
     }
 }
