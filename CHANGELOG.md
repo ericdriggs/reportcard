@@ -4,7 +4,7 @@ High-level feature changes for Browse JSON API. See git history for detailed com
 
 ---
 
-## [0.1.24] - 2026-02-09
+## [0.1.25] - 2026-02-09
 
 ### Browse JSON API
 
