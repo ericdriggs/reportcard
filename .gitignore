@@ -34,3 +34,9 @@ gradle-app.setting
 collaboration_progress.md
 .kiro/
 .kiro
+/.planning/phases/
+/.planning/config.json
+/.planning/PROJECT.md
+/.planning/REQUIREMENTS.md
+/.planning/ROADMAP.md
+/.planning/STATE.md
