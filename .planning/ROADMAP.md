@@ -38,10 +38,11 @@ Plans:
   1. User can access company-level jobs dashboard at `/company/{company}/jobs`
   2. Company dashboard displays jobs organized by org (matching org-level structure)
   3. User can filter company dashboard using `?days=N` query parameter (same as org level)
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] TBD (will be defined during plan-phase)
+- [ ] 02-01-PLAN.md — Backend support for company-level queries (optional org filter)
+- [ ] 02-02-PLAN.md — Company-level endpoint and navigation
 
 ## Progress
 
@@ -51,8 +52,8 @@ Phases execute in numeric order: 1 → 2
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Rename Org-Level Dashboard | 1/1 | ✓ Complete | 2026-02-11 |
-| 2. Add Company-Level Dashboard | 0/TBD | Not started | - |
+| 2. Add Company-Level Dashboard | 0/2 | Not started | - |
 
 ---
 *Roadmap created: 2026-02-11*
-*Last updated: 2026-02-11 after Phase 1 completion*
+*Last updated: 2026-02-11 after Phase 2 planning*
