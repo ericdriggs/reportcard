@@ -61,10 +61,12 @@ public class BrowseHtmlHelper {
                 """
                 <fieldset>
                 <legend>{companyName} links</legend>
+                    {jobsLink}<br>
                     {metricsLink}
                 </fieldset>
                 """
                         .replace("{companyName}", company)
+                        .replace("{jobsLink}", "<a href='/company/" + company + "/jobs?days=90' style='text-decoration: none;'>" + company + " Jobs ⏲</a>")
                         .replace("{metricsLink}", getLink(company + " Metrics 🔢", "/metrics/company/" + company ))
                 ;
     }
