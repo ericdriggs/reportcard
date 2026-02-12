@@ -593,11 +593,13 @@ public class GraphService extends AbstractPersistService {
     List<CompanyGraph> getPipelineDashboardCompanyGraphs(JobDashboardRequest request) {
         TableConditionMap tableConditionMap = new TableConditionMap();
         tableConditionMap.put(COMPANY, COMPANY.COMPANY_NAME.eq(request.getCompany()));
-        tableConditionMap.put(ORG, ORG.ORG_NAME.eq(request.getOrg()));
-        
+        if (request.getOrg() != null) {
+            tableConditionMap.put(ORG, ORG.ORG_NAME.eq(request.getOrg()));
+        }
+
         // Build conditions for lightweight runIds query
         Condition companyCondition = COMPANY.COMPANY_NAME.eq(request.getCompany());
-        Condition orgCondition = ORG.ORG_NAME.eq(request.getOrg());
+        Condition orgCondition = request.getOrg() != null ? ORG.ORG_NAME.eq(request.getOrg()) : trueCondition();
         Condition jobCondition = trueCondition();
         Condition runCondition = trueCondition();
         
