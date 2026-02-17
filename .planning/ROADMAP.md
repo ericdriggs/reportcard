@@ -20,8 +20,9 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 5: Dashboard Display** - UI presentation of job duration vs test execution time ✓
 - [x] **Phase 6: reportcard-client-java Support** - Karate JSON upload support in sibling repository ✓
 - [x] **Phase 7: Tags Investigation** - Research extracting scenario tags from Karate JSON for test_result storage and searchability ✓
-- [ ] **Phase 8: Karate Mapper + Tag Storage** - Full Karate JSON mapper with tag extraction and storage
-- [ ] **Phase 9: Tag Query API** - REST API for searching tests by tag expressions
+- [x] **Phase 8: Karate Mapper + Tag Storage** - Full Karate JSON mapper with tag extraction and storage ✓
+- [x] **Phase 9: Tag Query API** - REST API for searching tests by tag expressions ✓
+- [ ] **Phase 10: Tag Query HTML Interface** - HTML endpoints and browse UI links for tag search
 
 ## Phase Details
 
@@ -260,14 +261,38 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 09-01-PLAN.md — TagExpressionParser with TDD (boolean expression parsing)
-- [ ] 09-02-PLAN.md — TagQueryService and TagQueryBuilder (SQL generation)
-- [ ] 09-03-PLAN.md — TagQueryController REST API
+- [x] 09-01-PLAN.md — TagExpressionParser with TDD (boolean expression parsing) ✓
+- [x] 09-02-PLAN.md — TagQueryService and TagQueryBuilder (SQL generation) ✓
+- [x] 09-03-PLAN.md — TagQueryController REST API ✓
+
+### Phase 10: Tag Query HTML Interface
+**Goal**: HTML endpoints and browse UI links for tag search discovery
+
+**Depends on**: Phase 9 (needs Tag Query API)
+
+**Requirements**:
+- HTML controller mirroring TagQueryController endpoints
+- Search form for empty `?tags=` parameter
+- Results rendering with clickable links to jobs/runs
+- "Tag Search" links in browse page navigation
+
+**Success Criteria** (what must be TRUE):
+  1. TagQueryUIController serves HTML at `/company/{company}/.../tags/tests`
+  2. Empty tags parameter shows search form
+  3. Valid expression shows results grouped by branch/sha/job
+  4. Each result links to corresponding browse page
+  5. Browse pages include "Tag Search" link in navigation
+  6. Invalid expressions show error with form
+
+**Plans**: 1 plan
+
+Plans:
+- [ ] 10-01-PLAN.md — TagQueryHtmlHelper, TagQueryUIController, browse link integration
 
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 4.1 → 5 → 6 → 7 → 8 → 9
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 4.1 → 5 → 6 → 7 → 8 → 9 → 10
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -279,5 +304,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 4.1 → 5 → 6 → 7 �
 | 5. Dashboard Display | 3/3 | ✓ Complete | 2026-02-03 |
 | 6. reportcard-client-java | 1/1 | ✓ Complete | 2026-02-09 |
 | 7. Tags Investigation | 3/3 | ✓ Complete | 2026-02-09 |
-| 8. Karate Mapper + Tags | 0/6 | Not started | - |
-| 9. Tag Query API | 0/3 | Not started | - |
+| 8. Karate Mapper + Tags | 5/5 | ✓ Complete | 2026-02-10 |
+| 9. Tag Query API | 3/3 | ✓ Complete | 2026-02-10 |
+| 10. Tag Query HTML | 0/1 | Not started | - |
