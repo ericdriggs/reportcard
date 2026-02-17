@@ -4,6 +4,7 @@ import io.github.ericdriggs.reportcard.ReportcardApplication;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.Result;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -37,6 +38,7 @@ public class TagIndexBenchmarkTest {
     private static final String[] KEY_VALUE_TAGS = {"env=staging", "env=prod", "env=dev", "browser=chrome", "browser=firefox", "browser=safari", "priority=high", "priority=low"};
 
     @Test
+    @Disabled("Research/benchmark tool - run manually when needed, not in CI")
     void benchmarkMultiValueIndex() {
         System.out.println("\n" + "=".repeat(80));
         System.out.println("TAG INDEX BENCHMARK - Multi-Value Index on JSON Array");

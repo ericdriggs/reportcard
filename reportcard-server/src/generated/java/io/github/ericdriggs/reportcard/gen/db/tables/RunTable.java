@@ -18,13 +18,13 @@ import lombok.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
-import org.jooq.Function9;
+import org.jooq.Function7;
 import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
-import org.jooq.Row9;
+import org.jooq.Row7;
 import org.jooq.Schema;
 import org.jooq.SelectField;
 import org.jooq.Table;
@@ -43,7 +43,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RunTable extends TableImpl<RunRecord> {
 
-    private static final long serialVersionUID = -1323945069;
+    private static final long serialVersionUID = -1703280094;
 
     /**
      * The reference instance of <code>reportcard.run</code>
@@ -92,16 +92,6 @@ public class RunTable extends TableImpl<RunRecord> {
      * The column <code>reportcard.run.is_success</code>.
      */
     public final TableField<RunRecord, Boolean> IS_SUCCESS = createField(DSL.name("is_success"), SQLDataType.BOOLEAN.nullable(false).defaultValue(DSL.inline("1", SQLDataType.BOOLEAN)), this, "");
-
-    /**
-     * The column <code>reportcard.run.start_time</code>.
-     */
-    public final TableField<RunRecord, Instant> START_TIME = createField(DSL.name("start_time"), SQLDataType.INSTANT, this, "");
-
-    /**
-     * The column <code>reportcard.run.end_time</code>.
-     */
-    public final TableField<RunRecord, Instant> END_TIME = createField(DSL.name("end_time"), SQLDataType.INSTANT, this, "");
 
     private RunTable(Name alias, Table<RunRecord> aliased) {
         this(alias, aliased, null);
@@ -218,18 +208,18 @@ public class RunTable extends TableImpl<RunRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row9 type methods
+    // Row7 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row9<Long, String, Long, Integer, String, Instant, Boolean, Instant, Instant> fieldsRow() {
-        return (Row9) super.fieldsRow();
+    public Row7<Long, String, Long, Integer, String, Instant, Boolean> fieldsRow() {
+        return (Row7) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function9<? super Long, ? super String, ? super Long, ? super Integer, ? super String, ? super Instant, ? super Boolean, ? super Instant, ? super Instant, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function7<? super Long, ? super String, ? super Long, ? super Integer, ? super String, ? super Instant, ? super Boolean, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
@@ -237,7 +227,7 @@ public class RunTable extends TableImpl<RunRecord> {
      * Convenience mapping calling {@link SelectField#convertFrom(Class,
      * Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function9<? super Long, ? super String, ? super Long, ? super Integer, ? super String, ? super Instant, ? super Boolean, ? super Instant, ? super Instant, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function7<? super Long, ? super String, ? super Long, ? super Integer, ? super String, ? super Instant, ? super Boolean, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

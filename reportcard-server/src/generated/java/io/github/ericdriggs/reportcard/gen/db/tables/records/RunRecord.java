@@ -13,8 +13,8 @@ import lombok.Generated;
 
 import org.jooq.Field;
 import org.jooq.Record1;
-import org.jooq.Record9;
-import org.jooq.Row9;
+import org.jooq.Record7;
+import org.jooq.Row7;
 import org.jooq.impl.UpdatableRecordImpl;
 
 
@@ -23,9 +23,9 @@ import org.jooq.impl.UpdatableRecordImpl;
  */
 @Generated
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record9<Long, String, Long, Integer, String, Instant, Boolean, Instant, Instant> {
+public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7<Long, String, Long, Integer, String, Instant, Boolean> {
 
-    private static final long serialVersionUID = -462511936;
+    private static final long serialVersionUID = -1314155804;
 
     /**
      * Setter for <code>reportcard.run.run_id</code>.
@@ -132,36 +132,6 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record9
         return (Boolean) get(6);
     }
 
-    /**
-     * Setter for <code>reportcard.run.start_time</code>.
-     */
-    public RunRecord setStartTime(Instant value) {
-        set(7, value);
-        return this;
-    }
-
-    /**
-     * Getter for <code>reportcard.run.start_time</code>.
-     */
-    public Instant getStartTime() {
-        return (Instant) get(7);
-    }
-
-    /**
-     * Setter for <code>reportcard.run.end_time</code>.
-     */
-    public RunRecord setEndTime(Instant value) {
-        set(8, value);
-        return this;
-    }
-
-    /**
-     * Getter for <code>reportcard.run.end_time</code>.
-     */
-    public Instant getEndTime() {
-        return (Instant) get(8);
-    }
-
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
@@ -172,17 +142,17 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record9
     }
 
     // -------------------------------------------------------------------------
-    // Record9 type implementation
+    // Record7 type implementation
     // -------------------------------------------------------------------------
 
     @Override
-    public Row9<Long, String, Long, Integer, String, Instant, Boolean, Instant, Instant> fieldsRow() {
-        return (Row9) super.fieldsRow();
+    public Row7<Long, String, Long, Integer, String, Instant, Boolean> fieldsRow() {
+        return (Row7) super.fieldsRow();
     }
 
     @Override
-    public Row9<Long, String, Long, Integer, String, Instant, Boolean, Instant, Instant> valuesRow() {
-        return (Row9) super.valuesRow();
+    public Row7<Long, String, Long, Integer, String, Instant, Boolean> valuesRow() {
+        return (Row7) super.valuesRow();
     }
 
     @Override
@@ -221,16 +191,6 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record9
     }
 
     @Override
-    public Field<Instant> field8() {
-        return RunTable.RUN.START_TIME;
-    }
-
-    @Override
-    public Field<Instant> field9() {
-        return RunTable.RUN.END_TIME;
-    }
-
-    @Override
     public Long component1() {
         return getRunId();
     }
@@ -266,16 +226,6 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record9
     }
 
     @Override
-    public Instant component8() {
-        return getStartTime();
-    }
-
-    @Override
-    public Instant component9() {
-        return getEndTime();
-    }
-
-    @Override
     public Long value1() {
         return getRunId();
     }
@@ -308,16 +258,6 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record9
     @Override
     public Boolean value7() {
         return getIsSuccess();
-    }
-
-    @Override
-    public Instant value8() {
-        return getStartTime();
-    }
-
-    @Override
-    public Instant value9() {
-        return getEndTime();
     }
 
     @Override
@@ -363,19 +303,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record9
     }
 
     @Override
-    public RunRecord value8(Instant value) {
-        setStartTime(value);
-        return this;
-    }
-
-    @Override
-    public RunRecord value9(Instant value) {
-        setEndTime(value);
-        return this;
-    }
-
-    @Override
-    public RunRecord values(Long value1, String value2, Long value3, Integer value4, String value5, Instant value6, Boolean value7, Instant value8, Instant value9) {
+    public RunRecord values(Long value1, String value2, Long value3, Integer value4, String value5, Instant value6, Boolean value7) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -383,8 +311,6 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record9
         value5(value5);
         value6(value6);
         value7(value7);
-        value8(value8);
-        value9(value9);
         return this;
     }
 
@@ -402,7 +328,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record9
     /**
      * Create a detached, initialised RunRecord
      */
-    public RunRecord(Long runId, String runReference, Long jobFk, Integer jobRunCount, String sha, Instant runDate, Boolean isSuccess, Instant startTime, Instant endTime) {
+    public RunRecord(Long runId, String runReference, Long jobFk, Integer jobRunCount, String sha, Instant runDate, Boolean isSuccess) {
         super(RunTable.RUN);
 
         setRunId(runId);
@@ -412,8 +338,6 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record9
         setSha(sha);
         setRunDate(runDate);
         setIsSuccess(isSuccess);
-        setStartTime(startTime);
-        setEndTime(endTime);
     }
 
     /**
@@ -430,8 +354,6 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record9
             setSha(value.getSha());
             setRunDate(value.getRunDate());
             setIsSuccess(value.getIsSuccess());
-            setStartTime(value.getStartTime());
-            setEndTime(value.getEndTime());
         }
     }
 }

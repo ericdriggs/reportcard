@@ -174,7 +174,7 @@ task generateJooqSchemaSource {
                         )
                         .withTarget(new Target()
                                 .withPackageName('io.github.ericdriggs.reportcard.gen.db')
-                                .withDirectory('/Users/eric.r.driggs/github/ericdriggs/reportcard/reportcard-server/src/generated/java')
+                                .withDirectory("${projectDir}/src/generated/java")
                         )
                         .withStrategy(new Strategy().withName("org.jooq.codegen.SuffixGeneratorStrategy"))
                 )

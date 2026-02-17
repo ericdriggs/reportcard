@@ -90,7 +90,7 @@ Recent decisions affecting current work:
 - BigDecimal.compareTo() for zero comparison (08-04) - 0.000 with scale doesn't equal BigDecimal.ZERO using equals()
 - Status escalation hierarchy in converter (08-04) - skipped < success < failure < error, worst step wins
 - Background elements skipped in converter (08-04) - Only scenario/scenario_outline processed per Cucumber semantics
-- Karate JSON primary, JUnit fallback (08-05) - When no Cucumber JSON found in karate.tar.gz
+- ~~Karate JSON primary, JUnit fallback~~ — **REVERSED: JUnit primary, Karate supplemental** (post-08) - Karate folder structure unreliable for multi-stage builds
 - Tags passed to persistence layer (08-05) - Storage pending DDL (08-03), embedded in test_suites_json
 - Time values not expected to match between formats (08-06) - JUnit wall clock vs Cucumber step sum
 - Tag expansion in tests (08-06) - Comma-separated values expand per KarateTagExtractor
@@ -104,6 +104,8 @@ Recent decisions affecting current work:
 - SHA is run.sha column (09-03) - Not separate table, filtered via run table join
 - Results grouped by branch->sha->job (09-03) - Hierarchy structure for navigation
 - WebMvcTest for controller tests (09-03) - Fast unit tests with mocked service
+- JUnit primary, Karate supplemental (post-08) - JUnit XML reliable per-stage; Karate reports folder is "latest" regardless of stage, older get timestamp suffix
+- Graceful Karate JSON failure (post-08) - Log warning and continue without tags if extraction fails
 
 ### Pending Todos
 
@@ -142,6 +144,7 @@ External repository Java version issue: reportcard-client-java test runtime fail
 
 ## Session Continuity
 
-Last session: 2026-02-10T18:56:05Z
-Stopped at: Completed 09-03-PLAN.md (Tag Query Controller)
+Last session: 2026-02-10T21:08:00Z
+Stopped at: Committed JUnit-primary behavior change (refactor: JUnit primary source, Karate tags supplemental)
 Resume file: None
+Note: All phases complete. Design reversed from Karate-primary to JUnit-primary due to Karate folder structure issues.

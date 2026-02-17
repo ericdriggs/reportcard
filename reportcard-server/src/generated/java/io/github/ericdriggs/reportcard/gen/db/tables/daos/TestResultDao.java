@@ -282,4 +282,19 @@ public class TestResultDao extends DAOImpl<TestResultRecord, TestResultPojo, Lon
     public List<TestResultPojo> fetchByTestSuitesJsonTable(String... values) {
         return fetch(TestResultTable.TEST_RESULT.TEST_SUITES_JSON, values);
     }
+
+    /**
+     * Fetch records that have <code>tags BETWEEN lowerInclusive AND
+     * upperInclusive</code>
+     */
+    public List<TestResultPojo> fetchRangeOfTagsTable(String lowerInclusive, String upperInclusive) {
+        return fetchRange(TestResultTable.TEST_RESULT.TAGS, lowerInclusive, upperInclusive);
+    }
+
+    /**
+     * Fetch records that have <code>tags IN (values)</code>
+     */
+    public List<TestResultPojo> fetchByTagsTable(String... values) {
+        return fetch(TestResultTable.TEST_RESULT.TAGS, values);
+    }
 }

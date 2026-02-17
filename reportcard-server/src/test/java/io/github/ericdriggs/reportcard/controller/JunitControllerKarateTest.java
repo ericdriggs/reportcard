@@ -9,7 +9,11 @@ import io.github.ericdriggs.reportcard.gen.db.TestData;
 import io.github.ericdriggs.reportcard.model.StageDetails;
 import io.github.ericdriggs.reportcard.persist.test_result.TestResultPersistServiceTest;
 import io.github.ericdriggs.reportcard.xml.ResourceReaderComponent;
+import io.github.ericdriggs.reportcard.gen.db.tables.records.TestResultRecord;
 import lombok.extern.slf4j.Slf4j;
+import org.jooq.DSLContext;
+
+import static io.github.ericdriggs.reportcard.gen.db.tables.TestResultTable.TEST_RESULT;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -50,6 +54,9 @@ public class JunitControllerKarateTest {
 
     @Autowired
     ResourceReaderComponent resourceReader;
+
+    @Autowired
+    DSLContext dsl;
 
     private static final String KARATE_SUMMARY_JSON = """
         {
@@ -131,9 +138,16 @@ public class JunitControllerKarateTest {
         // Should have karate and html storages (2 storages)
         assertEquals(2, response.getStorages().size());
 
-        // Verify run has timing data
-        Long runId = response.getStagePath().getRun().getRunId();
-        assertNotNull(runId);
+        // Verify test_result has timing data from karate-summary-json.txt
+        Long stageId = response.getStagePath().getStage().getStageId();
+        assertNotNull(stageId, "stageId should not be null");
+
+        TestResultRecord testResult = dsl.selectFrom(TEST_RESULT)
+                .where(TEST_RESULT.STAGE_FK.eq(stageId))
+                .fetchOne();
+        assertNotNull(testResult, "testResult should exist in database for stage");
+        assertNotNull(testResult.getStartTime(), "startTime should be populated from Karate timing");
+        assertNotNull(testResult.getEndTime(), "endTime should be populated from Karate timing");
     }
 
     @Test

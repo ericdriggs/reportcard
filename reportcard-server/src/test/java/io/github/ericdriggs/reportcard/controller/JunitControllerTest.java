@@ -153,7 +153,7 @@ public class JunitControllerTest {
     }
 
 
-    final String expectedStageRegex = "/company/company1/org/org1/repo/repo1/branch/master/jobinfo/application=fooapp,host=foocorp.jenkins.com,pipeline=foopipeline/runcount/.*/stage/apiTest";
+    final String expectedStageRegex = ".*/company/company1/org/org1/repo/repo1/branch/master/jobinfo/application=fooapp,host=foocorp.jenkins.com,pipeline=foopipeline/runcount/.*/stage/apiTest";
 
     final String stageName = "apiTest";
 
@@ -192,11 +192,11 @@ public class JunitControllerTest {
                 assertThat(createdUrls.get("stage"), matchesPattern(expectedStageRegex));
                 {
                     final String htmlUrl = createdUrls.get("cucumber_html");
-                    assertThat(htmlUrl, matchesPattern("/v1/api/storage/key/rc/company1/org1/repo1/master/.*/1/.*/apiTest/cucumber_html/html-samples/foo/index.html"));
+                    assertThat(htmlUrl, matchesPattern(".*/v1/api/storage/key/rc/company1/org1/repo1/master/.*/1/.*/apiTest/cucumber_html/html-samples/foo/index.html"));
                 }
                 {
                     final String junitUrl = createdUrls.get("junit");
-                    assertThat(junitUrl, matchesPattern("/v1/api/storage/key/rc/company1/org1/repo1/master/.*/1/.*/apiTest/junit"));
+                    assertThat(junitUrl, matchesPattern(".*/v1/api/storage/key/rc/company1/org1/repo1/master/.*/1/.*/apiTest/junit"));
                 }
             }
 
