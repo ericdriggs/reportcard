@@ -1,6 +1,7 @@
 package io.github.ericdriggs.reportcard.persist.tags;
 
 import io.github.ericdriggs.reportcard.gen.db.tables.records.TestResultRecord;
+import io.github.ericdriggs.reportcard.model.TestResultModel;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Select;
@@ -49,8 +50,9 @@ public class TagQueryBuilder {
 
     /**
      * Maximum length for individual tags due to multi-value index CHAR(25) constraint.
+     * References TestResultModel.MAX_TAG_LENGTH as the single source of truth.
      */
-    public static final int MAX_TAG_LENGTH = 25;
+    public static final int MAX_TAG_LENGTH = TestResultModel.MAX_TAG_LENGTH;
 
     /**
      * Build a MEMBER OF condition for a single tag.

@@ -1,6 +1,7 @@
 package io.github.ericdriggs.reportcard.persist.tags;
 
 import io.github.ericdriggs.reportcard.gen.db.tables.records.TestResultRecord;
+import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
 import org.jooq.Result;
 import org.jooq.Select;
@@ -21,6 +22,7 @@ import static io.github.ericdriggs.reportcard.gen.db.Tables.*;
  * <p>OR queries use UNION for index usage (see {@link TagQueryBuilder}).
  */
 @Service
+@Slf4j
 public class TagQueryService {
 
     private final DSLContext dsl;
@@ -195,9 +197,25 @@ public class TagQueryService {
 
         // Resolve path to IDs
         Integer companyId = resolveCompanyId(company);
+        if (companyId == null) {
+            log.debug("Company not found: {}", company);
+            return Collections.emptyMap();
+        }
         Integer orgId = (org != null) ? resolveOrgId(companyId, org) : null;
+        if (org != null && orgId == null) {
+            log.debug("Org not found: {} in company {}", org, company);
+            return Collections.emptyMap();
+        }
         Integer repoId = (repo != null && orgId != null) ? resolveRepoId(orgId, repo) : null;
+        if (repo != null && repoId == null) {
+            log.debug("Repo not found: {} in org {}", repo, org);
+            return Collections.emptyMap();
+        }
         Integer branchId = (branch != null && repoId != null) ? resolveBranchId(repoId, branch) : null;
+        if (branch != null && branchId == null) {
+            log.debug("Branch not found: {} in repo {}", branch, repo);
+            return Collections.emptyMap();
+        }
 
         // Execute tag query with scope
         List<TestResultRecord> results = findByTagExpression(expression, companyId, orgId, repoId, branchId);
@@ -355,7 +373,9 @@ public class TagQueryService {
                 }
             }
         } catch (Exception e) {
-            // Return empty on parse failure
+            log.warn("Failed to extract test names from testSuitesJson: {}",
+                    testSuitesJson != null ? testSuitesJson.substring(0, Math.min(100, testSuitesJson.length())) : "null",
+                    e);
         }
         return testNames;
     }

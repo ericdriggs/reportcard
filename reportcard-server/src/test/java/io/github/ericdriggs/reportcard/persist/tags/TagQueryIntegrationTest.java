@@ -4,6 +4,7 @@ import io.github.ericdriggs.reportcard.ReportcardApplication;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.TestResultRecord;
 import io.github.ericdriggs.reportcard.model.*;
 import io.github.ericdriggs.reportcard.persist.TestResultPersistService;
+import org.jooq.DSLContext;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,6 +14,7 @@ import org.springframework.test.context.TestPropertySource;
 import java.math.BigDecimal;
 import java.util.*;
 
+import static io.github.ericdriggs.reportcard.gen.db.Tables.TEST_RESULT;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -27,14 +29,17 @@ public class TagQueryIntegrationTest {
 
     private final TestResultPersistService testResultPersistService;
     private final TagQueryService tagQueryService;
+    private final DSLContext dsl;
 
     private static final Random random = new Random();
 
     @Autowired
     public TagQueryIntegrationTest(TestResultPersistService testResultPersistService,
-                                   TagQueryService tagQueryService) {
+                                   TagQueryService tagQueryService,
+                                   DSLContext dsl) {
         this.testResultPersistService = testResultPersistService;
         this.tagQueryService = tagQueryService;
+        this.dsl = dsl;
     }
 
     @Test
@@ -190,6 +195,111 @@ public class TagQueryIntegrationTest {
         boolean found = results.stream()
                 .anyMatch(r -> r.getTestResultId().equals(insertedId));
         assertTrue(found, "Should find the inserted test result via truncated tag query");
+    }
+
+    @Test
+    void findByTagExpressionByPath_nonexistentCompany_returnsEmptyMap() {
+        // Given: a company that doesn't exist
+        String nonexistentCompany = "nonexistent-company-" + UUID.randomUUID();
+
+        // When: query with nonexistent company
+        var results = tagQueryService.findByTagExpressionByPath(
+                "smoke", nonexistentCompany, null, null, null, null);
+
+        // Then: should return empty map, not throw
+        assertNotNull(results);
+        assertTrue(results.isEmpty(), "Should return empty map for nonexistent company");
+    }
+
+    @Test
+    void findByTagExpressionByPath_existingCompanyNonexistentOrg_returnsEmptyMap() {
+        // Given: insert a test result to create a company
+        TestResultModel testResult = createTestResultModel();
+        StageDetails stageDetails = createUniqueStageDetails();
+        testResultPersistService.insertTestResult(stageDetails, testResult, List.of("smoke"));
+
+        // When: query with valid company but nonexistent org
+        String nonexistentOrg = "nonexistent-org-" + UUID.randomUUID();
+        var results = tagQueryService.findByTagExpressionByPath(
+                "smoke", stageDetails.getCompany(), nonexistentOrg, null, null, null);
+
+        // Then: should return empty map, not throw
+        assertNotNull(results);
+        assertTrue(results.isEmpty(), "Should return empty map for nonexistent org");
+    }
+
+    @Test
+    void findByTagExpressionByPath_existingCompanyOrgNonexistentRepo_returnsEmptyMap() {
+        // Given: insert a test result to create company/org
+        TestResultModel testResult = createTestResultModel();
+        StageDetails stageDetails = createUniqueStageDetails();
+        testResultPersistService.insertTestResult(stageDetails, testResult, List.of("smoke"));
+
+        // When: query with valid company/org but nonexistent repo
+        String nonexistentRepo = "nonexistent-repo-" + UUID.randomUUID();
+        var results = tagQueryService.findByTagExpressionByPath(
+                "smoke", stageDetails.getCompany(), stageDetails.getOrg(), nonexistentRepo, null, null);
+
+        // Then: should return empty map, not throw
+        assertNotNull(results);
+        assertTrue(results.isEmpty(), "Should return empty map for nonexistent repo");
+    }
+
+    @Test
+    void queryWithUnexpectedJsonStructure_handlesGracefully() {
+        // Given: insert a test result with tags
+        String uniqueTag = "malform-" + random.nextInt(1000000);
+        List<String> tags = List.of(uniqueTag);
+
+        TestResultModel testResult = createTestResultModel();
+        StageDetails stageDetails = createUniqueStageDetails();
+
+        StagePathTestResult inserted = testResultPersistService.insertTestResult(stageDetails, testResult, tags);
+        Long insertedId = inserted.getTestResult().getTestResultId();
+
+        // When: replace test_suites_json with valid JSON that doesn't match expected structure
+        // Expected: array of objects with testCases array containing objects with name
+        // Actual: object (not array) - this is valid JSON but wrong structure
+        dsl.update(TEST_RESULT)
+                .set(TEST_RESULT.TEST_SUITES_JSON, "{\"unexpected\": \"structure\"}")
+                .where(TEST_RESULT.TEST_RESULT_ID.eq(insertedId))
+                .execute();
+
+        // Then: query should not throw, should return results with empty tests list
+        var results = tagQueryService.findByTagExpressionByPath(
+                uniqueTag, stageDetails.getCompany(), stageDetails.getOrg(),
+                stageDetails.getRepo(), stageDetails.getBranch(), null);
+
+        assertNotNull(results, "Should not throw on unexpected JSON structure");
+        // The result should exist (tag matched) but tests list should be empty (structure mismatch)
+        assertFalse(results.isEmpty(), "Should find result by tag even with unexpected JSON structure");
+    }
+
+    @Test
+    void queryWithNullTestCases_handlesGracefully() {
+        // Given: insert a test result with tags
+        String uniqueTag = "nulltc-" + random.nextInt(1000000);
+        List<String> tags = List.of(uniqueTag);
+
+        TestResultModel testResult = createTestResultModel();
+        StageDetails stageDetails = createUniqueStageDetails();
+
+        StagePathTestResult inserted = testResultPersistService.insertTestResult(stageDetails, testResult, tags);
+        Long insertedId = inserted.getTestResult().getTestResultId();
+
+        // When: replace test_suites_json with array containing object without testCases
+        dsl.update(TEST_RESULT)
+                .set(TEST_RESULT.TEST_SUITES_JSON, "[{\"name\": \"suite\"}]")
+                .where(TEST_RESULT.TEST_RESULT_ID.eq(insertedId))
+                .execute();
+
+        // Then: query should not throw
+        var results = tagQueryService.findByTagExpressionByPath(
+                uniqueTag, stageDetails.getCompany(), stageDetails.getOrg(),
+                stageDetails.getRepo(), stageDetails.getBranch(), null);
+
+        assertNotNull(results, "Should not throw on missing testCases");
+        assertFalse(results.isEmpty(), "Should find result by tag even without testCases");
     }
 
     @Test
