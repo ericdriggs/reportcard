@@ -1,0 +1,28 @@
+[
+  {
+    "name": "feature-with-outline.feature",
+    "tags": [{"name": "@data-driven", "line": 1}],
+    "elements": [
+      {
+        "name": "Scenario Outline: login with credentials",
+        "type": "scenario_outline",
+        "tags": [{"name": "@outline", "line": 4}],
+        "steps": [
+          {"name": "Given user <username>", "result": {"status": "passed", "duration": 100000}},
+          {"name": "When password <password>", "result": {"status": "passed", "duration": 200000}},
+          {"name": "Then login succeeds", "result": {"status": "passed", "duration": 150000}}
+        ]
+      },
+      {
+        "name": "Scenario Outline: login with credentials (example 2)",
+        "type": "scenario_outline",
+        "tags": [{"name": "@outline", "line": 4}],
+        "steps": [
+          {"name": "Given user admin", "result": {"status": "passed", "duration": 100000}},
+          {"name": "When password secret", "result": {"status": "passed", "duration": 200000}},
+          {"name": "Then login succeeds", "result": {"status": "passed", "duration": 150000}}
+        ]
+      }
+    ]
+  }
+]

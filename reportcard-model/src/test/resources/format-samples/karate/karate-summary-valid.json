@@ -1,0 +1,14 @@
+{
+  "featureSummary": [],
+  "efficiency": 0.22618474365347813,
+  "featuresPassed": 5,
+  "featuresFailed": 1,
+  "totalTime": 348061.0,
+  "threads": 5,
+  "featuresSkipped": 1882,
+  "resultDate": "2026-01-20 03:00:56 PM",
+  "scenariosPassed": 6,
+  "version": "1.2.0",
+  "scenariosfailed": 1,
+  "elapsedTime": 307767.0
+}

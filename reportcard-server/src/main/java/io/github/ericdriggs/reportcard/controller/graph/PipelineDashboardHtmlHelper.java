@@ -2,7 +2,9 @@ package io.github.ericdriggs.reportcard.controller.graph;
 
 import io.github.ericdriggs.reportcard.controller.browse.BrowseHtmlHelper;
 import io.github.ericdriggs.reportcard.model.pipeline.JobDashboardMetrics;
+import io.github.ericdriggs.reportcard.util.NumberStringUtil;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 
@@ -125,6 +127,7 @@ public class PipelineDashboardHtmlHelper {
         sb.append("<th>Days since SUCCESS</th>").append(ls);
         sb.append("<th>Job Pass %</th>").append(ls);
         sb.append("<th>Test Pass %</th>").append(ls);
+        sb.append("<th>Avg Run Duration</th>").append(ls);
         sb.append("</tr>").append(ls);
         sb.append("</thead>").append(ls);
         
@@ -151,6 +154,7 @@ public class PipelineDashboardHtmlHelper {
             // Job pass % and Test pass %
             sb.append("<td class='percent'>").append(percentFromBigDecimal(metric.getJobPassPercent())).append("</td>").append(ls);
             sb.append("<td class='percent'>").append(percentFromBigDecimal(metric.getTestPassPercent())).append("</td>").append(ls);
+            sb.append("<td>").append(formatDuration(metric.getAvgRunDuration())).append("</td>").append(ls);
             sb.append("</tr>").append(ls);
         }
         sb.append("</tbody>").append(ls);
@@ -165,6 +169,8 @@ public class PipelineDashboardHtmlHelper {
         sb.append("<dd style='display: table-cell; border: 1px solid #ccc; padding: 8px; margin: 0;'>Percentage of runs where every test in the job passed. Calculated as: (passing runs / total runs).</dd>").append(ls);
         sb.append("<dt style='display: table-cell; border: 1px solid #ccc; padding: 8px; font-weight: bold; background: #f5f5f5;'>Test Pass %</dt>").append(ls);
         sb.append("<dd style='display: table-cell; border: 1px solid #ccc; padding: 8px; margin: 0;'>Percentage of individual tests that passed. Calculated as: (passing tests / total tests) across all runs.</dd>").append(ls);
+        sb.append("<dt style='display: table-cell; border: 1px solid #ccc; padding: 8px; font-weight: bold; background: #f5f5f5;'>Avg Run Duration</dt>").append(ls);
+        sb.append("<dd style='display: table-cell; border: 1px solid #ccc; padding: 8px; margin: 0;'>Average wall clock execution time per run. Calculated as the time from earliest stage start to latest stage end for each run, then averaged across runs with timing data. Displays \"-\" for jobs without timing data.</dd>").append(ls);
         sb.append("</dl>").append(ls);
         sb.append("</fieldset>").append(ls);
         
@@ -176,5 +182,12 @@ public class PipelineDashboardHtmlHelper {
             request.getCompany() + "/" + request.getOrg() :
             request.getCompany();
         return renderPipelineDashboard(metrics, title, request.getDays());
+    }
+
+    private static String formatDuration(BigDecimal durationSeconds) {
+        if (durationSeconds == null) {
+            return "-";  // Per DISP-03 requirement
+        }
+        return NumberStringUtil.fromSecondBigDecimalPadded(durationSeconds);
     }
 }

@@ -22,7 +22,7 @@ import lombok.Generated;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TestResultPojo implements Serializable {
 
-    private static final long serialVersionUID = 1230298613;
+    private static final long serialVersionUID = 1691178438;
 
     private Long testResultId;
     private Long stageFk;
@@ -31,9 +31,12 @@ public class TestResultPojo implements Serializable {
     private Integer error;
     private Integer failure;
     private BigDecimal time;
+    private Instant startTime;
+    private Instant endTime;
     private Instant testResultCreated;
     private String externalLinks;
     private Boolean isSuccess;
     private Boolean hasSkip;
     private String testSuitesJson;
+    private String tags;
 }

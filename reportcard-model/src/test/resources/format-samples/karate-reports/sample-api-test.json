@@ -1,0 +1,65 @@
+[
+  {
+    "line": 1,
+    "elements": [
+      {
+        "start_timestamp": "2026-01-20T10:30:00.000Z",
+        "line": 3,
+        "name": "verify user login",
+        "description": "",
+        "id": "user-authentication;verify-user-login",
+        "type": "scenario",
+        "keyword": "Scenario",
+        "tags": [
+          {"name": "@smoke", "line": 2},
+          {"name": "@auth", "line": 2}
+        ],
+        "steps": [
+          {
+            "name": "url 'https://api.example.com/auth'",
+            "result": {"duration": 500000000, "status": "passed"},
+            "match": {"location": "karate", "arguments": []},
+            "keyword": "Given ",
+            "line": 4
+          },
+          {
+            "name": "request { username: 'testuser', password: 'testpass' }",
+            "result": {"duration": 100000000, "status": "passed"},
+            "match": {"location": "karate", "arguments": []},
+            "keyword": "And ",
+            "line": 5
+          },
+          {
+            "name": "method post",
+            "result": {"duration": 2500000000, "status": "passed"},
+            "match": {"location": "karate", "arguments": []},
+            "keyword": "When ",
+            "line": 6
+          },
+          {
+            "name": "status 200",
+            "result": {"duration": 50000000, "status": "passed"},
+            "match": {"location": "karate", "arguments": []},
+            "keyword": "Then ",
+            "line": 7
+          },
+          {
+            "name": "match response.token != null",
+            "result": {"duration": 80000000, "status": "passed"},
+            "match": {"location": "karate", "arguments": []},
+            "keyword": "And ",
+            "line": 8
+          }
+        ]
+      }
+    ],
+    "name": "User Authentication",
+    "description": "Tests for user authentication API",
+    "id": "user-authentication",
+    "keyword": "Feature",
+    "uri": "classpath:features/auth/user-authentication.feature",
+    "tags": [
+      {"name": "@api", "line": 1}
+    ]
+  }
+]

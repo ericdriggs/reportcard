@@ -14,5 +14,6 @@ public class JunitHtmlPostRequest {
     String label;
     String indexFile;
     MultipartFile junitXmls;
+    MultipartFile karateTarGz;
     MultipartFile reports;
 }

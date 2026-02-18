@@ -32,11 +32,17 @@ gradle-app.setting
 .java-version
 .amazonq
 collaboration_progress.md
+.planning/phases
+.planning/research
+.planning/*.json
+.planning/*.md
 .kiro/
 .kiro
+tmp.log
 /.planning/phases/
 /.planning/config.json
 /.planning/PROJECT.md
 /.planning/REQUIREMENTS.md
 /.planning/ROADMAP.md
 /.planning/STATE.md
+/cucumber-json

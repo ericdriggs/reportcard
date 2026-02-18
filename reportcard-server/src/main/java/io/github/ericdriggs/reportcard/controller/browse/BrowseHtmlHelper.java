@@ -62,12 +62,14 @@ public class BrowseHtmlHelper {
                 <fieldset>
                 <legend>{companyName} links</legend>
                     {jobsLink}<br>
-                    {metricsLink}
+                    {metricsLink}<br>
+                    {tagSearchLink}
                 </fieldset>
                 """
                         .replace("{companyName}", company)
                         .replace("{jobsLink}", "<a href='/company/" + company + "/jobs?days=90' style='text-decoration: none;'>" + company + " Jobs ⏲</a>")
                         .replace("{metricsLink}", getLink(company + " Metrics 🔢", "/metrics/company/" + company ))
+                        .replace("{tagSearchLink}", getLink("Tag Search", "/company/" + company + "/tags/tests"))
                 ;
     }
 
@@ -124,13 +126,15 @@ public class BrowseHtmlHelper {
                 <legend>{orgName} links</legend>
                     {dashboardLink}<br>
                     {jobDashboardLink}<br>
-                    {metricsLink}
+                    {metricsLink}<br>
+                    {tagSearchLink}
                 </fieldset>
                 """
                         .replace("{orgName}", org)
                         .replace("{dashboardLink}", getLink(org + " Dashboard 📊", orgPath.toUrlPath() + "/dashboard?days=30"))
                         .replace("{jobDashboardLink}", "<a href='" + orgPath.toUrlPath() + "/jobs?days=90' style='text-decoration: none;'>" + org + " Jobs ⏲</a>" + System.lineSeparator())
                         .replace("{metricsLink}", getLink(org + " Metrics 🔢", "/metrics" + orgPath.toUrlPath() ))
+                        .replace("{tagSearchLink}", getLink("Tag Search", orgPath.toUrlPath() + "/tags/tests"))
                 ;
     }
 
@@ -744,7 +748,7 @@ public class BrowseHtmlHelper {
                 &nbsp;&nbsp;&nbsp;
                 <a href="/swagger-ui/index.html">swagger</a>&nbsp;&nbsp;&nbsp;
                 <a href="https://github.com/ericdriggs/reportcard">source</a>&nbsp;&nbsp;&nbsp;
-                <span style="color:white">ver: 0.1.25</span>
+                <span style="color:white">ver: 0.1.26</span>
               </span>
             </header>
             <nav aria-label="breadcrumb">

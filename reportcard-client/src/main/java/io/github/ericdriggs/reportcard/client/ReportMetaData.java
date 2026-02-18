@@ -31,6 +31,7 @@ public class ReportMetaData {
     private Map<String, String> externalLinks = new HashMap<>();
     private String testReportPath;
     private String testReportRegex;
+    private String karateJsonFile;
 
 
     public ReportMetaData() {
@@ -48,6 +49,7 @@ public class ReportMetaData {
         final String stage = argMap.get(ClientArg.STAGE);
         final String testReportPath = argMap.get(ClientArg.TEST_REPORT_PATH);
         final String testReportRegex = argMap.get(ClientArg.TEST_REPORT_REGEX);
+        final String karateJsonFile = argMap.get(ClientArg.KARATE_REPORT_PATH);
         final String runReference = argMap.get(ClientArg.RUN_REFERENCE);
         final String externalLinks = argMap.get(ClientArg.EXTERNAL_LINKS);
 
@@ -68,6 +70,7 @@ public class ReportMetaData {
         this.stage = stage;
         this.testReportPath = testReportPath;
         this.testReportRegex = testReportRegex;
+        this.karateJsonFile = karateJsonFile;
         this.runReference = runReference;
     }
 

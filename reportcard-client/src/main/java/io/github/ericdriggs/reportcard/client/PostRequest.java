@@ -15,7 +15,7 @@ public class PostRequest {
     private ReportMetaData reportMetaData;
 
     public String getPostUrl() {
-        return reportCardServerData.getReportCardHost() + "/v1/api/reports/";
+        return reportCardServerData.getReportCardHost() + "/v1/api/junit/storage/html/tar.gz";
     }
 
     public PostRequest(ReportMetaData reportMetaData, ReportCardServerData reportCardServerData) {

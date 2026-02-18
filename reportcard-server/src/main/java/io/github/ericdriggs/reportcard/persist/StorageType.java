@@ -15,6 +15,7 @@ public enum StorageType {
     XML(6),
     ZIP(7),
     JUNIT(8),
+    KARATE_JSON(9),
     ;
 
     StorageType(int storageTypeId) {

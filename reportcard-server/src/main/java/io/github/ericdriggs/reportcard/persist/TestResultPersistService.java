@@ -90,6 +90,37 @@ public class TestResultPersistService extends StagePathPersistService {
         return insertTestResult(stagePath, testResult);
     }
 
+    /**
+     * Insert test result with optional tags.
+     * Tags are stored in test_result.tags column as JSON array.
+     *
+     * @param stageDetails stage path details
+     * @param testResult the test result model
+     * @param tags flattened list of tags from Karate JSON (null for JUnit-only uploads)
+     * @return the inserted test result with stage path
+     */
+    public StagePathTestResult insertTestResult(StageDetails stageDetails, TestResultModel testResult, List<String> tags) {
+        StagePath stagePath = getUpsertedStagePath(stageDetails);
+        return insertTestResult(stagePath, testResult, tags);
+    }
+
+    /**
+     * Insert test result with optional tags.
+     *
+     * @param stagePath the stage path
+     * @param testResult the test result model
+     * @param tags flattened list of tags (null for JUnit-only uploads)
+     * @return the inserted test result with stage path
+     */
+    public StagePathTestResult insertTestResult(StagePath stagePath, TestResultModel testResult, List<String> tags) {
+        if (tags != null && !tags.isEmpty()) {
+            log.info("Storing {} tags in test_result.tags: {}",
+                    tags.size(), tags.size() <= 10 ? tags : tags.subList(0, 10) + "...");
+            testResult.setTagsList(tags);
+        }
+        return insertTestResult(stagePath, testResult);
+    }
+
     public StagePathTestResult insertTestResult(StagePath stagePath, TestResultModel testResult) {
         testResult.setStageFk(stagePath.getStage().getStageId());
         TestResultModel inserted = insertTestResult(testResult);
@@ -203,6 +234,7 @@ public class TestResultPersistService extends StagePathPersistService {
                     .setTime(testResult.getTime())
                     .setExternalLinks(testResult.getExternalLinks())
                     .setTestSuitesJson(TestSuiteModel.asJsonWithTruncatedErrorMessages(testSuites))
+                    .setTags(testResult.getTags())
                     .store();
 
             testResult = testResultRecord.into(TestResultModel.class);

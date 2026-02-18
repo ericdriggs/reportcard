@@ -1,0 +1,7 @@
+[
+  {
+    "name": "feature-with-no-scenarios.feature",
+    "tags": [{"name": "@empty", "line": 1}],
+    "elements": []
+  }
+]

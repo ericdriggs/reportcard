@@ -3,12 +3,15 @@
  */
 package io.github.ericdriggs.reportcard.dto;
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.SuperBuilder;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @SuperBuilder(builderMethodName = "testSuiteBuilder", toBuilder = true)
 @Data
@@ -36,6 +39,9 @@ public class TestSuite implements Serializable {
     private Boolean hasSkip;
     private String systemOut;
     private String systemErr;
+
+    @Builder.Default
+    private List<String> tags = new ArrayList<>();
 
 }
 

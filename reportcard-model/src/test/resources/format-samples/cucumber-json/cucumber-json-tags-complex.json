@@ -1,0 +1,32 @@
+[
+  {
+    "name": "feature-with-complex-tags.feature",
+    "tags": [
+      {"name": "@smoke", "line": 1},
+      {"name": "@env=prod,staging", "line": 1},
+      {"name": "@priority=high", "line": 1}
+    ],
+    "elements": [
+      {
+        "name": "scenario with inherited and own tags",
+        "type": "scenario",
+        "tags": [
+          {"name": "@team=platform", "line": 5},
+          {"name": "@jira=PROJ-123", "line": 5},
+          {"name": "@owner=john,jane", "line": 5}
+        ],
+        "steps": [
+          {"name": "Given setup", "result": {"status": "passed", "duration": 1000000}},
+          {"name": "Then verify", "result": {"status": "passed", "duration": 500000}}
+        ]
+      },
+      {
+        "name": "scenario with no tags",
+        "type": "scenario",
+        "steps": [
+          {"name": "Given another setup", "result": {"status": "passed", "duration": 800000}}
+        ]
+      }
+    ]
+  }
+]

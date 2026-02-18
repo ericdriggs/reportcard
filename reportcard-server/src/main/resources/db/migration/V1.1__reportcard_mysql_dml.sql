@@ -21,7 +21,8 @@ VALUES (1, 'HTML'),
        (5, 'TAR_GZ'),
        (6, 'XML'),
        (7, 'ZIP'),
-       (8, 'JUNIT');
+       (8, 'JUNIT'),
+       (9, 'KARATE_JSON');
 
 
 INSERT `reportcard`.`fault_context`

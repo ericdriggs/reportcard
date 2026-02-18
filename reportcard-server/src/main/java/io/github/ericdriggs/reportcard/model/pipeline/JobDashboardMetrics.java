@@ -6,6 +6,8 @@ import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -28,6 +30,7 @@ public class JobDashboardMetrics {
     BigDecimal jobPassPercent;
     // jobTimeAverage out of scope for V1
     BigDecimal testPassPercent;
+    BigDecimal avgRunDuration; // Average duration in seconds, null if no timing data available
     
     // Supporting data
     Instant lastPassingRun;
@@ -74,8 +77,48 @@ public class JobDashboardMetrics {
                                     }
                                 }
                             }
-                            BigDecimal testPassPercent = totalTests > 0 ? 
+                            BigDecimal testPassPercent = totalTests > 0 ?
                                 BigDecimal.valueOf(passingTests * 100.0 / totalTests) : BigDecimal.ZERO;
+
+                            // Calculate average run duration
+                            // Strategy: For each run, find wall clock time as max(endTime) - min(startTime)
+                            // Then average across all runs that have timing data
+                            List<BigDecimal> runDurations = new ArrayList<>();
+
+                            for (RunGraph run : runs) {
+                                Instant minStart = null;
+                                Instant maxEnd = null;
+
+                                for (StageGraph stage : emptyIfNull(run.stages())) {
+                                    for (TestResultGraph testResult : emptyIfNull(stage.testResults())) {
+                                        Instant start = testResult.startTime();
+                                        Instant end = testResult.endTime();
+
+                                        if (start != null && end != null) {
+                                            if (minStart == null || start.isBefore(minStart)) {
+                                                minStart = start;
+                                            }
+                                            if (maxEnd == null || end.isAfter(maxEnd)) {
+                                                maxEnd = end;
+                                            }
+                                        }
+                                    }
+                                }
+
+                                if (minStart != null && maxEnd != null) {
+                                    Duration duration = Duration.between(minStart, maxEnd);
+                                    BigDecimal seconds = BigDecimal.valueOf(duration.getSeconds())
+                                        .add(BigDecimal.valueOf(duration.getNano())
+                                        .divide(BigDecimal.valueOf(1_000_000_000), 2, RoundingMode.HALF_UP));
+                                    runDurations.add(seconds);
+                                }
+                            }
+
+                            BigDecimal avgDuration = null;
+                            if (!runDurations.isEmpty()) {
+                                BigDecimal sum = runDurations.stream().reduce(BigDecimal.ZERO, BigDecimal::add);
+                                avgDuration = sum.divide(BigDecimal.valueOf(runDurations.size()), 2, RoundingMode.HALF_UP);
+                            }
                             
                             // Skip jobs with no runs
                             if (totalRuns == 0) {
@@ -91,6 +134,7 @@ public class JobDashboardMetrics {
                                 .daysSincePassingRun(daysSincePassing)
                                 .jobPassPercent(jobPassPercent)
                                 .testPassPercent(testPassPercent)
+                                .avgRunDuration(avgDuration)
                                 .lastPassingRun(lastPassingRun)
                                 .totalRuns(totalRuns)
                                 .passingRuns(passingRuns)

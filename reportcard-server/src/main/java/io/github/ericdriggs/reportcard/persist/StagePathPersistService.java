@@ -360,6 +360,36 @@ public class StagePathPersistService extends AbstractPersistService {
         }
     }
 
+    /**
+     * Updates test_result record with start and end times from timing source (e.g., Karate).
+     * Does nothing if testResultId is null.
+     * Does nothing if both times are null.
+     *
+     * @param testResultId the test_result ID to update
+     * @param startTime the start time (nullable)
+     * @param endTime the end time (nullable)
+     */
+    public void updateTestResultTiming(Long testResultId, Instant startTime, Instant endTime) {
+        if (testResultId == null) {
+            log.warn("Cannot update test result timing: testResultId is null");
+            return;
+        }
+        if (startTime == null && endTime == null) {
+            log.debug("No timing data to update for testResultId: {}", testResultId);
+            return;
+        }
+
+        int rowsUpdated = dsl.update(TEST_RESULT)
+                .set(TEST_RESULT.START_TIME, startTime)
+                .set(TEST_RESULT.END_TIME, endTime)
+                .where(TEST_RESULT.TEST_RESULT_ID.eq(testResultId))
+                .execute();
+
+        if (rowsUpdated != 1) {
+            log.warn("Expected 1 row updated for test result timing, actual: {} for testResultId: {}", rowsUpdated, testResultId);
+        }
+    }
+
     //TOMAYBE: consolidate into single sql query
     public boolean isRunSuccess(StagePath stagePath) {
         int testResultFailures = dsl.fetchCount(

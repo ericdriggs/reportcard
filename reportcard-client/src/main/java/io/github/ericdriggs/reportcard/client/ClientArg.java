@@ -100,6 +100,11 @@ public enum ClientArg {
      */
     TEST_REPORT_REGEX(false),
     /**
+     * The path to a single folder containing Karate JSON reports. Will not search sub-folders.
+     * (Optional)
+     */
+    KARATE_REPORT_PATH(false),
+    /**
      * A map of links in the form: <code>description1|url1,description2|url2</code>
      * If description is missing, an ordinal value will be used in its place.
      * Duplicate descriptions will cause map entries to be overwritten.

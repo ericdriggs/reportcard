@@ -3,6 +3,7 @@ package io.github.ericdriggs.reportcard.client;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.ericdriggs.reportcard.client.util.TarGzUtil;
 import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpEntity;
@@ -17,6 +18,9 @@ import reactor.core.publisher.Mono;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,47 +55,83 @@ public class PostWebClient {
 
     protected Mono<String> postTestReport(PostRequest scannerPostRequest) {
 
+        Path junitTarGz = null;
+        Path karateTarGz = null;
 
-        File[] files;
-        {
-            File dir = new File(scannerPostRequest.getReportMetaData().getTestReportPath());
-            FileFilter fileFilter = new RegexFileFilter(scannerPostRequest.getReportMetaData().getTestReportRegex());
-            files = dir.listFiles(fileFilter);
-            if (files == null || files.length == 0) {
+        try {
+            // Create JUnit tar.gz from test report directory
+            String testReportPath = scannerPostRequest.getReportMetaData().getTestReportPath();
+            String testReportRegex = scannerPostRequest.getReportMetaData().getTestReportRegex();
+
+            try {
+                junitTarGz = TarGzUtil.createTarGzFromDirectory(
+                        Path.of(testReportPath),
+                        testReportRegex
+                );
+            } catch (IllegalArgumentException e) {
                 Map<String, String> validationErrors = new HashMap<>();
                 validationErrors.put(ClientArg.TEST_REPORT_PATH.name(), "no files found");
                 validationErrors.put(ClientArg.TEST_REPORT_REGEX.name(), "no files found");
                 throw new BadRequestException(validationErrors);
             }
-        }
 
-        MultipartBodyBuilder multipartBodyBuilder = new MultipartBodyBuilder();
-        try {
-            multipartBodyBuilder.part("reportMetaData", objectMapper.writeValueAsString(scannerPostRequest), MediaType.APPLICATION_JSON);
-
-            for (File file : files) {
-                multipartBodyBuilder.part("files", new FileSystemResource(file), MediaType.TEXT_XML);
+            // Create Karate tar.gz if karateJsonFile path is provided
+            String karateJsonFile = scannerPostRequest.getReportMetaData().getKarateJsonFile();
+            if (karateJsonFile != null && !karateJsonFile.isEmpty()) {
+                try {
+                    karateTarGz = TarGzUtil.createTarGzFromDirectory(
+                            Path.of(karateJsonFile),
+                            ".*\\.json$"
+                    );
+                } catch (IllegalArgumentException e) {
+                    // Log warning but don't fail - Karate is optional
+                    System.err.println("Warning: Failed to create Karate tar.gz: " + e.getMessage());
+                }
             }
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
 
-        WebClient.RequestHeadersSpec<?> requestHeadersSpec = client.post()
-                .uri(scannerPostRequest.getPostUrl())
-                .body(BodyInserters.fromMultipartData(multipartBodyBuilder.build()));
+            // Build multipart request
+            MultipartBodyBuilder multipartBodyBuilder = new MultipartBodyBuilder();
+            try {
+                multipartBodyBuilder.part("reportMetaData", objectMapper.writeValueAsString(scannerPostRequest), MediaType.APPLICATION_JSON);
+                multipartBodyBuilder.part("junit.tar.gz", new FileSystemResource(junitTarGz.toFile()), MediaType.APPLICATION_OCTET_STREAM);
 
-//        WebClient.ResponseSpec responseSpec = requestHeadersSpec.retrieve();
-//        responseSpec.to
-
-
-        Mono<String> monoResponse = requestHeadersSpec.exchangeToMono(resp -> {
-            if (resp.statusCode()
-                    .equals(HttpStatus.OK)) {
-                return resp.bodyToMono(String.class);
-            } else {
-                throw new ResponseStatusException(HttpStatus.valueOf(resp.statusCode().value()), resp.bodyToMono(String.class).block());
+                if (karateTarGz != null) {
+                    multipartBodyBuilder.part("karate.tar.gz", new FileSystemResource(karateTarGz.toFile()), MediaType.APPLICATION_OCTET_STREAM);
+                }
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
             }
-        });
-        return monoResponse;
+
+            WebClient.RequestHeadersSpec<?> requestHeadersSpec = client.post()
+                    .uri(scannerPostRequest.getPostUrl())
+                    .body(BodyInserters.fromMultipartData(multipartBodyBuilder.build()));
+
+            Mono<String> monoResponse = requestHeadersSpec.exchangeToMono(resp -> {
+                if (resp.statusCode()
+                        .equals(HttpStatus.OK)) {
+                    return resp.bodyToMono(String.class);
+                } else {
+                    throw new ResponseStatusException(HttpStatus.valueOf(resp.statusCode().value()), resp.bodyToMono(String.class).block());
+                }
+            });
+            return monoResponse;
+
+        } finally {
+            // Clean up temporary tar.gz files
+            if (junitTarGz != null) {
+                try {
+                    Files.deleteIfExists(junitTarGz);
+                } catch (IOException e) {
+                    System.err.println("Warning: Failed to delete temporary JUnit tar.gz file: " + junitTarGz);
+                }
+            }
+            if (karateTarGz != null) {
+                try {
+                    Files.deleteIfExists(karateTarGz);
+                } catch (IOException e) {
+                    System.err.println("Warning: Failed to delete temporary Karate tar.gz file: " + karateTarGz);
+                }
+            }
+        }
     }
 }

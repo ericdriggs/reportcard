@@ -179,6 +179,36 @@ public class TestResultDao extends DAOImpl<TestResultRecord, TestResultPojo, Lon
     }
 
     /**
+     * Fetch records that have <code>start_time BETWEEN lowerInclusive AND
+     * upperInclusive</code>
+     */
+    public List<TestResultPojo> fetchRangeOfStartTimeTable(Instant lowerInclusive, Instant upperInclusive) {
+        return fetchRange(TestResultTable.TEST_RESULT.START_TIME, lowerInclusive, upperInclusive);
+    }
+
+    /**
+     * Fetch records that have <code>start_time IN (values)</code>
+     */
+    public List<TestResultPojo> fetchByStartTimeTable(Instant... values) {
+        return fetch(TestResultTable.TEST_RESULT.START_TIME, values);
+    }
+
+    /**
+     * Fetch records that have <code>end_time BETWEEN lowerInclusive AND
+     * upperInclusive</code>
+     */
+    public List<TestResultPojo> fetchRangeOfEndTimeTable(Instant lowerInclusive, Instant upperInclusive) {
+        return fetchRange(TestResultTable.TEST_RESULT.END_TIME, lowerInclusive, upperInclusive);
+    }
+
+    /**
+     * Fetch records that have <code>end_time IN (values)</code>
+     */
+    public List<TestResultPojo> fetchByEndTimeTable(Instant... values) {
+        return fetch(TestResultTable.TEST_RESULT.END_TIME, values);
+    }
+
+    /**
      * Fetch records that have <code>test_result_created BETWEEN lowerInclusive
      * AND upperInclusive</code>
      */
@@ -251,5 +281,20 @@ public class TestResultDao extends DAOImpl<TestResultRecord, TestResultPojo, Lon
      */
     public List<TestResultPojo> fetchByTestSuitesJsonTable(String... values) {
         return fetch(TestResultTable.TEST_RESULT.TEST_SUITES_JSON, values);
+    }
+
+    /**
+     * Fetch records that have <code>tags BETWEEN lowerInclusive AND
+     * upperInclusive</code>
+     */
+    public List<TestResultPojo> fetchRangeOfTagsTable(String lowerInclusive, String upperInclusive) {
+        return fetchRange(TestResultTable.TEST_RESULT.TAGS, lowerInclusive, upperInclusive);
+    }
+
+    /**
+     * Fetch records that have <code>tags IN (values)</code>
+     */
+    public List<TestResultPojo> fetchByTagsTable(String... values) {
+        return fetch(TestResultTable.TEST_RESULT.TAGS, values);
     }
 }

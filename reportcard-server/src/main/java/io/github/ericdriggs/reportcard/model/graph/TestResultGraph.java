@@ -21,6 +21,8 @@ public record TestResultGraph(
         Integer failure,
         BigDecimal time,
         Instant testResultCreated,
+        Instant startTime,
+        Instant endTime,
         String externalLinks,
         Boolean isSuccess,
         Boolean hasSkip,
@@ -40,6 +42,8 @@ public record TestResultGraph(
                 .failure(failure)
                 .time(time)
                 .testResultCreated(testResultCreated)
+                .startTime(startTime)
+                .endTime(endTime)
                 .externalLinks(externalLinks)
                 .isSuccess(isSuccess)
                 .hasSkip(hasSkip)
