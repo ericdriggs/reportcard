@@ -45,3 +45,4 @@ tmp.log
 /.planning/REQUIREMENTS.md
 /.planning/ROADMAP.md
 /.planning/STATE.md
+/cucumber-json

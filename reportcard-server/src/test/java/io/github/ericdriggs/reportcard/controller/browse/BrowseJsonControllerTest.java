@@ -2,21 +2,15 @@ package io.github.ericdriggs.reportcard.controller.browse;
 
 import io.github.ericdriggs.reportcard.controller.browse.response.*;
 import io.github.ericdriggs.reportcard.gen.db.TestData;
-import io.github.ericdriggs.reportcard.gen.db.tables.pojos.*;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.RunPojo;
 import io.github.ericdriggs.reportcard.model.StageTestResultModel;
 import io.github.ericdriggs.reportcard.persist.BrowseService;
 import io.github.ericdriggs.reportcard.persist.browse.AbstractBrowseServiceTest;
-import io.github.ericdriggs.reportcard.util.JsonCompare;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
