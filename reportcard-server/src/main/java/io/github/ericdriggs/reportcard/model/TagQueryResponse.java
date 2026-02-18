@@ -6,32 +6,25 @@ import lombok.Data;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Response for tag-based test queries.
- * Tests grouped by hierarchy, latest run per job.
+ * Structure mirrors the schema hierarchy: org -> repo -> branch -> job -> run -> stage -> test.
+ * The root collection type depends on query scope.
  */
 @Data
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class TagQueryResponse {
 
-    /**
-     * Query parameters that produced this response.
-     */
     private QueryInfo query;
 
-    /**
-     * Results grouped by remaining hierarchy levels.
-     * Structure varies based on query scope:
-     * - Company scope: branch -> sha -> job -> JobResult
-     * - Org scope: branch -> sha -> job -> JobResult
-     * - Repo scope: branch -> sha -> job -> JobResult
-     * - Branch scope: sha -> job -> JobResult
-     * - Sha scope: job -> JobResult
-     */
-    private Map<String, Map<String, Map<String, JobResult>>> results;
+    // Results at different scope levels - only one will be populated
+    private List<OrgResult> orgs;       // populated when querying at company scope
+    private List<RepoResult> repos;     // populated when querying at org scope
+    private List<BranchResult> branches; // populated when querying at repo scope
+    private List<JobResult> jobs;       // populated when querying at branch or sha scope
 
     @Data
     @Builder
@@ -42,8 +35,58 @@ public class TagQueryResponse {
 
     @Data
     @Builder
+    public static class OrgResult {
+        private Integer orgId;
+        private String orgName;
+        private List<RepoResult> repos;
+    }
+
+    @Data
+    @Builder
+    public static class RepoResult {
+        private Integer repoId;
+        private String repoName;
+        private List<BranchResult> branches;
+    }
+
+    @Data
+    @Builder
+    public static class BranchResult {
+        private Integer branchId;
+        private String branchName;
+        private List<JobResult> jobs;
+    }
+
+    @Data
+    @Builder
     public static class JobResult {
+        private Long jobId;
+        private TreeMap<String, String> jobInfo;
+        private List<RunResult> runs;
+    }
+
+    @Data
+    @Builder
+    public static class RunResult {
+        private Long runId;
+        private String sha;
         private Instant runDate;
-        private List<String> tests;
+        private List<StageResult> stages;
+    }
+
+    @Data
+    @Builder
+    public static class StageResult {
+        private Long stageId;
+        private String stageName;
+        private List<TestInfo> tests;
+    }
+
+    @Data
+    @Builder
+    public static class TestInfo {
+        private String testName;
+        private String className;
+        private String status;
     }
 }

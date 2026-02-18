@@ -9,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
-
 /**
  * HTML UI controller for tag-based test queries.
  * Provides search form and results rendering at all hierarchy levels.
@@ -140,19 +138,10 @@ public class TagQueryUIController {
             return ResponseEntity.ok(html);
         }
 
-        // Execute query with explicit try-catch for ParseException
+        // Execute query
         try {
-            Map<String, Map<String, Map<String, TagQueryResponse.JobResult>>> results =
-                tagQueryService.findByTagExpressionByPath(tags, company, org, repo, branch, sha);
-
-            TagQueryResponse.QueryInfo queryInfo = TagQueryResponse.QueryInfo.builder()
-                .scope(scopePath.toUrlPath())
-                .tags(tags)
-                .build();
-            TagQueryResponse response = TagQueryResponse.builder()
-                .query(queryInfo)
-                .results(results)
-                .build();
+            TagQueryResponse response = tagQueryService.findByTagExpressionByPath(
+                tags, company, org, repo, branch, sha);
 
             String html = TagQueryHtmlHelper.renderTagQueryPage(response, scopePath);
             return ResponseEntity.ok(html);

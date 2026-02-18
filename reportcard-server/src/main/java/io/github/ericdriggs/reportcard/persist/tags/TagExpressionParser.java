@@ -127,9 +127,15 @@ public class TagExpressionParser {
      * <p>
      * Tags consist of alphanumeric characters, underscores, hyphens, and equals signs.
      * Tags stop at whitespace, parentheses, or end of input.
+     * Leading @ is stripped (users may type @foo instead of foo).
      */
     private SimpleTag parseTag() {
         skipWhitespace();
+
+        // Skip leading @ if present (users may type @foo instead of foo)
+        if (pos < input.length() && input.charAt(pos) == '@') {
+            pos++;
+        }
 
         int start = pos;
 

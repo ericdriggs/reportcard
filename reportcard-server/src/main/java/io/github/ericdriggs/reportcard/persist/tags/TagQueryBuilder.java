@@ -71,7 +71,7 @@ public class TagQueryBuilder {
         return condition(
             "{0} MEMBER OF({1})",
             val(truncatedTag),
-            field("tags")
+            TEST_RESULT.TAGS
         );
     }
 

@@ -87,6 +87,46 @@ class TagExpressionParserTest {
             assertInstanceOf(SimpleTag.class, result);
             assertEquals("smoke", ((SimpleTag) result).tag());
         }
+
+        @Test
+        @DisplayName("strips leading @ from tag")
+        void stripsLeadingAtSign() {
+            TagExpr result = TagExpressionParser.parse("@smoke");
+
+            assertInstanceOf(SimpleTag.class, result);
+            assertEquals("smoke", ((SimpleTag) result).tag());
+        }
+
+        @Test
+        @DisplayName("strips leading @ from key=value tag")
+        void stripsLeadingAtSignFromKeyValue() {
+            TagExpr result = TagExpressionParser.parse("@env=prod");
+
+            assertInstanceOf(SimpleTag.class, result);
+            assertEquals("env=prod", ((SimpleTag) result).tag());
+        }
+
+        @Test
+        @DisplayName("strips @ from tags in AND expression")
+        void stripsAtSignInAndExpression() {
+            TagExpr result = TagExpressionParser.parse("@smoke AND @regression");
+
+            assertInstanceOf(AndExpr.class, result);
+            AndExpr and = (AndExpr) result;
+            assertEquals("smoke", ((SimpleTag) and.left()).tag());
+            assertEquals("regression", ((SimpleTag) and.right()).tag());
+        }
+
+        @Test
+        @DisplayName("strips @ from tags in OR expression")
+        void stripsAtSignInOrExpression() {
+            TagExpr result = TagExpressionParser.parse("@smoke OR @regression");
+
+            assertInstanceOf(OrExpr.class, result);
+            OrExpr or = (OrExpr) result;
+            assertEquals("smoke", ((SimpleTag) or.left()).tag());
+            assertEquals("regression", ((SimpleTag) or.right()).tag());
+        }
     }
 
     @Nested

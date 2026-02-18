@@ -255,7 +255,7 @@ public class JunitController {
             testResultModel.setTestSuites(new ArrayList<>());
         }
 
-        // Merge tags from Karate Cucumber JSON when available (graceful failure)
+        // Merge suites and tags from Karate Cucumber JSON when available (graceful failure)
         if (hasKarate) {
             try {
                 String cucumberJson = KarateTarGzUtil.extractCucumberJson(req.getKarateTarGz());
@@ -263,6 +263,15 @@ public class JunitController {
                     List<TestSuiteModel> karateSuites = KarateCucumberConverter.fromCucumberJson(cucumberJson);
                     allTags = KarateCucumberConverter.collectAllTags(karateSuites);
                     log.info("Extracted {} tags from Karate JSON", allTags.size());
+
+                    // Use Karate suites for test_suites_json (they contain embedded tags)
+                    // For Karate-only: use karateSuites directly
+                    // For JUnit+Karate: prefer karateSuites (has tags) over JUnit (no tags)
+                    if (!karateSuites.isEmpty()) {
+                        testResultModel.setTestSuites(karateSuites);
+                        testResultModel.updateTotalsFromTestSuites();
+                        log.info("Using {} Karate suites for test_suites_json", karateSuites.size());
+                    }
                 }
             } catch (Exception e) {
                 log.warn("Failed to extract tags from Karate JSON, continuing without tags", e);

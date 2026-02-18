@@ -1,6 +1,7 @@
 package io.github.ericdriggs.reportcard.controller;
 
 import io.github.ericdriggs.reportcard.model.TagQueryResponse;
+import io.github.ericdriggs.reportcard.model.TagQueryResponse.*;
 import io.github.ericdriggs.reportcard.persist.tags.ParseException;
 import io.github.ericdriggs.reportcard.persist.tags.TagQueryService;
 import org.junit.jupiter.api.Test;
@@ -10,9 +11,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.Instant;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.TreeMap;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.*;
@@ -22,12 +22,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 /**
  * Unit tests for TagQueryUIController using MockMvc.
- *
- * <p>Tests verify HTML rendering including:
- * - Search form display
- * - Results rendering with hierarchy
- * - Error handling with form
- * - All hierarchy level endpoints
  */
 @WebMvcTest(TagQueryUIController.class)
 public class TagQueryUIControllerTest {
@@ -60,24 +54,66 @@ public class TagQueryUIControllerTest {
 
     @Test
     void testValidExpressionReturnsResults() throws Exception {
-        // Setup mock data
-        TagQueryResponse.JobResult jobResult = TagQueryResponse.JobResult.builder()
-            .runDate(Instant.parse("2024-01-15T10:30:00Z"))
-            .tests(List.of("SmokeTest.testLogin", "SmokeTest.testLogout"))
+        // Build response with proper hierarchy for org scope
+        TagQueryResponse response = TagQueryResponse.builder()
+            .query(QueryInfo.builder()
+                .scope("/company/testco")
+                .tags("smoke")
+                .build())
+            .orgs(List.of(
+                OrgResult.builder()
+                    .orgId(1)
+                    .orgName("testorg")
+                    .repos(List.of(
+                        RepoResult.builder()
+                            .repoId(10)
+                            .repoName("testrepo")
+                            .branches(List.of(
+                                BranchResult.builder()
+                                    .branchId(100)
+                                    .branchName("main")
+                                    .jobs(List.of(
+                                        JobResult.builder()
+                                            .jobId(1000L)
+                                            .jobInfo(new TreeMap<>())
+                                            .runs(List.of(
+                                                RunResult.builder()
+                                                    .runId(5000L)
+                                                    .sha("abc123def")
+                                                    .runDate(Instant.parse("2024-01-15T10:30:00Z"))
+                                                    .stages(List.of(
+                                                        StageResult.builder()
+                                                            .stageId(8000L)
+                                                            .stageName("test")
+                                                            .tests(List.of(
+                                                                TestInfo.builder()
+                                                                    .testName("testLogin")
+                                                                    .className("SmokeTest")
+                                                                    .status("PASSED")
+                                                                    .build(),
+                                                                TestInfo.builder()
+                                                                    .testName("testLogout")
+                                                                    .className("SmokeTest")
+                                                                    .status("PASSED")
+                                                                    .build()
+                                                            ))
+                                                            .build()
+                                                    ))
+                                                    .build()
+                                            ))
+                                            .build()
+                                    ))
+                                    .build()
+                            ))
+                            .build()
+                    ))
+                    .build()
+            ))
             .build();
-
-        Map<String, TagQueryResponse.JobResult> jobMap = new LinkedHashMap<>();
-        jobMap.put("jobInfo1", jobResult);
-
-        Map<String, Map<String, TagQueryResponse.JobResult>> shaMap = new LinkedHashMap<>();
-        shaMap.put("abc123def", jobMap);
-
-        Map<String, Map<String, Map<String, TagQueryResponse.JobResult>>> results = new LinkedHashMap<>();
-        results.put("main", shaMap);
 
         when(tagQueryService.findByTagExpressionByPath(
             eq("smoke"), eq("testco"), isNull(), isNull(), isNull(), isNull()
-        )).thenReturn(results);
+        )).thenReturn(response);
 
         mockMvc.perform(get("/company/testco/tags/tests")
                 .param("tags", "smoke"))
@@ -85,14 +121,16 @@ public class TagQueryUIControllerTest {
             .andExpect(content().contentType("text/html;charset=UTF-8"))
             .andExpect(content().string(containsString("<legend>Query Info</legend>")))
             .andExpect(content().string(containsString("smoke")))
+            .andExpect(content().string(containsString("class=\"org-fieldset\"")))
+            .andExpect(content().string(containsString("class=\"repo-fieldset\"")))
             .andExpect(content().string(containsString("class=\"branch-fieldset\"")))
-            .andExpect(content().string(containsString("class=\"sha-fieldset\"")))
+            .andExpect(content().string(containsString("class=\"job-fieldset\"")))
+            .andExpect(content().string(containsString("class=\"run-fieldset\"")))
+            .andExpect(content().string(containsString("class=\"stage-fieldset\"")))
             .andExpect(content().string(containsString("main")))
             .andExpect(content().string(containsString("abc123def")))
             .andExpect(content().string(containsString("SmokeTest.testLogin")))
-            .andExpect(content().string(containsString("SmokeTest.testLogout")))
-            .andExpect(content().string(containsString("<!--end-sha-fieldset-->")))
-            .andExpect(content().string(containsString("<!--end-branch-fieldset-->")));
+            .andExpect(content().string(containsString("SmokeTest.testLogout")));
 
         verify(tagQueryService).findByTagExpressionByPath("smoke", "testco", null, null, null, null);
     }
@@ -117,19 +155,19 @@ public class TagQueryUIControllerTest {
     void testAllHierarchyLevels_Company() throws Exception {
         when(tagQueryService.findByTagExpressionByPath(
             anyString(), eq("testco"), isNull(), isNull(), isNull(), isNull()
-        )).thenReturn(new LinkedHashMap<>());
+        )).thenReturn(emptyResponse("/company/testco", "smoke"));
 
         mockMvc.perform(get("/company/testco/tags/tests")
                 .param("tags", "smoke"))
             .andExpect(status().isOk())
-            .andExpect(content().string(containsString("<legend>Query Info</legend>")));
+            .andExpect(content().string(containsString("No results found")));
     }
 
     @Test
     void testAllHierarchyLevels_Org() throws Exception {
         when(tagQueryService.findByTagExpressionByPath(
             anyString(), eq("testco"), eq("testorg"), isNull(), isNull(), isNull()
-        )).thenReturn(new LinkedHashMap<>());
+        )).thenReturn(emptyResponse("/company/testco/org/testorg", "smoke"));
 
         mockMvc.perform(get("/company/testco/org/testorg/tags/tests")
                 .param("tags", "smoke"))
@@ -141,7 +179,7 @@ public class TagQueryUIControllerTest {
     void testAllHierarchyLevels_Repo() throws Exception {
         when(tagQueryService.findByTagExpressionByPath(
             anyString(), eq("testco"), eq("testorg"), eq("testrepo"), isNull(), isNull()
-        )).thenReturn(new LinkedHashMap<>());
+        )).thenReturn(emptyResponse("/company/testco/org/testorg/repo/testrepo", "smoke"));
 
         mockMvc.perform(get("/company/testco/org/testorg/repo/testrepo/tags/tests")
                 .param("tags", "smoke"))
@@ -153,7 +191,7 @@ public class TagQueryUIControllerTest {
     void testAllHierarchyLevels_Branch() throws Exception {
         when(tagQueryService.findByTagExpressionByPath(
             anyString(), eq("testco"), eq("testorg"), eq("testrepo"), eq("main"), isNull()
-        )).thenReturn(new LinkedHashMap<>());
+        )).thenReturn(emptyResponse("/company/testco/org/testorg/repo/testrepo/branch/main", "smoke"));
 
         mockMvc.perform(get("/company/testco/org/testorg/repo/testrepo/branch/main/tags/tests")
                 .param("tags", "smoke"))
@@ -165,7 +203,7 @@ public class TagQueryUIControllerTest {
     void testAllHierarchyLevels_Sha() throws Exception {
         when(tagQueryService.findByTagExpressionByPath(
             anyString(), eq("testco"), eq("testorg"), eq("testrepo"), eq("main"), eq("abc123")
-        )).thenReturn(new LinkedHashMap<>());
+        )).thenReturn(emptyResponse("/company/testco/org/testorg/repo/testrepo/branch/main/sha/abc123", "smoke"));
 
         mockMvc.perform(get("/company/testco/org/testorg/repo/testrepo/branch/main/sha/abc123/tags/tests")
                 .param("tags", "smoke"))
@@ -177,7 +215,7 @@ public class TagQueryUIControllerTest {
     void testNoResults_ShowsMessage() throws Exception {
         when(tagQueryService.findByTagExpressionByPath(
             eq("nonexistent"), eq("testco"), isNull(), isNull(), isNull(), isNull()
-        )).thenReturn(new LinkedHashMap<>());
+        )).thenReturn(emptyResponse("/company/testco", "nonexistent"));
 
         mockMvc.perform(get("/company/testco/tags/tests")
                 .param("tags", "nonexistent"))
@@ -186,43 +224,110 @@ public class TagQueryUIControllerTest {
     }
 
     @Test
-    void testMultipleBranchesAndShas() throws Exception {
-        // Setup data with multiple branches and SHAs
-        TagQueryResponse.JobResult job1 = TagQueryResponse.JobResult.builder()
-            .runDate(Instant.parse("2024-01-15T10:30:00Z"))
-            .tests(List.of("Test1", "Test2"))
+    void testMultipleOrgsAndRepos() throws Exception {
+        // Build response with multiple orgs and repos
+        TagQueryResponse response = TagQueryResponse.builder()
+            .query(QueryInfo.builder()
+                .scope("/company/testco")
+                .tags("smoke")
+                .build())
+            .orgs(List.of(
+                OrgResult.builder()
+                    .orgId(1)
+                    .orgName("org1")
+                    .repos(List.of(
+                        RepoResult.builder()
+                            .repoId(10)
+                            .repoName("repo1")
+                            .branches(List.of(
+                                BranchResult.builder()
+                                    .branchId(100)
+                                    .branchName("main")
+                                    .jobs(List.of(
+                                        JobResult.builder()
+                                            .jobId(1000L)
+                                            .jobInfo(new TreeMap<>())
+                                            .runs(List.of(
+                                                RunResult.builder()
+                                                    .runId(5000L)
+                                                    .sha("sha1")
+                                                    .runDate(Instant.parse("2024-01-15T10:30:00Z"))
+                                                    .stages(List.of(
+                                                        StageResult.builder()
+                                                            .stageId(8000L)
+                                                            .stageName("test")
+                                                            .tests(List.of(
+                                                                TestInfo.builder()
+                                                                    .testName("Test1")
+                                                                    .status("PASSED")
+                                                                    .build()
+                                                            ))
+                                                            .build()
+                                                    ))
+                                                    .build()
+                                            ))
+                                            .build()
+                                    ))
+                                    .build()
+                            ))
+                            .build()
+                    ))
+                    .build(),
+                OrgResult.builder()
+                    .orgId(2)
+                    .orgName("org2")
+                    .repos(List.of(
+                        RepoResult.builder()
+                            .repoId(20)
+                            .repoName("repo2")
+                            .branches(List.of(
+                                BranchResult.builder()
+                                    .branchId(200)
+                                    .branchName("develop")
+                                    .jobs(List.of(
+                                        JobResult.builder()
+                                            .jobId(2000L)
+                                            .jobInfo(new TreeMap<>())
+                                            .runs(List.of(
+                                                RunResult.builder()
+                                                    .runId(6000L)
+                                                    .sha("sha2")
+                                                    .runDate(Instant.parse("2024-01-16T11:30:00Z"))
+                                                    .stages(List.of(
+                                                        StageResult.builder()
+                                                            .stageId(9000L)
+                                                            .stageName("test")
+                                                            .tests(List.of(
+                                                                TestInfo.builder()
+                                                                    .testName("Test3")
+                                                                    .status("PASSED")
+                                                                    .build()
+                                                            ))
+                                                            .build()
+                                                    ))
+                                                    .build()
+                                            ))
+                                            .build()
+                                    ))
+                                    .build()
+                            ))
+                            .build()
+                    ))
+                    .build()
+            ))
             .build();
-
-        TagQueryResponse.JobResult job2 = TagQueryResponse.JobResult.builder()
-            .runDate(Instant.parse("2024-01-16T11:30:00Z"))
-            .tests(List.of("Test3"))
-            .build();
-
-        // Branch 1, SHA 1
-        Map<String, TagQueryResponse.JobResult> jobMap1 = new LinkedHashMap<>();
-        jobMap1.put("job1", job1);
-
-        Map<String, Map<String, TagQueryResponse.JobResult>> shaMap1 = new LinkedHashMap<>();
-        shaMap1.put("sha1", jobMap1);
-
-        // Branch 2, SHA 2
-        Map<String, TagQueryResponse.JobResult> jobMap2 = new LinkedHashMap<>();
-        jobMap2.put("job2", job2);
-
-        Map<String, Map<String, TagQueryResponse.JobResult>> shaMap2 = new LinkedHashMap<>();
-        shaMap2.put("sha2", jobMap2);
-
-        Map<String, Map<String, Map<String, TagQueryResponse.JobResult>>> results = new LinkedHashMap<>();
-        results.put("main", shaMap1);
-        results.put("develop", shaMap2);
 
         when(tagQueryService.findByTagExpressionByPath(
             eq("smoke"), eq("testco"), isNull(), isNull(), isNull(), isNull()
-        )).thenReturn(results);
+        )).thenReturn(response);
 
         mockMvc.perform(get("/company/testco/tags/tests")
                 .param("tags", "smoke"))
             .andExpect(status().isOk())
+            .andExpect(content().string(containsString("org1")))
+            .andExpect(content().string(containsString("org2")))
+            .andExpect(content().string(containsString("repo1")))
+            .andExpect(content().string(containsString("repo2")))
             .andExpect(content().string(containsString("main")))
             .andExpect(content().string(containsString("develop")))
             .andExpect(content().string(containsString("sha1")))
@@ -240,7 +345,12 @@ public class TagQueryUIControllerTest {
         mockMvc.perform(get("/company/testco/tags/tests")
                 .param("tags", "<script>alert('xss')</script>"))
             .andExpect(status().isBadRequest())
-            // Should be HTML-escaped in the error page
             .andExpect(content().string(containsString("&lt;script&gt;")));
+    }
+
+    private TagQueryResponse emptyResponse(String scope, String tags) {
+        return TagQueryResponse.builder()
+            .query(QueryInfo.builder().scope(scope).tags(tags).build())
+            .build();
     }
 }

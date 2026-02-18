@@ -16,9 +16,10 @@ import org.springframework.web.bind.annotation.*;
  * <p>Query syntax: ?tags=(smoke AND env=prod) OR (regression AND env=staging)
  *
  * <p>Endpoints scope query to hierarchy level in path.
+ * Response structure varies by scope - see {@link TagQueryResponse}.
  */
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/json")
 @SuppressWarnings("unused")
 public class TagQueryController {
 
@@ -31,6 +32,7 @@ public class TagQueryController {
 
     /**
      * Search all tests by tags (company-wide).
+     * Returns results grouped by org -> repo -> branch -> job -> run -> stage -> test.
      */
     @Operation(summary = "Search tests by tags within company scope")
     @GetMapping("/company/{company}/tags/tests")
@@ -40,11 +42,14 @@ public class TagQueryController {
             @Parameter(description = "Tag expression (e.g., 'smoke AND env=prod')")
             @RequestParam String tags) {
 
-        return searchByTags(tags, company, null, null, null, null);
+        TagQueryResponse response = tagQueryService.findByTagExpressionByPath(
+            tags, company, null, null, null, null);
+        return ResponseEntity.ok(response);
     }
 
     /**
      * Search tests by tags within org scope.
+     * Returns results grouped by repo -> branch -> job -> run -> stage -> test.
      */
     @Operation(summary = "Search tests by tags within org scope")
     @GetMapping("/company/{company}/org/{org}/tags/tests")
@@ -56,11 +61,14 @@ public class TagQueryController {
             @Parameter(description = "Tag expression (e.g., 'smoke AND env=prod')")
             @RequestParam String tags) {
 
-        return searchByTags(tags, company, org, null, null, null);
+        TagQueryResponse response = tagQueryService.findByTagExpressionByPath(
+            tags, company, org, null, null, null);
+        return ResponseEntity.ok(response);
     }
 
     /**
      * Search tests by tags within repo scope.
+     * Returns results grouped by branch -> job -> run -> stage -> test.
      */
     @Operation(summary = "Search tests by tags within repo scope")
     @GetMapping("/company/{company}/org/{org}/repo/{repo}/tags/tests")
@@ -74,11 +82,14 @@ public class TagQueryController {
             @Parameter(description = "Tag expression (e.g., 'smoke AND env=prod')")
             @RequestParam String tags) {
 
-        return searchByTags(tags, company, org, repo, null, null);
+        TagQueryResponse response = tagQueryService.findByTagExpressionByPath(
+            tags, company, org, repo, null, null);
+        return ResponseEntity.ok(response);
     }
 
     /**
      * Search tests by tags within branch scope.
+     * Returns results grouped by job -> run -> stage -> test.
      */
     @Operation(summary = "Search tests by tags within branch scope")
     @GetMapping("/company/{company}/org/{org}/repo/{repo}/branch/{branch}/tags/tests")
@@ -94,11 +105,14 @@ public class TagQueryController {
             @Parameter(description = "Tag expression (e.g., 'smoke AND env=prod')")
             @RequestParam String tags) {
 
-        return searchByTags(tags, company, org, repo, branch, null);
+        TagQueryResponse response = tagQueryService.findByTagExpressionByPath(
+            tags, company, org, repo, branch, null);
+        return ResponseEntity.ok(response);
     }
 
     /**
      * Search tests by tags within sha scope.
+     * Returns results grouped by job -> run -> stage -> test (filtered to specific SHA).
      */
     @Operation(summary = "Search tests by tags within sha scope")
     @GetMapping("/company/{company}/org/{org}/repo/{repo}/branch/{branch}/sha/{sha}/tags/tests")
@@ -116,38 +130,8 @@ public class TagQueryController {
             @Parameter(description = "Tag expression (e.g., 'smoke AND env=prod')")
             @RequestParam String tags) {
 
-        return searchByTags(tags, company, org, repo, branch, sha);
-    }
-
-    private ResponseEntity<TagQueryResponse> searchByTags(
-            String tagExpression,
-            String company,
-            String org,
-            String repo,
-            String branch,
-            String sha) {
-
-        // Build scope string for response
-        StringBuilder scopeBuilder = new StringBuilder(company);
-        if (org != null) scopeBuilder.append("/").append(org);
-        if (repo != null) scopeBuilder.append("/").append(repo);
-        if (branch != null) scopeBuilder.append("/").append(branch);
-        if (sha != null) scopeBuilder.append("/").append(sha);
-        String scope = scopeBuilder.toString();
-
-        // Execute query via service
-        var results = tagQueryService.findByTagExpressionByPath(
-            tagExpression, company, org, repo, branch, sha
-        );
-
-        TagQueryResponse response = TagQueryResponse.builder()
-            .query(TagQueryResponse.QueryInfo.builder()
-                .scope(scope)
-                .tags(tagExpression)
-                .build())
-            .results(results)
-            .build();
-
+        TagQueryResponse response = tagQueryService.findByTagExpressionByPath(
+            tags, company, org, repo, branch, sha);
         return ResponseEntity.ok(response);
     }
 

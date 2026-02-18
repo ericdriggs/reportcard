@@ -1,5 +1,7 @@
 package io.github.ericdriggs.reportcard.controller;
 
+import io.github.ericdriggs.reportcard.model.TagQueryResponse;
+import io.github.ericdriggs.reportcard.model.TagQueryResponse.*;
 import io.github.ericdriggs.reportcard.persist.tags.ParseException;
 import io.github.ericdriggs.reportcard.persist.tags.TagQueryService;
 import org.junit.jupiter.api.Test;
@@ -8,7 +10,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.LinkedHashMap;
+import java.time.Instant;
+import java.util.List;
+import java.util.TreeMap;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -17,11 +21,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 /**
  * Unit tests for TagQueryController using MockMvc.
- *
- * <p>Tests verify REST API contract including:
- * - Each hierarchy level endpoint
- * - Query parameter parsing
- * - Error responses for invalid queries
  */
 @WebMvcTest(TagQueryController.class)
 public class TagQueryControllerTest {
@@ -36,12 +35,12 @@ public class TagQueryControllerTest {
     void searchByTags_companyLevel_returnsOk() throws Exception {
         when(tagQueryService.findByTagExpressionByPath(
             anyString(), anyString(), isNull(), isNull(), isNull(), isNull()
-        )).thenReturn(new LinkedHashMap<>());
+        )).thenReturn(emptyResponse("/company/testco", "smoke"));
 
-        mockMvc.perform(get("/api/v1/company/testco/tags/tests")
+        mockMvc.perform(get("/json/company/testco/tags/tests")
                 .param("tags", "smoke"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.query.scope").value("testco"))
+            .andExpect(jsonPath("$.query.scope").value("/company/testco"))
             .andExpect(jsonPath("$.query.tags").value("smoke"));
     }
 
@@ -49,12 +48,12 @@ public class TagQueryControllerTest {
     void searchByTags_orgLevel_returnsOk() throws Exception {
         when(tagQueryService.findByTagExpressionByPath(
             anyString(), anyString(), anyString(), isNull(), isNull(), isNull()
-        )).thenReturn(new LinkedHashMap<>());
+        )).thenReturn(emptyResponse("/company/testco/org/testorg", "smoke"));
 
-        mockMvc.perform(get("/api/v1/company/testco/org/testorg/tags/tests")
+        mockMvc.perform(get("/json/company/testco/org/testorg/tags/tests")
                 .param("tags", "smoke"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.query.scope").value("testco/testorg"))
+            .andExpect(jsonPath("$.query.scope").value("/company/testco/org/testorg"))
             .andExpect(jsonPath("$.query.tags").value("smoke"));
     }
 
@@ -62,12 +61,12 @@ public class TagQueryControllerTest {
     void searchByTags_repoLevel_returnsOk() throws Exception {
         when(tagQueryService.findByTagExpressionByPath(
             anyString(), anyString(), anyString(), anyString(), isNull(), isNull()
-        )).thenReturn(new LinkedHashMap<>());
+        )).thenReturn(emptyResponse("/company/testco/org/testorg/repo/testrepo", "smoke AND env=prod"));
 
-        mockMvc.perform(get("/api/v1/company/testco/org/testorg/repo/testrepo/tags/tests")
+        mockMvc.perform(get("/json/company/testco/org/testorg/repo/testrepo/tags/tests")
                 .param("tags", "smoke AND env=prod"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.query.scope").value("testco/testorg/testrepo"))
+            .andExpect(jsonPath("$.query.scope").value("/company/testco/org/testorg/repo/testrepo"))
             .andExpect(jsonPath("$.query.tags").value("smoke AND env=prod"));
     }
 
@@ -75,12 +74,12 @@ public class TagQueryControllerTest {
     void searchByTags_branchLevel_returnsOk() throws Exception {
         when(tagQueryService.findByTagExpressionByPath(
             anyString(), anyString(), anyString(), anyString(), anyString(), isNull()
-        )).thenReturn(new LinkedHashMap<>());
+        )).thenReturn(emptyResponse("/company/testco/org/testorg/repo/testrepo/branch/main", "regression"));
 
-        mockMvc.perform(get("/api/v1/company/testco/org/testorg/repo/testrepo/branch/main/tags/tests")
+        mockMvc.perform(get("/json/company/testco/org/testorg/repo/testrepo/branch/main/tags/tests")
                 .param("tags", "regression"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.query.scope").value("testco/testorg/testrepo/main"))
+            .andExpect(jsonPath("$.query.scope").value("/company/testco/org/testorg/repo/testrepo/branch/main"))
             .andExpect(jsonPath("$.query.tags").value("regression"));
     }
 
@@ -88,17 +87,17 @@ public class TagQueryControllerTest {
     void searchByTags_shaLevel_returnsOk() throws Exception {
         when(tagQueryService.findByTagExpressionByPath(
             anyString(), anyString(), anyString(), anyString(), anyString(), anyString()
-        )).thenReturn(new LinkedHashMap<>());
+        )).thenReturn(emptyResponse("/company/co/org/o/repo/r/branch/b/sha/s", "smoke"));
 
-        mockMvc.perform(get("/api/v1/company/co/org/o/repo/r/branch/b/sha/s/tags/tests")
+        mockMvc.perform(get("/json/company/co/org/o/repo/r/branch/b/sha/s/tags/tests")
                 .param("tags", "smoke"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.query.scope").value("co/o/r/b/s"));
+            .andExpect(jsonPath("$.query.scope").value("/company/co/org/o/repo/r/branch/b/sha/s"));
     }
 
     @Test
     void searchByTags_missingTagsParam_returns400() throws Exception {
-        mockMvc.perform(get("/api/v1/company/testco/tags/tests"))
+        mockMvc.perform(get("/json/company/testco/tags/tests"))
             .andExpect(status().isBadRequest());
     }
 
@@ -108,7 +107,7 @@ public class TagQueryControllerTest {
             anyString(), anyString(), isNull(), isNull(), isNull(), isNull()
         )).thenThrow(new ParseException("Unexpected token", 0));
 
-        mockMvc.perform(get("/api/v1/company/testco/tags/tests")
+        mockMvc.perform(get("/json/company/testco/tags/tests")
                 .param("tags", "AND smoke"))
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.error").value("Invalid tag expression"));
@@ -118,10 +117,9 @@ public class TagQueryControllerTest {
     void searchByTags_complexExpression_acceptsUrlEncodedSyntax() throws Exception {
         when(tagQueryService.findByTagExpressionByPath(
             anyString(), anyString(), isNull(), isNull(), isNull(), isNull()
-        )).thenReturn(new LinkedHashMap<>());
+        )).thenReturn(emptyResponse("/company/testco", "(smoke OR regression) AND env=prod"));
 
-        // URL-encoded: (smoke OR regression) AND env=prod
-        mockMvc.perform(get("/api/v1/company/testco/tags/tests")
+        mockMvc.perform(get("/json/company/testco/tags/tests")
                 .param("tags", "(smoke OR regression) AND env=prod"))
             .andExpect(status().isOk());
     }
@@ -132,7 +130,7 @@ public class TagQueryControllerTest {
             anyString(), anyString(), isNull(), isNull(), isNull(), isNull()
         )).thenThrow(new ParseException("Empty expression"));
 
-        mockMvc.perform(get("/api/v1/company/testco/tags/tests")
+        mockMvc.perform(get("/json/company/testco/tags/tests")
                 .param("tags", ""))
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.error").value("Invalid tag expression"));
@@ -140,26 +138,81 @@ public class TagQueryControllerTest {
 
     @Test
     void searchByTags_serviceReturnsResults_includesInResponse() throws Exception {
-        // Setup mock to return some results
-        var branchResults = new LinkedHashMap<String, io.github.ericdriggs.reportcard.model.TagQueryResponse.JobResult>();
-        branchResults.put("default", io.github.ericdriggs.reportcard.model.TagQueryResponse.JobResult.builder()
-            .tests(java.util.List.of("test1", "test2"))
-            .build());
-
-        var shaResults = new LinkedHashMap<String, java.util.Map<String, io.github.ericdriggs.reportcard.model.TagQueryResponse.JobResult>>();
-        shaResults.put("abc123", branchResults);
-
-        var results = new LinkedHashMap<String, java.util.Map<String, java.util.Map<String, io.github.ericdriggs.reportcard.model.TagQueryResponse.JobResult>>>();
-        results.put("main", shaResults);
+        // Build response with proper hierarchy
+        TagQueryResponse response = TagQueryResponse.builder()
+            .query(QueryInfo.builder()
+                .scope("/company/testco")
+                .tags("smoke")
+                .build())
+            .orgs(List.of(
+                OrgResult.builder()
+                    .orgId(1)
+                    .orgName("org1")
+                    .repos(List.of(
+                        RepoResult.builder()
+                            .repoId(10)
+                            .repoName("repo1")
+                            .branches(List.of(
+                                BranchResult.builder()
+                                    .branchId(100)
+                                    .branchName("main")
+                                    .jobs(List.of(
+                                        JobResult.builder()
+                                            .jobId(1000L)
+                                            .jobInfo(new TreeMap<>())
+                                            .runs(List.of(
+                                                RunResult.builder()
+                                                    .runId(5000L)
+                                                    .sha("abc123")
+                                                    .runDate(Instant.parse("2024-01-15T10:30:00Z"))
+                                                    .stages(List.of(
+                                                        StageResult.builder()
+                                                            .stageId(8000L)
+                                                            .stageName("test")
+                                                            .tests(List.of(
+                                                                TestInfo.builder()
+                                                                    .testName("test1")
+                                                                    .className("TestClass")
+                                                                    .status("PASSED")
+                                                                    .build(),
+                                                                TestInfo.builder()
+                                                                    .testName("test2")
+                                                                    .className("TestClass")
+                                                                    .status("PASSED")
+                                                                    .build()
+                                                            ))
+                                                            .build()
+                                                    ))
+                                                    .build()
+                                            ))
+                                            .build()
+                                    ))
+                                    .build()
+                            ))
+                            .build()
+                    ))
+                    .build()
+            ))
+            .build();
 
         when(tagQueryService.findByTagExpressionByPath(
             anyString(), anyString(), isNull(), isNull(), isNull(), isNull()
-        )).thenReturn(results);
+        )).thenReturn(response);
 
-        mockMvc.perform(get("/api/v1/company/testco/tags/tests")
+        mockMvc.perform(get("/json/company/testco/tags/tests")
                 .param("tags", "smoke"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.results.main.abc123.default.tests[0]").value("test1"))
-            .andExpect(jsonPath("$.results.main.abc123.default.tests[1]").value("test2"));
+            .andExpect(jsonPath("$.orgs[0].orgName").value("org1"))
+            .andExpect(jsonPath("$.orgs[0].repos[0].repoName").value("repo1"))
+            .andExpect(jsonPath("$.orgs[0].repos[0].branches[0].branchName").value("main"))
+            .andExpect(jsonPath("$.orgs[0].repos[0].branches[0].jobs[0].runs[0].sha").value("abc123"))
+            .andExpect(jsonPath("$.orgs[0].repos[0].branches[0].jobs[0].runs[0].stages[0].tests[0].testName").value("test1"))
+            .andExpect(jsonPath("$.orgs[0].repos[0].branches[0].jobs[0].runs[0].stages[0].tests[1].testName").value("test2"));
+    }
+
+    private TagQueryResponse emptyResponse(String scope, String tags) {
+        return TagQueryResponse.builder()
+            .query(QueryInfo.builder().scope(scope).tags(tags).build())
+            .build();
     }
 }

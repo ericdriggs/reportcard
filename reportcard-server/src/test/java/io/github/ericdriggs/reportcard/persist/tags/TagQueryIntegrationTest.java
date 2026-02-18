@@ -4,6 +4,7 @@ import io.github.ericdriggs.reportcard.ReportcardApplication;
 import io.github.ericdriggs.reportcard.gen.db.tables.records.TestResultRecord;
 import io.github.ericdriggs.reportcard.model.*;
 import io.github.ericdriggs.reportcard.persist.TestResultPersistService;
+import io.github.ericdriggs.reportcard.model.TagQueryResponse;
 import org.jooq.DSLContext;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -198,7 +199,7 @@ public class TagQueryIntegrationTest {
     }
 
     @Test
-    void findByTagExpressionByPath_nonexistentCompany_returnsEmptyMap() {
+    void findByTagExpressionByPath_nonexistentCompany_returnsEmptyResponse() {
         // Given: a company that doesn't exist
         String nonexistentCompany = "nonexistent-company-" + UUID.randomUUID();
 
@@ -206,13 +207,13 @@ public class TagQueryIntegrationTest {
         var results = tagQueryService.findByTagExpressionByPath(
                 "smoke", nonexistentCompany, null, null, null, null);
 
-        // Then: should return empty map, not throw
+        // Then: should return empty response, not throw
         assertNotNull(results);
-        assertTrue(results.isEmpty(), "Should return empty map for nonexistent company");
+        assertTrue(hasNoResults(results), "Should return empty response for nonexistent company");
     }
 
     @Test
-    void findByTagExpressionByPath_existingCompanyNonexistentOrg_returnsEmptyMap() {
+    void findByTagExpressionByPath_existingCompanyNonexistentOrg_returnsEmptyResponse() {
         // Given: insert a test result to create a company
         TestResultModel testResult = createTestResultModel();
         StageDetails stageDetails = createUniqueStageDetails();
@@ -223,13 +224,13 @@ public class TagQueryIntegrationTest {
         var results = tagQueryService.findByTagExpressionByPath(
                 "smoke", stageDetails.getCompany(), nonexistentOrg, null, null, null);
 
-        // Then: should return empty map, not throw
+        // Then: should return empty response, not throw
         assertNotNull(results);
-        assertTrue(results.isEmpty(), "Should return empty map for nonexistent org");
+        assertTrue(hasNoResults(results), "Should return empty response for nonexistent org");
     }
 
     @Test
-    void findByTagExpressionByPath_existingCompanyOrgNonexistentRepo_returnsEmptyMap() {
+    void findByTagExpressionByPath_existingCompanyOrgNonexistentRepo_returnsEmptyResponse() {
         // Given: insert a test result to create company/org
         TestResultModel testResult = createTestResultModel();
         StageDetails stageDetails = createUniqueStageDetails();
@@ -240,9 +241,9 @@ public class TagQueryIntegrationTest {
         var results = tagQueryService.findByTagExpressionByPath(
                 "smoke", stageDetails.getCompany(), stageDetails.getOrg(), nonexistentRepo, null, null);
 
-        // Then: should return empty map, not throw
+        // Then: should return empty response, not throw
         assertNotNull(results);
-        assertTrue(results.isEmpty(), "Should return empty map for nonexistent repo");
+        assertTrue(hasNoResults(results), "Should return empty response for nonexistent repo");
     }
 
     @Test
@@ -265,14 +266,14 @@ public class TagQueryIntegrationTest {
                 .where(TEST_RESULT.TEST_RESULT_ID.eq(insertedId))
                 .execute();
 
-        // Then: query should not throw, should return results with empty tests list
+        // Then: query should not throw
         var results = tagQueryService.findByTagExpressionByPath(
                 uniqueTag, stageDetails.getCompany(), stageDetails.getOrg(),
                 stageDetails.getRepo(), stageDetails.getBranch(), null);
 
         assertNotNull(results, "Should not throw on unexpected JSON structure");
-        // The result should exist (tag matched) but tests list should be empty (structure mismatch)
-        assertFalse(results.isEmpty(), "Should find result by tag even with unexpected JSON structure");
+        // Malformed JSON (not an array) cannot extract any tests → pruned
+        assertTrue(hasNoResults(results), "Malformed JSON (not array) cannot extract tests");
     }
 
     @Test
@@ -299,7 +300,9 @@ public class TagQueryIntegrationTest {
                 stageDetails.getRepo(), stageDetails.getBranch(), null);
 
         assertNotNull(results, "Should not throw on missing testCases");
-        assertFalse(results.isEmpty(), "Should find result by tag even without testCases");
+        // With empty container pruning, suite without testCases results in empty response
+        // (no tests to extract → stage empty → pruned)
+        assertTrue(hasNoResults(results), "Suite without testCases should be pruned");
     }
 
     @Test
@@ -373,5 +376,128 @@ public class TagQueryIntegrationTest {
                 .runReference(UUID.randomUUID())
                 .stage("stage-" + uniqueId)
                 .build();
+    }
+
+    private boolean hasNoResults(TagQueryResponse response) {
+        return (response.getOrgs() == null || response.getOrgs().isEmpty())
+            && (response.getRepos() == null || response.getRepos().isEmpty())
+            && (response.getBranches() == null || response.getBranches().isEmpty())
+            && (response.getJobs() == null || response.getJobs().isEmpty());
+    }
+
+    @Test
+    void insertTestResultWithTagsInJson_tagsPersistedInTestSuitesJson() {
+        // Given: test result with tags embedded in test suite and test case
+        String suiteTag = "suite-tag-" + random.nextInt(1000000);
+        String testCaseTag = "tc-tag-" + random.nextInt(1000000);
+
+        TestCaseModel testCase = TestCaseModel.builder()
+                .name("testWithTags")
+                .className("TestClass")
+                .time(new BigDecimal("1.0"))
+                .testStatus(TestStatus.SUCCESS)
+                .testStatusFk(TestStatus.SUCCESS.getStatusId())
+                .tags(List.of(testCaseTag))
+                .build();
+
+        TestSuiteModel testSuite = TestSuiteModel.builder()
+                .name("SuiteWithTags")
+                .tests(1)
+                .error(0)
+                .failure(0)
+                .skipped(0)
+                .time(new BigDecimal("1.0"))
+                .tags(List.of(suiteTag))
+                .testCases(List.of(testCase))
+                .build();
+
+        TestResultModel testResult = new TestResultModel();
+        testResult.setTests(1);
+        testResult.setError(0);
+        testResult.setFailure(0);
+        testResult.setSkipped(0);
+        testResult.setTime(new BigDecimal("1.0"));
+        testResult.setTestSuites(List.of(testSuite));
+
+        // Flattened tags for test_result.tags column
+        List<String> allTags = List.of(suiteTag, testCaseTag);
+
+        StageDetails stageDetails = createUniqueStageDetails();
+
+        // When: insert test result
+        StagePathTestResult inserted = testResultPersistService.insertTestResult(stageDetails, testResult, allTags);
+        Long insertedId = inserted.getTestResult().getTestResultId();
+
+        // Then: verify test_suites_json contains the tags
+        String storedJson = dsl.select(TEST_RESULT.TEST_SUITES_JSON)
+                .from(TEST_RESULT)
+                .where(TEST_RESULT.TEST_RESULT_ID.eq(insertedId))
+                .fetchOne(TEST_RESULT.TEST_SUITES_JSON);
+
+        assertNotNull(storedJson, "test_suites_json should not be null");
+
+        // Verify suite tag is in the JSON
+        assertTrue(storedJson.contains(suiteTag),
+                "test_suites_json should contain suite tag: " + suiteTag + "\nActual JSON: " + storedJson);
+
+        // Verify test case tag is in the JSON
+        assertTrue(storedJson.contains(testCaseTag),
+                "test_suites_json should contain test case tag: " + testCaseTag + "\nActual JSON: " + storedJson);
+    }
+
+    @Test
+    void insertTestResultWithTagsInJson_queryFiltersCorrectly() {
+        // Given: test result with different tags at suite and test case level
+        String suiteTag = "stag-" + random.nextInt(1000000);
+        String testCaseTag = "tctag-" + random.nextInt(1000000);
+
+        TestCaseModel testCase = TestCaseModel.builder()
+                .name("taggedTest")
+                .className("TaggedClass")
+                .time(new BigDecimal("1.0"))
+                .testStatus(TestStatus.SUCCESS)
+                .testStatusFk(TestStatus.SUCCESS.getStatusId())
+                .tags(List.of(testCaseTag))
+                .build();
+
+        TestSuiteModel testSuite = TestSuiteModel.builder()
+                .name("TaggedSuite")
+                .tests(1)
+                .error(0)
+                .failure(0)
+                .skipped(0)
+                .time(new BigDecimal("1.0"))
+                .tags(List.of(suiteTag))
+                .testCases(List.of(testCase))
+                .build();
+
+        TestResultModel testResult = new TestResultModel();
+        testResult.setTests(1);
+        testResult.setError(0);
+        testResult.setFailure(0);
+        testResult.setSkipped(0);
+        testResult.setTime(new BigDecimal("1.0"));
+        testResult.setTestSuites(List.of(testSuite));
+
+        List<String> allTags = List.of(suiteTag, testCaseTag);
+
+        StageDetails stageDetails = createUniqueStageDetails();
+        testResultPersistService.insertTestResult(stageDetails, testResult, allTags);
+
+        // When: query by suite tag
+        var results = tagQueryService.findByTagExpressionByPath(
+                suiteTag, stageDetails.getCompany(), stageDetails.getOrg(),
+                stageDetails.getRepo(), stageDetails.getBranch(), null);
+
+        // Then: should find the result with the tagged test
+        assertFalse(hasNoResults(results), "Should find results when querying by suite tag");
+
+        // Verify the test is included (suite tag means all tests in suite match)
+        var jobs = results.getJobs();
+        assertNotNull(jobs);
+        assertFalse(jobs.isEmpty());
+        var tests = jobs.get(0).getRuns().get(0).getStages().get(0).getTests();
+        assertTrue(tests.stream().anyMatch(t -> "taggedTest".equals(t.getTestName())),
+                "Should include test from suite with matching tag");
     }
 }
