@@ -113,11 +113,10 @@ public class TestResultPersistService extends StagePathPersistService {
      * @return the inserted test result with stage path
      */
     public StagePathTestResult insertTestResult(StagePath stagePath, TestResultModel testResult, List<String> tags) {
-        // TODO: Store tags in test_result.tags column when DDL is applied (08-03)
-        // For now, tags are already embedded in test_suites_json via TestSuiteModel/TestCaseModel
         if (tags != null && !tags.isEmpty()) {
-            log.info("Tags extracted from Karate JSON ({} tags): {}",
+            log.info("Storing {} tags in test_result.tags: {}",
                     tags.size(), tags.size() <= 10 ? tags : tags.subList(0, 10) + "...");
+            testResult.setTagsList(tags);
         }
         return insertTestResult(stagePath, testResult);
     }
@@ -235,6 +234,7 @@ public class TestResultPersistService extends StagePathPersistService {
                     .setTime(testResult.getTime())
                     .setExternalLinks(testResult.getExternalLinks())
                     .setTestSuitesJson(TestSuiteModel.asJsonWithTruncatedErrorMessages(testSuites))
+                    .setTags(testResult.getTags())
                     .store();
 
             testResult = testResultRecord.into(TestResultModel.class);

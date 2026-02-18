@@ -20,6 +20,70 @@ public class TestResultModel extends io.github.ericdriggs.reportcard.dto.TestRes
 
     private List<TestSuiteModel> testSuites = new ArrayList<>();
 
+    /**
+     * Flattened tags JSON string for storage in test_result.tags column.
+     * Stored as JSON array string like ["foo", "bar"].
+     */
+    private String tags;
+
+    @JsonIgnore
+    public String getTags() {
+        return tags;
+    }
+
+    @JsonIgnore
+    public TestResultModel setTags(String tags) {
+        this.tags = tags;
+        return this;
+    }
+
+    /**
+     * Maximum length for individual tags due to multi-value index CHAR(25) constraint.
+     */
+    public static final int MAX_TAG_LENGTH = 25;
+
+    /**
+     * Convenience setter that converts List to JSON string.
+     * Tags longer than MAX_TAG_LENGTH are truncated to fit the index.
+     */
+    @JsonIgnore
+    public TestResultModel setTagsList(List<String> tagsList) {
+        if (tagsList == null || tagsList.isEmpty()) {
+            this.tags = null;
+        } else {
+            try {
+                List<String> truncatedTags = truncateTags(tagsList);
+                this.tags = mapper.writeValueAsString(truncatedTags);
+            } catch (JsonProcessingException e) {
+                log.error("Failed to serialize tags to JSON: {}", tagsList, e);
+                this.tags = null;
+            }
+        }
+        return this;
+    }
+
+    /**
+     * Truncates tags to MAX_TAG_LENGTH to fit the multi-value index constraint.
+     */
+    @JsonIgnore
+    public static List<String> truncateTags(List<String> tags) {
+        if (tags == null) {
+            return null;
+        }
+        List<String> truncated = new ArrayList<>(tags.size());
+        for (String tag : tags) {
+            if (tag == null) {
+                continue;
+            }
+            if (tag.length() > MAX_TAG_LENGTH) {
+                truncated.add(tag.substring(0, MAX_TAG_LENGTH));
+            } else {
+                truncated.add(tag);
+            }
+        }
+        return truncated;
+    }
+
     @JsonProperty("testSuites")
     public List<TestSuiteModel> getTestSuites() {
         return testSuites;

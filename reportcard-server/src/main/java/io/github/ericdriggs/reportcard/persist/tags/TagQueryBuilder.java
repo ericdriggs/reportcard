@@ -48,21 +48,42 @@ public class TagQueryBuilder {
     }
 
     /**
+     * Maximum length for individual tags due to multi-value index CHAR(25) constraint.
+     */
+    public static final int MAX_TAG_LENGTH = 25;
+
+    /**
      * Build a MEMBER OF condition for a single tag.
      *
      * <p>Generates SQL: {@code {tag} MEMBER OF(test_result.tags)}
+     * <p>Tags longer than MAX_TAG_LENGTH are truncated to match stored values.
      *
      * @param tag the tag to match (e.g., "smoke" or "env=prod")
      * @return a JOOQ Condition for the MEMBER OF check
      */
     public Condition tagMatches(String tag) {
+        // Truncate tag to match stored values (max 25 chars for index)
+        String truncatedTag = truncateTag(tag);
         // MEMBER OF query on JSON array
         // tags column stores JSON array like ["smoke", "regression", "env=prod"]
         return condition(
             "{0} MEMBER OF({1})",
-            val(tag),
+            val(truncatedTag),
             field("tags")
         );
+    }
+
+    /**
+     * Truncates a tag to MAX_TAG_LENGTH to match the stored value.
+     */
+    public static String truncateTag(String tag) {
+        if (tag == null) {
+            return null;
+        }
+        if (tag.length() > MAX_TAG_LENGTH) {
+            return tag.substring(0, MAX_TAG_LENGTH);
+        }
+        return tag;
     }
 
     /**

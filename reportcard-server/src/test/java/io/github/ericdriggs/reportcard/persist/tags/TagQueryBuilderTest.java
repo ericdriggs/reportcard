@@ -340,6 +340,64 @@ class TagQueryBuilderTest {
     }
 
     @Nested
+    @DisplayName("Tag truncation")
+    class TagTruncationTests {
+
+        @Test
+        @DisplayName("truncateTag returns null for null input")
+        void truncateTagNullInput() {
+            assertNull(TagQueryBuilder.truncateTag(null));
+        }
+
+        @Test
+        @DisplayName("truncateTag returns short tags unchanged")
+        void truncateTagShortUnchanged() {
+            assertEquals("smoke", TagQueryBuilder.truncateTag("smoke"));
+            assertEquals("env=prod", TagQueryBuilder.truncateTag("env=prod"));
+        }
+
+        @Test
+        @DisplayName("truncateTag truncates tags over 25 chars")
+        void truncateTagLongTruncated() {
+            String longTag = "this-is-a-very-long-tag-that-exceeds-25-characters";
+            String result = TagQueryBuilder.truncateTag(longTag);
+
+            assertEquals(25, result.length());
+            assertEquals("this-is-a-very-long-tag-t", result);
+        }
+
+        @Test
+        @DisplayName("truncateTag leaves exactly 25 char tags unchanged")
+        void truncateTagExact25() {
+            String exact = "exactly-25-characters-tag"; // 25 chars
+            assertEquals(25, exact.length());
+
+            assertEquals(exact, TagQueryBuilder.truncateTag(exact));
+        }
+
+        @Test
+        @DisplayName("tagMatches truncates long tags before query")
+        void tagMatchesTruncatesLongTags() {
+            String longTag = "this-is-a-very-long-tag-that-exceeds-25-characters";
+
+            Condition condition = queryBuilder.tagMatches(longTag);
+            String sql = condition.toString();
+
+            // Should contain truncated tag, not full tag
+            assertTrue(sql.contains("'this-is-a-very-long-tag-t'"),
+                    "Should contain truncated tag: " + sql);
+            assertFalse(sql.contains("'this-is-a-very-long-tag-that-exceeds-25-characters'"),
+                    "Should NOT contain full tag: " + sql);
+        }
+
+        @Test
+        @DisplayName("MAX_TAG_LENGTH is 25")
+        void maxTagLengthIs25() {
+            assertEquals(25, TagQueryBuilder.MAX_TAG_LENGTH);
+        }
+    }
+
+    @Nested
     @DisplayName("Parser integration")
     class ParserIntegrationTests {
 

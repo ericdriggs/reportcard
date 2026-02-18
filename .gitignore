@@ -34,6 +34,7 @@ gradle-app.setting
 collaboration_progress.md
 .kiro/
 .kiro
+tmp.log
 /.planning/phases/
 /.planning/config.json
 /.planning/PROJECT.md
