@@ -27,7 +27,7 @@ public class TarGzUtil {
      * @param fileRegex regex pattern to match filenames (e.g., ".*\\.xml$" for XML files)
      * @return Path to the created temporary tar.gz file
      * @throws IllegalArgumentException if directory doesn't exist, is not a directory, or contains no matching files
-     * @throws IOException if an I/O error occurs during archive creation
+     * @throws RuntimeException (sneaky throws IOException) if an I/O error occurs during archive creation
      */
     @SneakyThrows(IOException.class)
     public static Path createTarGzFromDirectory(Path directory, String fileRegex) {

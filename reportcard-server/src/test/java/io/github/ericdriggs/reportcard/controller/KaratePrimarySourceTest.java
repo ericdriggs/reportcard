@@ -35,12 +35,11 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Integration test verifying JUnit XML is primary source for test structure.
- * Karate JSON provides supplemental tags (merged when available).
+ * Integration test verifying Karate Cucumber JSON is primary source for test structure when available.
  * Tests:
- * 1. JUnit is primary source for test structure
- * 2. Tags extracted from Karate Cucumber JSON when both provided
- * 3. Karate-only uploads work but have no test structure
+ * 1. Karate-only uploads use Karate structure and tags
+ * 2. When both JUnit and Karate provided, Karate structure is used (has tags)
+ * 3. JUnit-only uploads use JUnit structure (no tags)
  */
 @SpringBootTest(classes = {ReportcardApplication.class, LocalStackConfig.class},
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -130,9 +129,9 @@ public class KaratePrimarySourceTest {
     }
 
     @Test
-    void whenKarateOnlyProvided_succeeds_withEmptyStructure() throws IOException {
+    void whenKarateOnlyProvided_usesKarateStructure() throws IOException {
         // Given: Karate tar.gz only (no JUnit)
-        // JUnit-primary means no test structure, but upload should succeed
+        // Karate is primary source - should use Karate structure and tags
         MultipartFile karateTarGz = createKarateTarGzWithCucumberJson();
         MultipartFile storageTarGz = getHtmlTarGz();
         StageDetails stageDetails = getStageDetails("karateOnlyStage-" + UUID.randomUUID());
@@ -149,10 +148,9 @@ public class KaratePrimarySourceTest {
         // When
         StagePathStorageResultCountResponse response = junitController.doPostStageJunitStorageTarGZ(req);
 
-        // Then: Should succeed (Karate provides timing, just no test structure)
+        // Then: Should succeed with Karate structure
         assertEquals(201, response.getResponseDetails().getHttpStatus());
 
-        // With JUnit-primary, Karate-only uploads have empty test suites
         StagePath stagePath = response.getStagePath();
         Set<TestResultModel> testResultModels = testResultPersistService.getTestResults(stagePath.getStage().getStageId());
         assertEquals(1, testResultModels.size());
@@ -160,13 +158,17 @@ public class KaratePrimarySourceTest {
         TestResultModel testResult = testResultModels.iterator().next();
         assertNotNull(testResult);
         assertNotNull(testResult.getTestSuites());
-        assertTrue(testResult.getTestSuites().isEmpty(), "Karate-only uploads have no test structure with JUnit-primary");
+        assertFalse(testResult.getTestSuites().isEmpty(), "Karate-only uploads should have test structure from Karate");
+
+        // Suite name should come from Karate feature
+        TestSuiteModel suite = testResult.getTestSuites().get(0);
+        assertEquals("Karate Feature One", suite.getName(), "Suite name should come from Karate feature");
     }
 
     @Test
-    void whenBothJunitAndKarateProvided_usesJunitStructure_extractsKarateTags() throws IOException {
+    void whenBothJunitAndKarateProvided_usesKarateStructure() throws IOException {
         // Given: Both JUnit and Karate tar.gz
-        // JUnit provides test structure, Karate provides tags
+        // Karate is primary - provides test structure with tags
         MultipartFile junitTarGz = getJunitTarGz();
         MultipartFile karateTarGz = createKarateTarGzWithCucumberJson();
         MultipartFile storageTarGz = getHtmlTarGz();
@@ -187,21 +189,18 @@ public class KaratePrimarySourceTest {
         // Then: Should succeed
         assertEquals(201, response.getResponseDetails().getHttpStatus());
 
-        // Verify test structure comes from JUnit (not Karate feature names)
+        // Verify test structure comes from Karate (primary source)
         StagePath stagePath = response.getStagePath();
         Set<TestResultModel> testResultModels = testResultPersistService.getTestResults(stagePath.getStage().getStageId());
         assertEquals(1, testResultModels.size());
 
         TestResultModel testResult = testResultModels.iterator().next();
         assertNotNull(testResult.getTestSuites());
-        assertFalse(testResult.getTestSuites().isEmpty(), "Should have JUnit test suites");
+        assertFalse(testResult.getTestSuites().isEmpty(), "Should have Karate test suites");
 
-        // Suite name should be from JUnit XML, not Karate
+        // Suite name should be from Karate (primary source when both provided)
         TestSuiteModel suite = testResult.getTestSuites().get(0);
-        assertNotEquals("Karate Feature One", suite.getName(), "Suite name should come from JUnit, not Karate");
-
-        // Note: Tags from Karate are stored in test_result.tags column (not visible via this API)
-        // The tags extraction is verified via log output: "Extracted X tags from Karate JSON"
+        assertEquals("Karate Feature One", suite.getName(), "Suite name should come from Karate (primary source)");
     }
 
     @Test

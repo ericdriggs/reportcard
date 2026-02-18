@@ -133,14 +133,14 @@ public class JunitControllerTest {
     @Test
     void postJunitHtmlSurefireFormat() throws IOException {
         final MultipartFile junitTarGz = getSurefireTarGz(resourceReader);
-        StagePathStorageResultCountResponse response = doPostHtmlTest(junitTarGz, getStageDetails(stageName));
+        StagePathStorageResultCountResponse response = doPostHtmlTest(junitTarGz, getStageDetails(stageName, UUID.randomUUID()));
         assertSingleTestResponse(response);
     }
 
     @Test
     void postJunitHtmlJunitFormat() throws IOException {
         final MultipartFile junitTarGz = getJunitTarGz(resourceReader);
-        StagePathStorageResultCountResponse response = doPostHtmlTest(junitTarGz, getStageDetails(stageName));
+        StagePathStorageResultCountResponse response = doPostHtmlTest(junitTarGz, getStageDetails(stageName, UUID.randomUUID()));
         assertSingleTestResponse(response);
     }
 
@@ -221,7 +221,8 @@ public class JunitControllerTest {
             assertEquals("master", stagePath.getBranch().getBranchName());
             assertJsonEquals("{\"host\": \"foocorp.jenkins.com\", \"pipeline\": \"foopipeline\", \"application\": \"fooapp\"}",
                     stagePath.getJob().getJobInfo());
-            assertEquals(TestData.runReference.toString(), stagePath.getRun().getRunReference());
+            // Run reference is dynamic (UUID.randomUUID() per test for S3 isolation)
+            assertNotNull(stagePath.getRun().getRunReference());
             assertEquals(stageName, stagePath.getStage().getStageName());
             Map<String, String> urlMaps = stagePath.getUrlMaps();
             assertThat(urlMaps.get("stage"), matchesPattern(expectedStageRegex));
@@ -263,39 +264,29 @@ public class JunitControllerTest {
 
             }
 
-            {
-                ListObjectsV2Response s3Objects = s3Service.listObjectsForBucket();
+            // Verify exact S3 file counts for this test's storage prefixes
+            int cucumberHtmlCount = 0;
+            int junitTarGzCount = 0;
 
+            for (StoragePojo storage : storages) {
+                String prefix = storage.getPrefix();
+                ListObjectsV2Response s3Objects = s3Service.listObjectsForPrefixNoDelimiter(prefix);
                 assertNotNull(s3Objects.contents());
-                assertThat(s3Objects.contents().size(), is(greaterThanOrEqualTo(3)));
-                System.out.println(s3Objects);
 
-                assertNotNull(s3Objects.contents());
-                assertThat(s3Objects.contents().size(), is(greaterThanOrEqualTo(3)));
-                System.out.println(s3Objects);
-
-                {
-                    List<String> s3Keys = s3Objects.contents().stream().map(S3Object::key).toList();
-                    Integer cucumberCount = 0;
-                    Integer junitCount = 0;
-                    for (String s3Key : s3Keys) {
-                        if (s3Key.contains("cucumber_html")) {
-                            cucumberCount++;
-                        }
-                        if (s3Key.contains("junit.tar.gz")) {
-                            junitCount++;
-                        }
-
+                for (S3Object s3Object : s3Objects.contents()) {
+                    String key = s3Object.key();
+                    if (key.contains("cucumber_html")) {
+                        cucumberHtmlCount++;
                     }
-
-                    final Integer expectedJunitCount = 1;
-                    final Integer expectedCucumberCount = 3;
-
-                    assertEquals(expectedCucumberCount, cucumberCount);
-                    assertEquals(expectedJunitCount, junitCount);
+                    if (key.endsWith("junit.tar.gz")) {
+                        junitTarGzCount++;
+                    }
                 }
-
+                System.out.println("S3 objects for " + prefix + ": " + s3Objects.contents().size());
             }
+
+            assertEquals(3, cucumberHtmlCount, "Expected exactly 3 cucumber HTML files");
+            assertEquals(1, junitTarGzCount, "Expected exactly 1 junit tar.gz file");
         }
 
 

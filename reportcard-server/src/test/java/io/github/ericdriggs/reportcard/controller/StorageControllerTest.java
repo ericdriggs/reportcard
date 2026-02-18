@@ -113,10 +113,11 @@ public class StorageControllerTest {
                 {
                     final Map<String, String> createdUrls = responseDetails.getCreatedUrls();
                     assertEquals(3, createdUrls.size());
-                    assertEquals(expectedStageUrl, createdUrls.get("stage"));
-                    assertEquals(expectedRunUrl, createdUrls.get("run"));
+                    // Use endsWith to handle optional REPORTCARD_SERVER_URL prefix
+                    assertTrue(createdUrls.get("stage").endsWith(expectedStageUrl), "stage URL should end with expected path");
+                    assertTrue(createdUrls.get("run").endsWith(expectedRunUrl), "run URL should end with expected path");
                     final String htmlUrl = createdUrls.get("cucumber_html");
-                    assertThat(htmlUrl, matchesPattern(expectedCucumberRegex));
+                    assertThat(htmlUrl, matchesPattern(".*" + expectedCucumberRegex));
                 }
             }
             {
@@ -131,7 +132,7 @@ public class StorageControllerTest {
                 assertEquals(TestData.runReference.toString(), stagePath.getRun().getRunReference());
                 assertEquals("api", stagePath.getStage().getStageName());
                 final Map<String, String> urlMaps = stagePath.getUrlMaps();
-                assertEquals(expectedStageUrl, urlMaps.get("stage"));
+                assertTrue(urlMaps.get("stage").endsWith(expectedStageUrl), "stage URL should end with expected path");
             }
 
             {

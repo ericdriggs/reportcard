@@ -301,7 +301,9 @@ public class JunitController {
             if (hasKarate) {
                 storagesList.add(storeKarate(stageId, req.getKarateTarGz()));
             }
-            storagesList.add(storeHtml(stageId, req.getLabel(), req.getReports(), req.getIndexFile()));
+            if (req.getReports() != null && !req.getReports().isEmpty()) {
+                storagesList.add(storeHtml(stageId, req.getLabel(), req.getReports(), req.getIndexFile()));
+            }
 
             stagePathStorages = StagePathStorages.merge(storagesList.toArray(new StagePathStorages[0]));
         }
