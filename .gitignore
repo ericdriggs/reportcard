@@ -32,6 +32,10 @@ gradle-app.setting
 .java-version
 .amazonq
 collaboration_progress.md
+.planning/phases
+.planning/research
+.planning/*.json
+.planning/*.md
 .kiro/
 .kiro
 tmp.log
