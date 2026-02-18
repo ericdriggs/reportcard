@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="User Authentication" tests="1" failures="0" errors="0" skipped="0" time="3.230">
+  <testcase name="verify user login" classname="User Authentication" time="3.230"/>
+</testsuite>

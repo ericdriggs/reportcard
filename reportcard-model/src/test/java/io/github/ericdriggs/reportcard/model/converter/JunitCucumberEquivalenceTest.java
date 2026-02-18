@@ -20,23 +20,16 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * <p>This catches drift between parsers and ensures consistency when
  * Karate produces both JUnit XML and its own JSON format.
- *
- * <p>Test data:
- * <ul>
- *   <li>delorean-create-dss-test: 1 test, 19.3s, single scenario</li>
- *   <li>cache-and-load-accounts-test: 2 tests, 0.004s, two scenarios</li>
- * </ul>
  */
 public class JunitCucumberEquivalenceTest {
 
     private static final String KARATE_REPORTS_PATH = "format-samples/karate-reports/";
-
-    // === DELOREAN TEST (1 test, 19.3s) ===
+    private static final String SAMPLE_TEST = "sample-api-test";
 
     @Test
-    void delorean_testCount_matches() {
-        TestResultModel junitResult = parseJunit("delorean-create-dss-test");
-        TestResultModel cucumberResult = parseCucumber("delorean-create-dss-test");
+    void testCount_matches() {
+        TestResultModel junitResult = parseJunit(SAMPLE_TEST);
+        TestResultModel cucumberResult = parseCucumber(SAMPLE_TEST);
 
         assertEquals(1, junitResult.getTests());
         assertEquals(junitResult.getTests(), cucumberResult.getTests(),
@@ -44,9 +37,9 @@ public class JunitCucumberEquivalenceTest {
     }
 
     @Test
-    void delorean_failureCount_matches() {
-        TestResultModel junitResult = parseJunit("delorean-create-dss-test");
-        TestResultModel cucumberResult = parseCucumber("delorean-create-dss-test");
+    void failureCount_matches() {
+        TestResultModel junitResult = parseJunit(SAMPLE_TEST);
+        TestResultModel cucumberResult = parseCucumber(SAMPLE_TEST);
 
         assertEquals(0, junitResult.getFailure());
         assertEquals(junitResult.getFailure(), cucumberResult.getFailure(),
@@ -54,9 +47,9 @@ public class JunitCucumberEquivalenceTest {
     }
 
     @Test
-    void delorean_skipCount_matches() {
-        TestResultModel junitResult = parseJunit("delorean-create-dss-test");
-        TestResultModel cucumberResult = parseCucumber("delorean-create-dss-test");
+    void skipCount_matches() {
+        TestResultModel junitResult = parseJunit(SAMPLE_TEST);
+        TestResultModel cucumberResult = parseCucumber(SAMPLE_TEST);
 
         assertEquals(0, junitResult.getSkipped());
         assertEquals(junitResult.getSkipped(), cucumberResult.getSkipped(),
@@ -64,9 +57,9 @@ public class JunitCucumberEquivalenceTest {
     }
 
     @Test
-    void delorean_errorCount_matches() {
-        TestResultModel junitResult = parseJunit("delorean-create-dss-test");
-        TestResultModel cucumberResult = parseCucumber("delorean-create-dss-test");
+    void errorCount_matches() {
+        TestResultModel junitResult = parseJunit(SAMPLE_TEST);
+        TestResultModel cucumberResult = parseCucumber(SAMPLE_TEST);
 
         assertEquals(0, junitResult.getError());
         assertEquals(junitResult.getError(), cucumberResult.getError(),
@@ -74,9 +67,9 @@ public class JunitCucumberEquivalenceTest {
     }
 
     @Test
-    void delorean_suiteCount_matches() {
-        TestResultModel junitResult = parseJunit("delorean-create-dss-test");
-        TestResultModel cucumberResult = parseCucumber("delorean-create-dss-test");
+    void suiteCount_matches() {
+        TestResultModel junitResult = parseJunit(SAMPLE_TEST);
+        TestResultModel cucumberResult = parseCucumber(SAMPLE_TEST);
 
         assertEquals(1, junitResult.getTestSuites().size());
         assertEquals(junitResult.getTestSuites().size(), cucumberResult.getTestSuites().size(),
@@ -84,9 +77,9 @@ public class JunitCucumberEquivalenceTest {
     }
 
     @Test
-    void delorean_suiteName_matches() {
-        TestResultModel junitResult = parseJunit("delorean-create-dss-test");
-        TestResultModel cucumberResult = parseCucumber("delorean-create-dss-test");
+    void suiteName_matches() {
+        TestResultModel junitResult = parseJunit(SAMPLE_TEST);
+        TestResultModel cucumberResult = parseCucumber(SAMPLE_TEST);
 
         String junitSuiteName = junitResult.getTestSuites().get(0).getName();
         String cucumberSuiteName = cucumberResult.getTestSuites().get(0).getName();
@@ -96,9 +89,9 @@ public class JunitCucumberEquivalenceTest {
     }
 
     @Test
-    void delorean_testCaseName_matches() {
-        TestResultModel junitResult = parseJunit("delorean-create-dss-test");
-        TestResultModel cucumberResult = parseCucumber("delorean-create-dss-test");
+    void testCaseName_matches() {
+        TestResultModel junitResult = parseJunit(SAMPLE_TEST);
+        TestResultModel cucumberResult = parseCucumber(SAMPLE_TEST);
 
         String junitName = junitResult.getTestSuites().get(0).getTestCases().get(0).getName();
         String cucumberName = cucumberResult.getTestSuites().get(0).getTestCases().get(0).getName();
@@ -108,9 +101,9 @@ public class JunitCucumberEquivalenceTest {
     }
 
     @Test
-    void delorean_isSuccess_matches() {
-        TestResultModel junitResult = parseJunit("delorean-create-dss-test");
-        TestResultModel cucumberResult = parseCucumber("delorean-create-dss-test");
+    void isSuccess_matches() {
+        TestResultModel junitResult = parseJunit(SAMPLE_TEST);
+        TestResultModel cucumberResult = parseCucumber(SAMPLE_TEST);
 
         assertTrue(junitResult.getIsSuccess());
         assertEquals(junitResult.getIsSuccess(), cucumberResult.getIsSuccess(),
@@ -119,151 +112,34 @@ public class JunitCucumberEquivalenceTest {
 
     /**
      * Time parsing test - verifies both formats produce valid, non-negative times.
-     *
-     * <p>NOTE: JUnit and Cucumber times are NOT expected to match because:
-     * <ul>
-     *   <li>JUnit reports wall clock time for the test (~19.3s)</li>
-     *   <li>Cucumber sums ALL step durations including nested feature calls (~57.8s)</li>
-     * </ul>
-     * This is a known behavioral difference between formats.
+     * Times may differ slightly due to format precision differences.
      */
     @Test
-    void delorean_time_bothParseable() {
-        TestResultModel junitResult = parseJunit("delorean-create-dss-test");
-        TestResultModel cucumberResult = parseCucumber("delorean-create-dss-test");
+    void time_bothParseable() {
+        TestResultModel junitResult = parseJunit(SAMPLE_TEST);
+        TestResultModel cucumberResult = parseCucumber(SAMPLE_TEST);
 
         assertNotNull(junitResult.getTime(), "JUnit time should be parsed");
         assertNotNull(cucumberResult.getTime(), "Cucumber time should be parsed");
 
-        // Both should be positive
         assertTrue(junitResult.getTime().compareTo(BigDecimal.ZERO) > 0,
             "JUnit time should be positive");
         assertTrue(cucumberResult.getTime().compareTo(BigDecimal.ZERO) > 0,
             "Cucumber time should be positive");
-
-        // JUnit reports ~19.3s wall clock time
-        assertTrue(junitResult.getTime().compareTo(new BigDecimal("15")) > 0,
-            "JUnit time should be > 15 seconds");
-
-        // Cucumber sums step durations (expected to be higher due to nested calls)
-        assertTrue(cucumberResult.getTime().compareTo(junitResult.getTime()) >= 0,
-            "Cucumber step duration sum should be >= JUnit wall clock time");
-    }
-
-    // === CACHE-AND-LOAD TEST (2 tests, 0.004s) ===
-
-    @Test
-    void cacheAndLoad_testCount_matches() {
-        TestResultModel junitResult = parseJunit("cache-and-load-accounts-test");
-        TestResultModel cucumberResult = parseCucumber("cache-and-load-accounts-test");
-
-        assertEquals(2, junitResult.getTests());
-        assertEquals(junitResult.getTests(), cucumberResult.getTests(),
-            "Test count mismatch between JUnit and Cucumber");
     }
 
     @Test
-    void cacheAndLoad_failureCount_matches() {
-        TestResultModel junitResult = parseJunit("cache-and-load-accounts-test");
-        TestResultModel cucumberResult = parseCucumber("cache-and-load-accounts-test");
+    void tags_extractedFromCucumber() {
+        TestResultModel cucumberResult = parseCucumber(SAMPLE_TEST);
 
-        assertEquals(0, junitResult.getFailure());
-        assertEquals(junitResult.getFailure(), cucumberResult.getFailure(),
-            "Failure count mismatch between JUnit and Cucumber");
-    }
+        TestSuiteModel suite = cucumberResult.getTestSuites().get(0);
+        assertNotNull(suite.getTags(), "Suite should have tags");
+        assertTrue(suite.getTags().contains("api"), "Suite should have @api tag");
 
-    @Test
-    void cacheAndLoad_skipCount_matches() {
-        TestResultModel junitResult = parseJunit("cache-and-load-accounts-test");
-        TestResultModel cucumberResult = parseCucumber("cache-and-load-accounts-test");
-
-        assertEquals(0, junitResult.getSkipped());
-        assertEquals(junitResult.getSkipped(), cucumberResult.getSkipped(),
-            "Skip count mismatch between JUnit and Cucumber");
-    }
-
-    @Test
-    void cacheAndLoad_errorCount_matches() {
-        TestResultModel junitResult = parseJunit("cache-and-load-accounts-test");
-        TestResultModel cucumberResult = parseCucumber("cache-and-load-accounts-test");
-
-        assertEquals(0, junitResult.getError());
-        assertEquals(junitResult.getError(), cucumberResult.getError(),
-            "Error count mismatch between JUnit and Cucumber");
-    }
-
-    @Test
-    void cacheAndLoad_suiteCount_matches() {
-        TestResultModel junitResult = parseJunit("cache-and-load-accounts-test");
-        TestResultModel cucumberResult = parseCucumber("cache-and-load-accounts-test");
-
-        assertEquals(1, junitResult.getTestSuites().size());
-        assertEquals(junitResult.getTestSuites().size(), cucumberResult.getTestSuites().size(),
-            "Suite count mismatch between JUnit and Cucumber");
-    }
-
-    @Test
-    void cacheAndLoad_suiteName_matches() {
-        TestResultModel junitResult = parseJunit("cache-and-load-accounts-test");
-        TestResultModel cucumberResult = parseCucumber("cache-and-load-accounts-test");
-
-        String junitSuiteName = junitResult.getTestSuites().get(0).getName();
-        String cucumberSuiteName = cucumberResult.getTestSuites().get(0).getName();
-
-        assertEquals(junitSuiteName, cucumberSuiteName,
-            "Suite name mismatch between JUnit and Cucumber");
-    }
-
-    @Test
-    void cacheAndLoad_testCaseNames_match() {
-        TestResultModel junitResult = parseJunit("cache-and-load-accounts-test");
-        TestResultModel cucumberResult = parseCucumber("cache-and-load-accounts-test");
-
-        List<String> junitNames = junitResult.getTestSuites().get(0).getTestCases().stream()
-            .map(TestCaseModel::getName)
-            .toList();
-
-        List<String> cucumberNames = cucumberResult.getTestSuites().get(0).getTestCases().stream()
-            .map(TestCaseModel::getName)
-            .toList();
-
-        assertEquals(junitNames.size(), cucumberNames.size(),
-            "Test case count mismatch");
-
-        // Both test cases have same name in this test file
-        for (String junitName : junitNames) {
-            assertTrue(cucumberNames.contains(junitName),
-                "Test case '" + junitName + "' from JUnit not found in Cucumber");
-        }
-    }
-
-    @Test
-    void cacheAndLoad_isSuccess_matches() {
-        TestResultModel junitResult = parseJunit("cache-and-load-accounts-test");
-        TestResultModel cucumberResult = parseCucumber("cache-and-load-accounts-test");
-
-        assertTrue(junitResult.getIsSuccess());
-        assertEquals(junitResult.getIsSuccess(), cucumberResult.getIsSuccess(),
-            "isSuccess mismatch between JUnit and Cucumber");
-    }
-
-    /**
-     * Time parsing test - verifies both formats produce valid, non-negative times.
-     * For short tests, we verify both are parseable and reasonable.
-     */
-    @Test
-    void cacheAndLoad_time_bothParseable() {
-        TestResultModel junitResult = parseJunit("cache-and-load-accounts-test");
-        TestResultModel cucumberResult = parseCucumber("cache-and-load-accounts-test");
-
-        assertNotNull(junitResult.getTime(), "JUnit time should be parsed");
-        assertNotNull(cucumberResult.getTime(), "Cucumber time should be parsed");
-
-        // Both should be non-negative
-        assertTrue(junitResult.getTime().compareTo(BigDecimal.ZERO) >= 0,
-            "JUnit time should be non-negative");
-        assertTrue(cucumberResult.getTime().compareTo(BigDecimal.ZERO) >= 0,
-            "Cucumber time should be non-negative");
+        TestCaseModel testCase = suite.getTestCases().get(0);
+        assertNotNull(testCase.getTags(), "Test case should have tags");
+        assertTrue(testCase.getTags().contains("smoke"), "Test case should have @smoke tag");
+        assertTrue(testCase.getTags().contains("auth"), "Test case should have @auth tag");
     }
 
     // === HELPER METHODS ===

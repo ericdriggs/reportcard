@@ -1,4 +1,0 @@
-<testsuite failures="0" name="delorean-create-dss-test.feature" skipped="0" tests="1" time="19.301714"><testcase classname="delorean-create-dss-test" name="create dss account" time="19.301714"><system-out>* call read('classpath:services/delorean/helpers/create-dss-account.feature') . passed
-* match dssAccountId != '' ................................................ passed
-</system-out></testcase>
-</testsuite>
