@@ -34,6 +34,7 @@ public class JobDashboardMetrics {
     
     // Supporting data
     Instant lastPassingRun;
+    Instant lastRun;  // When job last ran (regardless of pass/fail)
     Integer totalRuns;
     Integer passingRuns;
     
@@ -136,6 +137,7 @@ public class JobDashboardMetrics {
                                 .testPassPercent(testPassPercent)
                                 .avgRunDuration(avgDuration)
                                 .lastPassingRun(lastPassingRun)
+                                .lastRun(jobGraph.lastRun())
                                 .totalRuns(totalRuns)
                                 .passingRuns(passingRuns)
                                 .build());

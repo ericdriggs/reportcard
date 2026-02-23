@@ -5,7 +5,7 @@
 /target/**
 *.iml
 *.db
-
+.planning/jira
 # Ignore Gradle GUI config
 gradle-app.setting
 
