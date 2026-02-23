@@ -8,6 +8,9 @@ import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
 import org.apache.commons.lang3.ObjectUtils;
 
+import java.math.BigDecimal;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -23,6 +26,8 @@ public class RunResultCount implements Comparable<RunResultCount> {
     RunCount runCount  = RunCount.builder().build();
     @Builder.Default
     ResultCount resultCount = ResultCount.builder().build();
+    @Builder.Default
+    BigDecimal clockDurationSeconds = null;
 
     @JsonIgnore
     @Override
@@ -53,10 +58,21 @@ public class RunResultCount implements Comparable<RunResultCount> {
                 .failedRuns(testResultGraph.isSuccess() ? 0 : 1)
                 .build();
 
+        BigDecimal clockDuration = calculateClockDuration(testResultGraph.startTime(), testResultGraph.endTime());
+
         return RunResultCount.builder()
                 .runCount(runCount)
                 .resultCount(resultCount)
+                .clockDurationSeconds(clockDuration)
                 .build();
+    }
+
+    private static BigDecimal calculateClockDuration(Instant startTime, Instant endTime) {
+        if (startTime == null || endTime == null) {
+            return null;
+        }
+        Duration duration = Duration.between(startTime, endTime);
+        return BigDecimal.valueOf(duration.toMillis()).divide(BigDecimal.valueOf(1000), 2, java.math.RoundingMode.HALF_UP);
     }
 
     /**
@@ -68,6 +84,13 @@ public class RunResultCount implements Comparable<RunResultCount> {
     public void add(RunResultCount that) {
         runCount = RunCount.add(runCount, that.runCount);
         resultCount = ResultCount.add(resultCount, that.resultCount);
+        clockDurationSeconds = addBigDecimal(clockDurationSeconds, that.clockDurationSeconds);
+    }
+
+    private static BigDecimal addBigDecimal(BigDecimal a, BigDecimal b) {
+        if (a == null) return b;
+        if (b == null) return a;
+        return a.add(b);
     }
 
     @JsonIgnore

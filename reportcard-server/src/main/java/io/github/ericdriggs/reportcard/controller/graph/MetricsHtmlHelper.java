@@ -76,6 +76,7 @@ public class MetricsHtmlHelper {
         sb.append("<th class='test-header'>Test pass %</th>").append(ls);
         sb.append("<th class='test-header'>Test executions</th>").append(ls);
         sb.append("<th class='test-header'>Test Time Total</th>").append(ls);
+        sb.append("<th class='run-header'>Test Time Avg</th>").append(ls);
         sb.append("<th class='run-header'>Job Time Avg</th>").append(ls);
         sb.append("<th class='run-header'>Job pass %</th>").append(ls);
         sb.append("<th class='run-header'>Job runs</th>").append(ls);
@@ -164,14 +165,17 @@ public class MetricsHtmlHelper {
         final BigDecimal testSuccessPercent = resultCount.getResultCount().getTestSuccessPercent().setScale(0, RoundingMode.HALF_UP);
         final Integer totalTests = resultCount.getResultCount().getTests();
         final BigDecimal totalTime = resultCount.getResultCount().getTime();
+        final BigDecimal clockDuration = resultCount.getClockDurationSeconds();
         final Integer runCount = resultCount.getRunCount().getRuns();
-        final BigDecimal averageTime = divide(totalTime, runCount);
+        final BigDecimal testTimeAvg = divide(totalTime, runCount);
+        final BigDecimal jobTimeAvg = divide(clockDuration, runCount);
         final BigDecimal runSuccessPercent = resultCount.getRunCount().getRunSuccessPercent().setScale(0, RoundingMode.HALF_UP);
 
         sb.append("<td class='percent'>").append(percentFromBigDecimal(testSuccessPercent)).append("</td>").append(ls);
         sb.append("<td class='count'>").append(fromIntegerPadded(totalTests)).append("</td>").append(ls);
         sb.append("<td class='count'>").append(fromSecondBigDecimalPadded(totalTime)).append("</td>").append(ls);
-        sb.append("<td class='count'>").append(fromSecondBigDecimalPadded(averageTime)).append("</td>").append(ls);
+        sb.append("<td class='count'>").append(fromSecondBigDecimalPadded(testTimeAvg)).append("</td>").append(ls);
+        sb.append("<td class='count'>").append(jobTimeAvg != null ? fromSecondBigDecimalPadded(jobTimeAvg) : "N/A").append("</td>").append(ls);
         sb.append("<td class='percent'>").append(percentFromBigDecimal(runSuccessPercent)).append("</td>").append(ls);
         sb.append("<td class='count'>").append(fromIntegerPadded(runCount)).append("</td>").append(ls);
         return sb.toString();
@@ -186,22 +190,28 @@ public class MetricsHtmlHelper {
         Integer prevTests = previous != null ? previous.getResultCount().getTests() : null;
         BigDecimal currTime = current != null ? current.getResultCount().getTime() : null;
         BigDecimal prevTime = previous != null ? previous.getResultCount().getTime() : null;
+        BigDecimal currClockDuration = current != null ? current.getClockDurationSeconds() : null;
+        BigDecimal prevClockDuration = previous != null ? previous.getClockDurationSeconds() : null;
         Integer currRuns = current != null ? current.getRunCount().getRuns() : null;
         Integer prevRuns = previous != null ? previous.getRunCount().getRuns() : null;
         BigDecimal currRunPct = current != null ? current.getRunCount().getRunSuccessPercent() : null;
         BigDecimal prevRunPct = previous != null ? previous.getRunCount().getRunSuccessPercent() : null;
         
-        BigDecimal currAvgTime = divide(currTime, currRuns);
-        BigDecimal prevAvgTime = divide(prevTime, prevRuns);
+        BigDecimal currTestTimeAvg = divide(currTime, currRuns);
+        BigDecimal prevTestTimeAvg = divide(prevTime, prevRuns);
+        BigDecimal currJobTimeAvg = divide(currClockDuration, currRuns);
+        BigDecimal prevJobTimeAvg = divide(prevClockDuration, prevRuns);
 
         // Test pass % (higher is good)
         sb.append(renderDeltaCell(currTestPct, prevTestPct, true, true));
         // Test executions (neutral)
         sb.append(renderDeltaCellInteger(currTests, prevTests, false));
-        // Test Time Total (neutral)
+        // Test Time Total (lower is better)
         sb.append(renderDeltaCellDuration(currTime, prevTime));
-        // Job Time Avg (neutral - could argue lower is better, but keeping neutral)
-        sb.append(renderDeltaCellDuration(currAvgTime, prevAvgTime));
+        // Test Time Avg (lower is better)
+        sb.append(renderDeltaCellDuration(currTestTimeAvg, prevTestTimeAvg));
+        // Job Time Avg (lower is better)
+        sb.append(renderDeltaCellDuration(currJobTimeAvg, prevJobTimeAvg));
         // Job pass % (higher is good)
         sb.append(renderDeltaCell(currRunPct, prevRunPct, true, true));
         // Job runs (neutral)
@@ -589,10 +599,13 @@ public class MetricsHtmlHelper {
             	<dd>The total number of executions of tests</dd>
                         
             	<dt>Test Time Total</dt>
-            	<dd>Cumulative test time</dd>
+            	<dd>Cumulative test execution time</dd>
+            	
+            	<dt>Test Time Avg</dt>
+            	<dd>Test Time Total / Job Runs</dd>
             	
             	<dt>Job Time Avg</dt>
-            	<dd>Test Time Total / Job Runs</dd>
+            	<dd>Average wall clock job duration (from cucumber JSON start/end times)</dd>
                         
             	<dt>Job Pass %</dt>
             	<dd>The percentage of job runs with no failing tests</dd>
