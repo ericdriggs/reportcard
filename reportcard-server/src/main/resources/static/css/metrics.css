@@ -93,3 +93,63 @@ dd {
     margin-left: 1em;
     padding-bottom: 0.3em;
 }
+
+/* ===== Stacked Layout Styles (Phase 2) ===== */
+
+/* Entity group alternating backgrounds */
+.metrics-group:nth-child(odd) {
+    background: #fafafa;
+}
+.metrics-group:nth-child(even) {
+    background: #fff;
+}
+
+/* Row type styling */
+.row-current {
+    background: #f0f7ff !important;
+}
+.row-previous {
+    background: #f5f5f5 !important;
+}
+.row-delta {
+    background: #fff !important;
+    font-weight: 500;
+}
+
+/* Significant delta colors */
+.row-delta.significant-good {
+    background: #f0fff4 !important;
+}
+.row-delta.significant-bad {
+    background: #fff5f5 !important;
+}
+
+/* Delta cell colors - background only, text stays black */
+.delta-positive {
+    background-color: #d4edda !important;
+}
+.delta-negative {
+    background-color: #f8d7da !important;
+}
+.delta-neutral {
+    /* no background change */
+}
+
+/* Period column styling */
+.period-current {
+    font-weight: 600;
+    color: #1565c0;
+}
+.period-previous {
+    color: #616161;
+}
+.period-delta {
+    font-weight: 600;
+    color: #424242;
+}
+
+/* Entity name column - span across rows */
+.entity-name {
+    vertical-align: middle;
+    font-weight: 500;
+}

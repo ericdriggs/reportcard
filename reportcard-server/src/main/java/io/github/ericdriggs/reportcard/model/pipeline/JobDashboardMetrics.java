@@ -34,6 +34,7 @@ public class JobDashboardMetrics {
     
     // Supporting data
     Instant lastPassingRun;
+    Instant lastRun;  // When job last ran (regardless of pass/fail)
     Integer totalRuns;
     Integer passingRuns;
     

@@ -421,6 +421,107 @@ public class JobDashboardMetricsTest {
         assertEquals(new BigDecimal("90.00"), metric.getAvgRunDuration());
     }
 
+    @Test
+    void testLastRun_extractedFromJobGraph() {
+        // Create CompanyGraph with lastRun set on JobGraph
+        Instant expectedLastRun = Instant.parse("2024-01-15T10:30:00Z");
+        Instant t0 = Instant.parse("2024-01-01T00:00:00Z");
+
+        TestResultGraph testResult = TestResultGraphBuilder
+                .builder()
+                .testResultId(1L)
+                .stageFk(1L)
+                .tests(1)
+                .skipped(0)
+                .error(0)
+                .failure(0)
+                .time(BigDecimal.valueOf(100))
+                .testResultCreated(t0)
+                .startTime(t0)
+                .endTime(t0.plusSeconds(100))
+                .isSuccess(true)
+                .hasSkip(false)
+                .testSuites(Collections.emptyList())
+                .build();
+
+        StageGraph stage = StageGraphBuilder
+                .builder()
+                .stageId(1L)
+                .stageName("test")
+                .runFk(1L)
+                .testResults(List.of(testResult))
+                .build();
+
+        RunGraph run = RunGraphBuilder
+                .builder()
+                .runId(1L)
+                .jobFk(1L)
+                .jobRunCount(1)
+                .runDate(t0)
+                .isSuccess(true)
+                .sha("abc123")
+                .stages(List.of(stage))
+                .build();
+
+        CompanyGraph companyGraph = createCompanyGraphWithLastRun(List.of(run), expectedLastRun);
+
+        JobDashboardRequest request = JobDashboardRequest.builder()
+                .company("company1")
+                .org("org1")
+                .build();
+
+        List<JobDashboardMetrics> metrics = JobDashboardMetrics.fromCompanyGraphs(List.of(companyGraph), request);
+
+        assertEquals(1, metrics.size());
+        JobDashboardMetrics metric = metrics.get(0);
+        assertEquals(expectedLastRun, metric.getLastRun());
+    }
+
+    // Helper method to create CompanyGraph with given runs and specific lastRun
+    private CompanyGraph createCompanyGraphWithLastRun(List<RunGraph> runs, Instant lastRun) {
+        JobGraph job = JobGraphBuilder
+                .builder()
+                .jobId(1L)
+                .branchFk(1)
+                .lastRun(lastRun)
+                .jobInfo(new TreeMap<>(Collections.singletonMap("foo", "bar")))
+                .jobInfoStr("{\"foo\":\"bar\"}")
+                .runs(runs)
+                .build();
+
+        BranchGraph branch = BranchGraphBuilder
+                .builder()
+                .branchId(1)
+                .branchName("main")
+                .repoFk(1)
+                .lastRun(lastRun)
+                .jobs(List.of(job))
+                .build();
+
+        RepoGraph repo = RepoGraphBuilder
+                .builder()
+                .repoId(1)
+                .repoName("repo1")
+                .orgFk(1)
+                .branches(List.of(branch))
+                .build();
+
+        OrgGraph org = OrgGraphBuilder
+                .builder()
+                .orgId(1)
+                .orgName("org1")
+                .companyFk(1)
+                .repos(List.of(repo))
+                .build();
+
+        return CompanyGraphBuilder
+                .builder()
+                .companyId(1)
+                .companyName("company1")
+                .orgs(List.of(org))
+                .build();
+    }
+
     // Helper method to create CompanyGraph with given runs
     private CompanyGraph createCompanyGraph(List<RunGraph> runs) {
         Instant now = Instant.now();

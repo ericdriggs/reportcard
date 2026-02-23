@@ -5,6 +5,8 @@ import io.github.ericdriggs.reportcard.model.pipeline.JobDashboardMetrics;
 import io.github.ericdriggs.reportcard.util.NumberStringUtil;
 
 import java.math.BigDecimal;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 
@@ -125,6 +127,7 @@ public class PipelineDashboardHtmlHelper {
         sb.append("<th>Branch</th>").append(ls);
         sb.append("<th>Job Info</th>").append(ls);
         sb.append("<th>Days since SUCCESS</th>").append(ls);
+        sb.append("<th>Last Run</th>").append(ls);
         sb.append("<th>Job Pass %</th>").append(ls);
         sb.append("<th>Test Pass %</th>").append(ls);
         sb.append("<th>Avg Run Duration</th>").append(ls);
@@ -149,7 +152,13 @@ public class PipelineDashboardHtmlHelper {
             } else {
                 daysSince = metric.getDaysSincePassingRun().toString();
             }
-            sb.append("<td>").append(daysSince).append("</td>").append(ls);
+            String lastPassTooltip = NumberStringUtil.isoUtcTimestamp(metric.getLastPassingRun());
+            sb.append("<td title=\"").append(lastPassTooltip).append("\">").append(daysSince).append("</td>").append(ls);
+            
+            // Last Run - relative time with absolute tooltip
+            String lastRunDisplay = formatLastRun(metric.getLastRun());
+            String lastRunTooltip = NumberStringUtil.isoUtcTimestamp(metric.getLastRun());
+            sb.append("<td title=\"").append(lastRunTooltip).append("\">").append(lastRunDisplay).append("</td>").append(ls);
             
             // Job pass % and Test pass %
             sb.append("<td class='percent'>").append(percentFromBigDecimal(metric.getJobPassPercent())).append("</td>").append(ls);
@@ -164,7 +173,9 @@ public class PipelineDashboardHtmlHelper {
         sb.append("<legend style='font-weight: bold;'>Field Descriptions</legend>").append(ls);
         sb.append("<dl style='display: table; border-collapse: collapse; width: 100%;'>").append(ls);
         sb.append("<dt style='display: table-cell; border: 1px solid #ccc; padding: 8px; font-weight: bold; background: #f5f5f5;'>Days since SUCCESS</dt>").append(ls);
-        sb.append("<dd style='display: table-cell; border: 1px solid #ccc; padding: 8px; margin: 0;'>Number of days since the last successful run. 0 (SUCCESS) means the job passed today.</dd>").append(ls);
+        sb.append("<dd style='display: table-cell; border: 1px solid #ccc; padding: 8px; margin: 0;'>Number of days since the last successful run. 0 (SUCCESS) means the job passed today. Hover for exact timestamp.</dd>").append(ls);
+        sb.append("<dt style='display: table-cell; border: 1px solid #ccc; padding: 8px; font-weight: bold; background: #f5f5f5;'>Last Run</dt>").append(ls);
+        sb.append("<dd style='display: table-cell; border: 1px solid #ccc; padding: 8px; margin: 0;'>Time since the job last ran, regardless of pass/fail. Hover for exact timestamp.</dd>").append(ls);
         sb.append("<dt style='display: table-cell; border: 1px solid #ccc; padding: 8px; font-weight: bold; background: #f5f5f5;'>Job Pass %</dt>").append(ls);
         sb.append("<dd style='display: table-cell; border: 1px solid #ccc; padding: 8px; margin: 0;'>Percentage of runs where every test in the job passed. Calculated as: (passing runs / total runs).</dd>").append(ls);
         sb.append("<dt style='display: table-cell; border: 1px solid #ccc; padding: 8px; font-weight: bold; background: #f5f5f5;'>Test Pass %</dt>").append(ls);
@@ -189,5 +200,13 @@ public class PipelineDashboardHtmlHelper {
             return "-";  // Per DISP-03 requirement
         }
         return NumberStringUtil.fromSecondBigDecimalPadded(durationSeconds);
+    }
+
+    private static String formatLastRun(Instant lastRun) {
+        if (lastRun == null) {
+            return "—";
+        }
+        Duration duration = Duration.between(lastRun, Instant.now());
+        return NumberStringUtil.fromSecondBigDecimalPadded(duration);
     }
 }
