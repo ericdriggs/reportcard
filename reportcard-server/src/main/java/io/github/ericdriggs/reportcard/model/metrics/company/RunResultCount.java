@@ -72,6 +72,9 @@ public class RunResultCount implements Comparable<RunResultCount> {
             return null;
         }
         Duration duration = Duration.between(startTime, endTime);
+        if (duration.isNegative()) {
+            return null;
+        }
         return BigDecimal.valueOf(duration.toMillis()).divide(BigDecimal.valueOf(1000), 2, java.math.RoundingMode.HALF_UP);
     }
 

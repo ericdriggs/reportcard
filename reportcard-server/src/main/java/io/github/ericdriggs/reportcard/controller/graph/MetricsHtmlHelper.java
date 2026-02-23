@@ -251,7 +251,7 @@ public class MetricsHtmlHelper {
         BigDecimal percentChange = current.subtract(previous)
             .multiply(BigDecimal.valueOf(100))
             .divide(previous.abs(), 0, RoundingMode.HALF_UP);
-        // Use 5% threshold
+        // Use DELTA_SIGNIFICANCE_THRESHOLD_PERCENT threshold
         if (percentChange.abs().compareTo(BigDecimal.valueOf(DELTA_SIGNIFICANCE_THRESHOLD_PERCENT)) <= 0) {
             return "delta-neutral";
         }
@@ -277,7 +277,7 @@ public class MetricsHtmlHelper {
     private static String getDeltaCssClassInt(Integer current, Integer previous, boolean higherIsGood) {
         if (current == null || previous == null) return "delta-neutral";
         int delta = current - previous;
-        // For counts, use relative 5% threshold
+        // For counts, use relative DELTA_SIGNIFICANCE_THRESHOLD_PERCENT threshold
         if (previous == 0 || Math.abs(delta) * 100 / Math.abs(previous) <= DELTA_SIGNIFICANCE_THRESHOLD_PERCENT) {
             return "delta-neutral";
         }
@@ -285,6 +285,7 @@ public class MetricsHtmlHelper {
         return "delta-" + direction;
     }
 
+    @SuppressWarnings("unused")
     private static String getDeltaRowClass(RunResultCount current, RunResultCount previous) {
         // Check if test pass % or job pass % has significant change
         BigDecimal threshold = BigDecimal.valueOf(DELTA_SIGNIFICANCE_THRESHOLD_PERCENT);
@@ -614,7 +615,7 @@ public class MetricsHtmlHelper {
             	<dd>Total job runs</dd>
             	
             	<dt>Row Colors</dt>
-            	<dd>Blue = Current period, Gray = Previous period. Delta rows show green/red only for changes &gt;5%.</dd>
+            	<dd>Blue = Current period, Gray = Previous period. Delta rows show green/red only for changes &gt;10%.</dd>
             </dl>
             </fieldset>
             """;

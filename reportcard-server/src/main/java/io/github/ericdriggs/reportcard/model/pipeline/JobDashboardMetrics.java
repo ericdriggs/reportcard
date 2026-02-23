@@ -137,6 +137,7 @@ public class JobDashboardMetrics {
                                 .testPassPercent(testPassPercent)
                                 .avgRunDuration(avgDuration)
                                 .lastPassingRun(lastPassingRun)
+                                .lastRun(jobGraph.lastRun())
                                 .totalRuns(totalRuns)
                                 .passingRuns(passingRuns)
                                 .build());
