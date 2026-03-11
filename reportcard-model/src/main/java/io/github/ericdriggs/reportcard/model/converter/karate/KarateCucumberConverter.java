@@ -124,6 +124,8 @@ public class KarateCucumberConverter {
                 hasSteps = true;
                 JsonNode result = step.path("result");
                 String stepStatus = result.path("status").asText("skipped");
+                log.debug("Step '{}' has status: '{}', result node: {}",
+                    step.path("name").asText(""), stepStatus, result);
                 long duration = result.path("duration").asLong(0);
                 totalNanos = totalNanos.add(BigDecimal.valueOf(duration));
 
@@ -156,7 +158,10 @@ public class KarateCucumberConverter {
 
         if (!hasSteps) {
             status = TestStatus.SKIPPED;
+            log.debug("Scenario '{}' has no steps, setting status to SKIPPED", name);
         }
+        log.debug("Scenario '{}' final status: {}, hasSteps: {}, faults: {}",
+            name, status, hasSteps, faults.size());
 
         // Convert nanoseconds to seconds
         BigDecimal timeSeconds = totalNanos.divide(NANOS_PER_SECOND, 3, RoundingMode.HALF_UP);
