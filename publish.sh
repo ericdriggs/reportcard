@@ -137,9 +137,14 @@ UPLOAD_URL="$BASE/manual/upload/repository/${REPO_KEY}?publishing_type=automatic
 echo "   URL: $UPLOAD_URL"
 echo ""
 
-curl -w "\nHTTP %{http_code}\n" -X POST -H "Authorization: Bearer $AUTH" "$UPLOAD_URL" \
-  | tee /dev/tty \
-  | jq . 2>/dev/null || true
+RESPONSE=$(curl -sS -w "\n%{http_code}" -X POST -H "Authorization: Bearer $AUTH" "$UPLOAD_URL")
+HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+BODY=$(echo "$RESPONSE" | sed '$d')
+
+if [[ -n "$BODY" ]]; then
+  echo "$BODY" | jq . 2>/dev/null || echo "$BODY"
+fi
+echo "HTTP $HTTP_CODE"
 
 echo
 echo "Done. Verify in Publisher Portal → Deployments:"
