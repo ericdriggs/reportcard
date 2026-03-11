@@ -1,5 +1,38 @@
 # Changelog
 
+## [0.1.27] - 2026-03-11 - Fix Trend Report NPE for Null testStatusFk
+
+Fixes a production bug where trend reports failed with `NullPointerException` caused by null `testStatusFk` values. Root cause: Lombok's `@SuperBuilder` bypasses setter methods, so `testStatusFk` wasn't synced when `testStatus` was set during Karate test ingestion.
+
+### Fixed
+
+- **Trend Report NPE**: Fixed `NullPointerException` in trend reports
+  - Root cause: Lombok `@SuperBuilder` bypasses setters, so `testStatusFk` wasn't synced when `testStatus` was set in `KarateCucumberConverter`
+  - Added `@JsonCreator` factory method to `TestCaseGraph` to derive `testStatusFk` from `testStatus` string during JSON deserialization (handles existing data)
+  - Added null handling in `TestStatus.testStatusNameFromStatusId()` to accept `Byte` instead of primitive `byte`
+  - Added null checks in `TestTrendTable`, `SuccessAverage`, `JobStageTestTrend`, and `GraphUIController`
+  - Added defensive null handling in `TestCaseModel.getResultCount()` and `setTestStatus()`
+
+- **Division by Zero**: Fixed `ArithmeticException` in `SuccessAverage.successPercent()` when `totalCount` is zero
+
+- **Empty Hierarchy Handling**: Fixed NPE when job hierarchy (runs, stages, etc.) is empty in trend analysis
+
+### Changed
+
+- **Code Simplification**: Refactored `JobStageTestTrend` to reduce nesting from 8 levels to 5, extracted helper methods `getSingleOrNull()` and `findStageName()`
+
+### Added
+
+- **Logging**: Added warning logs for silent failure cases:
+  - Unknown `testStatus` strings in `TestCaseGraph.fromJson()`
+  - Skipped test cases with null `testStatusFk` in `TestTrendTable`
+
+### Documentation
+
+- Added "Lombok Gotchas" section to CLAUDE.md documenting builder bypass issue
+- Added "Data Safety Rules" section to CLAUDE.md about not committing tokens/credentials
+
+---
 
 ## [0.1.26] - Karate JSON Support for run duration and tags
 
