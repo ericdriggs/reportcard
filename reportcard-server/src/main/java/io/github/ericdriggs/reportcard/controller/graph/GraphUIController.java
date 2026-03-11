@@ -57,6 +57,9 @@ public class GraphUIController {
         for (int i = runs; i > 0; i = i / 2) {
             try {
                 final JobStageTestTrend jobTestTrend = graphService.getJobStageTestTrend(company, org, repo, branch, jobId, stage, start, end, i);
+                if (jobTestTrend == null) {
+                    return ResponseEntity.ok("No trend data available for this job/stage combination.");
+                }
                 e = null;
                 trendHtml = TrendHtmlHelper.renderTrendHtml(jobTestTrend);
                 break;

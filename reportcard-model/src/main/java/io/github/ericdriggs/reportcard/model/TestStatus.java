@@ -64,7 +64,10 @@ public enum TestStatus {
         return testStatus;
     }
 
-    public static String testStatusNameFromStatusId(byte statusId) {
+    public static String testStatusNameFromStatusId(Byte statusId) {
+        if (statusId == null) {
+            return null;
+        }
         try {
             return TestStatus.fromStatusId(statusId).name();
         } catch (Exception ex) {

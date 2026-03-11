@@ -165,6 +165,7 @@ public class KarateCucumberConverter {
             .name(name)
             .tags(tags)
             .testStatus(status)
+            .testStatusFk(status.getStatusId())
             .testCaseFaults(faults)
             .time(timeSeconds)
             .build();

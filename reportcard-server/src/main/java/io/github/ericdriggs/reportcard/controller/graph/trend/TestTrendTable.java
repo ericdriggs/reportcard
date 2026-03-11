@@ -9,6 +9,7 @@ import io.github.ericdriggs.reportcard.model.trend.TestPackageSuiteCase;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
@@ -19,6 +20,7 @@ import java.util.*;
 
 @Builder
 @Jacksonized
+@Slf4j
 @Value
 public class TestTrendTable {
     TreeSet<TestRunHeader> testRunHeaders;
@@ -55,6 +57,10 @@ public class TestTrendTable {
                 for (Map.Entry<RunPojo, TestCaseModel> runEntry : runTestCaseMap.entrySet()) {
                     final RunPojo runPojo = runEntry.getKey();
                     final TestCaseModel testCaseModel = runEntry.getValue();
+                    if (testCaseModel.getTestStatusFk() == null) {
+                        log.warn("Skipping test case '{}' in suite '{}' - testStatusFk is null", testCaseName, testSuiteName);
+                        continue;
+                    }
                     testRunHeaders.add(TestRunHeader.fromRunPojo(jobStageTestTrend.getCompanyOrgRepoBranchJobStageName(), runPojo));
                     final TestStatus testStatus = TestStatus.fromStatusId(testCaseModel.getTestStatusFk());
 

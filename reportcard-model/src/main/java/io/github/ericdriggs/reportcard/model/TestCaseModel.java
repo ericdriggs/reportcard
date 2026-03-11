@@ -49,12 +49,12 @@ public class TestCaseModel extends io.github.ericdriggs.reportcard.dto.TestCase 
     @JsonProperty("testStatus")
     public TestCaseModel setTestStatus(TestStatus testStatus) {
         this.testStatus = testStatus;
-        this.testStatusFk = testStatus.getStatusId();
+        this.testStatusFk = testStatus == null ? null : testStatus.getStatusId();
         return this;
     }
 
     public TestCaseModel setTestStatusFk(Byte testStatusFk) {
-        this.testStatus = TestStatus.fromStatusId(testStatusFk);
+        this.testStatus = testStatusFk == null ? null : TestStatus.fromStatusId(testStatusFk);
         this.testStatusFk = testStatusFk;
         return this;
     }
@@ -75,6 +75,9 @@ public class TestCaseModel extends io.github.ericdriggs.reportcard.dto.TestCase 
 
     @JsonIgnore
     public ResultCount getResultCount() {
+        if (testStatus == null) {
+            return ResultCount.builder().tests(1).time(getTime()).build();
+        }
         return testStatus.getResultCount(getTime());
     }
 
