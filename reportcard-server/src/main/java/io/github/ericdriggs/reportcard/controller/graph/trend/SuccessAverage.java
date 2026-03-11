@@ -34,6 +34,9 @@ public class SuccessAverage {
     }
 
     static BigDecimal successPercent(int successCount, int totalCount, int scale) {
+        if (totalCount == 0) {
+            return BigDecimal.ZERO;
+        }
         return BigDecimal.valueOf((float) successCount / (float) totalCount).setScale(scale, RoundingMode.HALF_UP);
     }
 
