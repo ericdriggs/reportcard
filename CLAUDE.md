@@ -99,6 +99,15 @@ TestCaseModel.builder().testStatus(status).testStatusFk(status.getStatusId()).bu
 
 **Inheritance and field access.** Always use accessors (getters/setters), not direct field access. Subclass overrides won't work if you access fields directly.
 
+## Data Safety Rules (CRITICAL)
+
+**Never commit sensitive data:**
+- API tokens, secrets, credentials, passwords
+- Real user data, PII, or production data
+- Non-synthetic test data from real systems
+
+Use synthetic/mock data for tests. If you see real data in code or test files, flag it immediately.
+
 ## Database Safety Rules (CRITICAL)
 
 **NEVER modify RDS or any remote database.** Only localhost MySQL may be modified.
