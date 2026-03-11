@@ -43,6 +43,9 @@ public class JobStageTestTrend {
 
     private static JobStageTestTrend fromCompanyGraph(CompanyGraph companyGraph, int maxRuns) {
         Pair<CompanyOrgRepoBranchJobStageName, JobGraph> graphPair = getCompanyOrgRepoBranchJob(companyGraph);
+        if (graphPair == null) {
+            return null;
+        }
         CompanyOrgRepoBranchJobStageName companyOrgRepoBranchJobStageNameStageName = graphPair.getLeft();
         JobGraph jobGraph = graphPair.getRight();
         Instant now = Instant.now();
@@ -121,15 +124,27 @@ public class JobStageTestTrend {
 
     private static Pair<CompanyOrgRepoBranchJobStageName, JobGraph> getCompanyOrgRepoBranchJob(CompanyGraph companyGraph) {
 
+        if (CollectionUtils.isEmpty(companyGraph.orgs())) {
+            return null;
+        }
         assertSize1(companyGraph.orgs(), "orgs");
         final OrgGraph orgGraph = companyGraph.orgs().get(0);
 
+        if (CollectionUtils.isEmpty(orgGraph.repos())) {
+            return null;
+        }
         assertSize1(orgGraph.repos(), "repos");
         final RepoGraph repoGraph = orgGraph.repos().get(0);
 
+        if (CollectionUtils.isEmpty(repoGraph.branches())) {
+            return null;
+        }
         assertSize1(repoGraph.branches(), "branches");
         final BranchGraph branchGraph = repoGraph.branches().get(0);
 
+        if (CollectionUtils.isEmpty(branchGraph.jobs())) {
+            return null;
+        }
         assertSize1(branchGraph.jobs(), "jobs");
         final JobGraph jobGraph = branchGraph.jobs().get(0);
 
