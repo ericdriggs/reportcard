@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.ericdriggs.reportcard.model.TestCaseModel;
 import io.github.ericdriggs.reportcard.model.TestStatus;
 import io.soabase.recordbuilder.core.RecordBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -24,10 +26,11 @@ public record TestCaseGraph(
         String assertions,
         List<TestCaseFaultGraph> testCaseFaults
 ) {
+    private static final Logger log = LoggerFactory.getLogger(TestCaseGraph.class);
 
     /**
      * JSON deserializer that derives testStatusFk from testStatus if testStatusFk is null.
-     * This handles JSON that has testStatus but not testStatusFk (e.g., from Karate converter).
+     * This handles legacy data where testStatusFk may be null but testStatus string is present.
      */
     @JsonCreator
     public static TestCaseGraph fromJson(
@@ -48,7 +51,7 @@ public record TestCaseGraph(
             try {
                 testStatusFk = TestStatus.valueOf(testStatus).getStatusId();
             } catch (IllegalArgumentException e) {
-                // Unknown status, leave as null
+                log.warn("Unknown testStatus '{}' for testCase '{}', leaving testStatusFk as null", testStatus, name);
             }
         }
         return new TestCaseGraph(testCaseId, testSuiteFk, testStatusFk, name, className,

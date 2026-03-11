@@ -75,6 +75,9 @@ public class TestCaseModel extends io.github.ericdriggs.reportcard.dto.TestCase 
 
     @JsonIgnore
     public ResultCount getResultCount() {
+        if (testStatus == null) {
+            return ResultCount.builder().tests(1).time(getTime()).build();
+        }
         return testStatus.getResultCount(getTime());
     }
 
