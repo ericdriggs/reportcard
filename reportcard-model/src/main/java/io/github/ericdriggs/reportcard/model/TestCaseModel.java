@@ -49,7 +49,7 @@ public class TestCaseModel extends io.github.ericdriggs.reportcard.dto.TestCase 
     @JsonProperty("testStatus")
     public TestCaseModel setTestStatus(TestStatus testStatus) {
         this.testStatus = testStatus;
-        this.testStatusFk = testStatus.getStatusId();
+        this.testStatusFk = testStatus == null ? null : testStatus.getStatusId();
         return this;
     }
 
