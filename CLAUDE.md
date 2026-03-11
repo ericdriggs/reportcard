@@ -77,6 +77,28 @@ Flyway is NOT used. Schema changes are manual:
 4. **No Spring Security** - Current auth is basic placeholder (username/password in application.properties)
 5. **Test vs Production** - Tests use Testcontainers/LocalStack; production uses real MySQL/S3
 
+## Lombok Gotchas
+
+**Builders bypass setters.** Lombok `@Builder` and `@SuperBuilder` set fields directly, not through setter methods. If a setter does extra work (syncing related fields, validation, derived values), the builder will bypass it.
+
+Example problem in this codebase:
+```java
+// TestCaseModel.setTestStatus() syncs both testStatus AND testStatusFk
+public TestCaseModel setTestStatus(TestStatus testStatus) {
+    this.testStatus = testStatus;
+    this.testStatusFk = testStatus.getStatusId();  // Builder skips this!
+    return this;
+}
+
+// WRONG - only sets testStatus, testStatusFk stays null
+TestCaseModel.builder().testStatus(status).build();
+
+// CORRECT - set both fields explicitly
+TestCaseModel.builder().testStatus(status).testStatusFk(status.getStatusId()).build();
+```
+
+**Inheritance and field access.** Always use accessors (getters/setters), not direct field access. Subclass overrides won't work if you access fields directly.
+
 ## Database Safety Rules (CRITICAL)
 
 **NEVER modify RDS or any remote database.** Only localhost MySQL may be modified.
