@@ -54,7 +54,7 @@ public class TestCaseModel extends io.github.ericdriggs.reportcard.dto.TestCase 
     }
 
     public TestCaseModel setTestStatusFk(Byte testStatusFk) {
-        this.testStatus = TestStatus.fromStatusId(testStatusFk);
+        this.testStatus = testStatusFk == null ? null : TestStatus.fromStatusId(testStatusFk);
         this.testStatusFk = testStatusFk;
         return this;
     }
