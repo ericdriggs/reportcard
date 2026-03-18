@@ -188,11 +188,15 @@ public class JunitControllerTest {
                 assertNull(responseDetails.getProblemInstance());
                 assertNull(responseDetails.getProblemType());
                 final Map<String, String> createdUrls = responseDetails.getCreatedUrls();
-                assertEquals(4, createdUrls.size());
+                assertEquals(5, createdUrls.size(), "Expected 5 URLs: stage, cucumber_html, cucumber_html.tar.gz, junit, runInfo");
                 assertThat(createdUrls.get("stage"), matchesPattern(expectedStageRegex));
                 {
                     final String htmlUrl = createdUrls.get("cucumber_html");
                     assertThat(htmlUrl, matchesPattern(".*/v1/api/storage/key/rc/company1/org1/repo1/master/.*/1/.*/apiTest/cucumber_html/html-samples/foo/index.html"));
+                }
+                {
+                    final String cucumberTarGzUrl = createdUrls.get("cucumber_html.tar.gz");
+                    assertThat(cucumberTarGzUrl, matchesPattern(".*/v1/api/storage/key/rc/company1/org1/repo1/master/.*/1/.*/apiTest/cucumber_html.tar.gz"));
                 }
                 {
                     final String junitUrl = createdUrls.get("junit");
@@ -255,6 +259,9 @@ public class JunitControllerTest {
 
         {//storage assertions
             List<StoragePojo> storages = response.getStorages();
+
+            // Verify cucumber tar.gz storage record
+            boolean foundCucumberTarGz = false;
             for (StoragePojo storage : storages) {
                 assertNotNull(storage.getStorageId());
                 assertNotNull(storage.getLabel());
@@ -262,11 +269,16 @@ public class JunitControllerTest {
                 System.out.println("storage: " + storage);
                 assertTrue(storage.getIsUploadComplete());
 
+                if ("cucumber_html.tar.gz".equals(storage.getLabel())) {
+                    foundCucumberTarGz = true;
+                    assertEquals(5, storage.getStorageType(), "cucumber_html.tar.gz should use TAR_GZ storage type (5)");
+                    assertTrue(storage.getIsUploadComplete(), "cucumber_html.tar.gz upload should be complete");
+                }
             }
+            assertTrue(foundCucumberTarGz, "Should have cucumber_html.tar.gz storage record");
 
             // Verify exact S3 file counts for this test's storage prefixes
-            int cucumberHtmlCount = 0;
-            int junitTarGzCount = 0;
+            Set<String> allS3Keys = new java.util.HashSet<>();
 
             for (StoragePojo storage : storages) {
                 String prefix = storage.getPrefix();
@@ -274,19 +286,30 @@ public class JunitControllerTest {
                 assertNotNull(s3Objects.contents());
 
                 for (S3Object s3Object : s3Objects.contents()) {
-                    String key = s3Object.key();
-                    if (key.contains("cucumber_html")) {
-                        cucumberHtmlCount++;
-                    }
-                    if (key.endsWith("junit.tar.gz")) {
-                        junitTarGzCount++;
-                    }
+                    allS3Keys.add(s3Object.key());
                 }
                 System.out.println("S3 objects for " + prefix + ": " + s3Objects.contents().size());
             }
 
+            int cucumberHtmlCount = 0;
+            int junitTarGzCount = 0;
+            int cucumberTarGzArchiveCount = 0;
+
+            for (String key : allS3Keys) {
+                // Check for cucumber_html.tar.gz BEFORE cucumber_html (substring match)
+                if (key.contains("/cucumber_html.tar.gz/")) {
+                    cucumberTarGzArchiveCount++;
+                } else if (key.contains("/cucumber_html/")) {
+                    cucumberHtmlCount++;
+                }
+                if (key.endsWith("/junit/junit.tar.gz")) {
+                    junitTarGzCount++;
+                }
+            }
+
             assertEquals(3, cucumberHtmlCount, "Expected exactly 3 cucumber HTML files");
             assertEquals(1, junitTarGzCount, "Expected exactly 1 junit tar.gz file");
+            assertEquals(1, cucumberTarGzArchiveCount, "Expected exactly 1 cucumber tar.gz archive");
         }
 
 
