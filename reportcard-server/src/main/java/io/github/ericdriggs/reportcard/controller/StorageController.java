@@ -166,6 +166,25 @@ public class StorageController {
         if (storageType == null) {
             storageType = StorageType.HTML;
         }
+
+        // Store original tar.gz for cucumber_html before expanding
+        if ("cucumber_html".equals(label) && storageType == StorageType.HTML && shouldExpand) {
+            StagePathStorages tarGzStorage = storeCucumberTarGzArchive(stageId, file);
+            StagePathStorages mainStorage = doPostStageStorageTarGZInternal(stageId, label, file, indexFile, storageType, shouldExpand);
+            return StagePathStorages.merge(tarGzStorage, mainStorage);
+        }
+
+        return doPostStageStorageTarGZInternal(stageId, label, file, indexFile, storageType, shouldExpand);
+    }
+
+    private StagePathStorages doPostStageStorageTarGZInternal(
+            Long stageId,
+            String label,
+            MultipartFile file,
+            String indexFile,
+            StorageType storageType,
+            boolean shouldExpand) {
+
         final StagePath stagePath = storagePersistService.getStagePath(stageId);
         final String prefix = new StoragePath(stagePath, label).getPrefix();
         final StagePathStorages stagePathStorages = storagePersistService.upsertStoragePath(indexFile, label, prefix, stageId, storageType);
@@ -176,6 +195,26 @@ public class StorageController {
             stagePathStorages.setComplete();
         }
         //TOMAYBE: else inspect contents on s3 and throw if different. Probability seems low, so defer until actually an issue.
+        return stagePathStorages;
+    }
+
+    protected StagePathStorages storeCucumberTarGzArchive(Long stageId, MultipartFile tarGz) {
+        final String label = "cucumber_html.tar.gz";
+        StorageType storageType = StorageType.TAR_GZ;
+
+        final StagePath stagePath = storagePersistService.getStagePath(stageId);
+        final String prefix = new StoragePath(stagePath, label).getPrefix();
+
+        StagePathStorages stagePathStorages = storagePersistService.upsertStoragePath(
+            null, label, prefix, stageId, storageType
+        );
+
+        if (!stagePathStorages.isComplete()) {
+            s3Service.uploadTarGz(prefix, false, tarGz);
+            storagePersistService.setUploadCompleted(null, label, prefix, stageId);
+            stagePathStorages.setComplete();
+        }
+
         return stagePathStorages;
     }
 

@@ -321,6 +321,23 @@ public class JunitController {
 
         StorageType storageType = StorageType.HTML;
 
+        // Store original tar.gz for cucumber_html before expanding
+        if ("cucumber_html".equals(label)) {
+            StagePathStorages tarGzStorage = storeCucumberTarGzArchive(stageId, tarGz);
+            StagePathStorages htmlStorage = storeHtmlInternal(stageId, label, tarGz, indexFile, storageType);
+            return StagePathStorages.merge(tarGzStorage, htmlStorage);
+        }
+
+        return storeHtmlInternal(stageId, label, tarGz, indexFile, storageType);
+    }
+
+    private StagePathStorages storeHtmlInternal(
+            Long stageId,
+            String label,
+            MultipartFile tarGz,
+            String indexFile,
+            StorageType storageType) {
+
         final StagePath stagePath = storagePersistService.getStagePath(stageId);
         final String prefix = new StoragePath(stagePath, label).getPrefix();
 
@@ -330,6 +347,26 @@ public class JunitController {
             storagePersistService.setUploadCompleted(indexFile, label, prefix, stageId);
             stagePathStorages.setComplete();
         }
+        return stagePathStorages;
+    }
+
+    protected StagePathStorages storeCucumberTarGzArchive(Long stageId, MultipartFile tarGz) {
+        final String label = "cucumber_html.tar.gz";
+        StorageType storageType = StorageType.TAR_GZ;
+
+        final StagePath stagePath = storagePersistService.getStagePath(stageId);
+        final String prefix = new StoragePath(stagePath, label).getPrefix();
+
+        StagePathStorages stagePathStorages = storagePersistService.upsertStoragePath(
+            null, label, prefix, stageId, storageType
+        );
+
+        if (!stagePathStorages.isComplete()) {
+            s3Service.uploadTarGz(prefix, false, tarGz);
+            storagePersistService.setUploadCompleted(null, label, prefix, stageId);
+            stagePathStorages.setComplete();
+        }
+
         return stagePathStorages;
     }
 
