@@ -55,7 +55,7 @@ class BrowseHtmlHelperTest {
         assertTrue(html.contains(">storage.tar.gz<"), "Should contain indexFile as display name");
         assertTrue(html.contains("/v1/api/storage/key/rc/company/org/repo/branch/sha/jobId/runId/stage/cucumber_html_tar_gz"),
                 "Should contain full URL");
-        assertTrue(html.contains("title=\"Download cucumber HTML report as tar.gz archive\""),
+        assertTrue(html.contains("title=\"Download cucumber_html_tar_gz\""),
                 "Should have download tooltip");
         assertTrue(html.contains("class=\"info report-link\""), "Should have report-link class");
         assertTrue(html.contains("report-simple.svg"), "Should have report icon");
@@ -89,7 +89,7 @@ class BrowseHtmlHelperTest {
         assertTrue(html.contains(">storage.tar.gz<"), "Should contain tar.gz display name");
 
         // Verify tooltip only on tar.gz link
-        assertTrue(html.contains("title=\"Download cucumber HTML report as tar.gz archive\""),
+        assertTrue(html.contains("title=\"Download cucumber_html_tar_gz\""),
                 "Tar.gz link should have tooltip");
 
         // Count occurrences of 'title=' - should be exactly 1 (only on tar.gz)
@@ -184,6 +184,18 @@ class BrowseHtmlHelperTest {
         // URL should end with the prefix
         assertTrue(html.contains("href=\"/v1/api/storage/key/rc/test/path/cucumber_html_tar_gz\""),
                 "URL should not have /null or trailing content after prefix");
+    }
+
+    @Test
+    void getDisplayName_withIndexFile_returnsIndexFile() {
+        StoragePojo storage = createStoragePojo("cucumber_html", "rc/test/path", "index.html", StorageType.HTML.getStorageTypeId());
+        assertEquals("index.html", BrowseHtmlHelper.getDisplayName(storage));
+    }
+
+    @Test
+    void getDisplayName_withNullIndexFile_returnsLabel() {
+        StoragePojo storage = createStoragePojo("cucumber_html", "rc/test/path", null, StorageType.HTML.getStorageTypeId());
+        assertEquals("cucumber_html", BrowseHtmlHelper.getDisplayName(storage));
     }
 
     // Helper method to create StoragePojo with test data

@@ -418,7 +418,7 @@ public class BrowseHtmlHelper {
                 final String downloadLink = downloadLinkBase
                         .replace("{downloadName}", displayName)
                         .replace("{downloadUrl}", getStorageKey(storage))
-                        .replace("{tooltip}", "Download cucumber HTML report as tar.gz archive");
+                        .replace("{tooltip}", "Download " + storage.getLabel());
                 sb.append(downloadLink + ls);
             } else {
                 // Existing browse link for HTML/other files
