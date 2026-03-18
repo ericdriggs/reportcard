@@ -44,17 +44,17 @@ class BrowseHtmlHelperTest {
         StoragePojo tarGzStorage = createStoragePojo(
                 "cucumber_html_tar_gz",
                 "rc/company/org/repo/branch/sha/jobId/runId/stage/cucumber_html_tar_gz",
-                null, // tar.gz has no index file
+                "storage.tar.gz",
                 StorageType.TAR_GZ.getStorageTypeId()
         );
 
         Set<StoragePojo> storages = Set.of(tarGzStorage);
         String html = BrowseHtmlHelper.getReportLinks(storages);
 
-        // Verify download link rendered with tooltip
-        assertTrue(html.contains("cucumber_html_tar_gz"), "Should contain label");
+        // Verify download link rendered with tooltip - display is just indexFile
+        assertTrue(html.contains(">storage.tar.gz<"), "Should contain indexFile as display name");
         assertTrue(html.contains("/v1/api/storage/key/rc/company/org/repo/branch/sha/jobId/runId/stage/cucumber_html_tar_gz"),
-                "Should contain full URL without index file");
+                "Should contain full URL");
         assertTrue(html.contains("title=\"Download cucumber HTML report as tar.gz archive\""),
                 "Should have download tooltip");
         assertTrue(html.contains("class=\"info report-link\""), "Should have report-link class");
@@ -73,7 +73,7 @@ class BrowseHtmlHelperTest {
         StoragePojo tarGzStorage = createStoragePojo(
                 "cucumber_html_tar_gz",
                 "rc/test/path/cucumber_html_tar_gz",
-                null,
+                "storage.tar.gz",
                 StorageType.TAR_GZ.getStorageTypeId()
         );
 
@@ -84,9 +84,9 @@ class BrowseHtmlHelperTest {
 
         String html = BrowseHtmlHelper.getReportLinks(storages);
 
-        // Verify both links present
-        assertTrue(html.contains("cucumber_html"), "Should contain HTML label");
-        assertTrue(html.contains("cucumber_html_tar_gz"), "Should contain tar.gz label");
+        // Verify both display names present (just indexFile)
+        assertTrue(html.contains(">index.html<"), "Should contain HTML display name");
+        assertTrue(html.contains(">storage.tar.gz<"), "Should contain tar.gz display name");
 
         // Verify tooltip only on tar.gz link
         assertTrue(html.contains("title=\"Download cucumber HTML report as tar.gz archive\""),
@@ -100,7 +100,7 @@ class BrowseHtmlHelperTest {
         assertTrue(html.contains("/v1/api/storage/key/rc/test/path/cucumber_html/index.html"),
                 "HTML link should have index.html");
         assertTrue(html.contains("/v1/api/storage/key/rc/test/path/cucumber_html_tar_gz"),
-                "Tar.gz link should NOT have index.html appended");
+                "Tar.gz link URL should not change");
     }
 
     @Test
@@ -166,8 +166,8 @@ class BrowseHtmlHelperTest {
     }
 
     @Test
-    void getReportLinks_tarGzUrlDoesNotAppendIndexFile() {
-        // Verify that tar.gz storage with null indexFile doesn't get "/null" appended
+    void getReportLinks_withNullIndexFile_displaysLabelOnly() {
+        // Verify that storage with null indexFile displays just the label
         StoragePojo tarGzStorage = createStoragePojo(
                 "cucumber_html_tar_gz",
                 "rc/test/path/cucumber_html_tar_gz",
@@ -178,10 +178,12 @@ class BrowseHtmlHelperTest {
         Set<StoragePojo> storages = Set.of(tarGzStorage);
         String html = BrowseHtmlHelper.getReportLinks(storages);
 
-        // URL should end with the prefix, no "/null" or extra slash
+        // Display name should be just the label (no /null)
+        assertTrue(html.contains(">cucumber_html_tar_gz<"), "Display should be just the label");
+        assertFalse(html.contains("/null"), "Should not contain /null");
+        // URL should end with the prefix
         assertTrue(html.contains("href=\"/v1/api/storage/key/rc/test/path/cucumber_html_tar_gz\""),
                 "URL should not have /null or trailing content after prefix");
-        assertFalse(html.contains("/null"), "Should not contain /null in URL");
     }
 
     // Helper method to create StoragePojo with test data

@@ -376,15 +376,16 @@ public class JunitController {
             MultipartFile tarGz) {
 
         final String label = "junit";
+        final String indexFile = "junit.tar.gz";
         StorageType storageType = StorageType.JUNIT;
 
         final StagePath stagePath = storagePersistService.getStagePath(stageId);
         final String prefix = new StoragePath(stagePath, label).getPrefix();
 
-        StagePathStorages stagePathStorages = storagePersistService.upsertStoragePath(null, label, prefix, stageId, storageType);
+        StagePathStorages stagePathStorages = storagePersistService.upsertStoragePath(indexFile, label, prefix, stageId, storageType);
         if (!stagePathStorages.isComplete()) {
             s3Service.uploadTarGz(prefix, false, tarGz);
-            storagePersistService.setUploadCompleted(null, label, prefix, stageId);
+            storagePersistService.setUploadCompleted(indexFile, label, prefix, stageId);
             stagePathStorages.setComplete();
         }
 
@@ -432,15 +433,16 @@ public class JunitController {
      */
     protected StagePathStorages storeKarate(Long stageId, MultipartFile tarGz) {
         final String label = "karate";
+        final String indexFile = "karate.tar.gz";
         StorageType storageType = StorageType.KARATE_JSON;
 
         final StagePath stagePath = storagePersistService.getStagePath(stageId);
         final String prefix = new StoragePath(stagePath, label).getPrefix();
 
-        StagePathStorages stagePathStorages = storagePersistService.upsertStoragePath(null, label, prefix, stageId, storageType);
+        StagePathStorages stagePathStorages = storagePersistService.upsertStoragePath(indexFile, label, prefix, stageId, storageType);
         if (!stagePathStorages.isComplete()) {
             s3Service.uploadTarGz(prefix, false, tarGz);  // false = don't expand
-            storagePersistService.setUploadCompleted(null, label, prefix, stageId);
+            storagePersistService.setUploadCompleted(indexFile, label, prefix, stageId);
             stagePathStorages.setComplete();
         }
         return stagePathStorages;

@@ -411,23 +411,31 @@ public class BrowseHtmlHelper {
         }
         StringBuilder sb = new StringBuilder();
         for (StoragePojo storage : storages) {
+            final String displayName = getDisplayName(storage);
             if (storage.getStorageType() != null
                 && storage.getStorageType() == StorageType.TAR_GZ.getStorageTypeId()) {
                 // Download link for tar.gz files with tooltip
                 final String downloadLink = downloadLinkBase
-                        .replace("{downloadName}", storage.getLabel())
+                        .replace("{downloadName}", displayName)
                         .replace("{downloadUrl}", getStorageKey(storage))
                         .replace("{tooltip}", "Download cucumber HTML report as tar.gz archive");
                 sb.append(downloadLink + ls);
             } else {
                 // Existing browse link for HTML/other files
                 final String reportLink = reportLinkBase
-                        .replace("{reportName}", storage.getLabel())
+                        .replace("{reportName}", displayName)
                         .replace("{reportUrl}", getStorageKey(storage));
                 sb.append(reportLink + ls);
             }
         }
         return sb.toString();
+    }
+
+    protected static String getDisplayName(StoragePojo storage) {
+        if (storage.getIndexFile() == null) {
+            return storage.getLabel();
+        }
+        return storage.getIndexFile();
     }
 
     protected final static String stageViewMain =
@@ -476,12 +484,12 @@ public class BrowseHtmlHelper {
             </fieldset>
             """;
 
-    protected final static String reportLinkBase = "<a class=\"info report-link\" href=\"{reportUrl}\">" +
+    protected final static String reportLinkBase = "<a class=\"info report-link\" style=\"white-space: nowrap\" href=\"{reportUrl}\">" +
                                                    "<img alt=\"{reportName}\" class=\"report-img\" src=\"/image/report-simple.svg\">" +
                                                    "{reportName}" +
                                                    "</a>";
 
-    protected final static String downloadLinkBase = "<a class=\"info report-link\" href=\"{downloadUrl}\" title=\"{tooltip}\">" +
+    protected final static String downloadLinkBase = "<a class=\"info report-link\" style=\"white-space: nowrap\" href=\"{downloadUrl}\" title=\"{tooltip}\">" +
                                                      "<img alt=\"{downloadName}\" class=\"report-img\" src=\"/image/report-simple.svg\">" +
                                                      "{downloadName}" +
                                                      "</a>";

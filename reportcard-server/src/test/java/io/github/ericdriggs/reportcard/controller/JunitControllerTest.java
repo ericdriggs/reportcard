@@ -200,7 +200,7 @@ public class JunitControllerTest {
                 }
                 {
                     final String junitUrl = createdUrls.get("junit");
-                    assertThat(junitUrl, matchesPattern(".*/v1/api/storage/key/rc/company1/org1/repo1/master/.*/1/.*/apiTest/junit"));
+                    assertThat(junitUrl, matchesPattern(".*/v1/api/storage/key/rc/company1/org1/repo1/master/.*/1/.*/apiTest/junit/junit.tar.gz"));
                 }
             }
 
