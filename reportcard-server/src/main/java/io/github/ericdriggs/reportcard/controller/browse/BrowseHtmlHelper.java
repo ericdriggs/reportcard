@@ -7,6 +7,7 @@ import io.github.ericdriggs.reportcard.gen.db.tables.pojos.*;
 import io.github.ericdriggs.reportcard.model.StageTestResultPojo;
 import io.github.ericdriggs.reportcard.model.branch.BranchJobLatestRunMap;
 import io.github.ericdriggs.reportcard.model.branch.RunStorageTestResult;
+import io.github.ericdriggs.reportcard.persist.StorageType;
 import io.github.ericdriggs.reportcard.util.NumberStringUtil;
 import io.github.ericdriggs.reportcard.util.PrettyPrintUtil;
 import io.github.ericdriggs.reportcard.util.StringMapUtil;
@@ -410,10 +411,21 @@ public class BrowseHtmlHelper {
         }
         StringBuilder sb = new StringBuilder();
         for (StoragePojo storage : storages) {
-            final String reportLink = reportLinkBase
-                    .replace("{reportName}", storage.getLabel())
-                    .replace("{reportUrl}", getStorageKey(storage));
-            sb.append(reportLink + ls);
+            if (storage.getStorageType() != null
+                && storage.getStorageType() == StorageType.TAR_GZ.getStorageTypeId()) {
+                // Download link for tar.gz files with tooltip
+                final String downloadLink = downloadLinkBase
+                        .replace("{downloadName}", storage.getLabel())
+                        .replace("{downloadUrl}", getStorageKey(storage))
+                        .replace("{tooltip}", "Download cucumber HTML report as tar.gz archive");
+                sb.append(downloadLink + ls);
+            } else {
+                // Existing browse link for HTML/other files
+                final String reportLink = reportLinkBase
+                        .replace("{reportName}", storage.getLabel())
+                        .replace("{reportUrl}", getStorageKey(storage));
+                sb.append(reportLink + ls);
+            }
         }
         return sb.toString();
     }
@@ -468,6 +480,11 @@ public class BrowseHtmlHelper {
                                                    "<img alt=\"{reportName}\" class=\"report-img\" src=\"/image/report-simple.svg\">" +
                                                    "{reportName}" +
                                                    "</a>";
+
+    protected final static String downloadLinkBase = "<a class=\"info report-link\" href=\"{downloadUrl}\" title=\"{tooltip}\">" +
+                                                     "<img alt=\"{downloadName}\" class=\"report-img\" src=\"/image/report-simple.svg\">" +
+                                                     "{downloadName}" +
+                                                     "</a>";
 
     //******************** job stages ********************//
 
