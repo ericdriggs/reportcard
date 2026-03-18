@@ -24,7 +24,10 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.multipart.MultipartFile;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
+import software.amazon.awssdk.core.ResponseBytes;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
+import software.amazon.awssdk.services.s3.model.S3Object;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -82,7 +85,7 @@ public class StorageControllerTest {
     void postStorageToStageTest() throws IOException {
         MultipartFile[] files = TestResultPersistServiceTest.getMockMultipartFilesFromPathStrings(TestResultPersistServiceTest.htmlPaths, resourceReader);
         String indexFile = TestResultPersistServiceTest.htmlIndexFile;
-        Long stageId = 1L;
+        Long stageId = 2L; // Use stage 2 to avoid collision with JunitControllerTest
         final String label = "cucumber_html";
 
         Path tempTarGz = null;
@@ -98,11 +101,11 @@ public class StorageControllerTest {
             assertNotNull(responseEntity);
             StagePathStorageResponse response = responseEntity.getBody();
 
-            final String expectedStageUrl = "/company/company1/org/org1/repo/repo1/branch/master/jobinfo/application=fooapp,host=foocorp.jenkins.com,pipeline=foopipeline/runcount/1/stage/api";
+            final String expectedStageUrl = "/company/company1/org/org1/repo/repo1/branch/master/jobinfo/application=fooapp,host=foocorp.jenkins.com,pipeline=foopipeline/runcount/1/stage/integration";
             {
 
                 final String expectedRunUrl = "/company/company1/org/org1/repo/repo1/branch/master/jobinfo/application=fooapp,host=foocorp.jenkins.com,pipeline=foopipeline/runcount/1";
-                final String expectedCucumberRegex = "/v1/api/storage/key/rc/company1/org1/repo1/master/.*/1/1/api/cucumber_html/html-samples/foo/index.html";
+                final String expectedCucumberRegex = "/v1/api/storage/key/rc/company1/org1/repo1/master/.*/1/1/integration/cucumber_html/html-samples/foo/index.html";
 
                 final ResponseDetails responseDetails = response.getResponseDetails();
                 assertEquals(201, responseDetails.getHttpStatus());
@@ -112,14 +115,14 @@ public class StorageControllerTest {
                 assertNull(responseDetails.getProblemType());
                 {
                     final Map<String, String> createdUrls = responseDetails.getCreatedUrls();
-                    assertEquals(4, createdUrls.size(), "Expected 4 URLs: stage, run, cucumber_html, cucumber_html.tar.gz");
+                    assertEquals(4, createdUrls.size(), "Expected 4 URLs: stage, run, cucumber_html, cucumber_html_tar_gz");
                     // Use endsWith to handle optional REPORTCARD_SERVER_URL prefix
                     assertTrue(createdUrls.get("stage").endsWith(expectedStageUrl), "stage URL should end with expected path");
                     assertTrue(createdUrls.get("run").endsWith(expectedRunUrl), "run URL should end with expected path");
                     final String htmlUrl = createdUrls.get("cucumber_html");
                     assertThat(htmlUrl, matchesPattern(".*" + expectedCucumberRegex));
-                    // Verify cucumber_html.tar.gz URL exists
-                    assertNotNull(createdUrls.get("cucumber_html.tar.gz"), "Should have cucumber_html.tar.gz URL");
+                    // Verify cucumber_html_tar_gz URL exists
+                    assertNotNull(createdUrls.get("cucumber_html_tar_gz"), "Should have cucumber_html_tar_gz URL");
                 }
             }
             {
@@ -132,7 +135,7 @@ public class StorageControllerTest {
                 assertJsonEquals("{\"host\": \"foocorp.jenkins.com\", \"pipeline\": \"foopipeline\", \"application\": \"fooapp\"}",
                         stagePath.getJob().getJobInfo());
                 assertEquals(TestData.runReference.toString(), stagePath.getRun().getRunReference());
-                assertEquals("api", stagePath.getStage().getStageName());
+                assertEquals("integration", stagePath.getStage().getStageName());
                 final Map<String, String> urlMaps = stagePath.getUrlMaps();
                 assertTrue(urlMaps.get("stage").endsWith(expectedStageUrl), "stage URL should end with expected path");
             }
@@ -160,5 +163,78 @@ public class StorageControllerTest {
             }
         }
 
+    }
+
+    @Test
+    void cucumberTarGzStoragePathAndDownloadTest() throws IOException {
+        // This test verifies:
+        // 1. cucumber tar.gz is stored at the correct S3 path
+        // 2. The file can be downloaded from that path
+
+        MultipartFile[] files = TestResultPersistServiceTest.getMockMultipartFilesFromPathStrings(TestResultPersistServiceTest.htmlPaths, resourceReader);
+        String indexFile = TestResultPersistServiceTest.htmlIndexFile;
+        Long stageId = 1L;
+        final String label = "cucumber_html";
+
+        Path tempTarGz = null;
+        try {
+            tempTarGz = TestXmlTarGzUtil.createTarGzipFilesForTesting(files);
+            MockMultipartFile tarGzFile = new MockMultipartFile(
+                    "storage.tar.gz",
+                    "storage.tar.gz",
+                    MediaType.ALL_VALUE,
+                    Files.newInputStream(tempTarGz)
+            );
+
+            ResponseEntity<StagePathStorageResponse> responseEntity = storageController.postStageStorageTarGZ(stageId, label, indexFile, StorageType.HTML, true, tarGzFile);
+            StagePathStorageResponse response = responseEntity.getBody();
+            assertNotNull(response);
+
+            // Find the tar.gz storage record
+            StoragePojo tarGzStorage = null;
+            for (StoragePojo storage : response.getStorages()) {
+                if (storage.getLabel().contains("tar_gz")) {
+                    tarGzStorage = storage;
+                    break;
+                }
+            }
+            assertNotNull(tarGzStorage, "Should have tar.gz storage record");
+            assertEquals("storage.tar.gz", tarGzStorage.getIndexFile(), "indexFile should be the form field name");
+
+            String tarGzPrefix = tarGzStorage.getPrefix();
+            log.info("tar.gz prefix from DB: {}", tarGzPrefix);
+            log.info("tar.gz indexFile from DB: {}", tarGzStorage.getIndexFile());
+
+            // List S3 objects at the tar.gz prefix to see what's actually there
+            ListObjectsV2Response s3ListResponse = s3Service.listObjectsForPrefixNoDelimiter(tarGzPrefix);
+            assertNotNull(s3ListResponse.contents(), "S3 should have contents at prefix");
+            assertFalse(s3ListResponse.contents().isEmpty(), "S3 contents should not be empty at prefix: " + tarGzPrefix);
+
+            // Log all S3 keys found
+            log.info("S3 objects at prefix '{}':", tarGzPrefix);
+            for (S3Object s3Obj : s3ListResponse.contents()) {
+                log.info("  - {}", s3Obj.key());
+            }
+
+            // The file should be at prefix/storage.tar.gz (since that's the form field name)
+            String expectedKey = tarGzPrefix + "/storage.tar.gz";
+            boolean foundExpectedFile = s3ListResponse.contents().stream()
+                    .anyMatch(obj -> obj.key().equals(expectedKey));
+            assertTrue(foundExpectedFile, "Expected file at: " + expectedKey +
+                    ", but found: " + s3ListResponse.contents().stream().map(S3Object::key).toList());
+
+            // Verify the file can be downloaded
+            ResponseBytes<GetObjectResponse> downloadResponse = s3Service.getObjectBytes(expectedKey);
+            assertTrue(downloadResponse.response().sdkHttpResponse().isSuccessful(),
+                    "Should be able to download file from: " + expectedKey);
+            assertTrue(downloadResponse.asByteArray().length > 0, "Downloaded file should have content");
+
+            log.info("Successfully verified tar.gz at path: {}", expectedKey);
+
+        } finally {
+            if (tempTarGz != null) {
+                Files.delete(tempTarGz);
+            }
+        }
     }
 }

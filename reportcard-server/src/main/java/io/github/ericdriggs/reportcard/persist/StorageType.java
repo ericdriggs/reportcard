@@ -28,6 +28,10 @@ public enum StorageType {
         return storageTypeId;
     }
 
+    public String toLabel(String baseLabel) {
+        return baseLabel + "_" + this.name().toLowerCase();
+    }
+
     final static Map<Integer, StorageType> idStorageTypeMap = new HashMap<>();
 
     static {

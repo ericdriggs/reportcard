@@ -199,19 +199,20 @@ public class StorageController {
     }
 
     protected StagePathStorages storeCucumberTarGzArchive(Long stageId, MultipartFile tarGz) {
-        final String label = "cucumber_html.tar.gz";
         StorageType storageType = StorageType.TAR_GZ;
+        final String label = storageType.toLabel("cucumber_html");
+        final String indexFile = tarGz.getName(); // form field name becomes filename in S3
 
         final StagePath stagePath = storagePersistService.getStagePath(stageId);
         final String prefix = new StoragePath(stagePath, label).getPrefix();
 
         StagePathStorages stagePathStorages = storagePersistService.upsertStoragePath(
-            null, label, prefix, stageId, storageType
+            indexFile, label, prefix, stageId, storageType
         );
 
         if (!stagePathStorages.isComplete()) {
             s3Service.uploadTarGz(prefix, false, tarGz);
-            storagePersistService.setUploadCompleted(null, label, prefix, stageId);
+            storagePersistService.setUploadCompleted(indexFile, label, prefix, stageId);
             stagePathStorages.setComplete();
         }
 

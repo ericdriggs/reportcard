@@ -41,6 +41,14 @@ VALUES (1,
         'api',
         1);
 
+INSERT INTO `reportcard`.`stage`
+(`stage_id`,
+ `stage_name`,
+ `run_fk`
+)
+VALUES (2,
+        'integration',
+        1);
 
 
 INSERT INTO `reportcard`.`test_result`

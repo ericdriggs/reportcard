@@ -42,8 +42,8 @@ class BrowseHtmlHelperTest {
     @Test
     void getReportLinks_withTarGzStorageOnly_rendersDownloadLinkWithTooltip() {
         StoragePojo tarGzStorage = createStoragePojo(
-                "cucumber_html.tar.gz",
-                "rc/company/org/repo/branch/sha/jobId/runId/stage/cucumber_html.tar.gz",
+                "cucumber_html_tar_gz",
+                "rc/company/org/repo/branch/sha/jobId/runId/stage/cucumber_html_tar_gz",
                 null, // tar.gz has no index file
                 StorageType.TAR_GZ.getStorageTypeId()
         );
@@ -52,8 +52,8 @@ class BrowseHtmlHelperTest {
         String html = BrowseHtmlHelper.getReportLinks(storages);
 
         // Verify download link rendered with tooltip
-        assertTrue(html.contains("cucumber_html.tar.gz"), "Should contain label");
-        assertTrue(html.contains("/v1/api/storage/key/rc/company/org/repo/branch/sha/jobId/runId/stage/cucumber_html.tar.gz"),
+        assertTrue(html.contains("cucumber_html_tar_gz"), "Should contain label");
+        assertTrue(html.contains("/v1/api/storage/key/rc/company/org/repo/branch/sha/jobId/runId/stage/cucumber_html_tar_gz"),
                 "Should contain full URL without index file");
         assertTrue(html.contains("title=\"Download cucumber HTML report as tar.gz archive\""),
                 "Should have download tooltip");
@@ -71,8 +71,8 @@ class BrowseHtmlHelperTest {
         );
 
         StoragePojo tarGzStorage = createStoragePojo(
-                "cucumber_html.tar.gz",
-                "rc/test/path/cucumber_html.tar.gz",
+                "cucumber_html_tar_gz",
+                "rc/test/path/cucumber_html_tar_gz",
                 null,
                 StorageType.TAR_GZ.getStorageTypeId()
         );
@@ -86,7 +86,7 @@ class BrowseHtmlHelperTest {
 
         // Verify both links present
         assertTrue(html.contains("cucumber_html"), "Should contain HTML label");
-        assertTrue(html.contains("cucumber_html.tar.gz"), "Should contain tar.gz label");
+        assertTrue(html.contains("cucumber_html_tar_gz"), "Should contain tar.gz label");
 
         // Verify tooltip only on tar.gz link
         assertTrue(html.contains("title=\"Download cucumber HTML report as tar.gz archive\""),
@@ -99,7 +99,7 @@ class BrowseHtmlHelperTest {
         // Verify both URLs are correct
         assertTrue(html.contains("/v1/api/storage/key/rc/test/path/cucumber_html/index.html"),
                 "HTML link should have index.html");
-        assertTrue(html.contains("/v1/api/storage/key/rc/test/path/cucumber_html.tar.gz"),
+        assertTrue(html.contains("/v1/api/storage/key/rc/test/path/cucumber_html_tar_gz"),
                 "Tar.gz link should NOT have index.html appended");
     }
 
@@ -169,8 +169,8 @@ class BrowseHtmlHelperTest {
     void getReportLinks_tarGzUrlDoesNotAppendIndexFile() {
         // Verify that tar.gz storage with null indexFile doesn't get "/null" appended
         StoragePojo tarGzStorage = createStoragePojo(
-                "cucumber_html.tar.gz",
-                "rc/test/path/cucumber_html.tar.gz",
+                "cucumber_html_tar_gz",
+                "rc/test/path/cucumber_html_tar_gz",
                 null,
                 StorageType.TAR_GZ.getStorageTypeId()
         );
@@ -179,7 +179,7 @@ class BrowseHtmlHelperTest {
         String html = BrowseHtmlHelper.getReportLinks(storages);
 
         // URL should end with the prefix, no "/null" or extra slash
-        assertTrue(html.contains("href=\"/v1/api/storage/key/rc/test/path/cucumber_html.tar.gz\""),
+        assertTrue(html.contains("href=\"/v1/api/storage/key/rc/test/path/cucumber_html_tar_gz\""),
                 "URL should not have /null or trailing content after prefix");
         assertFalse(html.contains("/null"), "Should not contain /null in URL");
     }
