@@ -112,12 +112,14 @@ public class StorageControllerTest {
                 assertNull(responseDetails.getProblemType());
                 {
                     final Map<String, String> createdUrls = responseDetails.getCreatedUrls();
-                    assertEquals(3, createdUrls.size());
+                    assertEquals(4, createdUrls.size(), "Expected 4 URLs: stage, run, cucumber_html, cucumber_html.tar.gz");
                     // Use endsWith to handle optional REPORTCARD_SERVER_URL prefix
                     assertTrue(createdUrls.get("stage").endsWith(expectedStageUrl), "stage URL should end with expected path");
                     assertTrue(createdUrls.get("run").endsWith(expectedRunUrl), "run URL should end with expected path");
                     final String htmlUrl = createdUrls.get("cucumber_html");
                     assertThat(htmlUrl, matchesPattern(".*" + expectedCucumberRegex));
+                    // Verify cucumber_html.tar.gz URL exists
+                    assertNotNull(createdUrls.get("cucumber_html.tar.gz"), "Should have cucumber_html.tar.gz URL");
                 }
             }
             {
