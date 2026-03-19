@@ -321,6 +321,23 @@ public class JunitController {
 
         StorageType storageType = StorageType.HTML;
 
+        // Store original tar.gz for cucumber_html before expanding
+        if ("cucumber_html".equals(label)) {
+            StagePathStorages tarGzStorage = storeCucumberTarGzArchive(stageId, tarGz);
+            StagePathStorages htmlStorage = storeHtmlInternal(stageId, label, tarGz, indexFile, storageType);
+            return StagePathStorages.merge(tarGzStorage, htmlStorage);
+        }
+
+        return storeHtmlInternal(stageId, label, tarGz, indexFile, storageType);
+    }
+
+    private StagePathStorages storeHtmlInternal(
+            Long stageId,
+            String label,
+            MultipartFile tarGz,
+            String indexFile,
+            StorageType storageType) {
+
         final StagePath stagePath = storagePersistService.getStagePath(stageId);
         final String prefix = new StoragePath(stagePath, label).getPrefix();
 
@@ -333,20 +350,42 @@ public class JunitController {
         return stagePathStorages;
     }
 
+    protected StagePathStorages storeCucumberTarGzArchive(Long stageId, MultipartFile tarGz) {
+        StorageType storageType = StorageType.TAR_GZ;
+        final String label = storageType.toLabel("cucumber_html");
+        final String indexFile = tarGz.getName(); // form field name becomes filename in S3
+
+        final StagePath stagePath = storagePersistService.getStagePath(stageId);
+        final String prefix = new StoragePath(stagePath, label).getPrefix();
+
+        StagePathStorages stagePathStorages = storagePersistService.upsertStoragePath(
+            indexFile, label, prefix, stageId, storageType
+        );
+
+        if (!stagePathStorages.isComplete()) {
+            s3Service.uploadTarGz(prefix, false, tarGz);
+            storagePersistService.setUploadCompleted(indexFile, label, prefix, stageId);
+            stagePathStorages.setComplete();
+        }
+
+        return stagePathStorages;
+    }
+
     protected StagePathStorages storeJunit(
             Long stageId,
             MultipartFile tarGz) {
 
         final String label = "junit";
+        final String indexFile = "junit.tar.gz";
         StorageType storageType = StorageType.JUNIT;
 
         final StagePath stagePath = storagePersistService.getStagePath(stageId);
         final String prefix = new StoragePath(stagePath, label).getPrefix();
 
-        StagePathStorages stagePathStorages = storagePersistService.upsertStoragePath(null, label, prefix, stageId, storageType);
+        StagePathStorages stagePathStorages = storagePersistService.upsertStoragePath(indexFile, label, prefix, stageId, storageType);
         if (!stagePathStorages.isComplete()) {
             s3Service.uploadTarGz(prefix, false, tarGz);
-            storagePersistService.setUploadCompleted(null, label, prefix, stageId);
+            storagePersistService.setUploadCompleted(indexFile, label, prefix, stageId);
             stagePathStorages.setComplete();
         }
 
@@ -394,15 +433,16 @@ public class JunitController {
      */
     protected StagePathStorages storeKarate(Long stageId, MultipartFile tarGz) {
         final String label = "karate";
+        final String indexFile = "karate.tar.gz";
         StorageType storageType = StorageType.KARATE_JSON;
 
         final StagePath stagePath = storagePersistService.getStagePath(stageId);
         final String prefix = new StoragePath(stagePath, label).getPrefix();
 
-        StagePathStorages stagePathStorages = storagePersistService.upsertStoragePath(null, label, prefix, stageId, storageType);
+        StagePathStorages stagePathStorages = storagePersistService.upsertStoragePath(indexFile, label, prefix, stageId, storageType);
         if (!stagePathStorages.isComplete()) {
             s3Service.uploadTarGz(prefix, false, tarGz);  // false = don't expand
-            storagePersistService.setUploadCompleted(null, label, prefix, stageId);
+            storagePersistService.setUploadCompleted(indexFile, label, prefix, stageId);
             stagePathStorages.setComplete();
         }
         return stagePathStorages;

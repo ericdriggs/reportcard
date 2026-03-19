@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.1.28] - 2026-03-18 - Cucumber tar.gz download and clean display names
+
+Store original cucumber HTML tar.gz archive for download alongside expanded HTML. Improve storage link display names and add download support for tar.gz files.
+
+### Added
+
+- **Cucumber tar.gz archive storage**: When `cucumber_html` reports are uploaded, the original tar.gz is stored as a separate `cucumber_html_tar_gz` record, enabling archive download
+- **Download link rendering**: Tar.gz storage types render with a download tooltip in the browse UI
+- **`StorageType.toLabel()`**: Helper to generate derived labels (e.g., `cucumber_html` → `cucumber_html_tar_gz`)
+- **Tests**: `BrowseHtmlHelperTest` (11 unit tests), `StorageTypeTest`, updated integration tests
+
+### Changed
+
+- **Display names**: Storage links now show `indexFile` when present (e.g., `index.html`, `storage.tar.gz`) instead of raw labels (e.g., `cucumber_html_tar_gz`). Falls back to label for legacy records with null `indexFile`
+- **indexFile for junit/karate**: `storeJunit()` and `storeKarate()` now set `indexFile` to `junit.tar.gz` and `karate.tar.gz` respectively
+- **Link styling**: Added `white-space: nowrap` to keep link icon+text together when wrapping; removed `<br>` tags between links
+
+---
+
 ## [0.1.27] - 2026-03-11 - Fix Trend Report NPE for Null testStatusFk
 
 Fixes a production bug where trend reports failed with `NullPointerException` caused by null `testStatusFk` values. Root cause: Lombok's `@SuperBuilder` bypasses setter methods, so `testStatusFk` wasn't synced when `testStatus` was set during Karate test ingestion.
