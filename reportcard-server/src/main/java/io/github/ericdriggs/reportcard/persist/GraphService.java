@@ -291,6 +291,58 @@ public class GraphService extends AbstractPersistService {
 
     }
 
+    public List<OrgDashboard> getRepoDashboard(String repoName, List<String> branchNames, boolean shouldIncludeDefaultBranches, Integer days) {
+        List<CompanyGraph> companyGraphs = getRepoDashboardCompanyGraphs(repoName, branchNames, shouldIncludeDefaultBranches, days);
+        return OrgDashboard.listFromCompanyGraphs(companyGraphs);
+    }
+
+    List<CompanyGraph> getRepoDashboardCompanyGraphs(String repoName,
+                                                     List<String> branchNames,
+                                                     boolean shouldIncludeDefaultBranches,
+                                                     Integer days) {
+
+        TableConditionMap tableConditionMap = new TableConditionMap();
+        tableConditionMap.put(TEST_RESULT, TEST_RESULT.TEST_RESULT_ID.isNotNull());
+
+        Condition repoCondition = REPO.REPO_NAME.eq(repoName);
+        tableConditionMap.put(REPO, repoCondition);
+
+        branchNames = new ArrayList<>(branchNames);
+        if (shouldIncludeDefaultBranches) {
+            branchNames.addAll(defaultBranchNames);
+        }
+        tableConditionMap.put(BRANCH, BRANCH.BRANCH_NAME.in(branchNames));
+
+        if (days != null) {
+            Instant cutoff = Instant.now().minus(days, ChronoUnit.DAYS);
+            tableConditionMap.put(JOB, JOB.LAST_RUN.ge(cutoff));
+        }
+
+        Long[] runIds = dsl.select(max(RUN.RUN_ID).as("MAX_RUN_ID"))
+                .from(COMPANY)
+                .leftJoin(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID))
+                .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)).and(repoCondition)
+                .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID).and(BRANCH.BRANCH_NAME.in(branchNames)))
+                .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
+                .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID))
+                .leftJoin(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID))
+                .groupBy(JOB.JOB_ID, STAGE.STAGE_NAME)
+                .union(
+                        select(max(RUN.RUN_ID))
+                                .from(COMPANY)
+                                .leftJoin(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID))
+                                .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)).and(repoCondition)
+                                .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID).and(BRANCH.BRANCH_NAME.in(branchNames)))
+                                .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
+                                .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID).and(RUN.IS_SUCCESS))
+                                .leftJoin(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID))
+                                .groupBy(JOB.JOB_ID, STAGE.STAGE_NAME)
+                ).fetchArray("MAX_RUN_ID", Long.class);
+
+        tableConditionMap.put(RUN, RUN.RUN_ID.in(runIds));
+        return getCompanyGraphs(tableConditionMap, false);
+    }
+
     public TreeSet<MetricsIntervalResultCount> getCompanyDashboardIntervalResultCount(MetricsIntervalRequest metricsIntervalRequest) {
         TreeSet<MetricsRequest> metricsRequests = metricsIntervalRequest.toCompanyDashboardRequests();
         Set<MetricsIntervalResultCount> results = new ConcurrentSkipListSet<>();

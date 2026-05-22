@@ -75,6 +75,18 @@ public class GraphUIController {
         return new ResponseEntity<>(trendHtml, HttpStatus.OK);
     }
 
+    @GetMapping(path = "repo/{repoName}/dashboard", produces = "text/html;charset=UTF-8")
+    public ResponseEntity<String> getRepoDashboard(
+            @PathVariable String repoName,
+            @RequestParam(required = false, defaultValue = "") List<String> branches,
+            @RequestParam(required = false, defaultValue = "true") boolean shouldIncludeDefaultBranches,
+            @RequestParam(required = false) Integer days
+    ) {
+        final List<OrgDashboard> repoDashboards = graphService.getRepoDashboard(repoName, branches, shouldIncludeDefaultBranches, days);
+        final String dashboardHtml = OrgDashboardHtmlHelper.renderRepoDashboardHtml(repoName, repoDashboards);
+        return new ResponseEntity<>(dashboardHtml, HttpStatus.OK);
+    }
+
     @GetMapping(path = "company/{company}/org/{org}/dashboard", produces = "text/html;charset=UTF-8")
     public ResponseEntity<String> getOrgDashbarod(
             @PathVariable String company,
