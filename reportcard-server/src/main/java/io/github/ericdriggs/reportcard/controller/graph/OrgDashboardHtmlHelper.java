@@ -20,6 +20,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.util.HtmlUtils;
 
 import java.net.URI;
 import java.util.*;
@@ -208,6 +209,51 @@ public class OrgDashboardHtmlHelper extends BrowseHtmlHelper {
 
         CompanyOrgRepoBranchJobRunStageDTO path = CompanyOrgRepoBranchJobRunStageDTO.builder().company(companyPojo.getCompanyName()).org(orgPojo.getOrgName()).build();
         return getBreadCrumb(path, "dashboard");
+    }
+
+    public static String renderRepoDashboardHtml(String repoName, List<OrgDashboard> orgDashboards) {
+        final String main = getRepoDashboardMainDiv(orgDashboards);
+        final List<Pair<String, String>> breadCrumbs = getRepoDashboardBreadCrumb(repoName);
+        return getPage(main, breadCrumbs, "dashboard-columns")
+                .replace("<!--additionalLinks-->", "<link rel=\"stylesheet\" href=\"/css/dashboard.css\">" + ls);
+    }
+
+    private static String getRepoDashboardMainDiv(List<OrgDashboard> orgDashboards) {
+        StringBuilder str = new StringBuilder();
+        for (OrgDashboard orgDashboard : orgDashboards) {
+            final String companyName = orgDashboard.getCompanyPojo().getCompanyName();
+            final String orgName = orgDashboard.getOrgPojo().getOrgName();
+
+            final CompanyOrgRepoBranchJobRunStageDTO companyPath = CompanyOrgRepoBranchJobRunStageDTO.builder()
+                    .company(companyName).build();
+            final CompanyOrgRepoBranchJobRunStageDTO orgPath = CompanyOrgRepoBranchJobRunStageDTO.builder()
+                    .company(companyName).org(orgName).build();
+
+            str.append("<fieldset class=\"company-fieldset fieldset-group\">").append(ls);
+            str.append("  <legend class='company-legend'>company: <a target=\"_blank\" href=\"{companyUrl}\">{companyName}</a></legend>"
+                    .replace("{companyUrl}", getUrl(companyPath))
+                    .replace("{companyName}", HtmlUtils.htmlEscape(companyName))
+            ).append(ls);
+
+            str.append("<fieldset class=\"org-fieldset fieldset-group\">").append(ls);
+            str.append("  <legend class='org-legend'>org: <a target=\"_blank\" href=\"{orgUrl}\">{orgName}</a></legend>"
+                    .replace("{orgUrl}", getUrl(orgPath))
+                    .replace("{orgName}", HtmlUtils.htmlEscape(orgName))
+            ).append(ls);
+
+            str.append(getOrgDashboardMainDiv(orgDashboard));
+
+            str.append("</fieldset><!--end-org-fieldset-->").append(ls);
+            str.append("</fieldset><!--end-company-fieldset-->").append(ls);
+        }
+        return str.toString();
+    }
+
+    protected static List<Pair<String, String>> getRepoDashboardBreadCrumb(String repoName) {
+        List<Pair<String, String>> breadCrumbs = new ArrayList<>();
+        breadCrumbs.add(Pair.of("home", getUrl(null)));
+        breadCrumbs.add(Pair.of("repo: " + HtmlUtils.htmlEscape(repoName), "/repo/" + repoName + "/dashboard"));
+        return breadCrumbs;
     }
 
 }

@@ -10,6 +10,7 @@ import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -20,6 +21,28 @@ public class OrgDashboard {
     CompanyPojo companyPojo;
     OrgPojo orgPojo;
     List<RepoGraph> repoGraphs;
+
+    public static List<OrgDashboard> listFromCompanyGraphs(List<CompanyGraph> companyGraphs) {
+        if (CollectionUtils.isEmpty(companyGraphs)) {
+            return Collections.emptyList();
+        }
+        List<OrgDashboard> results = new ArrayList<>();
+        for (CompanyGraph companyGraph : companyGraphs) {
+            List<OrgGraph> orgs = companyGraph.orgs() == null ? Collections.emptyList() : companyGraph.orgs();
+            for (OrgGraph orgGraph : orgs) {
+                List<RepoGraph> repos = orgGraph.repos() == null ? Collections.emptyList() : orgGraph.repos();
+                if (repos.isEmpty()) {
+                    continue;
+                }
+                results.add(OrgDashboard.builder()
+                        .companyPojo(companyGraph.asCompanyPojo())
+                        .orgPojo(orgGraph.asOrgPojo())
+                        .repoGraphs(repos)
+                        .build());
+            }
+        }
+        return results;
+    }
 
     public static OrgDashboard fromCompanyGraphs(List<CompanyGraph> companyGraphs) {
 

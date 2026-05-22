@@ -53,6 +53,17 @@ public class BrowseJsonController {
         return new ResponseEntity<>(OrgReposBranchesResponse.fromMap(browseService.getOrgReposBranches(company, org)), HttpStatus.OK);
     }
 
+    @GetMapping(path = "repo/{repoName}/dashboard", produces = "application/json")
+    public ResponseEntity<List<OrgDashboard>> getRepoDashboardJson(
+            @PathVariable String repoName,
+            @RequestParam(required = false, defaultValue = "") List<String> branches,
+            @RequestParam(required = false, defaultValue = "true") boolean shouldIncludeDefaultBranches,
+            @RequestParam(required = false) Integer days
+    ) {
+        List<OrgDashboard> repoDashboards = graphService.getRepoDashboard(repoName, branches, shouldIncludeDefaultBranches, days);
+        return new ResponseEntity<>(repoDashboards, HttpStatus.OK);
+    }
+
     @GetMapping(path = "company/{company}/org/{org}/dashboard", produces = "application/json")
     public ResponseEntity<OrgDashboard> getOrgDashboardJson(
             @PathVariable String company,
