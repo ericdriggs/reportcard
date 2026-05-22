@@ -12,6 +12,7 @@ import io.github.ericdriggs.reportcard.util.db.SqlJsonUtil;
 import org.jooq.*;
 import org.jooq.Record;
 import org.jooq.exception.NoDataFoundException;
+import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,36 @@ import static org.jooq.impl.DSL.max;
 public class BrowseService extends AbstractPersistService {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
+
+    private static final SelectFieldOrAsterisk[] STAGE_VIEW_FIELDS_ALL = Stream.of(
+            Stream.of(COMPANY.fields()),
+            Stream.of(ORG.fields()),
+            Stream.of(REPO.fields()),
+            Stream.of(BRANCH.fields()),
+            Stream.of(JOB.fields()),
+            Stream.of(RUN.fields()),
+            Stream.of(STAGE.fields()),
+            Stream.of(STORAGE.fields()),
+            Stream.of(TEST_RESULT.fields())
+    ).flatMap(s -> s).toArray(SelectFieldOrAsterisk[]::new);
+
+    private static final SelectFieldOrAsterisk[] STAGE_VIEW_FIELDS_EXCLUDE_TEST_RESULT_JSON = Stream.of(
+            Stream.of(COMPANY.fields()),
+            Stream.of(ORG.fields()),
+            Stream.of(REPO.fields()),
+            Stream.of(BRANCH.fields()),
+            Stream.of(JOB.fields()),
+            Stream.of(RUN.fields()),
+            Stream.of(STAGE.fields()),
+            Stream.of(STORAGE.fields()),
+            Stream.of(
+                    TEST_RESULT.TEST_RESULT_ID, TEST_RESULT.STAGE_FK,
+                    TEST_RESULT.TESTS, TEST_RESULT.SKIPPED, TEST_RESULT.ERROR, TEST_RESULT.FAILURE,
+                    TEST_RESULT.TIME, TEST_RESULT.START_TIME, TEST_RESULT.END_TIME,
+                    TEST_RESULT.TEST_RESULT_CREATED, TEST_RESULT.EXTERNAL_LINKS,
+                    TEST_RESULT.IS_SUCCESS, TEST_RESULT.HAS_SKIP, TEST_RESULT.TAGS
+            )
+    ).flatMap(s -> s).toArray(SelectFieldOrAsterisk[]::new);
 
     @Autowired
     public BrowseService(DSLContext dsl) {
@@ -384,7 +415,7 @@ public class BrowseService extends AbstractPersistService {
                 .limit(runs)
                 .fetchArray(RUN.RUN_ID, Long.class);
 
-        Result<Record> recordResult = dsl.select()
+        Result<Record> recordResult = dsl.select(STAGE_VIEW_FIELDS_EXCLUDE_TEST_RESULT_JSON)
                 .from(COMPANY)
                 .join(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID)
                         .and(ORG.ORG_NAME.eq(orgName)))
@@ -422,7 +453,7 @@ public class BrowseService extends AbstractPersistService {
                 .fetchArray(RUN.RUN_ID, Long.class);
 
 
-        Result<Record> recordResult = dsl.select()
+        Result<Record> recordResult = dsl.select(STAGE_VIEW_FIELDS_EXCLUDE_TEST_RESULT_JSON)
                 .from(COMPANY)
                 .join(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID)
                         .and(ORG.ORG_NAME.eq(orgName)))
@@ -447,7 +478,7 @@ public class BrowseService extends AbstractPersistService {
     public BranchStageViewResponse getStageViewForJobInfo(String companyName, String orgName, String repoName, String branchName, Map<String,String> jobInfo) {
 
         //final String jobInfoJson = StringMapUtil.toJson(jobInfo);
-        Result<Record> recordResult = dsl.select()
+        Result<Record> recordResult = dsl.select(STAGE_VIEW_FIELDS_EXCLUDE_TEST_RESULT_JSON)
                 .from(COMPANY)
                 .join(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID)
                         .and(ORG.ORG_NAME.eq(orgName)))
