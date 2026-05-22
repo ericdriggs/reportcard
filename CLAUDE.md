@@ -19,7 +19,7 @@ Reportcard is a test result metrics API and dashboard application. It stores, an
 ./gradlew test                       # Run unit tests
 ./gradlew integrationTest            # Run integration tests
 ./gradlew generateJooqSchemaSource   # Regenerate JOOQ code (requires local MySQL with schema)
-./gradlew bootRun                    # Run server locally
+./gradlew :reportcard-server:bootRun  # Run server locally
 ```
 
 To run a single test class:

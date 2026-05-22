@@ -287,7 +287,7 @@ public class GraphService extends AbstractPersistService {
                 ).fetchArray("MAX_RUN_ID", Long.class);
 
         tableConditionMap.put(RUN, RUN.RUN_ID.in(runIds));
-        return getCompanyGraphs(tableConditionMap);
+        return getCompanyGraphs(tableConditionMap, false);
 
     }
 
