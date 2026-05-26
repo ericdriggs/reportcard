@@ -5,7 +5,7 @@ import io.github.ericdriggs.reportcard.controller.browse.response.*;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.*;
 import io.github.ericdriggs.reportcard.model.StageTestResultModel;
 import io.github.ericdriggs.reportcard.model.orgdashboard.OrgDashboard;
-import io.github.ericdriggs.reportcard.model.orgdashboard.OrgDashboardFlattener;
+import io.github.ericdriggs.reportcard.controller.browse.response.OrgDashboardFlattener;
 import io.github.ericdriggs.reportcard.persist.BrowseService;
 import io.github.ericdriggs.reportcard.persist.GraphService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +63,7 @@ public class BrowseJsonController {
             @RequestParam(required = false, defaultValue = "true") boolean shouldIncludeDefaultBranches,
             @RequestParam(required = false) Integer days
     ) {
-        List<OrgDashboard> repoDashboards = graphService.getRepoDashboard(repoName, branches, shouldIncludeDefaultBranches, days);
+        List<OrgDashboard> repoDashboards = graphService.getRepoDashboard(repoName, branches, shouldIncludeDefaultBranches, validateDays(days));
         return new ResponseEntity<>(repoDashboards, HttpStatus.OK);
     }
 
@@ -76,7 +76,7 @@ public class BrowseJsonController {
             @RequestParam(required = false) Integer days
     ) {
         Map<String, String> jobInfoFilter = validateJobInfo(jobInfo);
-        List<OrgDashboard> repoDashboards = graphService.getRepoDashboard(repoName, branches, shouldIncludeDefaultBranches, days, jobInfoFilter);
+        List<OrgDashboard> repoDashboards = graphService.getRepoDashboard(repoName, branches, shouldIncludeDefaultBranches, validateDays(days), jobInfoFilter);
         return new ResponseEntity<>(repoDashboards, HttpStatus.OK);
     }
 
@@ -89,7 +89,7 @@ public class BrowseJsonController {
             @RequestParam(required = false) Integer days
     ) {
         Map<String, String> jobInfoFilter = validateJobInfo(jobInfo);
-        List<OrgDashboard> repoDashboards = graphService.getRepoDashboard(repoName, branches, shouldIncludeDefaultBranches, days, jobInfoFilter);
+        List<OrgDashboard> repoDashboards = graphService.getRepoDashboard(repoName, branches, shouldIncludeDefaultBranches, validateDays(days), jobInfoFilter);
         return new ResponseEntity<>(OrgDashboardFlattener.flatten(repoDashboards), HttpStatus.OK);
     }
 
@@ -100,7 +100,7 @@ public class BrowseJsonController {
             @RequestParam(required = false, defaultValue = "true") boolean shouldIncludeDefaultBranches,
             @RequestParam(required = false) Integer days
     ) {
-        List<OrgDashboard> repoDashboards = graphService.getRepoDashboard(repoName, branches, shouldIncludeDefaultBranches, days);
+        List<OrgDashboard> repoDashboards = graphService.getRepoDashboard(repoName, branches, shouldIncludeDefaultBranches, validateDays(days));
         return new ResponseEntity<>(OrgDashboardFlattener.flatten(repoDashboards), HttpStatus.OK);
     }
 
@@ -113,7 +113,7 @@ public class BrowseJsonController {
             @RequestParam(required = false, defaultValue = "true") boolean shouldIncludeDefaultBranches,
             @RequestParam(required = false) Integer days
     ) {
-        OrgDashboard orgDashboard = graphService.getOrgDashboard(company, org, repos, branches, shouldIncludeDefaultBranches, days);
+        OrgDashboard orgDashboard = graphService.getOrgDashboard(company, org, repos, branches, shouldIncludeDefaultBranches, validateDays(days));
         return new ResponseEntity<>(orgDashboard, HttpStatus.OK);
     }
 
@@ -309,6 +309,13 @@ public class BrowseJsonController {
                     "Invalid jobInfo format. Expected comma-separated key=value pairs, e.g. 'application=myapp,env=prod'. Got: " + jobInfo);
         }
         return parsed;
+    }
+
+    Integer validateDays(Integer days) {
+        if (days == null) {
+            return null;
+        }
+        return Math.max(days, 1);
     }
 
     /**

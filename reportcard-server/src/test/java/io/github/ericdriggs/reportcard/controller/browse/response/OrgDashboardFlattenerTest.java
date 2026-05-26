@@ -1,9 +1,9 @@
-package io.github.ericdriggs.reportcard.model.orgdashboard;
+package io.github.ericdriggs.reportcard.controller.browse.response;
 
-import io.github.ericdriggs.reportcard.controller.browse.response.FlatDashboardEntry;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.CompanyPojo;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.OrgPojo;
 import io.github.ericdriggs.reportcard.model.graph.*;
+import io.github.ericdriggs.reportcard.model.orgdashboard.OrgDashboard;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
