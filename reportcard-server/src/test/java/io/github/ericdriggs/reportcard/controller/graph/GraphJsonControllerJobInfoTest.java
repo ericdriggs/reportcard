@@ -32,6 +32,9 @@ public class GraphJsonControllerJobInfoTest extends AbstractBrowseServiceTest {
 
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertNotNull(response.getBody().getTestCaseTrends());
+        assertFalse(response.getBody().getTestCaseTrends().isEmpty());
     }
 
     @Test
@@ -47,5 +50,13 @@ public class GraphJsonControllerJobInfoTest extends AbstractBrowseServiceTest {
                 TestData.jobId, TestData.stage, null, null);
 
         assertEquals(jobIdResponse.getStatusCode(), jobInfoResponse.getStatusCode());
+        assertNotNull(jobInfoResponse.getBody());
+        assertNotNull(jobIdResponse.getBody());
+        assertEquals(
+            jobIdResponse.getBody().getCompanyOrgRepoBranchJobStageName(),
+            jobInfoResponse.getBody().getCompanyOrgRepoBranchJobStageName());
+        assertEquals(
+            jobIdResponse.getBody().getTestCaseTrends().size(),
+            jobInfoResponse.getBody().getTestCaseTrends().size());
     }
 }

@@ -32,6 +32,7 @@ public class GraphUIControllerJobInfoTest extends AbstractBrowseServiceTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
+        assertFalse(response.getBody().isEmpty());
     }
 
     @Test
@@ -47,5 +48,8 @@ public class GraphUIControllerJobInfoTest extends AbstractBrowseServiceTest {
                 TestData.jobId, TestData.stage, null, null, 30);
 
         assertEquals(jobIdResponse.getStatusCode(), jobInfoResponse.getStatusCode());
+        assertNotNull(jobInfoResponse.getBody());
+        assertNotNull(jobIdResponse.getBody());
+        assertEquals(jobIdResponse.getBody(), jobInfoResponse.getBody());
     }
 }

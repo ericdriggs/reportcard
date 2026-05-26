@@ -74,6 +74,25 @@ public class BrowseJsonControllerJobInfoTest extends AbstractBrowseServiceTest {
     }
 
     @Test
+    void getStagesByJobInfoAndRunCountMatchesLatestTest() {
+        ResponseEntity<RunStagesTestResultsResponse> runCountResponse =
+            controller.getStagesByJobInfoAndRunCount(
+                TestData.company, TestData.org, TestData.repo, TestData.branch, jobInfoString, 1);
+
+        ResponseEntity<RunStagesTestResultsResponse> latestResponse =
+            controller.getLatestRunStagesFromJobInfo(
+                TestData.company, TestData.org, TestData.repo, TestData.branch, jobInfoString);
+
+        assertNotNull(runCountResponse.getBody());
+        assertNotNull(latestResponse.getBody());
+        assertEquals(latestResponse.getBody().getRunId(), runCountResponse.getBody().getRunId());
+        assertEquals(latestResponse.getBody().getStages().size(), runCountResponse.getBody().getStages().size());
+        assertEquals(
+            latestResponse.getBody().getStages().get(0).getStageId(),
+            runCountResponse.getBody().getStages().get(0).getStageId());
+    }
+
+    @Test
     void getLatestRunStagesFromJobInfoSuccessTest() {
         ResponseEntity<RunStagesTestResultsResponse> response =
             controller.getLatestRunStagesFromJobInfo(
@@ -119,6 +138,26 @@ public class BrowseJsonControllerJobInfoTest extends AbstractBrowseServiceTest {
         assertNotNull(body.getStage());
         assertEquals(TestData.stage, body.getStage().getStageName());
         assertNotNull(body.getTestResult());
+    }
+
+    @Test
+    void getStageTestResultsByJobInfoAndRunCountMatchesLatestTest() {
+        ResponseEntity<StageTestResultModel> runCountResponse =
+            controller.getStageTestResultsByJobInfoAndRunCount(
+                TestData.company, TestData.org, TestData.repo, TestData.branch,
+                jobInfoString, 1, TestData.stage);
+
+        ResponseEntity<StageTestResultModel> latestResponse =
+            controller.getLatestRunStageTestResultsFromJobInfo(
+                TestData.company, TestData.org, TestData.repo, TestData.branch,
+                jobInfoString, TestData.stage);
+
+        assertNotNull(runCountResponse.getBody());
+        assertNotNull(latestResponse.getBody());
+        assertEquals(latestResponse.getBody().getStage().getStageId(),
+            runCountResponse.getBody().getStage().getStageId());
+        assertEquals(latestResponse.getBody().getTestResult().getTestResultId(),
+            runCountResponse.getBody().getTestResult().getTestResultId());
     }
 
     @Test

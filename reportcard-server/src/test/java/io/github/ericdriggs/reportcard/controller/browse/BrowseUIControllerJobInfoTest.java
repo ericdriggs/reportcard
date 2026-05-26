@@ -46,4 +46,61 @@ public class BrowseUIControllerJobInfoTest extends AbstractBrowseServiceTest {
         assertNotNull(response.getBody());
         assertFalse(response.getBody().isEmpty());
     }
+
+    @Test
+    void getRunStagesFromJobInfoSuccessTest() {
+        ResponseEntity<String> response =
+            controller.getRunStagesFromJobInfo(
+                TestData.company, TestData.org, TestData.repo, TestData.branch, jobInfoString);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertFalse(response.getBody().isEmpty());
+    }
+
+    @Test
+    void getTestResultNaturalKeysSuccessTest() {
+        ResponseEntity<String> response =
+            controller.getTestResultNaturalKeys(
+                TestData.company, TestData.org, TestData.repo, TestData.branch,
+                jobInfoString, 1, TestData.stage);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertFalse(response.getBody().isEmpty());
+    }
+
+    @Test
+    void getLatestRunStagesFromJobInfoMatchesJobIdTest() {
+        ResponseEntity<String> jobInfoResponse =
+            controller.getLatestRunStagesFromJobInfo(
+                TestData.company, TestData.org, TestData.repo, TestData.branch, jobInfoString);
+
+        ResponseEntity<String> jobIdResponse =
+            controller.getLatestRunStages(
+                TestData.company, TestData.org, TestData.repo, TestData.branch, TestData.jobId);
+
+        assertNotNull(jobInfoResponse.getBody());
+        assertNotNull(jobIdResponse.getBody());
+        assertEquals(jobIdResponse.getBody(), jobInfoResponse.getBody());
+    }
+
+    @Test
+    void getLatestRunStageTestResultFromJobInfoMatchesJobIdTest() {
+        ResponseEntity<String> jobInfoResponse =
+            controller.getLatestRunStageTestResultFromJobInfo(
+                TestData.company, TestData.org, TestData.repo, TestData.branch,
+                jobInfoString, TestData.stage);
+
+        ResponseEntity<String> jobIdResponse =
+            controller.getLatestRunStageTestResult(
+                TestData.company, TestData.org, TestData.repo, TestData.branch,
+                TestData.jobId, TestData.stage);
+
+        assertNotNull(jobInfoResponse.getBody());
+        assertNotNull(jobIdResponse.getBody());
+        assertEquals(jobIdResponse.getBody(), jobInfoResponse.getBody());
+    }
 }
