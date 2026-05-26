@@ -30,7 +30,7 @@ import static io.github.ericdriggs.reportcard.util.list.ListAssertUtil.emptyIfNu
 
 public class OrgDashboardHtmlHelper extends BrowseHtmlHelper {
 
-    private static Logger log = LoggerFactory.getLogger(OrgDashboardHtmlHelper.class);
+    private static final Logger log = LoggerFactory.getLogger(OrgDashboardHtmlHelper.class);
 
     public static String renderOrgDashboardHtml(OrgDashboard orgDashboard) {
         final String main = getOrgDashboardMainDiv(orgDashboard);
