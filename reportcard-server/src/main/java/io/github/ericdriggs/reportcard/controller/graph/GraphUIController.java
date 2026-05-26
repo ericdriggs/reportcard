@@ -105,6 +105,20 @@ public class GraphUIController {
         return new ResponseEntity<>(dashboardHtml, HttpStatus.OK);
     }
 
+    @GetMapping(path = "repo/{repoName}/jobinfo/{jobInfo}/dashboard", produces = "text/html;charset=UTF-8")
+    public ResponseEntity<String> getRepoDashboardWithJobInfo(
+            @PathVariable String repoName,
+            @PathVariable String jobInfo,
+            @RequestParam(required = false, defaultValue = "") List<String> branches,
+            @RequestParam(required = false, defaultValue = "true") boolean shouldIncludeDefaultBranches,
+            @RequestParam(required = false) Integer days
+    ) {
+        Map<String, String> jobInfoFilter = StringMapUtil.stringToMap(jobInfo);
+        final List<OrgDashboard> repoDashboards = graphService.getRepoDashboard(repoName, branches, shouldIncludeDefaultBranches, days, jobInfoFilter);
+        final String dashboardHtml = OrgDashboardHtmlHelper.renderRepoDashboardHtml(repoName, repoDashboards);
+        return new ResponseEntity<>(dashboardHtml, HttpStatus.OK);
+    }
+
     @GetMapping(path = "company/{company}/org/{org}/dashboard", produces = "text/html;charset=UTF-8")
     public ResponseEntity<String> getOrgDashbarod(
             @PathVariable String company,

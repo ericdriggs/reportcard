@@ -74,6 +74,9 @@ public class OrgDashboardHtmlHelper extends BrowseHtmlHelper {
                 ).append(ls);
 
                 for (JobGraph jobGraph : emptyIfNull(branchGraph.jobs())) {
+                    if (CollectionUtils.isEmpty(jobGraph.jobInfo())) {
+                        continue;
+                    }
                     final CompanyOrgRepoBranchJobRunStageDTO jobPath = branchPath.toBuilder().jobId(jobGraph.jobId()).build();
                     final String jobUrl = getUrl(jobPath);
                     final String jobInfoTruncated = TruncateUtils.truncateRight(StringMapUtil.valuesOnlyColonSeparated(jobGraph.jobInfo()), 45, true);
@@ -130,6 +133,9 @@ public class OrgDashboardHtmlHelper extends BrowseHtmlHelper {
 
                             TreeSet<StorageTypeUriLabel> storageUris = new TreeSet<>();
                             for (StorageGraph storageGraph : emptyIfNull(stageGraph.storages())) {
+                                if (storageGraph.storageType() == null) {
+                                    continue;
+                                }
                                 final URI storageUri = getStorageURI(storageGraph.asStoragePojo());
                                 storageUris.add(StorageTypeUriLabel.builder()
                                         .uri(storageUri)

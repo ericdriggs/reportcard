@@ -292,14 +292,19 @@ public class GraphService extends AbstractPersistService {
     }
 
     public List<OrgDashboard> getRepoDashboard(String repoName, List<String> branchNames, boolean shouldIncludeDefaultBranches, Integer days) {
-        List<CompanyGraph> companyGraphs = getRepoDashboardCompanyGraphs(repoName, branchNames, shouldIncludeDefaultBranches, days);
+        return getRepoDashboard(repoName, branchNames, shouldIncludeDefaultBranches, days, null);
+    }
+
+    public List<OrgDashboard> getRepoDashboard(String repoName, List<String> branchNames, boolean shouldIncludeDefaultBranches, Integer days, Map<String, String> jobInfoFilter) {
+        List<CompanyGraph> companyGraphs = getRepoDashboardCompanyGraphs(repoName, branchNames, shouldIncludeDefaultBranches, days, jobInfoFilter);
         return OrgDashboard.listFromCompanyGraphs(companyGraphs);
     }
 
     List<CompanyGraph> getRepoDashboardCompanyGraphs(String repoName,
                                                      List<String> branchNames,
                                                      boolean shouldIncludeDefaultBranches,
-                                                     Integer days) {
+                                                     Integer days,
+                                                     Map<String, String> jobInfoFilter) {
 
         TableConditionMap tableConditionMap = new TableConditionMap();
         tableConditionMap.put(TEST_RESULT, TEST_RESULT.TEST_RESULT_ID.isNotNull());
@@ -313,9 +318,23 @@ public class GraphService extends AbstractPersistService {
         }
         tableConditionMap.put(BRANCH, BRANCH.BRANCH_NAME.in(branchNames));
 
+        Condition jobCondition = trueCondition();
         if (days != null) {
             Instant cutoff = Instant.now().minus(days, ChronoUnit.DAYS);
-            tableConditionMap.put(JOB, JOB.LAST_RUN.ge(cutoff));
+            jobCondition = jobCondition.and(JOB.LAST_RUN.ge(cutoff));
+        }
+        if (jobInfoFilter != null && !jobInfoFilter.isEmpty()) {
+            for (Map.Entry<String, String> entry : jobInfoFilter.entrySet()) {
+                jobCondition = jobCondition.and(SqlJsonUtil.jobInfoContainsKeyValue(entry.getKey(), entry.getValue()));
+            }
+        }
+        tableConditionMap.put(JOB, jobCondition);
+
+        Condition jobOnCondition = JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID);
+        if (jobInfoFilter != null && !jobInfoFilter.isEmpty()) {
+            for (Map.Entry<String, String> entry : jobInfoFilter.entrySet()) {
+                jobOnCondition = jobOnCondition.and(SqlJsonUtil.jobInfoContainsKeyValue(entry.getKey(), entry.getValue()));
+            }
         }
 
         Long[] runIds = dsl.select(max(RUN.RUN_ID).as("MAX_RUN_ID"))
@@ -323,7 +342,7 @@ public class GraphService extends AbstractPersistService {
                 .leftJoin(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID))
                 .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)).and(repoCondition)
                 .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID).and(BRANCH.BRANCH_NAME.in(branchNames)))
-                .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
+                .leftJoin(JOB).on(jobOnCondition)
                 .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID))
                 .leftJoin(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID))
                 .groupBy(JOB.JOB_ID, STAGE.STAGE_NAME)
@@ -333,7 +352,7 @@ public class GraphService extends AbstractPersistService {
                                 .leftJoin(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID))
                                 .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)).and(repoCondition)
                                 .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID).and(BRANCH.BRANCH_NAME.in(branchNames)))
-                                .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
+                                .leftJoin(JOB).on(jobOnCondition)
                                 .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID).and(RUN.IS_SUCCESS))
                                 .leftJoin(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID))
                                 .groupBy(JOB.JOB_ID, STAGE.STAGE_NAME)
