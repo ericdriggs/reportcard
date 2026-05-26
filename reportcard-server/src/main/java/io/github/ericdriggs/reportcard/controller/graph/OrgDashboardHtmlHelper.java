@@ -30,7 +30,7 @@ import static io.github.ericdriggs.reportcard.util.list.ListAssertUtil.emptyIfNu
 
 public class OrgDashboardHtmlHelper extends BrowseHtmlHelper {
 
-    private static Logger log = LoggerFactory.getLogger(OrgDashboardHtmlHelper.class);
+    private static final Logger log = LoggerFactory.getLogger(OrgDashboardHtmlHelper.class);
 
     public static String renderOrgDashboardHtml(OrgDashboard orgDashboard) {
         final String main = getOrgDashboardMainDiv(orgDashboard);
@@ -46,6 +46,11 @@ public class OrgDashboardHtmlHelper extends BrowseHtmlHelper {
                 .org(orgDashboard.getOrgPojo().getOrgName()).build();
         StringBuilder str = new StringBuilder();
         for (RepoGraph repoGraph : emptyIfNull(orgDashboard.getRepoGraphs())) {
+            boolean repoHasJobs = emptyIfNull(repoGraph.branches()).stream()
+                    .anyMatch(b -> !CollectionUtils.isEmpty(b.jobs()));
+            if (!repoHasJobs) {
+                continue;
+            }
             final CompanyOrgRepoBranchJobRunStageDTO repoPath = orgPath.toBuilder().repo(repoGraph.repoName()).build();
             final String repoUrl = getUrl(repoPath);
             str.append("<fieldset class=\"repo-fieldset fieldset-group\">").append(ls);
