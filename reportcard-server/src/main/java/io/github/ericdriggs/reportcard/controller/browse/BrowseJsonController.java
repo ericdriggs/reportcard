@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import io.github.ericdriggs.reportcard.util.StringMapUtil;
+
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -115,6 +117,20 @@ public class BrowseJsonController {
         return new ResponseEntity<>(JobRunsStagesResponse.fromMap(limitRunsInJob(fullResult, runs)), HttpStatus.OK);
     }
 
+    @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}/branch/{branch}/jobinfo/{jobInfo}",
+            "company/{company}/org/{org}/repo/{repo}/branch/{branch}/jobinfo/{jobInfo}/run"}, produces = "application/json")
+    public ResponseEntity<JobRunsStagesResponse> getJobRunsStagesFromJobInfo(
+            @PathVariable String company,
+            @PathVariable String org,
+            @PathVariable String repo,
+            @PathVariable String branch,
+            @PathVariable String jobInfo,
+            @RequestParam(required = false, defaultValue = "60") Integer runs) {
+        Map<String, String> jobInfoMap = StringMapUtil.stringToMap(jobInfo);
+        JobPojo job = browseService.getJob(company, org, repo, branch, jobInfoMap);
+        return getJobRunsStages(company, org, repo, branch, job.getJobId(), runs);
+    }
+
     @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/{runId}",
             "company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/{runId}/stage"}, produces = "application/json")
     public ResponseEntity<RunStagesTestResultsResponse> getStagesByIds(
@@ -128,6 +144,20 @@ public class BrowseJsonController {
         return new ResponseEntity<>(RunStagesTestResultsResponse.fromBranchStageViewResponse(result), HttpStatus.OK);
     }
 
+    @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}/branch/{branch}/jobinfo/{jobInfo}/runcount/{runCount}",
+            "company/{company}/org/{org}/repo/{repo}/branch/{branch}/jobinfo/{jobInfo}/runcount/{runCount}/stage"}, produces = "application/json")
+    public ResponseEntity<RunStagesTestResultsResponse> getStagesByJobInfoAndRunCount(
+            @PathVariable String company,
+            @PathVariable String org,
+            @PathVariable String repo,
+            @PathVariable String branch,
+            @PathVariable String jobInfo,
+            @PathVariable Integer runCount) {
+        Map<String, String> jobInfoMap = StringMapUtil.stringToMap(jobInfo);
+        BranchStageViewResponse result = graphService.getRunBranchStageViewResponse(company, org, repo, branch, jobInfoMap, runCount);
+        return new ResponseEntity<>(RunStagesTestResultsResponse.fromBranchStageViewResponse(result), HttpStatus.OK);
+    }
+
     @GetMapping(path = "company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/latest",
                 produces = "application/json")
     public ResponseEntity<RunStagesTestResultsResponse> getLatestRunStages(
@@ -138,6 +168,20 @@ public class BrowseJsonController {
             @PathVariable Long jobId) {
         Long latestRunId = browseService.getLatestRunId(jobId);
         return getStagesByIds(company, org, repo, branch, jobId, latestRunId);
+    }
+
+    @GetMapping(path = "company/{company}/org/{org}/repo/{repo}/branch/{branch}/jobinfo/{jobInfo}/run/latest",
+                produces = "application/json")
+    public ResponseEntity<RunStagesTestResultsResponse> getLatestRunStagesFromJobInfo(
+            @PathVariable String company,
+            @PathVariable String org,
+            @PathVariable String repo,
+            @PathVariable String branch,
+            @PathVariable String jobInfo) {
+        Map<String, String> jobInfoMap = StringMapUtil.stringToMap(jobInfo);
+        JobPojo job = browseService.getJob(company, org, repo, branch, jobInfoMap);
+        Long latestRunId = browseService.getLatestRunId(job.getJobId());
+        return getStagesByIds(company, org, repo, branch, job.getJobId(), latestRunId);
     }
 
     @GetMapping(path = "company/{company}/org/{org}/repo/{repo}/branch/{branch}/sha/{sha}/run", produces = "application/json")
@@ -176,6 +220,20 @@ public class BrowseJsonController {
         return new ResponseEntity<>(browseService.getStageTestResultMap(company, org, repo, branch, jobId, runId, stage), HttpStatus.OK);
     }
 
+    @GetMapping(path = "company/{company}/org/{org}/repo/{repo}/branch/{branch}/jobinfo/{jobInfo}/runcount/{runCount}/stage/{stage}",
+                produces = "application/json")
+    public ResponseEntity<StageTestResultModel> getStageTestResultsByJobInfoAndRunCount(
+            @PathVariable String company,
+            @PathVariable String org,
+            @PathVariable String repo,
+            @PathVariable String branch,
+            @PathVariable String jobInfo,
+            @PathVariable Integer runCount,
+            @PathVariable String stage) {
+        Map<String, String> jobInfoMap = StringMapUtil.stringToMap(jobInfo);
+        return new ResponseEntity<>(browseService.getStageTestResultMap(company, org, repo, branch, jobInfoMap, runCount, stage), HttpStatus.OK);
+    }
+
     @GetMapping(path = "company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/latest/stage/{stage}",
                 produces = "application/json")
     public ResponseEntity<StageTestResultModel> getLatestRunStageTestResults(
@@ -187,6 +245,21 @@ public class BrowseJsonController {
             @PathVariable String stage) {
         Long latestRunId = browseService.getLatestRunId(jobId);
         return getStageTestResultsTestSuites(company, org, repo, branch, jobId, latestRunId, stage);
+    }
+
+    @GetMapping(path = "company/{company}/org/{org}/repo/{repo}/branch/{branch}/jobinfo/{jobInfo}/run/latest/stage/{stage}",
+                produces = "application/json")
+    public ResponseEntity<StageTestResultModel> getLatestRunStageTestResultsFromJobInfo(
+            @PathVariable String company,
+            @PathVariable String org,
+            @PathVariable String repo,
+            @PathVariable String branch,
+            @PathVariable String jobInfo,
+            @PathVariable String stage) {
+        Map<String, String> jobInfoMap = StringMapUtil.stringToMap(jobInfo);
+        JobPojo job = browseService.getJob(company, org, repo, branch, jobInfoMap);
+        Long latestRunId = browseService.getLatestRunId(job.getJobId());
+        return getStageTestResultsTestSuites(company, org, repo, branch, job.getJobId(), latestRunId, stage);
     }
 
     // ==================== Helper Methods ====================

@@ -1,15 +1,16 @@
 package io.github.ericdriggs.reportcard.controller.graph;
 
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.JobPojo;
 import io.github.ericdriggs.reportcard.model.metrics.company.MetricsIntervalRequest;
 import io.github.ericdriggs.reportcard.model.metrics.company.MetricsIntervalResultCount;
 import io.github.ericdriggs.reportcard.model.metrics.company.MetricsIntervalResultCountMaps;
 import io.github.ericdriggs.reportcard.model.orgdashboard.OrgDashboard;
-import io.github.ericdriggs.reportcard.model.pipeline.JobDashboardRequest;
 import io.github.ericdriggs.reportcard.model.pipeline.JobDashboardMetrics;
-
+import io.github.ericdriggs.reportcard.model.pipeline.JobDashboardRequest;
 import io.github.ericdriggs.reportcard.model.trend.JobStageTestTrend;
+import io.github.ericdriggs.reportcard.persist.BrowseService;
 import io.github.ericdriggs.reportcard.persist.GraphService;
-import io.github.ericdriggs.reportcard.controller.graph.JobInfoParser;
+import io.github.ericdriggs.reportcard.util.StringMapUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
-
 import java.time.Instant;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
@@ -33,10 +32,12 @@ import java.util.TreeSet;
 public class GraphUIController {
 
     private final GraphService graphService;
+    private final BrowseService browseService;
 
     @Autowired
-    public GraphUIController(GraphService graphService) {
+    public GraphUIController(GraphService graphService, BrowseService browseService) {
         this.graphService = graphService;
+        this.browseService = browseService;
     }
 
     @GetMapping(path = "company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/stage/{stage}/trend", produces = "text/html;charset=UTF-8")
@@ -73,6 +74,23 @@ public class GraphUIController {
         }
         //TODO: add cache headers * browser side cache using header, e.g. Cache-Control: max-age=600 //10 mins
         return new ResponseEntity<>(trendHtml, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "company/{company}/org/{org}/repo/{repo}/branch/{branch}/jobinfo/{jobInfo}/stage/{stage}/trend", produces = "text/html;charset=UTF-8")
+    public ResponseEntity<String> getJobStageTestTrendFromJobInfo(
+            @PathVariable String company,
+            @PathVariable String org,
+            @PathVariable String repo,
+            @PathVariable String branch,
+            @PathVariable String jobInfo,
+            @PathVariable String stage,
+            @RequestParam(required = false) Instant start,
+            @RequestParam(required = false) Instant end,
+            @RequestParam(required = false, defaultValue = "30") Integer runs
+    ) {
+        Map<String, String> jobInfoMap = StringMapUtil.stringToMap(jobInfo);
+        JobPojo job = browseService.getJob(company, org, repo, branch, jobInfoMap);
+        return getJobStageTestTrend(company, org, repo, branch, job.getJobId(), stage, start, end, runs);
     }
 
     @GetMapping(path = "repo/{repoName}/dashboard", produces = "text/html;charset=UTF-8")

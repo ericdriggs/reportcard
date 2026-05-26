@@ -1,6 +1,7 @@
 package io.github.ericdriggs.reportcard.controller.browse;
 
 import io.github.ericdriggs.reportcard.cache.model.*;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.JobPojo;
 import io.github.ericdriggs.reportcard.controller.html.TestResultHtmlHelper;
 import io.github.ericdriggs.reportcard.model.StageTestResultModel;
 import io.github.ericdriggs.reportcard.model.branch.BranchJobLatestRunMap;
@@ -155,6 +156,19 @@ public class BrowseUIController {
         return getStageTestResults(company, org, repo, branch, jobId, latestRunId);
     }
 
+    @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}/branch/{branch}/jobinfo/{jobInfo}/run/latest"}, produces = "text/html;charset=UTF-8")
+    public ResponseEntity<String> getLatestRunStagesFromJobInfo(
+            @PathVariable String company,
+            @PathVariable String org,
+            @PathVariable String repo,
+            @PathVariable String branch,
+            @PathVariable String jobInfo) {
+        Map<String, String> jobInfoMap = StringMapUtil.stringToMap(jobInfo);
+        JobPojo job = browseService.getJob(company, org, repo, branch, jobInfoMap);
+        Long latestRunId = browseService.getLatestRunId(job.getJobId());
+        return getStageTestResults(company, org, repo, branch, job.getJobId(), latestRunId);
+    }
+
     @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/{runId}/stage/{stage}"}, produces = "text/html;charset=UTF-8")
     public ResponseEntity<String> getTestResult(
             @PathVariable String company,
@@ -166,18 +180,6 @@ public class BrowseUIController {
             @PathVariable String stage) {
         StageTestResultModel stageTestResultModel = browseService.getStageTestResultMap(company, org, repo, branch , jobId, runId, stage);
         return new ResponseEntity<>(TestResultHtmlHelper.getTestResult(stageTestResultModel.getTestResult()), HttpStatus.OK);
-    }
-
-    @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/latest/stage/{stage}"}, produces = "text/html;charset=UTF-8")
-    public ResponseEntity<String> getLatestRunStageTestResult(
-            @PathVariable String company,
-            @PathVariable String org,
-            @PathVariable String repo,
-            @PathVariable String branch,
-            @PathVariable Long jobId,
-            @PathVariable String stage) {
-        Long latestRunId = browseService.getLatestRunId(jobId);
-        return getTestResult(company, org, repo, branch, jobId, latestRunId, stage);
     }
 
     @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}/branch/{branch}/jobinfo/{jobInfo}/runcount/{runCount}/stage/{stage}"}, produces = "text/html;charset=UTF-8")
@@ -193,6 +195,32 @@ public class BrowseUIController {
         TreeMap<String,String> jobInfoMap = StringMapUtil.stringToMap(jobInfo);
         StageTestResultModel stageTestResultModel = browseService.getStageTestResultMap(company, org, repo, branch , jobInfoMap, runCount, stage);
         return new ResponseEntity<>(TestResultHtmlHelper.getTestResult(stageTestResultModel.getTestResult()), HttpStatus.OK);
+    }
+
+    @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/run/latest/stage/{stage}"}, produces = "text/html;charset=UTF-8")
+    public ResponseEntity<String> getLatestRunStageTestResult(
+            @PathVariable String company,
+            @PathVariable String org,
+            @PathVariable String repo,
+            @PathVariable String branch,
+            @PathVariable Long jobId,
+            @PathVariable String stage) {
+        Long latestRunId = browseService.getLatestRunId(jobId);
+        return getTestResult(company, org, repo, branch, jobId, latestRunId, stage);
+    }
+
+    @GetMapping(path = {"company/{company}/org/{org}/repo/{repo}/branch/{branch}/jobinfo/{jobInfo}/run/latest/stage/{stage}"}, produces = "text/html;charset=UTF-8")
+    public ResponseEntity<String> getLatestRunStageTestResultFromJobInfo(
+            @PathVariable String company,
+            @PathVariable String org,
+            @PathVariable String repo,
+            @PathVariable String branch,
+            @PathVariable String jobInfo,
+            @PathVariable String stage) {
+        Map<String, String> jobInfoMap = StringMapUtil.stringToMap(jobInfo);
+        JobPojo job = browseService.getJob(company, org, repo, branch, jobInfoMap);
+        Long latestRunId = browseService.getLatestRunId(job.getJobId());
+        return getTestResult(company, org, repo, branch, job.getJobId(), latestRunId, stage);
     }
 
     Integer validateRuns(int runs) {
