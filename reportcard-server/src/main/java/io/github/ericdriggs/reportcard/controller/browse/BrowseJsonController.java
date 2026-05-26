@@ -75,7 +75,7 @@ public class BrowseJsonController {
             @RequestParam(required = false, defaultValue = "true") boolean shouldIncludeDefaultBranches,
             @RequestParam(required = false) Integer days
     ) {
-        Map<String, String> jobInfoFilter = StringMapUtil.stringToMap(jobInfo);
+        Map<String, String> jobInfoFilter = validateJobInfo(jobInfo);
         List<OrgDashboard> repoDashboards = graphService.getRepoDashboard(repoName, branches, shouldIncludeDefaultBranches, days, jobInfoFilter);
         return new ResponseEntity<>(repoDashboards, HttpStatus.OK);
     }
@@ -88,7 +88,7 @@ public class BrowseJsonController {
             @RequestParam(required = false, defaultValue = "true") boolean shouldIncludeDefaultBranches,
             @RequestParam(required = false) Integer days
     ) {
-        Map<String, String> jobInfoFilter = StringMapUtil.stringToMap(jobInfo);
+        Map<String, String> jobInfoFilter = validateJobInfo(jobInfo);
         List<OrgDashboard> repoDashboards = graphService.getRepoDashboard(repoName, branches, shouldIncludeDefaultBranches, days, jobInfoFilter);
         return new ResponseEntity<>(OrgDashboardFlattener.flatten(repoDashboards), HttpStatus.OK);
     }
@@ -301,6 +301,15 @@ public class BrowseJsonController {
     }
 
     // ==================== Helper Methods ====================
+
+    Map<String, String> validateJobInfo(String jobInfo) {
+        Map<String, String> parsed = StringMapUtil.stringToMap(jobInfo);
+        if (parsed.isEmpty() && jobInfo != null && !jobInfo.isBlank()) {
+            throw new IllegalArgumentException(
+                    "Invalid jobInfo format. Expected comma-separated key=value pairs, e.g. 'application=myapp,env=prod'. Got: " + jobInfo);
+        }
+        return parsed;
+    }
 
     /**
      * Validates runs parameter. Returns 60 as default for null or invalid values.

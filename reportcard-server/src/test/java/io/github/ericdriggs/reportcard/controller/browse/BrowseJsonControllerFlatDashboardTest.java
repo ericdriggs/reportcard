@@ -49,6 +49,11 @@ public class BrowseJsonControllerFlatDashboardTest extends AbstractBrowseService
         assertNotNull(first.getSha());
         assertNotNull(first.getRunDate());
         assertNotNull(first.getIsSuccess());
+        assertNotNull(first.getUrl());
+        assertTrue(first.getUrl().contains("/company/"));
+        assertTrue(first.getUrl().contains("/run/"));
+        assertNotNull(first.getStageName());
+        assertNotNull(first.getStorageUrls());
     }
 
     @Test
@@ -72,6 +77,9 @@ public class BrowseJsonControllerFlatDashboardTest extends AbstractBrowseService
             assertNotNull(entry.getSha());
             assertNotNull(entry.getRunDate());
             assertNotNull(entry.getIsSuccess());
+            assertNotNull(entry.getUrl());
+            assertNotNull(entry.getStageName());
+            assertNotNull(entry.getStorageUrls());
         }
     }
 
@@ -100,6 +108,9 @@ public class BrowseJsonControllerFlatDashboardTest extends AbstractBrowseService
         assertNotNull(first.getSha());
         assertNotNull(first.getRunDate());
         assertNotNull(first.getIsSuccess());
+        assertNotNull(first.getUrl());
+        assertNotNull(first.getStageName());
+        assertNotNull(first.getStorageUrls());
     }
 
     @Test

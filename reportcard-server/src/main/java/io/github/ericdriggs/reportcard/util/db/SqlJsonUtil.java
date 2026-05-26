@@ -16,6 +16,7 @@ import java.util.Map;
 import static io.github.ericdriggs.reportcard.gen.db.Tables.JOB;
 import static org.jooq.impl.DSL.condition;
 import static org.jooq.impl.DSL.inline;
+import static org.jooq.impl.DSL.val;
 
 public enum SqlJsonUtil {
     ;//static methods only
@@ -64,17 +65,14 @@ public enum SqlJsonUtil {
             throw new IllegalArgumentException("Invalid key format: " + key);
         }
         
-        // Use parameterized queries to prevent SQL injection
         if (value.contains("%") || value.contains("_")) {
-            // Wildcard search - use JSON_EXTRACT with LIKE
             return condition("JSON_EXTRACT(job_info, {0}) LIKE {1}",
                     inline("$." + key),
-                    inline(value));
+                    val(value));
         } else {
-            // Exact match - use JSON_EXTRACT with =
             return condition("JSON_EXTRACT(job_info, {0}) = {1}",
                     inline("$." + key),
-                    inline(value));
+                    val(value));
         }
     }
 

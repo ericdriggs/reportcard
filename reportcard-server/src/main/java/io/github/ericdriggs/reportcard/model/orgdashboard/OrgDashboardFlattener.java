@@ -5,7 +5,9 @@ import io.github.ericdriggs.reportcard.model.graph.*;
 import io.github.ericdriggs.reportcard.model.graph.comparator.GraphComparators;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeSet;
 
 import static io.github.ericdriggs.reportcard.util.list.ListAssertUtil.emptyIfNull;
@@ -17,6 +19,9 @@ public class OrgDashboardFlattener {
     public static List<FlatDashboardEntry> flatten(List<OrgDashboard> dashboards) {
         List<FlatDashboardEntry> entries = new ArrayList<>();
         for (OrgDashboard dashboard : emptyIfNull(dashboards)) {
+            if (dashboard.getCompanyPojo() == null || dashboard.getOrgPojo() == null) {
+                continue;
+            }
             String company = dashboard.getCompanyPojo().getCompanyName();
             String org = dashboard.getOrgPojo().getOrgName();
 
@@ -27,24 +32,47 @@ public class OrgDashboardFlattener {
                         if (latestRun == null) {
                             continue;
                         }
-                        entries.add(FlatDashboardEntry.builder()
-                                .company(company)
-                                .org(org)
-                                .repo(repoGraph.repoName())
-                                .branch(branchGraph.branchName())
-                                .jobId(jobGraph.jobId())
-                                .jobInfo(jobGraph.jobInfo())
-                                .runId(latestRun.runId())
-                                .jobRunCount(latestRun.jobRunCount())
-                                .sha(latestRun.sha())
-                                .runDate(latestRun.runDate())
-                                .isSuccess(latestRun.isSuccess())
-                                .build());
+                        String url = String.format("/company/%s/org/%s/repo/%s/branch/%s/job/%d/run/%d",
+                                company, org, repoGraph.repoName(), branchGraph.branchName(),
+                                jobGraph.jobId(), latestRun.runId());
+                        for (StageGraph stage : emptyIfNull(latestRun.stages())) {
+                            Map<String, String> storageUrls = buildStorageUrls(stage.storages());
+                            entries.add(FlatDashboardEntry.builder()
+                                    .company(company)
+                                    .org(org)
+                                    .repo(repoGraph.repoName())
+                                    .branch(branchGraph.branchName())
+                                    .jobId(jobGraph.jobId())
+                                    .jobInfo(jobGraph.jobInfo())
+                                    .runId(latestRun.runId())
+                                    .jobRunCount(latestRun.jobRunCount())
+                                    .sha(latestRun.sha())
+                                    .runDate(latestRun.runDate())
+                                    .isSuccess(latestRun.isSuccess())
+                                    .url(url)
+                                    .stageName(stage.stageName())
+                                    .storageUrls(storageUrls)
+                                    .build());
+                        }
                     }
                 }
             }
         }
         return entries;
+    }
+
+    private static Map<String, String> buildStorageUrls(List<StorageGraph> storages) {
+        Map<String, String> urls = new LinkedHashMap<>();
+        for (StorageGraph storage : emptyIfNull(storages)) {
+            if (storage.label() == null || storage.prefix() == null) {
+                continue;
+            }
+            String storageUrl = storage.indexFile() != null
+                    ? "/v1/api/storage/key/" + storage.prefix() + "/" + storage.indexFile()
+                    : "/v1/api/storage/key/" + storage.prefix();
+            urls.put(storage.label(), storageUrl);
+        }
+        return urls;
     }
 
     private static RunGraph getLatestRun(List<RunGraph> runs) {

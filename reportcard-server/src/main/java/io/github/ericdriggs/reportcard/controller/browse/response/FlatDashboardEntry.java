@@ -22,4 +22,7 @@ public class FlatDashboardEntry {
     String sha;
     Instant runDate;
     Boolean isSuccess;
+    String url;
+    String stageName;
+    Map<String, String> storageUrls;
 }

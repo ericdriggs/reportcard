@@ -113,10 +113,19 @@ public class GraphUIController {
             @RequestParam(required = false, defaultValue = "true") boolean shouldIncludeDefaultBranches,
             @RequestParam(required = false) Integer days
     ) {
-        Map<String, String> jobInfoFilter = StringMapUtil.stringToMap(jobInfo);
+        Map<String, String> jobInfoFilter = validateJobInfo(jobInfo);
         final List<OrgDashboard> repoDashboards = graphService.getRepoDashboard(repoName, branches, shouldIncludeDefaultBranches, days, jobInfoFilter);
         final String dashboardHtml = OrgDashboardHtmlHelper.renderRepoDashboardHtml(repoName, repoDashboards);
         return new ResponseEntity<>(dashboardHtml, HttpStatus.OK);
+    }
+
+    private Map<String, String> validateJobInfo(String jobInfo) {
+        Map<String, String> parsed = StringMapUtil.stringToMap(jobInfo);
+        if (parsed.isEmpty() && jobInfo != null && !jobInfo.isBlank()) {
+            throw new IllegalArgumentException(
+                    "Invalid jobInfo format. Expected comma-separated key=value pairs, e.g. 'application=myapp,env=prod'. Got: " + jobInfo);
+        }
+        return parsed;
     }
 
     @GetMapping(path = "company/{company}/org/{org}/dashboard", produces = "text/html;charset=UTF-8")
