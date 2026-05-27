@@ -35,9 +35,9 @@ public class StringMapUtilTest {
 
     @Test
     void preservesUnderscoresAndDigits() {
-        TreeMap<String, String> map = StringMapUtil.stringToMap("env=prod_us-east-1,pipeline=dev-cp3");
+        TreeMap<String, String> map = StringMapUtil.stringToMap("env=prod_us-east-1,pipeline=release-candidate");
         assertEquals("prod_us-east-1", map.get("env"));
-        assertEquals("dev-cp3", map.get("pipeline"));
+        assertEquals("release-candidate", map.get("pipeline"));
     }
 
 }

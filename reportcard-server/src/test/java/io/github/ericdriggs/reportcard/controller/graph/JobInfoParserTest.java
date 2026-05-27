@@ -29,10 +29,10 @@ class JobInfoParserTest {
 
     @Test
     void testNoWildcard() {
-        List<String> jobInfo = Arrays.asList("pipeline:dev-cp3");
+        List<String> jobInfo = Arrays.asList("pipeline:release-candidate");
         Map<String, String> result = JobInfoParser.parseJobInfoParams(jobInfo);
         
-        assertEquals("dev-cp3", result.get("pipeline"));
+        assertEquals("release-candidate", result.get("pipeline"));
     }
 
     @Test

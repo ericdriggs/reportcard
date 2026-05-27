@@ -36,7 +36,7 @@ public class JobDashboardEndpointsIntegrationTest {
     @Test
     public void testJobDashboardUIEndpointWithJobInfo() {
         ResponseEntity<String> response = graphUIController.getJobDashboard("hulu", "SubLife", 
-                List.of("pipeline:dev-cp3"), 90);
+                List.of("pipeline:release-candidate"), 90);
         assertEquals(200, response.getStatusCodeValue());
         assertNotNull(response.getBody());
     }
@@ -66,7 +66,7 @@ public class JobDashboardEndpointsIntegrationTest {
     @Test
     public void testJobDashboardJsonEndpointWithJobInfo() {
         ResponseEntity<List<JobDashboardMetrics>> response = graphJsonController.getJobDashboardJson("hulu", "SubLife", 
-                List.of("pipeline:dev-cp3"), 90);
+                List.of("pipeline:release-candidate"), 90);
         assertEquals(200, response.getStatusCodeValue());
         assertNotNull(response.getBody());
     }

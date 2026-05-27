@@ -69,7 +69,7 @@ public class BrowseJsonControllerTrendTest extends AbstractBrowseServiceTest {
 
     @Test
     void trendJobInfoPreservesSpecialCharsTest() {
-        String realisticJobInfo = "application=foo-app,host=build.corp.jenkins.com,pipeline=dev_cp-3";
+        String realisticJobInfo = "application=foo-app,host=build.corp.jenkins.com,pipeline=re-lease_candidate";
         org.springframework.web.server.ResponseStatusException ex = assertThrows(
             org.springframework.web.server.ResponseStatusException.class,
             () -> controller.getJobStageTestTrendFromJobInfoJson(
@@ -78,7 +78,7 @@ public class BrowseJsonControllerTrendTest extends AbstractBrowseServiceTest {
         assertEquals(org.springframework.http.HttpStatus.NOT_FOUND, ex.getStatus());
         assertTrue(ex.getReason().contains("foo-app"));
         assertTrue(ex.getReason().contains("build.corp.jenkins.com"));
-        assertTrue(ex.getReason().contains("dev_cp-3"));
+        assertTrue(ex.getReason().contains("re-lease_candidate"));
     }
 
     @Test

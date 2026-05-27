@@ -53,7 +53,7 @@ public class JobInfoWildcardIntegrationTest {
     @Test
     public void testExactMatch() {
         ResponseEntity<List<JobDashboardMetrics>> response = graphJsonController.getJobDashboardJson("hulu", "SubLife",
-                List.of("pipeline:dev-cp3"), 90);
+                List.of("pipeline:release-candidate"), 90);
         assertEquals(200, response.getStatusCodeValue());
         assertNotNull(response.getBody());
     }

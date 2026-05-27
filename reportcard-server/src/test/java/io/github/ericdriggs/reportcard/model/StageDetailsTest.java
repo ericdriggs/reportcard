@@ -98,7 +98,7 @@ public class StageDetailsTest {
         TreeMap<String, String> jobInfoMap = new TreeMap<>();
         jobInfoMap.put("application", "foo-app");
         jobInfoMap.put("host", "build.corp.jenkins.com");
-        jobInfoMap.put("pipeline", "dev-cp3");
+        jobInfoMap.put("pipeline", "release-candidate");
         jobInfoMap.put("env", "prod_us-east-1");
 
         StageDetails stageDetails = StageDetails.builder()
@@ -108,7 +108,7 @@ public class StageDetailsTest {
 
         assertEquals("foo-app", stageDetails.getJobInfo().get("application"));
         assertEquals("build.corp.jenkins.com", stageDetails.getJobInfo().get("host"));
-        assertEquals("dev-cp3", stageDetails.getJobInfo().get("pipeline"));
+        assertEquals("release-candidate", stageDetails.getJobInfo().get("pipeline"));
         assertEquals("prod_us-east-1", stageDetails.getJobInfo().get("env"));
     }
 }
