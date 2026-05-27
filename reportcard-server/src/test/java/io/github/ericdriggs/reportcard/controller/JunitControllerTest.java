@@ -31,10 +31,7 @@ import software.amazon.awssdk.services.s3.model.S3Object;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import static net.javacrumbs.jsonunit.JsonAssert.assertJsonEquals;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -65,6 +62,27 @@ public class JunitControllerTest {
 
     @Autowired
     private TestResultPersistService testResultPersistService;
+
+    @Test
+    void jobInfoHtmlCharsStrippedOnIngestion() {
+        TreeMap<String, String> maliciousJobInfo = new TreeMap<>();
+        maliciousJobInfo.put("application", "<script>xss</script>");
+        maliciousJobInfo.put("pipeline", "foo&bar");
+
+        StageDetails stageDetails = StageDetails.builder()
+                .company(TestData.company)
+                .org(TestData.org)
+                .repo(TestData.repo)
+                .branch(TestData.branch)
+                .sha(TestData.sha)
+                .jobInfo(maliciousJobInfo)
+                .runReference(UUID.randomUUID())
+                .stage("htmlStripTest")
+                .build();
+
+        assertEquals("scriptxss/script", stageDetails.getJobInfo().get("application"));
+        assertEquals("foobar", stageDetails.getJobInfo().get("pipeline"));
+    }
 
     static StageDetails getStageDetails(String stageName) {
         return StageDetails.builder()

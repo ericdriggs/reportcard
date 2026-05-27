@@ -26,4 +26,18 @@ public class StringMapUtilTest {
         assertEquals("baz1", map.get("BAZ"));
     }
 
+    @Test
+    void preservesHyphensAndDots() {
+        TreeMap<String, String> map = StringMapUtil.stringToMap("application=foo-app,host=build.corp.jenkins.com");
+        assertEquals("foo-app", map.get("application"));
+        assertEquals("build.corp.jenkins.com", map.get("host"));
+    }
+
+    @Test
+    void preservesUnderscoresAndDigits() {
+        TreeMap<String, String> map = StringMapUtil.stringToMap("env=prod_us-east-1,pipeline=dev-cp3");
+        assertEquals("prod_us-east-1", map.get("env"));
+        assertEquals("dev-cp3", map.get("pipeline"));
+    }
+
 }
