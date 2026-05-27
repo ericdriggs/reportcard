@@ -143,4 +143,35 @@ public class BrowseJsonControllerFlatDashboardTest extends AbstractBrowseService
         assertNotNull(response.getBody());
         assertTrue(response.getBody().isEmpty());
     }
+
+    @Test
+    void getOrgDashboardFlatJsonSuccessTest() {
+        ResponseEntity<List<FlatDashboardEntry>> response =
+            controller.getOrgDashboardFlatJson(
+                TestData.company, TestData.org,
+                null, new java.util.ArrayList<>(), true, null);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertFalse(response.getBody().isEmpty());
+
+        FlatDashboardEntry first = response.getBody().get(0);
+        assertEquals(TestData.company, first.getCompany());
+        assertEquals(TestData.org, first.getOrg());
+        assertNotNull(first.getRepo());
+        assertNotNull(first.getBranch());
+        assertNotNull(first.getJobId());
+        assertNotNull(first.getJobInfo());
+        assertNotNull(first.getRunId());
+        assertNotNull(first.getJobRunCount());
+        assertNotNull(first.getSha());
+        assertNotNull(first.getRunDate());
+        assertNotNull(first.getIsSuccess());
+        assertNotNull(first.getUrl());
+        assertTrue(first.getUrl().contains("/company/"));
+        assertTrue(first.getUrl().contains("/run/"));
+        assertNotNull(first.getStageName());
+        assertNotNull(first.getStorageUrls());
+    }
 }
