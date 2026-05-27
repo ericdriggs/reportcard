@@ -1,5 +1,6 @@
 package io.github.ericdriggs.reportcard.controller.graph.trend;
 
+import java.util.List;
 
 import lombok.Builder;
 import lombok.Value;
@@ -19,15 +20,20 @@ public class TestRowSummary {
     @Builder.Default
     Integer success = 0;
 
-    //TODO: handle skipped rows
     public static TestRowSummary fromTestTrendTable(TestTrendTable testTrendTable) {
         int tests = 0;
         int success = 0;
         int fail = 0;
 
-        for (TestCaseTrendRow row : testTrendTable.getTestCaseTrendRows()) {
+        List<TestCaseTrendRow> rows = testTrendTable.getTestCaseTrendRows();
+        if (rows == null) {
+            return TestRowSummary.builder().build();
+        }
+
+        for (TestCaseTrendRow row : rows) {
             tests++;
-            if (row.getFailureMessageIndexMap().getFailureMessageIndexMap().isEmpty()) {
+            FailureMessageIndexMap fmim = row.getFailureMessageIndexMap();
+            if (fmim == null || fmim.getFailureMessageIndexMap().isEmpty()) {
                 success++;
             } else {
                 fail++;

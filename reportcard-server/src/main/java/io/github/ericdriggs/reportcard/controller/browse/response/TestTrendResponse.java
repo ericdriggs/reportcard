@@ -3,10 +3,8 @@ package io.github.ericdriggs.reportcard.controller.browse.response;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.github.ericdriggs.reportcard.controller.graph.trend.*;
 import io.github.ericdriggs.reportcard.model.trend.TestPackageSuiteCase;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.extern.jackson.Jacksonized;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -24,44 +22,41 @@ public class TestTrendResponse {
     private List<TestCaseTrendEntry> testCases;
     private TestTrendSummary summary;
 
-    @Data
+    @Value
     @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
+    @Jacksonized
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class RunHeaderEntry {
-        private Long runId;
-        private String runUri;
-        private String runDate;
-        private Integer totalTests;
-        private BigDecimal successPercent;
+        Long runId;
+        String runUri;
+        Instant runDate;
+        Integer totalTests;
+        BigDecimal successPercent;
     }
 
-    @Data
+    @Value
     @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
+    @Jacksonized
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class TestCaseTrendEntry {
-        private String testPackageName;
-        private String testSuiteName;
-        private String testCaseName;
-        private BigDecimal successPercent;
-        private BigDecimal averageDurationSeconds;
-        private String failSince;
-        private Map<String, List<Long>> runStates;
-        private Map<String, List<Long>> failureMessages;
+        String testPackageName;
+        String testSuiteName;
+        String testCaseName;
+        BigDecimal successPercent;
+        BigDecimal averageDurationSeconds;
+        Instant failSince;
+        Map<String, List<Long>> runStates;
+        Map<String, List<Long>> failureMessages;
     }
 
-    @Data
+    @Value
     @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
+    @Jacksonized
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class TestTrendSummary {
-        private Integer totalTests;
-        private Integer successCount;
-        private Integer failCount;
+        Integer totalTests;
+        Integer successCount;
+        Integer failCount;
     }
 
     public static BigDecimal calculateSuccessPercent(int passed, int total) {
@@ -97,7 +92,7 @@ public class TestTrendResponse {
                     .testCaseName(tpsc != null ? tpsc.getTestCaseName() : null)
                     .successPercent(ratioToPercent(row.getSuccessPercent()))
                     .averageDurationSeconds(row.getAverageDurationSeconds())
-                    .failSince(row.getFailSince() != null ? row.getFailSince().toString() : null)
+                    .failSince(row.getFailSince())
                     .build();
         }
 
@@ -142,7 +137,7 @@ public class TestTrendResponse {
                 .testCaseName(tpsc != null ? tpsc.getTestCaseName() : null)
                 .successPercent(ratioToPercent(row.getSuccessPercent()))
                 .averageDurationSeconds(row.getAverageDurationSeconds())
-                .failSince(row.getFailSince() != null ? row.getFailSince().toString() : null)
+                .failSince(row.getFailSince())
                 .runStates(runStates.isEmpty() ? null : runStates)
                 .failureMessages(failureMessages.isEmpty() ? null : failureMessages)
                 .build();
@@ -190,11 +185,10 @@ public class TestTrendResponse {
             int total = runTotalTests.getOrDefault(runId, 0);
             int passed = runPassCount.getOrDefault(runId, 0);
 
-            Instant runDate = header.getRunDate();
             runs.put(header.getJobRunCount(), RunHeaderEntry.builder()
                     .runId(header.getRunId())
                     .runUri(header.getRunUri())
-                    .runDate(runDate != null ? runDate.toString() : null)
+                    .runDate(header.getRunDate())
                     .totalTests(total)
                     .successPercent(calculateSuccessPercent(passed, total))
                     .build());

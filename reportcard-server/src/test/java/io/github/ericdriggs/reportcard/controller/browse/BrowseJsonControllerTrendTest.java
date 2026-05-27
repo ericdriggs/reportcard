@@ -51,6 +51,23 @@ public class BrowseJsonControllerTrendTest extends AbstractBrowseServiceTest {
     }
 
     @Test
+    void getJobStageTestTrendFromJobInfoJsonSuccessTest() {
+        String jobInfoStr = "application=fooapp,host=foocorp.jenkins.com,pipeline=foopipeline";
+        ResponseEntity<TestTrendResponse> response = controller.getJobStageTestTrendFromJobInfoJson(
+                TestData.company, TestData.org, TestData.repo, TestData.branch,
+                jobInfoStr, TestData.stage, null, null, 30, TrendDetail.full, false);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        TestTrendResponse body = response.getBody();
+        assertNotNull(body);
+        assertFalse(body.getRuns().isEmpty(), "Expected at least one run");
+        assertFalse(body.getTestCases().isEmpty(), "Expected at least one test case");
+        assertTrue(body.getSummary().getTotalTests() > 0, "Expected totalTests > 0");
+    }
+
+    @Test
     void getJobStageTestTrendJsonEmptyResultTest() {
         // Non-existent job should return empty response
         ResponseEntity<TestTrendResponse> response = controller.getJobStageTestTrendJson(

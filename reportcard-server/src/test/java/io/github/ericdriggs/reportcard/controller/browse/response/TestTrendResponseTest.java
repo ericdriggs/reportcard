@@ -56,7 +56,7 @@ public class TestTrendResponseTest {
         TestTrendResponse.RunHeaderEntry run160 = response.getRuns().get(160L);
         assertEquals(300L, run160.getRunId());
         assertEquals("/run/300", run160.getRunUri());
-        assertEquals("2025-05-03T00:00:00Z", run160.getRunDate());
+        assertEquals(Instant.parse("2025-05-03T00:00:00Z"), run160.getRunDate());
         assertEquals(1, run160.getTotalTests());
         assertEquals(new BigDecimal("100.0"), run160.getSuccessPercent());
 
@@ -195,6 +195,103 @@ public class TestTrendResponseTest {
         assertEquals("testFailing", result.getTestCases().get(0).getTestCaseName());
         assertNull(result.getTestCases().get(0).getRunStates());
         assertNull(result.getTestCases().get(0).getFailureMessages());
+    }
+
+    @Test
+    void ratioToPercent_nullInput() {
+        assertNull(TestTrendResponse.ratioToPercent(null));
+    }
+
+    @Test
+    void ratioToPercent_zeroRatio() {
+        assertEquals(new BigDecimal("0.0"), TestTrendResponse.ratioToPercent(BigDecimal.ZERO));
+    }
+
+    @Test
+    void ratioToPercent_fullRatio() {
+        assertEquals(new BigDecimal("100.0"), TestTrendResponse.ratioToPercent(BigDecimal.ONE));
+    }
+
+    @Test
+    void fromTestTrendTable_skippedStateHandling() {
+        TreeSet<TestRunHeader> headers = new TreeSet<>();
+        headers.add(TestRunHeader.builder().runId(1L).jobRunCount(10L).runUri("/run/1").runDate(Instant.parse("2025-05-01T00:00:00Z")).build());
+
+        TreeMap<Long, TestCaseRunGroupedState> states = new TreeMap<>(Collections.reverseOrder());
+        states.put(1L, TestCaseRunGroupedState.builder().runId(1L).testCaseRunState(TestCaseRunState.SKIPPED).build());
+
+        TestCaseTrendRow row = TestCaseTrendRow.builder()
+                .testPackageSuiteCase(TestPackageSuiteCase.builder().testPackageName("pkg").testSuiteName("suite").testCaseName("testSkipped").build())
+                .successPercent(BigDecimal.ZERO)
+                .averageDurationSeconds(BigDecimal.ONE)
+                .hasSkip(true)
+                .failureMessageIndexMap(FailureMessageIndexMap.builder().build())
+                .testRunGroupedStates(states)
+                .build();
+
+        TestTrendTable table = TestTrendTable.builder()
+                .testRunHeaders(headers)
+                .testCaseTrendRows(List.of(row))
+                .build();
+
+        TestTrendResponse response = TestTrendResponse.fromTestTrendTable(table);
+
+        // SKIPPED appears in runStates
+        TestTrendResponse.TestCaseTrendEntry entry = response.getTestCases().get(0);
+        assertNotNull(entry.getRunStates());
+        assertEquals(List.of(10L), entry.getRunStates().get("SKIPPED"));
+        assertNull(entry.getRunStates().get("SUCCESS"));
+
+        // SKIPPED does not count as passed — run successPercent should be 0
+        TestTrendResponse.RunHeaderEntry run = response.getRuns().get(10L);
+        assertEquals(new BigDecimal("0.0"), run.getSuccessPercent());
+        assertEquals(1, run.getTotalTests());
+    }
+
+    @Test
+    void fromTestTrendTable_multipleRowsAggregatePerRunStats() {
+        TreeSet<TestRunHeader> headers = new TreeSet<>();
+        headers.add(TestRunHeader.builder().runId(1L).jobRunCount(10L).runUri("/run/1").runDate(Instant.parse("2025-05-01T00:00:00Z")).build());
+
+        TreeMap<Long, TestCaseRunGroupedState> passStates = new TreeMap<>(Collections.reverseOrder());
+        passStates.put(1L, TestCaseRunGroupedState.builder().runId(1L).testCaseRunState(TestCaseRunState.SUCCESS).build());
+
+        TreeMap<Long, TestCaseRunGroupedState> failStates = new TreeMap<>(Collections.reverseOrder());
+        failStates.put(1L, TestCaseRunGroupedState.builder().runId(1L).testCaseRunState(TestCaseRunState.FAIL).build());
+
+        TestCaseTrendRow passRow = TestCaseTrendRow.builder()
+                .testPackageSuiteCase(TestPackageSuiteCase.builder().testPackageName("pkg").testSuiteName("suite").testCaseName("testPass").build())
+                .successPercent(BigDecimal.ONE)
+                .averageDurationSeconds(BigDecimal.ONE)
+                .hasSkip(false)
+                .failureMessageIndexMap(FailureMessageIndexMap.builder().build())
+                .testRunGroupedStates(passStates)
+                .build();
+
+        FailureMessageIndexMap failMap = FailureMessageIndexMap.builder().build();
+        failMap.getFailureIndex("timeout");
+        TestCaseTrendRow failRow = TestCaseTrendRow.builder()
+                .testPackageSuiteCase(TestPackageSuiteCase.builder().testPackageName("pkg").testSuiteName("suite").testCaseName("testFail").build())
+                .successPercent(BigDecimal.ZERO)
+                .averageDurationSeconds(BigDecimal.ONE)
+                .hasSkip(false)
+                .failureMessageIndexMap(failMap)
+                .testRunGroupedStates(failStates)
+                .build();
+
+        TestTrendTable table = TestTrendTable.builder()
+                .testRunHeaders(headers)
+                .testCaseTrendRows(List.of(passRow, failRow))
+                .build();
+
+        TestTrendResponse response = TestTrendResponse.fromTestTrendTable(table);
+
+        // Run has 2 total tests, 1 passed -> 50%
+        TestTrendResponse.RunHeaderEntry run = response.getRuns().get(10L);
+        assertEquals(2, run.getTotalTests());
+        assertEquals(new BigDecimal("50.0"), run.getSuccessPercent());
+
+        assertEquals(2, response.getTestCases().size());
     }
 
     private TestTrendResponse buildResponseWithMixedTests() {
