@@ -64,7 +64,7 @@ public class JunitControllerTest {
     private TestResultPersistService testResultPersistService;
 
     @Test
-    void jobInfoHtmlCharsStrippedOnIngestion() {
+    void stageDetailsStripsHtmlCharsFromJobInfo() {
         TreeMap<String, String> maliciousJobInfo = new TreeMap<>();
         maliciousJobInfo.put("application", "<script>xss</script>");
         maliciousJobInfo.put("pipeline", "foo&bar");

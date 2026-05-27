@@ -34,6 +34,7 @@ public class StageDetailsTest {
         TreeMap<String, String> jobInfoMap = new TreeMap<>();
         jobInfoMap.put("application", "<script>alert(1)</script>");
         jobInfoMap.put("pipeline", "foo&bar");
+        jobInfoMap.put("<img>", "malicious-key");
 
         StageDetails stageDetails = StageDetails.builder()
                 .company(TestData.company).org(TestData.org).repo(TestData.repo)
@@ -42,6 +43,7 @@ public class StageDetailsTest {
 
         assertEquals("scriptalert(1)/script", stageDetails.getJobInfo().get("application"));
         assertEquals("foobar", stageDetails.getJobInfo().get("pipeline"));
+        assertEquals("malicious-key", stageDetails.getJobInfo().get("img"));
     }
 
     @Test
@@ -76,6 +78,19 @@ public class StageDetailsTest {
         assertEquals("my.repo", stageDetails.getRepo());
         assertEquals("feature_my-branch", stageDetails.getBranch());
         assertEquals("unit-tests_v2", stageDetails.getStage());
+    }
+
+    @Test
+    void shaStripsHtmlChars() {
+        TreeMap<String, String> jobInfoMap = new TreeMap<>();
+        jobInfoMap.put("pipeline", "safe");
+
+        StageDetails stageDetails = StageDetails.builder()
+                .company(TestData.company).org(TestData.org).repo(TestData.repo)
+                .branch(TestData.branch).sha("abc<script>123").stage(TestData.stage)
+                .jobInfo(jobInfoMap).build();
+
+        assertEquals("abcscript123", stageDetails.getSha());
     }
 
     @Test
