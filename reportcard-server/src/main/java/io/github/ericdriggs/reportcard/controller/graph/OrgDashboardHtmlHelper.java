@@ -77,6 +77,9 @@ public class OrgDashboardHtmlHelper extends BrowseHtmlHelper {
                     if (CollectionUtils.isEmpty(jobGraph.jobInfo())) {
                         continue;
                     }
+                    if (CollectionUtils.isEmpty(jobGraph.runs())) {
+                        continue;
+                    }
                     final CompanyOrgRepoBranchJobRunStageDTO jobPath = branchPath.toBuilder().jobId(jobGraph.jobId()).build();
                     final String jobUrl = getUrl(jobPath);
                     final String jobInfoTruncated = TruncateUtils.truncateRight(StringMapUtil.valuesOnlyColonSeparated(jobGraph.jobInfo()), 45, true);

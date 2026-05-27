@@ -38,6 +38,21 @@ public class GraphJsonControllerJobInfoTest extends AbstractBrowseServiceTest {
     }
 
     @Test
+    void jobInfoPreservesSpecialCharsTest() {
+        String realisticJobInfo = "application=foo-app,host=build.corp.jenkins.com,pipeline=re-lease_candidate";
+        // Parsing succeeds; 404 means lookup ran but no match — not a parse failure
+        org.springframework.web.server.ResponseStatusException ex = assertThrows(
+            org.springframework.web.server.ResponseStatusException.class,
+            () -> controller.getJobStageTestTrendFromJobInfo(
+                TestData.company, TestData.org, TestData.repo, TestData.branch,
+                realisticJobInfo, TestData.stage, null, null));
+        assertEquals(org.springframework.http.HttpStatus.NOT_FOUND, ex.getStatus());
+        assertTrue(ex.getReason().contains("foo-app"));
+        assertTrue(ex.getReason().contains("build.corp.jenkins.com"));
+        assertTrue(ex.getReason().contains("re-lease_candidate"));
+    }
+
+    @Test
     void getJobStageTestTrendFromJobInfoMatchesJobIdTest() {
         ResponseEntity<JobStageTestTrend> jobInfoResponse =
             controller.getJobStageTestTrendFromJobInfo(

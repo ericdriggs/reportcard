@@ -56,6 +56,17 @@ public class StageDetails {
             if (runReference == null) {
                 runReference = UUID.randomUUID();
             }
+            jobInfo = lower(jobInfo);
+            if (branch != null) {
+                branch = branch.replace("/", "_");
+            }
+            company = stripHtmlChars(company);
+            org = stripHtmlChars(org);
+            repo = stripHtmlChars(repo);
+            branch = stripHtmlChars(branch);
+            sha = stripHtmlChars(sha);
+            stage = stripHtmlChars(stage);
+            jobInfo = stripHtmlCharsFromMap(jobInfo);
             Map<String, String> errors = new LinkedHashMap<>();
             addErrorIfMissing(errors, company, "company");
             addErrorIfMissing(errors, org, "org");
@@ -63,12 +74,24 @@ public class StageDetails {
             addErrorIfMissing(errors, branch, "branch");
             addErrorIfMissing(errors, sha, "sha");
             addErrorIfMissing(errors, stage, "stage");
-            jobInfo = lower(jobInfo);
-            branch = branch.replace("/", "_");
             if (!errors.isEmpty()) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                         "errors - " + Arrays.toString(errors.entrySet().toArray()));
             }
+        }
+
+        private static String stripHtmlChars(String input) {
+            if (input == null) return null;
+            return input.replaceAll("[<>\"'&]", "");
+        }
+
+        private static TreeMap<String, String> stripHtmlCharsFromMap(TreeMap<String, String> map) {
+            if (map == null || map.isEmpty()) return map;
+            TreeMap<String, String> result = new TreeMap<>();
+            for (Map.Entry<String, String> entry : map.entrySet()) {
+                result.put(stripHtmlChars(entry.getKey()), stripHtmlChars(entry.getValue()));
+            }
+            return result;
         }
 
         @JsonIgnore
