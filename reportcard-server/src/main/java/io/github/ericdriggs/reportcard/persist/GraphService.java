@@ -3,17 +3,16 @@ package io.github.ericdriggs.reportcard.persist;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.github.ericdriggs.reportcard.cache.model.BranchStageViewResponse;
 import io.github.ericdriggs.reportcard.model.branch.BranchJobLatestRunMap;
-import io.github.ericdriggs.reportcard.model.metrics.company.MetricsIntervalRequest;
-import io.github.ericdriggs.reportcard.model.metrics.company.MetricsIntervalResultCount;
-import io.github.ericdriggs.reportcard.model.metrics.company.MetricsRequest;
-import io.github.ericdriggs.reportcard.model.pipeline.JobDashboardRequest;
-import io.github.ericdriggs.reportcard.model.pipeline.JobDashboardMetrics;
-
 import io.github.ericdriggs.reportcard.model.graph.CompanyGraph;
 import io.github.ericdriggs.reportcard.model.graph.TestSuiteGraph;
 import io.github.ericdriggs.reportcard.model.graph.TestSuiteGraphBuilder;
 import io.github.ericdriggs.reportcard.model.graph.condition.TableConditionMap;
+import io.github.ericdriggs.reportcard.model.metrics.company.MetricsIntervalRequest;
+import io.github.ericdriggs.reportcard.model.metrics.company.MetricsIntervalResultCount;
+import io.github.ericdriggs.reportcard.model.metrics.company.MetricsRequest;
 import io.github.ericdriggs.reportcard.model.orgdashboard.OrgDashboard;
+import io.github.ericdriggs.reportcard.model.pipeline.JobDashboardMetrics;
+import io.github.ericdriggs.reportcard.model.pipeline.JobDashboardRequest;
 import io.github.ericdriggs.reportcard.model.trend.InstantRange;
 import io.github.ericdriggs.reportcard.model.trend.JobStageTestTrend;
 import io.github.ericdriggs.reportcard.util.db.SqlJsonUtil;
@@ -21,8 +20,6 @@ import lombok.SneakyThrows;
 import org.jooq.*;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
-
-import java.math.BigDecimal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +29,6 @@ import org.springframework.util.CollectionUtils;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 import static io.github.ericdriggs.reportcard.gen.db.Tables.*;
@@ -318,22 +314,14 @@ public class GraphService extends AbstractPersistService {
         }
         tableConditionMap.put(BRANCH, BRANCH.BRANCH_NAME.in(branchNames));
 
-        Condition jobCondition = trueCondition();
         if (days != null) {
             Instant cutoff = Instant.now().minus(days, ChronoUnit.DAYS);
-            jobCondition = jobCondition.and(JOB.LAST_RUN.ge(cutoff));
+            tableConditionMap.put(JOB, JOB.LAST_RUN.ge(cutoff));
         }
-        if (jobInfoFilter != null && !jobInfoFilter.isEmpty()) {
+         if (jobInfoFilter != null && !jobInfoFilter.isEmpty()) {
             for (Map.Entry<String, String> entry : jobInfoFilter.entrySet()) {
-                jobCondition = jobCondition.and(SqlJsonUtil.jobInfoContainsKeyValue(entry.getKey(), entry.getValue()));
-            }
-        }
-        tableConditionMap.put(JOB, jobCondition);
-
-        Condition jobOnCondition = JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID);
-        if (jobInfoFilter != null && !jobInfoFilter.isEmpty()) {
-            for (Map.Entry<String, String> entry : jobInfoFilter.entrySet()) {
-                jobOnCondition = jobOnCondition.and(SqlJsonUtil.jobInfoContainsKeyValue(entry.getKey(), entry.getValue()));
+                Condition jobInfoCondition = SqlJsonUtil.jobInfoContainsKeyValue(entry.getKey(), entry.getValue());
+                tableConditionMap.merge(JOB, jobInfoCondition, Condition::and);
             }
         }
 
@@ -342,7 +330,7 @@ public class GraphService extends AbstractPersistService {
                 .leftJoin(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID))
                 .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)).and(repoCondition)
                 .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID).and(BRANCH.BRANCH_NAME.in(branchNames)))
-                .leftJoin(JOB).on(jobOnCondition)
+                .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
                 .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID))
                 .leftJoin(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID))
                 .groupBy(JOB.JOB_ID, STAGE.STAGE_NAME)
@@ -352,7 +340,7 @@ public class GraphService extends AbstractPersistService {
                                 .leftJoin(ORG).on(ORG.COMPANY_FK.eq(COMPANY.COMPANY_ID))
                                 .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)).and(repoCondition)
                                 .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID).and(BRANCH.BRANCH_NAME.in(branchNames)))
-                                .leftJoin(JOB).on(jobOnCondition)
+                                .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
                                 .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID).and(RUN.IS_SUCCESS))
                                 .leftJoin(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID))
                                 .groupBy(JOB.JOB_ID, STAGE.STAGE_NAME)

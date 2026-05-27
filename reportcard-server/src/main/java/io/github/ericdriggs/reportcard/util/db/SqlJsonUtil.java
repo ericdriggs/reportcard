@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.ericdriggs.reportcard.mappers.SharedObjectMappers;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.jooq.Condition;
 import org.jooq.Field;
 import org.springframework.util.CollectionUtils;
@@ -13,10 +12,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.List;
 import java.util.Map;
 
-import static io.github.ericdriggs.reportcard.gen.db.Tables.JOB;
-import static org.jooq.impl.DSL.condition;
-import static org.jooq.impl.DSL.inline;
-import static org.jooq.impl.DSL.val;
+import static org.jooq.impl.DSL.*;
 
 public enum SqlJsonUtil {
     ;//static methods only
@@ -55,16 +51,25 @@ public enum SqlJsonUtil {
         return mapper.writeValueAsString(map);
     }
 
+    /**
+     * Matches a key-value pair in the job_info JSON column with protection against SQL injection.
+     */
     public static Condition jobInfoContainsKeyValue(String key, String value) {
         if (ObjectUtils.isEmpty(key) || ObjectUtils.isEmpty(value)) {
             return condition("true");
         }
-        
-        // Validate key to prevent JSON path injection
+
+        // prevent sql injection on key by ensuring it's a single word
         if (!key.matches("^[a-zA-Z0-9_]+$")) {
             throw new IllegalArgumentException("Invalid key format: " + key);
         }
-        
+
+        /*
+         * val() (parameterized) inherently prevents SQL injection on value.
+         * inline() (non-parameterized) offers no such protection, so the key must be
+         * validated via regex before inlining. MySQL requires inline for keys because JSON path
+         * expressions cannot be bind parameters.
+         */
         if (value.contains("%") || value.contains("_")) {
             return condition("JSON_EXTRACT(job_info, {0}) LIKE {1}",
                     inline("$." + key),
