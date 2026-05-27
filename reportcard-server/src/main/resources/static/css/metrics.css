@@ -70,6 +70,10 @@ li {
     text-align: right !important;
 }
 
+.delta {
+    text-align: left !important;
+}
+
 dl {
     max-width: 650px;
     width: 650px;
@@ -94,61 +98,39 @@ dd {
     padding-bottom: 0.3em;
 }
 
-/* ===== Stacked Layout Styles (Phase 2) ===== */
+/* ===== Inline Delta Styles ===== */
 
-/* Entity group alternating backgrounds */
-.metrics-group:nth-child(odd) {
+/* Alternating row backgrounds */
+tbody tr:nth-child(odd) {
     background: #fafafa;
 }
-.metrics-group:nth-child(even) {
+tbody tr:nth-child(even) {
     background: #fff;
 }
 
-/* Row type styling */
-.row-current {
-    background: #f0f7ff !important;
-}
-.row-previous {
-    background: #f5f5f5 !important;
-}
-.row-delta {
-    background: #fff !important;
-    font-weight: 500;
+/* Primary metric value */
+.metric-value {
+    white-space: nowrap;
 }
 
-/* Significant delta colors */
-.row-delta.significant-good {
-    background: #f0fff4 !important;
-}
-.row-delta.significant-bad {
-    background: #fff5f5 !important;
+/* Inline delta annotation */
+.metric-delta {
+    font-size: 0.8em;
+    white-space: nowrap;
 }
 
-/* Delta cell colors - background only, text stays black */
-.delta-positive {
-    background-color: #d4edda !important;
+/* Delta significance colors */
+.metric-delta.delta-positive {
+    color: #1b7a2f;
 }
-.delta-negative {
-    background-color: #f8d7da !important;
+.metric-delta.delta-negative {
+    color: #b71c1c;
 }
-.delta-neutral {
-    /* no background change */
-}
-
-/* Period column styling */
-.period-current {
-    font-weight: 600;
-    color: #1565c0;
-}
-.period-previous {
-    color: #616161;
-}
-.period-delta {
-    font-weight: 600;
-    color: #424242;
+.metric-delta.delta-neutral {
+    color: #757575;
 }
 
-/* Entity name column - span across rows */
+/* Entity name column */
 .entity-name {
     vertical-align: middle;
     font-weight: 500;

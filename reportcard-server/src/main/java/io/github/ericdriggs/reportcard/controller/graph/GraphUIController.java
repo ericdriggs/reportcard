@@ -163,8 +163,7 @@ public class GraphUIController {
             @RequestParam(required = false, defaultValue = "") TreeSet<String> notBranches,
             @RequestParam(required = false, defaultValue = "") TreeSet<String> notJobInfos,
             @RequestParam(required = false, defaultValue = "true") boolean shouldIncludeDefaultBranches,
-            @RequestParam(required = false, defaultValue = "30") Integer intervalDays,
-            @RequestParam(required = false, defaultValue = "2") Integer intervalCount
+            @RequestParam(required = false, defaultValue = "30") Integer intervalDays
     ) {
         MetricsIntervalRequest metricsIntervalRequest = MetricsIntervalRequest.fromQueryParams(
                 companies,
@@ -178,8 +177,7 @@ public class GraphUIController {
                 notBranches,
                 notJobInfos,
                 shouldIncludeDefaultBranches,
-                intervalDays,
-                intervalCount
+                intervalDays
         );
         return postCompanyDashboard(metricsIntervalRequest);
     }
@@ -197,8 +195,7 @@ public class GraphUIController {
             @RequestParam(required = false, defaultValue = "") TreeSet<String> notBranches,
             @RequestParam(required = false, defaultValue = "") TreeSet<String> notJobInfos,
             @RequestParam(required = false, defaultValue = "true") boolean shouldIncludeDefaultBranches,
-            @RequestParam(required = false, defaultValue = "30") Integer intervalDays,
-            @RequestParam(required = false, defaultValue = "2") Integer intervalCount
+            @RequestParam(required = false, defaultValue = "30") Integer intervalDays
     ) {
         TreeSet<String> companies = new TreeSet<>();
         companies.add(company);
@@ -216,8 +213,7 @@ public class GraphUIController {
                 notBranches,
                 notJobInfos,
                 shouldIncludeDefaultBranches,
-                intervalDays,
-                intervalCount
+                intervalDays
         );
         return postCompanyDashboard(metricsIntervalRequest);
     }
@@ -234,8 +230,7 @@ public class GraphUIController {
             @RequestParam(required = false, defaultValue = "") TreeSet<String> notBranches,
             @RequestParam(required = false, defaultValue = "") TreeSet<String> notJobInfos,
             @RequestParam(required = false, defaultValue = "true") boolean shouldIncludeDefaultBranches,
-            @RequestParam(required = false, defaultValue = "30") Integer intervalDays,
-            @RequestParam(required = false, defaultValue = "2") Integer intervalCount
+            @RequestParam(required = false, defaultValue = "30") Integer intervalDays
     ) {
         TreeSet<String> companies = new TreeSet<>();
         companies.add(company);
@@ -257,8 +252,7 @@ public class GraphUIController {
                 notBranches,
                 notJobInfos,
                 shouldIncludeDefaultBranches,
-                intervalDays,
-                intervalCount
+                intervalDays
         );
         return postCompanyDashboard(metricsIntervalRequest);
     }
