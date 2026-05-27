@@ -100,9 +100,39 @@ public class GraphUIController {
             @RequestParam(required = false, defaultValue = "true") boolean shouldIncludeDefaultBranches,
             @RequestParam(required = false) Integer days
     ) {
-        final List<OrgDashboard> repoDashboards = graphService.getRepoDashboard(repoName, branches, shouldIncludeDefaultBranches, days);
+        final List<OrgDashboard> repoDashboards = graphService.getRepoDashboard(repoName, branches, shouldIncludeDefaultBranches, validateDays(days));
         final String dashboardHtml = OrgDashboardHtmlHelper.renderRepoDashboardHtml(repoName, repoDashboards);
         return new ResponseEntity<>(dashboardHtml, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "repo/{repoName}/jobinfo/{jobInfo}/dashboard", produces = "text/html;charset=UTF-8")
+    public ResponseEntity<String> getRepoDashboardWithJobInfo(
+            @PathVariable String repoName,
+            @PathVariable String jobInfo,
+            @RequestParam(required = false, defaultValue = "") List<String> branches,
+            @RequestParam(required = false, defaultValue = "true") boolean shouldIncludeDefaultBranches,
+            @RequestParam(required = false) Integer days
+    ) {
+        Map<String, String> jobInfoFilter = validateJobInfo(jobInfo);
+        final List<OrgDashboard> repoDashboards = graphService.getRepoDashboard(repoName, branches, shouldIncludeDefaultBranches, validateDays(days), jobInfoFilter);
+        final String dashboardHtml = OrgDashboardHtmlHelper.renderRepoDashboardHtml(repoName, repoDashboards);
+        return new ResponseEntity<>(dashboardHtml, HttpStatus.OK);
+    }
+
+    private Map<String, String> validateJobInfo(String jobInfo) {
+        Map<String, String> parsed = StringMapUtil.stringToMap(jobInfo);
+        if (parsed.isEmpty() && jobInfo != null && !jobInfo.isBlank()) {
+            throw new IllegalArgumentException(
+                    "Invalid jobInfo format. Expected comma-separated key=value pairs, e.g. 'application=myapp,env=prod'. Got: " + jobInfo);
+        }
+        return parsed;
+    }
+
+    private Integer validateDays(Integer days) {
+        if (days == null) {
+            return null;
+        }
+        return Math.max(days, 1);
     }
 
     @GetMapping(path = "company/{company}/org/{org}/dashboard", produces = "text/html;charset=UTF-8")
@@ -114,7 +144,7 @@ public class GraphUIController {
             @RequestParam(required = false, defaultValue = "true") boolean shouldIncludeDefaultBranches,
             @RequestParam(required = false) Integer days
     ) {
-        final OrgDashboard orgDashboard = graphService.getOrgDashboard(company, org, repos, branches, shouldIncludeDefaultBranches, days);
+        final OrgDashboard orgDashboard = graphService.getOrgDashboard(company, org, repos, branches, shouldIncludeDefaultBranches, validateDays(days));
         final String dashboardHtml = OrgDashboardHtmlHelper.renderOrgDashboardHtml(orgDashboard);
         //TODO: add cache headers * browser side cache using header, e.g. Cache-Control: max-age=600 //10 mins
         return new ResponseEntity<>(dashboardHtml, HttpStatus.OK);
@@ -256,7 +286,7 @@ public class GraphUIController {
                 .company(company)
                 .org(org)
                 .jobInfos(jobInfoMap)
-                .days(days)
+                .days(validateDays(days))
                 .build();
         List<JobDashboardMetrics> metrics = graphService.getPipelineDashboard(request);
         return new ResponseEntity<>(PipelineDashboardHtmlHelper.renderPipelineDashboardMetrics(metrics, request), HttpStatus.OK);
@@ -274,7 +304,7 @@ public class GraphUIController {
                 .company(company)
                 // org is null for company-level view
                 .jobInfos(jobInfoMap)
-                .days(days)
+                .days(validateDays(days))
                 .build();
         List<JobDashboardMetrics> metrics = graphService.getPipelineDashboard(request);
         return new ResponseEntity<>(

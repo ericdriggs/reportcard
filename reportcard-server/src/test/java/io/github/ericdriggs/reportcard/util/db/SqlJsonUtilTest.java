@@ -1,6 +1,9 @@
 package io.github.ericdriggs.reportcard.util.db;
 
 import org.jooq.Condition;
+import org.jooq.DSLContext;
+import org.jooq.impl.DSL;
+import org.jooq.SQLDialect;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -86,13 +89,32 @@ class SqlJsonUtilTest {
 
     @Test
     void testSqlInjectionPrevention() {
-        // Verify that malicious input doesn't cause SQL injection
         Condition condition = SqlJsonUtil.jobInfoContainsKeyValue("application", "foo' OR '1'='1");
         String sql = condition.toString();
-        
-        // Should contain JSON_EXTRACT and be parameterized
+
         assertTrue(sql.contains("JSON_EXTRACT"));
-        // The condition should be created successfully without throwing exception
         assertNotNull(condition);
+    }
+
+    @Test
+    void testValueUsesBindParameter() {
+        Condition condition = SqlJsonUtil.jobInfoContainsKeyValue("application", "myvalue");
+        DSLContext ctx = DSL.using(SQLDialect.MYSQL);
+        String renderedSql = ctx.renderNamedParams(condition);
+
+        // DSL.val() renders as a named parameter placeholder in the SQL sent to DB
+        assertTrue(renderedSql.contains(":"), "Value should render as a named bind parameter");
+        assertFalse(renderedSql.contains("'myvalue'"), "Value should not be inlined in rendered SQL");
+    }
+
+    @Test
+    void testWildcardValueUsesBindParameter() {
+        Condition condition = SqlJsonUtil.jobInfoContainsKeyValue("application", "my%value");
+        DSLContext ctx = DSL.using(SQLDialect.MYSQL);
+        String renderedSql = ctx.renderNamedParams(condition);
+
+        assertTrue(renderedSql.contains(":"), "Wildcard value should render as a named bind parameter");
+        assertFalse(renderedSql.contains("'my%value'"), "Wildcard value should not be inlined in rendered SQL");
+        assertTrue(renderedSql.toLowerCase().contains("like"));
     }
 }

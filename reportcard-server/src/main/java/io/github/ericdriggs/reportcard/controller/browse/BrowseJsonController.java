@@ -5,6 +5,7 @@ import io.github.ericdriggs.reportcard.controller.browse.response.*;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.*;
 import io.github.ericdriggs.reportcard.model.StageTestResultModel;
 import io.github.ericdriggs.reportcard.model.orgdashboard.OrgDashboard;
+import io.github.ericdriggs.reportcard.controller.browse.response.OrgDashboardFlattener;
 import io.github.ericdriggs.reportcard.persist.BrowseService;
 import io.github.ericdriggs.reportcard.persist.GraphService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,8 +63,45 @@ public class BrowseJsonController {
             @RequestParam(required = false, defaultValue = "true") boolean shouldIncludeDefaultBranches,
             @RequestParam(required = false) Integer days
     ) {
-        List<OrgDashboard> repoDashboards = graphService.getRepoDashboard(repoName, branches, shouldIncludeDefaultBranches, days);
+        List<OrgDashboard> repoDashboards = graphService.getRepoDashboard(repoName, branches, shouldIncludeDefaultBranches, validateDays(days));
         return new ResponseEntity<>(repoDashboards, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "repo/{repoName}/jobinfo/{jobInfo}/dashboard", produces = "application/json")
+    public ResponseEntity<List<OrgDashboard>> getRepoDashboardWithJobInfoJson(
+            @PathVariable String repoName,
+            @PathVariable String jobInfo,
+            @RequestParam(required = false, defaultValue = "") List<String> branches,
+            @RequestParam(required = false, defaultValue = "true") boolean shouldIncludeDefaultBranches,
+            @RequestParam(required = false) Integer days
+    ) {
+        Map<String, String> jobInfoFilter = validateJobInfo(jobInfo);
+        List<OrgDashboard> repoDashboards = graphService.getRepoDashboard(repoName, branches, shouldIncludeDefaultBranches, validateDays(days), jobInfoFilter);
+        return new ResponseEntity<>(repoDashboards, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "repo/{repoName}/jobinfo/{jobInfo}/dashboard/flat", produces = "application/json")
+    public ResponseEntity<List<FlatDashboardEntry>> getRepoDashboardFlatWithJobInfoJson(
+            @PathVariable String repoName,
+            @PathVariable String jobInfo,
+            @RequestParam(required = false, defaultValue = "") List<String> branches,
+            @RequestParam(required = false, defaultValue = "true") boolean shouldIncludeDefaultBranches,
+            @RequestParam(required = false) Integer days
+    ) {
+        Map<String, String> jobInfoFilter = validateJobInfo(jobInfo);
+        List<OrgDashboard> repoDashboards = graphService.getRepoDashboard(repoName, branches, shouldIncludeDefaultBranches, validateDays(days), jobInfoFilter);
+        return new ResponseEntity<>(OrgDashboardFlattener.flatten(repoDashboards), HttpStatus.OK);
+    }
+
+    @GetMapping(path = "repo/{repoName}/dashboard/flat", produces = "application/json")
+    public ResponseEntity<List<FlatDashboardEntry>> getRepoDashboardFlatJson(
+            @PathVariable String repoName,
+            @RequestParam(required = false, defaultValue = "") List<String> branches,
+            @RequestParam(required = false, defaultValue = "true") boolean shouldIncludeDefaultBranches,
+            @RequestParam(required = false) Integer days
+    ) {
+        List<OrgDashboard> repoDashboards = graphService.getRepoDashboard(repoName, branches, shouldIncludeDefaultBranches, validateDays(days));
+        return new ResponseEntity<>(OrgDashboardFlattener.flatten(repoDashboards), HttpStatus.OK);
     }
 
     @GetMapping(path = "company/{company}/org/{org}/dashboard", produces = "application/json")
@@ -75,7 +113,7 @@ public class BrowseJsonController {
             @RequestParam(required = false, defaultValue = "true") boolean shouldIncludeDefaultBranches,
             @RequestParam(required = false) Integer days
     ) {
-        OrgDashboard orgDashboard = graphService.getOrgDashboard(company, org, repos, branches, shouldIncludeDefaultBranches, days);
+        OrgDashboard orgDashboard = graphService.getOrgDashboard(company, org, repos, branches, shouldIncludeDefaultBranches, validateDays(days));
         return new ResponseEntity<>(orgDashboard, HttpStatus.OK);
     }
 
@@ -263,6 +301,22 @@ public class BrowseJsonController {
     }
 
     // ==================== Helper Methods ====================
+
+    Map<String, String> validateJobInfo(String jobInfo) {
+        Map<String, String> parsed = StringMapUtil.stringToMap(jobInfo);
+        if (parsed.isEmpty() && jobInfo != null && !jobInfo.isBlank()) {
+            throw new IllegalArgumentException(
+                    "Invalid jobInfo format. Expected comma-separated key=value pairs, e.g. 'application=myapp,env=prod'. Got: " + jobInfo);
+        }
+        return parsed;
+    }
+
+    Integer validateDays(Integer days) {
+        if (days == null) {
+            return null;
+        }
+        return Math.max(days, 1);
+    }
 
     /**
      * Validates runs parameter. Returns 60 as default for null or invalid values.

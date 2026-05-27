@@ -118,6 +118,12 @@
   - Enforce file type restrictions
   - Add rate limiting to prevent abuse
 
+**O(n log n) TreeSet for single-max in OrgDashboardFlattener:**
+- Issue: `getLatestRun()` creates a `TreeSet` and inserts all runs just to get the first (maximum) element. O(n log n) with intermediate allocation when O(n) `stream().max()` suffices.
+- Files: `reportcard-server/src/main/java/io/github/ericdriggs/reportcard/controller/browse/response/OrgDashboardFlattener.java` (lines 78-85)
+- Impact: Negligible in practice (jobs rarely have many runs in dashboard response), but the intent is unclear — `max` communicates "find the largest" better than "sort everything then take first"
+- Fix approach: Replace with `runs.stream().max(GraphComparators.RUN_GRAPH_DESC.reversed()).orElse(null)`
+
 ## Performance Bottlenecks
 
 **Large service classes with complex queries:**

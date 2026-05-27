@@ -3,17 +3,16 @@ package io.github.ericdriggs.reportcard.persist;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.github.ericdriggs.reportcard.cache.model.BranchStageViewResponse;
 import io.github.ericdriggs.reportcard.model.branch.BranchJobLatestRunMap;
-import io.github.ericdriggs.reportcard.model.metrics.company.MetricsIntervalRequest;
-import io.github.ericdriggs.reportcard.model.metrics.company.MetricsIntervalResultCount;
-import io.github.ericdriggs.reportcard.model.metrics.company.MetricsRequest;
-import io.github.ericdriggs.reportcard.model.pipeline.JobDashboardRequest;
-import io.github.ericdriggs.reportcard.model.pipeline.JobDashboardMetrics;
-
 import io.github.ericdriggs.reportcard.model.graph.CompanyGraph;
 import io.github.ericdriggs.reportcard.model.graph.TestSuiteGraph;
 import io.github.ericdriggs.reportcard.model.graph.TestSuiteGraphBuilder;
 import io.github.ericdriggs.reportcard.model.graph.condition.TableConditionMap;
+import io.github.ericdriggs.reportcard.model.metrics.company.MetricsIntervalRequest;
+import io.github.ericdriggs.reportcard.model.metrics.company.MetricsIntervalResultCount;
+import io.github.ericdriggs.reportcard.model.metrics.company.MetricsRequest;
 import io.github.ericdriggs.reportcard.model.orgdashboard.OrgDashboard;
+import io.github.ericdriggs.reportcard.model.pipeline.JobDashboardMetrics;
+import io.github.ericdriggs.reportcard.model.pipeline.JobDashboardRequest;
 import io.github.ericdriggs.reportcard.model.trend.InstantRange;
 import io.github.ericdriggs.reportcard.model.trend.JobStageTestTrend;
 import io.github.ericdriggs.reportcard.util.db.SqlJsonUtil;
@@ -21,8 +20,6 @@ import lombok.SneakyThrows;
 import org.jooq.*;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
-
-import java.math.BigDecimal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +29,6 @@ import org.springframework.util.CollectionUtils;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 import static io.github.ericdriggs.reportcard.gen.db.Tables.*;
@@ -292,14 +288,19 @@ public class GraphService extends AbstractPersistService {
     }
 
     public List<OrgDashboard> getRepoDashboard(String repoName, List<String> branchNames, boolean shouldIncludeDefaultBranches, Integer days) {
-        List<CompanyGraph> companyGraphs = getRepoDashboardCompanyGraphs(repoName, branchNames, shouldIncludeDefaultBranches, days);
+        return getRepoDashboard(repoName, branchNames, shouldIncludeDefaultBranches, days, null);
+    }
+
+    public List<OrgDashboard> getRepoDashboard(String repoName, List<String> branchNames, boolean shouldIncludeDefaultBranches, Integer days, Map<String, String> jobInfoFilter) {
+        List<CompanyGraph> companyGraphs = getRepoDashboardCompanyGraphs(repoName, branchNames, shouldIncludeDefaultBranches, days, jobInfoFilter);
         return OrgDashboard.listFromCompanyGraphs(companyGraphs);
     }
 
     List<CompanyGraph> getRepoDashboardCompanyGraphs(String repoName,
                                                      List<String> branchNames,
                                                      boolean shouldIncludeDefaultBranches,
-                                                     Integer days) {
+                                                     Integer days,
+                                                     Map<String, String> jobInfoFilter) {
 
         TableConditionMap tableConditionMap = new TableConditionMap();
         tableConditionMap.put(TEST_RESULT, TEST_RESULT.TEST_RESULT_ID.isNotNull());
@@ -316,6 +317,12 @@ public class GraphService extends AbstractPersistService {
         if (days != null) {
             Instant cutoff = Instant.now().minus(days, ChronoUnit.DAYS);
             tableConditionMap.put(JOB, JOB.LAST_RUN.ge(cutoff));
+        }
+         if (jobInfoFilter != null && !jobInfoFilter.isEmpty()) {
+            for (Map.Entry<String, String> entry : jobInfoFilter.entrySet()) {
+                Condition jobInfoCondition = SqlJsonUtil.jobInfoContainsKeyValue(entry.getKey(), entry.getValue());
+                tableConditionMap.merge(JOB, jobInfoCondition, Condition::and);
+            }
         }
 
         Long[] runIds = dsl.select(max(RUN.RUN_ID).as("MAX_RUN_ID"))
