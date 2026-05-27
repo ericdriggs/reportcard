@@ -2,19 +2,25 @@ package io.github.ericdriggs.reportcard.controller.browse;
 
 import io.github.ericdriggs.reportcard.cache.model.BranchStageViewResponse;
 import io.github.ericdriggs.reportcard.controller.browse.response.*;
+import io.github.ericdriggs.reportcard.controller.graph.trend.TestTrendTable;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.*;
 import io.github.ericdriggs.reportcard.model.StageTestResultModel;
 import io.github.ericdriggs.reportcard.model.orgdashboard.OrgDashboard;
+import io.github.ericdriggs.reportcard.model.trend.JobStageTestTrend;
 import io.github.ericdriggs.reportcard.controller.browse.response.OrgDashboardFlattener;
 import io.github.ericdriggs.reportcard.persist.BrowseService;
 import io.github.ericdriggs.reportcard.persist.GraphService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import io.github.ericdriggs.reportcard.util.StringMapUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 
+import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +31,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 //TODO: add reports endpoint after stages
+@Slf4j
 @RestController
 @RequestMapping("/json")
 @SuppressWarnings("unused")
@@ -311,6 +318,87 @@ public class BrowseJsonController {
         JobPojo job = browseService.getJob(company, org, repo, branch, jobInfoMap);
         Long latestRunId = browseService.getLatestRunId(job.getJobId());
         return getStageTestResultsTestSuites(company, org, repo, branch, job.getJobId(), latestRunId, stage);
+    }
+
+    // ==================== Trend Endpoints ====================
+
+    @Operation(summary = "Get test case trend data for a job stage",
+               description = "Returns a sparse matrix of test case results across recent runs. "
+                       + "The 'runs' map is keyed by jobRunCount (build number) with run metadata. "
+                       + "Each testCase entry contains runStates (state -> list of build numbers) and failureMessages (message -> list of build numbers). "
+                       + "Use detail=summary to omit per-run breakdown for a compact overview. "
+                       + "Use onlyShowFailures=true to filter to tests with successPercent < 100%.")
+    @GetMapping(path = "company/{company}/org/{org}/repo/{repo}/branch/{branch}/job/{jobId}/stage/{stage}/trend",
+                produces = "application/json")
+    public ResponseEntity<TestTrendResponse> getJobStageTestTrendJson(
+            @PathVariable String company,
+            @PathVariable String org,
+            @PathVariable String repo,
+            @PathVariable String branch,
+            @PathVariable Long jobId,
+            @PathVariable String stage,
+            @Parameter(description = "Start of time range filter (ISO 8601, e.g. 2025-05-01T00:00:00Z). Only runs after this time are included.")
+            @RequestParam(required = false) Instant start,
+            @Parameter(description = "End of time range filter (ISO 8601, e.g. 2025-05-31T00:00:00Z). Only runs before this time are included.")
+            @RequestParam(required = false) Instant end,
+            @Parameter(description = "Maximum number of recent runs to include. Halves automatically on packet-too-large errors. Default: 30")
+            @RequestParam(required = false, defaultValue = "30") Integer runs,
+            @Parameter(description = "Response detail level. 'full' includes runStates and failureMessages per test case. 'summary' omits them for a compact overview. Default: full")
+            @RequestParam(required = false, defaultValue = "full") TrendDetail detail,
+            @Parameter(description = "When true, only returns test cases with successPercent < 100%. Reduces response size for failure analysis. Default: false")
+            @RequestParam(required = false, defaultValue = "false") Boolean onlyShowFailures) {
+
+        JobStageTestTrend jobTestTrend = null;
+        for (int i = runs; i > 0; i = i / 2) {
+            try {
+                jobTestTrend = graphService.getJobStageTestTrend(company, org, repo, branch, jobId, stage, start, end, i);
+                break;
+            } catch (Exception ex) {
+                log.warn("failed trend for jobId: {}, i: {}", jobId, i, ex);
+            }
+        }
+
+        if (jobTestTrend == null) {
+            return ResponseEntity.ok(TestTrendResponse.builder()
+                    .runs(Map.of())
+                    .testCases(List.of())
+                    .summary(TestTrendResponse.TestTrendSummary.builder()
+                            .totalTests(0).successCount(0).failCount(0).build())
+                    .build());
+        }
+
+        TestTrendTable testTrendTable = TestTrendTable.fromJob(jobTestTrend);
+        TestTrendResponse response = TestTrendResponse.fromTestTrendTable(testTrendTable);
+        return ResponseEntity.ok(response.withFilters(detail, onlyShowFailures));
+    }
+
+    @Operation(summary = "Get test case trend data for a job stage (by job info)",
+               description = "Same as the /job/{jobId}/stage/{stage}/trend endpoint but resolves the job by its info key-value pairs "
+                       + "(e.g. 'application=myapp,pipeline=nightly') instead of numeric jobId. "
+                       + "See the jobId variant for full response format documentation.")
+    @GetMapping(path = "company/{company}/org/{org}/repo/{repo}/branch/{branch}/jobinfo/{jobInfo}/stage/{stage}/trend",
+                produces = "application/json")
+    public ResponseEntity<TestTrendResponse> getJobStageTestTrendFromJobInfoJson(
+            @PathVariable String company,
+            @PathVariable String org,
+            @PathVariable String repo,
+            @PathVariable String branch,
+            @Parameter(description = "Comma-separated key=value pairs identifying the job (e.g. 'application=myapp,pipeline=nightly')")
+            @PathVariable String jobInfo,
+            @PathVariable String stage,
+            @Parameter(description = "Start of time range filter (ISO 8601, e.g. 2025-05-01T00:00:00Z). Only runs after this time are included.")
+            @RequestParam(required = false) Instant start,
+            @Parameter(description = "End of time range filter (ISO 8601, e.g. 2025-05-31T00:00:00Z). Only runs before this time are included.")
+            @RequestParam(required = false) Instant end,
+            @Parameter(description = "Maximum number of recent runs to include. Halves automatically on packet-too-large errors. Default: 30")
+            @RequestParam(required = false, defaultValue = "30") Integer runs,
+            @Parameter(description = "Response detail level. 'full' includes runStates and failureMessages per test case. 'summary' omits them for a compact overview. Default: full")
+            @RequestParam(required = false, defaultValue = "full") TrendDetail detail,
+            @Parameter(description = "When true, only returns test cases with successPercent < 100%. Reduces response size for failure analysis. Default: false")
+            @RequestParam(required = false, defaultValue = "false") Boolean onlyShowFailures) {
+        Map<String, String> jobInfoMap = StringMapUtil.stringToMap(jobInfo);
+        JobPojo job = browseService.getJob(company, org, repo, branch, jobInfoMap);
+        return getJobStageTestTrendJson(company, org, repo, branch, job.getJobId(), stage, start, end, runs, detail, onlyShowFailures);
     }
 
     // ==================== Helper Methods ====================

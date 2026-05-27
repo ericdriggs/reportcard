@@ -22,7 +22,7 @@ public class SuccessAverage {
     }
 
     public BigDecimal successPercent() {
-        return successPercent(successCount, totalCount, 2);
+        return successPercent(successCount, totalCount, 4);
     }
 
     public void incrementSuccessCount() {
@@ -37,7 +37,7 @@ public class SuccessAverage {
         if (totalCount == 0) {
             return BigDecimal.ZERO;
         }
-        return BigDecimal.valueOf((float) successCount / (float) totalCount).setScale(scale, RoundingMode.HALF_UP);
+        return new BigDecimal(successCount).divide(new BigDecimal(totalCount), scale, RoundingMode.HALF_UP);
     }
 
     @JsonIgnore
