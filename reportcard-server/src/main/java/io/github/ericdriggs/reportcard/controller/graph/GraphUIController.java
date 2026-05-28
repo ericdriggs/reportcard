@@ -51,13 +51,7 @@ public class GraphUIController {
             @RequestParam(required = false) Instant end,
             @RequestParam(required = false, defaultValue = "30") Integer runs
     ) {
-        JobStageTestTrend jobTestTrend;
-        try {
-            jobTestTrend = graphService.getJobStageTestTrend(company, org, repo, branch, jobId, stage, start, end, runs);
-        } catch (Exception e) {
-            log.warn("Primary trend query failed for jobId: {}, falling back to chunked fetch", jobId, e);
-            jobTestTrend = graphService.getJobStageTestTrendWithFallback(company, org, repo, branch, jobId, stage, start, end, Math.min(runs, 30));
-        }
+        JobStageTestTrend jobTestTrend = graphService.getJobStageTestTrend(company, org, repo, branch, jobId, stage, start, end, runs);
         if (jobTestTrend == null) {
             return ResponseEntity.ok("No trend data available for this job/stage combination.");
         }

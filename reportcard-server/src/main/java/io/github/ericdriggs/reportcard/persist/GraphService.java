@@ -47,11 +47,6 @@ import static org.jooq.impl.DSL.*;
 public class GraphService extends AbstractPersistService {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
-    private static final ExecutorService TEST_SUITES_FETCH_POOL = Executors.newFixedThreadPool(8, r -> {
-        Thread t = new Thread(r, "test-suites-fetch");
-        t.setDaemon(true);
-        return t;
-    });
     private final static List<String> defaultBranchNames = List.of("dev", "develop", "qa", "staging", "main", "master", "staging", "test");
 
     @Autowired
@@ -69,22 +64,27 @@ public class GraphService extends AbstractPersistService {
                                                   Instant start,
                                                   Instant end,
                                                   Integer maxRuns) {
-        List<CompanyGraph> companyGraphs = getJobTrendCompanyGraphs(companyName, orgName, repoName, branchName, jobId, stageName, start, end, maxRuns);
-        return JobStageTestTrend.fromCompanyGraphs(companyGraphs, maxRuns);
+        try {
+            List<CompanyGraph> companyGraphs = getJobTrendCompanyGraphs(companyName, orgName, repoName, branchName, jobId, stageName, start, end, maxRuns);
+            return JobStageTestTrend.fromCompanyGraphs(companyGraphs, maxRuns);
+        } catch (Exception e) {
+            log.warn("Primary trend query failed for jobId: {}, falling back to chunked fetch", jobId, e);
+            return getJobStageTestTrendWithFallback(companyName, orgName, repoName, branchName, jobId, stageName, start, end, Math.min(maxRuns, 30));
+        }
     }
 
-    public JobStageTestTrend getJobStageTestTrendWithFallback(String companyName,
-                                                             String orgName,
-                                                             String repoName,
-                                                             String branchName,
-                                                             Long jobId,
-                                                             String stageName,
-                                                             Instant start,
-                                                             Instant end,
-                                                             Integer maxRuns) {
+    JobStageTestTrend getJobStageTestTrendWithFallback(String companyName,
+                                                              String orgName,
+                                                              String repoName,
+                                                              String branchName,
+                                                              Long jobId,
+                                                              String stageName,
+                                                              Instant start,
+                                                              Instant end,
+                                                              Integer maxRuns) {
         List<CompanyGraph> skeletonGraphs = getJobTrendCompanyGraphs(companyName, orgName, repoName, branchName, jobId, stageName, start, end, maxRuns, false);
         List<CompanyGraph> populatedGraphs = stitchTestSuitesIntoGraph(skeletonGraphs);
-        return JobStageTestTrend.fromCompanyGraphs(populatedGraphs, maxRuns);
+        return JobStageTestTrend.fromCompanyGraphs(populatedGraphs, maxRuns).withUsedFallback(true);
     }
 
     private List<CompanyGraph> stitchTestSuitesIntoGraph(List<CompanyGraph> skeletonGraphs) {
@@ -93,21 +93,24 @@ public class GraphService extends AbstractPersistService {
     }
 
     private Map<Long, List<TestSuiteGraph>> fetchTestSuitesAsync(List<CompanyGraph> skeletonGraphs) {
-        Map<Long, CompletableFuture<List<TestSuiteGraph>>> futureMap = new LinkedHashMap<>();
-        for (CompanyGraph company : skeletonGraphs) {
-            for (OrgGraph org : company.orgs()) {
-                for (RepoGraph repo : org.repos()) {
-                    for (BranchGraph branch : repo.branches()) {
-                        for (JobGraph job : branch.jobs()) {
-                            for (RunGraph run : job.runs()) {
-                                for (StageGraph stage : run.stages()) {
-                                    for (TestResultGraph tr : stage.testResults()) {
-                                        futureMap.computeIfAbsent(tr.testResultId(),
-                                                id -> CompletableFuture.supplyAsync(() -> getTestSuitesGraph(id), TEST_SUITES_FETCH_POOL)
-                                                        .exceptionally(ex -> {
-                                                            log.warn("Failed to fetch test suites for testResultId: {}", id, ex);
-                                                            return Collections.emptyList();
-                                                        }));
+        ExecutorService executor = Executors.newCachedThreadPool();
+        try {
+            Map<Long, CompletableFuture<List<TestSuiteGraph>>> futureMap = new LinkedHashMap<>();
+            for (CompanyGraph company : skeletonGraphs) {
+                for (OrgGraph org : company.orgs()) {
+                    for (RepoGraph repo : org.repos()) {
+                        for (BranchGraph branch : repo.branches()) {
+                            for (JobGraph job : branch.jobs()) {
+                                for (RunGraph run : job.runs()) {
+                                    for (StageGraph stage : run.stages()) {
+                                        for (TestResultGraph tr : stage.testResults()) {
+                                            futureMap.computeIfAbsent(tr.testResultId(),
+                                                    id -> CompletableFuture.supplyAsync(() -> getTestSuitesGraph(id), executor)
+                                                            .exceptionally(ex -> {
+                                                                log.warn("Failed to fetch test suites for testResultId: {}", id, ex);
+                                                                return Collections.emptyList();
+                                                            }));
+                                        }
                                     }
                                 }
                             }
@@ -115,17 +118,19 @@ public class GraphService extends AbstractPersistService {
                     }
                 }
             }
-        }
 
-        CompletableFuture.allOf(futureMap.values().toArray(new CompletableFuture[0]))
-                .orTimeout(15, TimeUnit.SECONDS)
-                .join();
+            CompletableFuture.allOf(futureMap.values().toArray(new CompletableFuture[0]))
+                    .orTimeout(60, TimeUnit.SECONDS)
+                    .join();
 
-        Map<Long, List<TestSuiteGraph>> suitesById = new HashMap<>();
-        for (Map.Entry<Long, CompletableFuture<List<TestSuiteGraph>>> entry : futureMap.entrySet()) {
-            suitesById.put(entry.getKey(), entry.getValue().join());
+            Map<Long, List<TestSuiteGraph>> suitesById = new HashMap<>();
+            for (Map.Entry<Long, CompletableFuture<List<TestSuiteGraph>>> entry : futureMap.entrySet()) {
+                suitesById.put(entry.getKey(), entry.getValue().join());
+            }
+            return suitesById;
+        } finally {
+            executor.shutdown();
         }
-        return suitesById;
     }
 
     private List<CompanyGraph> rebuildGraphWithSuites(List<CompanyGraph> skeletonGraphs, Map<Long, List<TestSuiteGraph>> suitesById) {

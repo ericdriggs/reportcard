@@ -10,7 +10,6 @@ import io.github.ericdriggs.reportcard.persist.BrowseService;
 import io.github.ericdriggs.reportcard.persist.GraphService;
 import io.github.ericdriggs.reportcard.util.StringMapUtil;
 import io.swagger.v3.oas.annotations.Operation;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +23,6 @@ import java.util.TreeSet;
 @RestController
 @RequestMapping("/v1/api")
 @SuppressWarnings("unused")
-@Slf4j
 public class GraphJsonController {
 
     private final GraphService graphService;
@@ -48,12 +46,7 @@ public class GraphJsonController {
             @RequestParam(required = false) Instant end,
             @RequestParam(required = false, defaultValue = "30") Integer runs
     ) {
-        try {
-            return new ResponseEntity<>(graphService.getJobStageTestTrend(company, org, repo, branch, jobId, stage, start, end, runs), HttpStatus.OK);
-        } catch (Exception e) {
-            log.warn("Primary trend query failed for jobId: {}, falling back to chunked fetch", jobId, e);
-            return new ResponseEntity<>(graphService.getJobStageTestTrendWithFallback(company, org, repo, branch, jobId, stage, start, end, Math.min(runs, 30)), HttpStatus.OK);
-        }
+        return new ResponseEntity<>(graphService.getJobStageTestTrend(company, org, repo, branch, jobId, stage, start, end, runs), HttpStatus.OK);
     }
 
     @GetMapping(path = "company/{company}/org/{org}/repo/{repo}/branch/{branch}/jobinfo/{jobInfo}/stage/{stage}/trend", produces = "application/json")
