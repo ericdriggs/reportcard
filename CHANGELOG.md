@@ -1,5 +1,63 @@
 # Changelog
 
+## [0.2.0] - 2026-05-28 - Dashboard endpoints, trend API, and performance
+
+Major additions to the JSON API surface: org/repo dashboards, flat denormalized endpoints, jobInfo natural-key routing, JSON trend endpoint with chunked fallback, and significant query performance improvements.
+
+### Added
+
+**Dashboard Endpoints**
+- JSON org dashboard at `/json/company/{company}/org/{org}/dashboard` with repo/branch/days filtering (#146)
+- Repo dashboard at `/json/repo/{repoName}/dashboard` and `/repo/{repoName}/dashboard` — query by repo name across all company/org pairs (#147)
+- Flat dashboard endpoints (`/json/repo/{repoName}/dashboard/flat`, `/json/company/{company}/org/{org}/dashboard/flat`) returning denormalized stage-level entries with storage URLs (#151, #152)
+- Repo dashboard jobInfo filtering at `/json/repo/{repoName}/jobinfo/{jobInfo}/dashboard/flat` and HTML equivalent (#151)
+
+**JobInfo Natural-Key Endpoints**
+- 9 new endpoints across Browse JSON/UI and Graph JSON/UI controllers allowing access by jobInfo natural key (e.g., `application=fooapp,host=foocorp.jenkins.com,pipeline=foopipeline`) instead of requiring internal jobId lookup (#150)
+- 20 new tests covering jobInfo endpoint equivalence with jobId variants (#150)
+
+**JSON Trend Endpoint**
+- `/json/.../stage/{stage}/trend` endpoints (by jobId and by jobInfo) returning sparse matrix of test case results across recent runs (#153)
+- Progressive disclosure via `detail` (summary/full) and `onlyShowFailures` query params (#153)
+- `runs` query parameter to control how many runs to include (#156)
+- OpenAPI `@Operation` summaries and `@Parameter` descriptions on all `BrowseJsonController` endpoints (#153)
+
+**Chunked Fallback for Trend**
+- When primary `JSON_ARRAYAGG` query fails (packet-too-large), service fetches skeleton graph then retrieves test suites individually in parallel (#156)
+- `JobStageTestTrend.usedFallback` field signals degraded fetch to JSON consumers (#156)
+- Per-future `.exceptionally()` and 60s timeout on parallel fetches (#156)
+
+### Changed
+
+**Performance**
+- Exclude `test_suites_json` (~100KB+ per stage) from branch/job stage view queries and dashboard responses — reduces org dashboard payload from ~113KB to ~32KB (#146, #148)
+- Reusable field lists `STAGE_VIEW_FIELDS_ALL` and `STAGE_VIEW_FIELDS_EXCLUDE_TEST_RESULT_JSON` for query variants (#148)
+
+**Metrics Dashboard UI**
+- Flattened 3-row-per-entity layout into single row with inline delta annotations (#155)
+- Added `data-sort` attributes for client-side column sorting (#155)
+- CSS `data-tooltip` tooltips (instant, no hover delay) replacing browser-native `title` tooltips (#155)
+- Period summary section above first table; conditional Job Time Avg column hiding (#155)
+- Removed `intervalCount` query parameter (hardcoded to 2 periods) (#155)
+- `+∞%↑` / `-∞%↓` display when previous period is null (#155)
+
+**Security & Validation**
+- Strip HTML-unsafe characters (`<>"'&`) from all user-supplied entity names and jobInfo keys/values in `StageDetails` validation (#154)
+- SQL injection hardening in `SqlJsonUtil.jobInfoContainsKeyValue` — bind parameters for values, regex-validated inlined keys (#151)
+- HTML-escape user-provided values in rendered dashboard output (#147)
+- `days` parameter clamped to minimum 1; `jobInfo` format validation returns 400 on invalid input (#151)
+
+### Fixed
+
+- Filter empty repos from org dashboard to prevent rendering empty entries (#149)
+- Filter jobs with no runs from org dashboard HTML (#154)
+- NPEs in `TestRowSummary` when rows or failure maps are null (#153)
+- Precision loss in `SuccessAverage` — switched from float division to `BigDecimal.divide` (#153)
+- Null-safe `getTestSuitesGraph` returns `emptyList()` instead of NPE on null JSON (#156)
+- Testcontainers upgraded from 1.20.0 to 1.21.4 to fix Docker Desktop 4.67+ API version negotiation (#146)
+
+---
+
 ## [0.1.28] - 2026-03-18 - Cucumber tar.gz download and clean display names
 
 Store original cucumber HTML tar.gz archive for download alongside expanded HTML. Improve storage link display names and add download support for tar.gz files.
