@@ -28,7 +28,21 @@ public class GraphJsonControllerJobInfoTest extends AbstractBrowseServiceTest {
         ResponseEntity<JobStageTestTrend> response =
             controller.getJobStageTestTrendFromJobInfo(
                 TestData.company, TestData.org, TestData.repo, TestData.branch,
-                jobInfoString, TestData.stage, null, null);
+                jobInfoString, TestData.stage, null, null, 30);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertNotNull(response.getBody().getTestCaseTrends());
+        assertFalse(response.getBody().getTestCaseTrends().isEmpty());
+    }
+
+    @Test
+    void getJobStageTestTrendWithRunsParamTest() {
+        ResponseEntity<JobStageTestTrend> response =
+            controller.getJobStageTestTrend(
+                TestData.company, TestData.org, TestData.repo, TestData.branch,
+                TestData.jobId, TestData.stage, null, null, 30);
 
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -45,7 +59,7 @@ public class GraphJsonControllerJobInfoTest extends AbstractBrowseServiceTest {
             org.springframework.web.server.ResponseStatusException.class,
             () -> controller.getJobStageTestTrendFromJobInfo(
                 TestData.company, TestData.org, TestData.repo, TestData.branch,
-                realisticJobInfo, TestData.stage, null, null));
+                realisticJobInfo, TestData.stage, null, null, 30));
         assertEquals(org.springframework.http.HttpStatus.NOT_FOUND, ex.getStatus());
         assertTrue(ex.getReason().contains("foo-app"));
         assertTrue(ex.getReason().contains("build.corp.jenkins.com"));
@@ -57,12 +71,12 @@ public class GraphJsonControllerJobInfoTest extends AbstractBrowseServiceTest {
         ResponseEntity<JobStageTestTrend> jobInfoResponse =
             controller.getJobStageTestTrendFromJobInfo(
                 TestData.company, TestData.org, TestData.repo, TestData.branch,
-                jobInfoString, TestData.stage, null, null);
+                jobInfoString, TestData.stage, null, null, 30);
 
         ResponseEntity<JobStageTestTrend> jobIdResponse =
             controller.getJobStageTestTrend(
                 TestData.company, TestData.org, TestData.repo, TestData.branch,
-                TestData.jobId, TestData.stage, null, null);
+                TestData.jobId, TestData.stage, null, null, 30);
 
         assertEquals(jobIdResponse.getStatusCode(), jobInfoResponse.getStatusCode());
         assertNotNull(jobInfoResponse.getBody());

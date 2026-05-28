@@ -52,28 +52,29 @@ public class GraphUIController {
             @RequestParam(required = false) Instant end,
             @RequestParam(required = false, defaultValue = "30") Integer runs
     ) {
-        Exception e = null;
-        String trendHtml = null;
-        //temporary workaround until bump max_allowed_packet
-        for (int i = runs; i > 0; i = i / 2) {
+        JobStageTestTrend jobTestTrend;
+        boolean usedFallback = false;
+        try {
+            jobTestTrend = graphService.getJobStageTestTrend(company, org, repo, branch, jobId, stage, start, end, runs);
+        } catch (Exception e) {
+            log.warn("Primary trend query failed for jobId: {}, falling back to chunked fetch: {}", jobId, e.getMessage());
             try {
-                final JobStageTestTrend jobTestTrend = graphService.getJobStageTestTrend(company, org, repo, branch, jobId, stage, start, end, i);
-                if (jobTestTrend == null) {
-                    return ResponseEntity.ok("No trend data available for this job/stage combination.");
-                }
-                e = null;
-                trendHtml = TrendHtmlHelper.renderTrendHtml(jobTestTrend);
-                break;
+                jobTestTrend = graphService.getJobStageTestTrendWithFallback(company, org, repo, branch, jobId, stage, start, end, Math.min(runs, 30));
+                usedFallback = true;
             } catch (Exception ex) {
-                e = ex;
-                log.warn("failed run for jobId: {}, i: {}", jobId, i, ex);
+                log.error("Fallback trend query also failed for jobId: {}", jobId, ex);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(String.join("\n", ExceptionUtils.getStackFrames(ex)));
             }
         }
-        if (e != null) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(String.join("\n", ExceptionUtils.getStackFrames(e)));
+        if (jobTestTrend == null) {
+            return ResponseEntity.ok("No trend data available for this job/stage combination.");
         }
-        //TODO: add cache headers * browser side cache using header, e.g. Cache-Control: max-age=600 //10 mins
-        return new ResponseEntity<>(trendHtml, HttpStatus.OK);
+        String trendHtml = TrendHtmlHelper.renderTrendHtml(jobTestTrend);
+        ResponseEntity.BodyBuilder builder = ResponseEntity.ok();
+        if (usedFallback) {
+            builder.header("X-Trend-Source", "fallback");
+        }
+        return builder.body(trendHtml);
     }
 
     @GetMapping(path = "company/{company}/org/{org}/repo/{repo}/branch/{branch}/jobinfo/{jobInfo}/stage/{stage}/trend", produces = "text/html;charset=UTF-8")

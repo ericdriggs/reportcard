@@ -10,6 +10,8 @@ import io.github.ericdriggs.reportcard.persist.BrowseService;
 import io.github.ericdriggs.reportcard.persist.GraphService;
 import io.github.ericdriggs.reportcard.util.StringMapUtil;
 import io.swagger.v3.oas.annotations.Operation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +27,7 @@ import java.util.TreeSet;
 @SuppressWarnings("unused")
 public class GraphJsonController {
 
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
     private final GraphService graphService;
     private final BrowseService browseService;
 
@@ -43,9 +46,16 @@ public class GraphJsonController {
             @PathVariable Long jobId,
             @PathVariable String stage,
             @RequestParam(required = false) Instant start,
-            @RequestParam(required = false) Instant end
+            @RequestParam(required = false) Instant end,
+            @RequestParam(required = false, defaultValue = "30") Integer runs
     ) {
-        return new ResponseEntity<>(graphService.getJobStageTestTrend(company, org, repo, branch, jobId, stage, start, end, 30), HttpStatus.OK);
+        try {
+            return new ResponseEntity<>(graphService.getJobStageTestTrend(company, org, repo, branch, jobId, stage, start, end, runs), HttpStatus.OK);
+        } catch (Exception e) {
+            log.warn("Primary trend query failed, falling back to chunked fetch: {}", e.getMessage());
+            JobStageTestTrend fallbackResult = graphService.getJobStageTestTrendWithFallback(company, org, repo, branch, jobId, stage, start, end, Math.min(runs, 30));
+            return ResponseEntity.ok().header("X-Trend-Source", "fallback").body(fallbackResult);
+        }
     }
 
     @GetMapping(path = "company/{company}/org/{org}/repo/{repo}/branch/{branch}/jobinfo/{jobInfo}/stage/{stage}/trend", produces = "application/json")
@@ -57,11 +67,12 @@ public class GraphJsonController {
             @PathVariable String jobInfo,
             @PathVariable String stage,
             @RequestParam(required = false) Instant start,
-            @RequestParam(required = false) Instant end
+            @RequestParam(required = false) Instant end,
+            @RequestParam(required = false, defaultValue = "30") Integer runs
     ) {
         Map<String, String> jobInfoMap = StringMapUtil.stringToMap(jobInfo);
         JobPojo job = browseService.getJob(company, org, repo, branch, jobInfoMap);
-        return getJobStageTestTrend(company, org, repo, branch, job.getJobId(), stage, start, end);
+        return getJobStageTestTrend(company, org, repo, branch, job.getJobId(), stage, start, end, runs);
     }
 
     @GetMapping(path = "metrics/all", produces = "application/json")
