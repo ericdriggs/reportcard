@@ -135,3 +135,23 @@ tbody tr:nth-child(even) {
     vertical-align: middle;
     font-weight: 500;
 }
+
+/* CSS tooltips (instant, no browser delay) */
+[data-tooltip] {
+    position: relative;
+}
+[data-tooltip]:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333;
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    white-space: nowrap;
+    z-index: 1000;
+    pointer-events: none;
+}

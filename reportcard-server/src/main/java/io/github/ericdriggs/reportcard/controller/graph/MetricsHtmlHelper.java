@@ -37,12 +37,50 @@ public class MetricsHtmlHelper {
         StringBuilder sb = new StringBuilder();
         sb.append(shortcuts);
         sb.append(legend);
-        sb.append("<br>");
+        sb.append(renderPeriodSummary(metricsIntervalResultCountMaps.getOrgResultCounts()));
         sb.append(renderResultCountMap(metricsIntervalResultCountMaps.getOrgResultCounts()));
         sb.append(renderResultCountMap(metricsIntervalResultCountMaps.getRepoResultCounts()));
         sb.append(renderResultCountMap(metricsIntervalResultCountMaps.getBranchResultCounts()));
         sb.append(renderResultCountMap(metricsIntervalResultCountMaps.getJobResultCounts()));
         return sb.toString();
+    }
+
+    private static <T> String renderPeriodSummary(TreeMap<T, TreeMap<InstantRange, RunResultCount>> resultCounts) {
+        if (resultCounts == null || resultCounts.isEmpty()) {
+            return "";
+        }
+        TreeMap<InstantRange, RunResultCount> firstEntry = resultCounts.firstEntry().getValue();
+        if (firstEntry == null || firstEntry.isEmpty()) {
+            return "";
+        }
+        List<InstantRange> ranges = new ArrayList<>(firstEntry.keySet());
+        ranges.sort((a, b) -> b.getStart().compareTo(a.getStart()));
+
+        InstantRange current = ranges.get(0);
+        InstantRange previous = ranges.size() > 1 ? ranges.get(1) : null;
+
+        long days = java.time.Duration.between(current.getStart(), current.getEnd()).toDays();
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("<dl>").append(ls);
+        sb.append("<dt>Period length</dt><dd>").append(days).append(" days</dd>").append(ls);
+        sb.append("<dt>Current period</dt><dd>").append(NumberStringUtil.friendlyDateRange(current.getStart(), current.getEnd())).append("</dd>").append(ls);
+        if (previous != null) {
+            sb.append("<dt>Previous period</dt><dd>").append(NumberStringUtil.friendlyDateRange(previous.getStart(), previous.getEnd())).append("</dd>").append(ls);
+        }
+        sb.append("</dl>").append(ls);
+        return sb.toString();
+    }
+
+    private static <T> boolean hasAnyJobTime(TreeMap<T, TreeMap<InstantRange, RunResultCount>> dtoResultCounts) {
+        for (TreeMap<InstantRange, RunResultCount> ranges : dtoResultCounts.values()) {
+            for (RunResultCount rrc : ranges.values()) {
+                if (rrc.getClockDurationSeconds() != null && rrc.getRunCount().getRuns() != null && rrc.getRunCount().getRuns() > 0) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private static <T> String renderResultCountMap(TreeMap<T, TreeMap<InstantRange, RunResultCount>> dtoResultCounts) {
@@ -57,6 +95,7 @@ public class MetricsHtmlHelper {
             }
         }
         final String dtoNameLower = dtoName == null ? null : dtoName.toLowerCase();
+        boolean showJobTime = hasAnyJobTime(dtoResultCounts);
 
         sb.append("<fieldset id='").append(dtoNameLower).append("-fieldset'>").append(ls);
         sb.append("<legend>").append(dtoName).append("</legend>").append(ls);
@@ -72,25 +111,26 @@ public class MetricsHtmlHelper {
             break;
         }
 
-        sb.append("<th class='test-header'>Test Pass %</th><th class='test-header'>Δ</th>").append(ls);
-        sb.append("<th class='test-header'>Test Executions</th><th class='test-header'>Δ</th>").append(ls);
-        sb.append("<th class='test-header'>Test Time Total</th><th class='test-header'>Δ</th>").append(ls);
-        sb.append("<th class='run-header'>Test Time Avg</th><th class='run-header'>Δ</th>").append(ls);
-        sb.append("<th class='run-header'>Job Time Avg</th><th class='run-header'>Δ</th>").append(ls);
+        sb.append("<th class='test-header'>Success %</th><th class='test-header'>Δ</th>").append(ls);
+        sb.append("<th class='test-header'>Test Runs</th><th class='test-header'>Δ</th>").append(ls);
+        sb.append("<th class='test-header'>Duration Avg</th><th class='test-header'>Δ</th>").append(ls);
+        if (showJobTime) {
+            sb.append("<th class='run-header'>Job Time Avg</th><th class='run-header'>Δ</th>").append(ls);
+        }
         sb.append("<th class='run-header'>Job Pass %</th><th class='run-header'>Δ</th>").append(ls);
         sb.append("<th class='run-header'>Job Runs</th><th class='run-header'>Δ</th>").append(ls);
 
         sb.append("</tr>").append(ls);
         sb.append("</thead>").append(ls);
 
-        sb.append(renderTableBodyStacked(dtoResultCounts));
+        sb.append(renderTableBodyStacked(dtoResultCounts, showJobTime));
         sb.append("</table>").append(ls);
         sb.append("</fieldset>").append(ls);
         sb.append("<br>").append(ls);
         return sb.toString();
     }
 
-    private static <T> String renderTableBodyStacked(TreeMap<T, TreeMap<InstantRange, RunResultCount>> orgResultCounts) {
+    private static <T> String renderTableBodyStacked(TreeMap<T, TreeMap<InstantRange, RunResultCount>> orgResultCounts, boolean showJobTime) {
         StringBuilder sb = new StringBuilder();
         sb.append("<tbody>").append(ls);
 
@@ -121,7 +161,7 @@ public class MetricsHtmlHelper {
 
             sb.append("<tr>").append(ls);
             sb.append(renderDtoSingleRow(t));
-            sb.append(renderInlineDeltaCells(currentResult, previousResult, currentRange, previousRange));
+            sb.append(renderInlineDeltaCells(currentResult, previousResult, currentRange, previousRange, showJobTime));
             sb.append("</tr>").append(ls);
         }
         sb.append("</tbody>").append(ls);
@@ -162,7 +202,7 @@ public class MetricsHtmlHelper {
     }
 
     private static String renderInlineDeltaCells(RunResultCount current, RunResultCount previous,
-                                                  InstantRange currentRange, InstantRange previousRange) {
+                                                  InstantRange currentRange, InstantRange previousRange, boolean showJobTime) {
         StringBuilder sb = new StringBuilder();
         if (current == null) {
             current = RunResultCount.builder().build();
@@ -178,14 +218,15 @@ public class MetricsHtmlHelper {
         BigDecimal currJobTimeAvg = divide(currClockDuration, currRuns);
         BigDecimal currRunPct = noRuns ? null : current.getRunCount().getRunSuccessPercent().setScale(0, RoundingMode.HALF_UP);
 
-        BigDecimal prevTestPct = previous != null ? previous.getResultCount().getTestSuccessPercent().setScale(0, RoundingMode.HALF_UP) : null;
+        Integer prevRuns = previous != null ? previous.getRunCount().getRuns() : null;
+        boolean prevNoRuns = prevRuns == null || prevRuns == 0;
+        BigDecimal prevTestPct = (!prevNoRuns) ? previous.getResultCount().getTestSuccessPercent().setScale(0, RoundingMode.HALF_UP) : null;
         Integer prevTests = previous != null ? previous.getResultCount().getTests() : null;
         BigDecimal prevTime = previous != null ? previous.getResultCount().getTime() : null;
         BigDecimal prevClockDuration = previous != null ? previous.getClockDurationSeconds() : null;
-        Integer prevRuns = previous != null ? previous.getRunCount().getRuns() : null;
         BigDecimal prevTestTimeAvg = divide(prevTime, prevRuns);
         BigDecimal prevJobTimeAvg = divide(prevClockDuration, prevRuns);
-        BigDecimal prevRunPct = previous != null ? previous.getRunCount().getRunSuccessPercent().setScale(0, RoundingMode.HALF_UP) : null;
+        BigDecimal prevRunPct = (!prevNoRuns) ? previous.getRunCount().getRunSuccessPercent().setScale(0, RoundingMode.HALF_UP) : null;
 
 
         // Test pass % (higher is good)
@@ -203,27 +244,22 @@ public class MetricsHtmlHelper {
                 buildTooltip(prevTests != null ? String.valueOf(prevTests) : "—"),
                 "count"));
 
-        // Test Time Total (lower is better)
-        sb.append(renderInlineCell(fromSecondBigDecimalPadded(currTime),
-                NumberStringUtil.formatDeltaDuration(currTime, prevTime),
-                getDeltaCssClassDuration(currTime, prevTime),
-                buildTooltip(prevTime != null ? fromSecondBigDecimal(prevTime) : "—"),
-                "count"));
-
-        // Test Time Avg (lower is better)
+        // Duration Avg (lower is better)
         sb.append(renderInlineCell(fromSecondBigDecimalPadded(currTestTimeAvg),
                 NumberStringUtil.formatDeltaDuration(currTestTimeAvg, prevTestTimeAvg),
                 getDeltaCssClassDuration(currTestTimeAvg, prevTestTimeAvg),
                 buildTooltip(prevTestTimeAvg != null ? fromSecondBigDecimal(prevTestTimeAvg) : "—"),
                 "count"));
 
-        // Job Time Avg (lower is better)
-        String currJobTimeStr = currJobTimeAvg != null ? fromSecondBigDecimalPadded(currJobTimeAvg) : "N/A";
-        sb.append(renderInlineCell(currJobTimeStr,
-                NumberStringUtil.formatDeltaDuration(currJobTimeAvg, prevJobTimeAvg),
-                getDeltaCssClassDuration(currJobTimeAvg, prevJobTimeAvg),
-                buildTooltip(prevJobTimeAvg != null ? fromSecondBigDecimal(prevJobTimeAvg) : "—"),
-                "count"));
+        // Job Time Avg (lower is better) — column hidden when no rows have data
+        if (showJobTime) {
+            sb.append(renderInlineCell(
+                    currJobTimeAvg != null ? fromSecondBigDecimalPadded(currJobTimeAvg) : "-",
+                    currJobTimeAvg != null ? NumberStringUtil.formatDeltaDuration(currJobTimeAvg, prevJobTimeAvg) : "—",
+                    getDeltaCssClassDuration(currJobTimeAvg, prevJobTimeAvg),
+                    buildTooltip(prevJobTimeAvg != null ? fromSecondBigDecimal(prevJobTimeAvg) : "—"),
+                    "count"));
+        }
 
         // Job pass % (higher is good)
         String currRunPctStr = currRunPct != null ? percentFromBigDecimal(currRunPct) : "-";
@@ -246,7 +282,7 @@ public class MetricsHtmlHelper {
     private static String renderInlineCell(String primaryValue, String deltaText, String deltaCssClass,
                                             String tooltip, String cellClass) {
         StringBuilder sb = new StringBuilder();
-        sb.append("<td class='").append(cellClass).append("' title='").append(tooltip).append("'>");
+        sb.append("<td class='").append(cellClass).append("' data-tooltip='").append(tooltip).append("'>");
         sb.append(primaryValue);
         sb.append("</td>");
         sb.append("<td class='delta'>");
@@ -682,31 +718,28 @@ public class MetricsHtmlHelper {
             <fieldset class='top-fieldset'>
             <dl>
             	<dt>Δ columns</dt>
-            	<dd>Change from previous period. Hover any cell for current, previous, and delta values.</dd>
+            	<dd>Change from previous period. Hover any cell for previous value.</dd>
 
             	<dt>-</dt>
             	<dd>No runs in current period.</dd>
 
-            	<dt>Test Pass %</dt>
+            	<dt>Success %</dt>
             	<dd>The % of test executions which passed.</dd>
 
-            	<dt>Test Executions</dt>
-            	<dd>The total number of executions of tests</dd>
+            	<dt>Test Runs</dt>
+            	<dd>The total number of test executions.</dd>
 
-            	<dt>Test Time Total</dt>
-            	<dd>Cumulative test execution time</dd>
-
-            	<dt>Test Time Avg</dt>
-            	<dd>Test Time Total / Job Runs</dd>
+            	<dt>Duration Avg</dt>
+            	<dd>Average test execution time per job run.</dd>
 
             	<dt>Job Time Avg</dt>
-            	<dd>Average wall clock job duration (from cucumber JSON start/end times)</dd>
+            	<dd>Average wall clock job duration.</dd>
 
             	<dt>Job Pass %</dt>
-            	<dd>The percentage of job runs with no failing tests</dd>
+            	<dd>The percentage of job runs with no failing tests.</dd>
 
             	<dt>Job Runs</dt>
-            	<dd>Total job runs</dd>
+            	<dd>Total job runs.</dd>
 
             	<dt>Delta Colors</dt>
             	<dd>Green = improvement, Red = regression. Only shown for changes &gt;10%.</dd>

@@ -250,8 +250,13 @@ public enum NumberStringUtil {
      * Returns "+3%↑", "-2%↓", or "0%"
      */
     public static String formatDeltaPercent(BigDecimal current, BigDecimal previous) {
-        if (current == null || previous == null) {
+        if (current == null) {
             return "—";
+        }
+        if (previous == null) {
+            int cmp = current.compareTo(BigDecimal.ZERO);
+            if (cmp == 0) return "0%";
+            return cmp > 0 ? "+∞%↑" : "-∞%↓";
         }
         BigDecimal delta = current.subtract(previous).setScale(0, RoundingMode.HALF_UP);
         int cmp = delta.compareTo(BigDecimal.ZERO);
