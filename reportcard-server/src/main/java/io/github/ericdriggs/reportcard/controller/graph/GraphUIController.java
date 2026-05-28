@@ -12,7 +12,6 @@ import io.github.ericdriggs.reportcard.persist.BrowseService;
 import io.github.ericdriggs.reportcard.persist.GraphService;
 import io.github.ericdriggs.reportcard.util.StringMapUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -53,28 +52,16 @@ public class GraphUIController {
             @RequestParam(required = false, defaultValue = "30") Integer runs
     ) {
         JobStageTestTrend jobTestTrend;
-        boolean usedFallback = false;
         try {
             jobTestTrend = graphService.getJobStageTestTrend(company, org, repo, branch, jobId, stage, start, end, runs);
         } catch (Exception e) {
-            log.warn("Primary trend query failed for jobId: {}, falling back to chunked fetch: {}", jobId, e.getMessage());
-            try {
-                jobTestTrend = graphService.getJobStageTestTrendWithFallback(company, org, repo, branch, jobId, stage, start, end, Math.min(runs, 30));
-                usedFallback = true;
-            } catch (Exception ex) {
-                log.error("Fallback trend query also failed for jobId: {}", jobId, ex);
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(String.join("\n", ExceptionUtils.getStackFrames(ex)));
-            }
+            log.warn("Primary trend query failed for jobId: {}, falling back to chunked fetch", jobId, e);
+            jobTestTrend = graphService.getJobStageTestTrendWithFallback(company, org, repo, branch, jobId, stage, start, end, Math.min(runs, 30));
         }
         if (jobTestTrend == null) {
             return ResponseEntity.ok("No trend data available for this job/stage combination.");
         }
-        String trendHtml = TrendHtmlHelper.renderTrendHtml(jobTestTrend);
-        ResponseEntity.BodyBuilder builder = ResponseEntity.ok();
-        if (usedFallback) {
-            builder.header("X-Trend-Source", "fallback");
-        }
-        return builder.body(trendHtml);
+        return ResponseEntity.ok().body(TrendHtmlHelper.renderTrendHtml(jobTestTrend));
     }
 
     @GetMapping(path = "company/{company}/org/{org}/repo/{repo}/branch/{branch}/jobinfo/{jobInfo}/stage/{stage}/trend", produces = "text/html;charset=UTF-8")

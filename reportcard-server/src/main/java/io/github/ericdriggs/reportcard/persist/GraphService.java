@@ -29,6 +29,9 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import static io.github.ericdriggs.reportcard.gen.db.Tables.*;
 import static org.jooq.impl.DSL.*;
@@ -44,6 +47,11 @@ import static org.jooq.impl.DSL.*;
 public class GraphService extends AbstractPersistService {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
+    private static final ExecutorService TEST_SUITES_FETCH_POOL = Executors.newFixedThreadPool(8, r -> {
+        Thread t = new Thread(r, "test-suites-fetch");
+        t.setDaemon(true);
+        return t;
+    });
     private final static List<String> defaultBranchNames = List.of("dev", "develop", "qa", "staging", "main", "master", "staging", "test");
 
     @Autowired
@@ -80,6 +88,11 @@ public class GraphService extends AbstractPersistService {
     }
 
     private List<CompanyGraph> stitchTestSuitesIntoGraph(List<CompanyGraph> skeletonGraphs) {
+        Map<Long, List<TestSuiteGraph>> suitesById = fetchTestSuitesAsync(skeletonGraphs);
+        return rebuildGraphWithSuites(skeletonGraphs, suitesById);
+    }
+
+    private Map<Long, List<TestSuiteGraph>> fetchTestSuitesAsync(List<CompanyGraph> skeletonGraphs) {
         Map<Long, CompletableFuture<List<TestSuiteGraph>>> futureMap = new LinkedHashMap<>();
         for (CompanyGraph company : skeletonGraphs) {
             for (OrgGraph org : company.orgs()) {
@@ -90,7 +103,11 @@ public class GraphService extends AbstractPersistService {
                                 for (StageGraph stage : run.stages()) {
                                     for (TestResultGraph tr : stage.testResults()) {
                                         futureMap.computeIfAbsent(tr.testResultId(),
-                                                id -> CompletableFuture.supplyAsync(() -> getTestSuitesGraph(id)));
+                                                id -> CompletableFuture.supplyAsync(() -> getTestSuitesGraph(id), TEST_SUITES_FETCH_POOL)
+                                                        .exceptionally(ex -> {
+                                                            log.warn("Failed to fetch test suites for testResultId: {}", id, ex);
+                                                            return Collections.emptyList();
+                                                        }));
                                     }
                                 }
                             }
@@ -100,51 +117,37 @@ public class GraphService extends AbstractPersistService {
             }
         }
 
-        CompletableFuture.allOf(futureMap.values().toArray(new CompletableFuture[0])).join();
+        CompletableFuture.allOf(futureMap.values().toArray(new CompletableFuture[0]))
+                .orTimeout(15, TimeUnit.SECONDS)
+                .join();
 
         Map<Long, List<TestSuiteGraph>> suitesById = new HashMap<>();
         for (Map.Entry<Long, CompletableFuture<List<TestSuiteGraph>>> entry : futureMap.entrySet()) {
             suitesById.put(entry.getKey(), entry.getValue().join());
         }
+        return suitesById;
+    }
 
-        List<CompanyGraph> result = new ArrayList<>();
-        for (CompanyGraph company : skeletonGraphs) {
-            List<OrgGraph> newOrgs = new ArrayList<>();
-            for (OrgGraph org : company.orgs()) {
-                List<RepoGraph> newRepos = new ArrayList<>();
-                for (RepoGraph repo : org.repos()) {
-                    List<BranchGraph> newBranches = new ArrayList<>();
-                    for (BranchGraph branch : repo.branches()) {
-                        List<JobGraph> newJobs = new ArrayList<>();
-                        for (JobGraph job : branch.jobs()) {
-                            List<RunGraph> newRuns = new ArrayList<>();
-                            for (RunGraph run : job.runs()) {
-                                List<StageGraph> newStages = new ArrayList<>();
-                                for (StageGraph stage : run.stages()) {
-                                    List<TestResultGraph> newTestResults = new ArrayList<>();
-                                    for (TestResultGraph tr : stage.testResults()) {
-                                        newTestResults.add(new TestResultGraph(
-                                                tr.testResultId(), tr.stageFk(), tr.tests(), tr.skipped(),
-                                                tr.error(), tr.failure(), tr.time(), tr.testResultCreated(),
-                                                tr.startTime(), tr.endTime(), tr.externalLinks(),
-                                                tr.isSuccess(), tr.hasSkip(),
-                                                suitesById.getOrDefault(tr.testResultId(), Collections.emptyList())));
-                                    }
-                                    newStages.add(new StageGraph(stage.stageId(), stage.stageName(), stage.runFk(), newTestResults, stage.storages()));
-                                }
-                                newRuns.add(new RunGraph(run.runId(), run.runReference(), run.jobFk(), run.jobRunCount(), run.sha(), run.runDate(), run.isSuccess(), newStages));
-                            }
-                            newJobs.add(new JobGraph(job.jobId(), job.jobInfo(), job.branchFk(), job.jobInfoStr(), job.lastRun(), newRuns));
-                        }
-                        newBranches.add(new BranchGraph(branch.branchId(), branch.branchName(), branch.repoFk(), branch.lastRun(), newJobs));
-                    }
-                    newRepos.add(new RepoGraph(repo.repoId(), repo.repoName(), repo.orgFk(), newBranches));
-                }
-                newOrgs.add(new OrgGraph(org.orgId(), org.orgName(), org.companyFk(), newRepos));
-            }
-            result.add(new CompanyGraph(company.companyId(), company.companyName(), newOrgs));
-        }
-        return result;
+    private List<CompanyGraph> rebuildGraphWithSuites(List<CompanyGraph> skeletonGraphs, Map<Long, List<TestSuiteGraph>> suitesById) {
+        return skeletonGraphs.stream()
+                .map(company -> CompanyGraphBuilder.from(company).withOrgs(
+                        company.orgs().stream().map(org -> OrgGraphBuilder.from(org).withRepos(
+                                org.repos().stream().map(repo -> RepoGraphBuilder.from(repo).withBranches(
+                                        repo.branches().stream().map(branch -> BranchGraphBuilder.from(branch).withJobs(
+                                                branch.jobs().stream().map(job -> JobGraphBuilder.from(job).withRuns(
+                                                        job.runs().stream().map(run -> RunGraphBuilder.from(run).withStages(
+                                                                run.stages().stream().map(stage -> StageGraphBuilder.from(stage).withTestResults(
+                                                                        stage.testResults().stream()
+                                                                                .map(tr -> TestResultGraphBuilder.from(tr).withTestSuites(
+                                                                                        suitesById.getOrDefault(tr.testResultId(), Collections.emptyList())))
+                                                                                .toList()
+                                                                )).toList()
+                                                        )).toList()
+                                                )).toList()
+                                        )).toList()
+                                )).toList()
+                        )).toList()
+                )).toList();
     }
 
     List<CompanyGraph> getJobTrendCompanyGraphs(String companyName,

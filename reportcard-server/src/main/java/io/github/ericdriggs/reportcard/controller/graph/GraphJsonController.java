@@ -10,8 +10,7 @@ import io.github.ericdriggs.reportcard.persist.BrowseService;
 import io.github.ericdriggs.reportcard.persist.GraphService;
 import io.github.ericdriggs.reportcard.util.StringMapUtil;
 import io.swagger.v3.oas.annotations.Operation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,9 +24,9 @@ import java.util.TreeSet;
 @RestController
 @RequestMapping("/v1/api")
 @SuppressWarnings("unused")
+@Slf4j
 public class GraphJsonController {
 
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
     private final GraphService graphService;
     private final BrowseService browseService;
 
@@ -52,9 +51,8 @@ public class GraphJsonController {
         try {
             return new ResponseEntity<>(graphService.getJobStageTestTrend(company, org, repo, branch, jobId, stage, start, end, runs), HttpStatus.OK);
         } catch (Exception e) {
-            log.warn("Primary trend query failed, falling back to chunked fetch: {}", e.getMessage());
-            JobStageTestTrend fallbackResult = graphService.getJobStageTestTrendWithFallback(company, org, repo, branch, jobId, stage, start, end, Math.min(runs, 30));
-            return ResponseEntity.ok().header("X-Trend-Source", "fallback").body(fallbackResult);
+            log.warn("Primary trend query failed for jobId: {}, falling back to chunked fetch", jobId, e);
+            return new ResponseEntity<>(graphService.getJobStageTestTrendWithFallback(company, org, repo, branch, jobId, stage, start, end, Math.min(runs, 30)), HttpStatus.OK);
         }
     }
 
