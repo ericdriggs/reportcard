@@ -54,14 +54,6 @@ li {
     display:none;
 }
 
-.interval-header {
-    font-size: 0.9em;
-    font-weight: bold;
-    background-color: #443 !important;
-    border: 2px #aa7 solid;
-    font-family: "Times New Roman", serif;
-}
-
 .percent {
     text-align: right !important;
 }
@@ -106,11 +98,6 @@ tbody tr:nth-child(odd) {
 }
 tbody tr:nth-child(even) {
     background: #fff;
-}
-
-/* Primary metric value */
-.metric-value {
-    white-space: nowrap;
 }
 
 /* Inline delta annotation */
