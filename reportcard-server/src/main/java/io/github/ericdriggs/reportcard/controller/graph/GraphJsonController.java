@@ -43,9 +43,10 @@ public class GraphJsonController {
             @PathVariable Long jobId,
             @PathVariable String stage,
             @RequestParam(required = false) Instant start,
-            @RequestParam(required = false) Instant end
+            @RequestParam(required = false) Instant end,
+            @RequestParam(required = false, defaultValue = "30") Integer runs
     ) {
-        return new ResponseEntity<>(graphService.getJobStageTestTrend(company, org, repo, branch, jobId, stage, start, end, 30), HttpStatus.OK);
+        return new ResponseEntity<>(graphService.getJobStageTestTrend(company, org, repo, branch, jobId, stage, start, end, runs), HttpStatus.OK);
     }
 
     @GetMapping(path = "company/{company}/org/{org}/repo/{repo}/branch/{branch}/jobinfo/{jobInfo}/stage/{stage}/trend", produces = "application/json")
@@ -57,11 +58,12 @@ public class GraphJsonController {
             @PathVariable String jobInfo,
             @PathVariable String stage,
             @RequestParam(required = false) Instant start,
-            @RequestParam(required = false) Instant end
+            @RequestParam(required = false) Instant end,
+            @RequestParam(required = false, defaultValue = "30") Integer runs
     ) {
         Map<String, String> jobInfoMap = StringMapUtil.stringToMap(jobInfo);
         JobPojo job = browseService.getJob(company, org, repo, branch, jobInfoMap);
-        return getJobStageTestTrend(company, org, repo, branch, job.getJobId(), stage, start, end);
+        return getJobStageTestTrend(company, org, repo, branch, job.getJobId(), stage, start, end, runs);
     }
 
     @GetMapping(path = "metrics/all", produces = "application/json")

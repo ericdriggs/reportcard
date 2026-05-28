@@ -60,6 +60,18 @@ public class GraphServiceTest extends AbstractGraphServiceTest {
     }
 
     @Test
+    void getJobStageTestTrendWithFallbackTest() {
+        final Instant start = Instant.parse("2000-01-01T01:00:00.00Z");
+        final Instant end = Instant.parse("4000-01-01T01:00:00.00Z");
+        final int maxRuns = 30;
+        JobStageTestTrend trend = graphService.getJobStageTestTrendWithFallback(
+                TestData.company, TestData.org, TestData.repo, TestData.branch,
+                TestData.jobId, TestData.stage, start, end, maxRuns);
+        assertNotNull(trend);
+        assertNotNull(trend.getTestCaseTrends());
+    }
+
+    @Test
     void getCompanyGraphTest() throws JsonProcessingException {
         List<CompanyGraph> companyGraphs = getTestCompanyGraphs();
         assertFalse(CollectionUtils.isEmpty(companyGraphs));

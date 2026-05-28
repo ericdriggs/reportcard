@@ -9,6 +9,7 @@ import io.github.ericdriggs.reportcard.model.graph.*;
 
 import lombok.Builder;
 import lombok.Value;
+import lombok.With;
 import lombok.extern.jackson.Jacksonized;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.util.CollectionUtils;
@@ -30,6 +31,9 @@ public class JobStageTestTrend {
     InstantRange range;
     Instant generated;
     Integer maxRuns;
+    @With
+    @Builder.Default
+    boolean usedFallback = false;
 
     public static JobStageTestTrend fromCompanyGraphs(List<CompanyGraph> companyGraphs, int maxRuns) {
         if (companyGraphs == null) {
