@@ -24,7 +24,10 @@ TODOs:
 
 == tag latest version
 
-* git tag
+
+* find most recent version by
+** git tag OR
+** bottom of ./reportcard-server/build.gradle
 * determine <new-tag> by incrementing latest tag +1
 * find/replace in repo <previous-tag> with <latest-tag>
   ** build.gradle
