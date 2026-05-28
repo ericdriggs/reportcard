@@ -81,8 +81,7 @@ public class GraphJsonController {
             @RequestParam(required = false, defaultValue = "") TreeSet<String> notBranches,
             @RequestParam(required = false, defaultValue = "") TreeSet<String> notJobInfos,
             @RequestParam(required = false, defaultValue = "true") boolean shouldIncludeDefaultBranches,
-            @RequestParam(required = false, defaultValue = "30") Integer intervalDays,
-            @RequestParam(required = false, defaultValue = "2") Integer intervalCount
+            @RequestParam(required = false, defaultValue = "30") Integer intervalDays
     ) {
         MetricsIntervalRequest metricsIntervalRequest = MetricsIntervalRequest.fromQueryParams(
                 companies,
@@ -96,8 +95,7 @@ public class GraphJsonController {
                 notBranches,
                 notJobInfos,
                 shouldIncludeDefaultBranches,
-                intervalDays,
-                intervalCount
+                intervalDays
         );
 
         return postMetrics(metricsIntervalRequest);

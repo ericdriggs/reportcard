@@ -13,9 +13,6 @@ import io.github.ericdriggs.reportcard.util.StringMapUtil;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.Instant;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static io.github.ericdriggs.reportcard.util.NumberStringUtil.*;
@@ -37,7 +34,7 @@ public class MetricsHtmlHelper {
         StringBuilder sb = new StringBuilder();
         sb.append(shortcuts);
         sb.append(legend);
-        sb.append("<br>");
+        sb.append(renderPeriodSummary(metricsIntervalResultCountMaps.getOrgResultCounts()));
         sb.append(renderResultCountMap(metricsIntervalResultCountMaps.getOrgResultCounts()));
         sb.append(renderResultCountMap(metricsIntervalResultCountMaps.getRepoResultCounts()));
         sb.append(renderResultCountMap(metricsIntervalResultCountMaps.getBranchResultCounts()));
@@ -45,7 +42,48 @@ public class MetricsHtmlHelper {
         return sb.toString();
     }
 
+    private static <T> String renderPeriodSummary(TreeMap<T, TreeMap<InstantRange, RunResultCount>> resultCounts) {
+        if (resultCounts == null || resultCounts.isEmpty()) {
+            return "";
+        }
+        TreeMap<InstantRange, RunResultCount> firstEntry = resultCounts.firstEntry().getValue();
+        if (firstEntry == null || firstEntry.isEmpty()) {
+            return "";
+        }
+        List<InstantRange> ranges = new ArrayList<>(firstEntry.keySet());
+        ranges.sort((a, b) -> b.getStart().compareTo(a.getStart()));
+
+        InstantRange current = ranges.get(0);
+        InstantRange previous = ranges.size() > 1 ? ranges.get(1) : null;
+
+        long days = java.time.Duration.between(current.getStart(), current.getEnd()).toDays();
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("<dl>").append(ls);
+        sb.append("<dt>Period length</dt><dd>").append(days).append(" days</dd>").append(ls);
+        sb.append("<dt>Current period</dt><dd>").append(NumberStringUtil.friendlyDateRange(current.getStart(), current.getEnd())).append("</dd>").append(ls);
+        if (previous != null) {
+            sb.append("<dt>Previous period</dt><dd>").append(NumberStringUtil.friendlyDateRange(previous.getStart(), previous.getEnd())).append("</dd>").append(ls);
+        }
+        sb.append("</dl>").append(ls);
+        return sb.toString();
+    }
+
+    private static <T> boolean hasAnyJobTime(TreeMap<T, TreeMap<InstantRange, RunResultCount>> dtoResultCounts) {
+        for (TreeMap<InstantRange, RunResultCount> ranges : dtoResultCounts.values()) {
+            for (RunResultCount rrc : ranges.values()) {
+                if (rrc.getClockDurationSeconds() != null && rrc.getRunCount().getRuns() != null && rrc.getRunCount().getRuns() > 0) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     private static <T> String renderResultCountMap(TreeMap<T, TreeMap<InstantRange, RunResultCount>> dtoResultCounts) {
+        if (dtoResultCounts == null || dtoResultCounts.isEmpty()) {
+            return "";
+        }
         StringBuilder sb = new StringBuilder();
 
         String dtoName = null;
@@ -57,6 +95,7 @@ public class MetricsHtmlHelper {
             }
         }
         final String dtoNameLower = dtoName == null ? null : dtoName.toLowerCase();
+        boolean showJobTime = hasAnyJobTime(dtoResultCounts);
 
         sb.append("<fieldset id='").append(dtoNameLower).append("-fieldset'>").append(ls);
         sb.append("<legend>").append(dtoName).append("</legend>").append(ls);
@@ -72,28 +111,29 @@ public class MetricsHtmlHelper {
             break;
         }
 
-        sb.append("<th class='interval-header'>Period</th>").append(ls);
-        sb.append("<th class='test-header'>Test pass %</th>").append(ls);
-        sb.append("<th class='test-header'>Test executions</th>").append(ls);
-        sb.append("<th class='test-header'>Test Time Total</th>").append(ls);
-        sb.append("<th class='run-header'>Test Time Avg</th>").append(ls);
-        sb.append("<th class='run-header'>Job Time Avg</th>").append(ls);
-        sb.append("<th class='run-header'>Job pass %</th>").append(ls);
-        sb.append("<th class='run-header'>Job runs</th>").append(ls);
+        sb.append("<th class='test-header'>Success %</th><th class='test-header'>Δ</th>").append(ls);
+        sb.append("<th class='test-header'>Test Runs</th><th class='test-header'>Δ</th>").append(ls);
+        sb.append("<th class='test-header'>Duration Avg</th><th class='test-header'>Δ</th>").append(ls);
+        if (showJobTime) {
+            sb.append("<th class='run-header'>Job Time Avg</th><th class='run-header'>Δ</th>").append(ls);
+        }
+        sb.append("<th class='run-header'>Job Pass %</th><th class='run-header'>Δ</th>").append(ls);
+        sb.append("<th class='run-header'>Job Runs</th><th class='run-header'>Δ</th>").append(ls);
 
         sb.append("</tr>").append(ls);
         sb.append("</thead>").append(ls);
 
-        sb.append(renderTableBodyStacked(dtoResultCounts));
+        sb.append(renderTableBodyStacked(dtoResultCounts, showJobTime));
         sb.append("</table>").append(ls);
         sb.append("</fieldset>").append(ls);
         sb.append("<br>").append(ls);
         return sb.toString();
     }
 
-    private static <T> String renderTableBodyStacked(TreeMap<T, TreeMap<InstantRange, RunResultCount>> orgResultCounts) {
+    private static <T> String renderTableBodyStacked(TreeMap<T, TreeMap<InstantRange, RunResultCount>> orgResultCounts, boolean showJobTime) {
         StringBuilder sb = new StringBuilder();
-        
+        sb.append("<tbody>").append(ls);
+
         for (Map.Entry<T, TreeMap<InstantRange, RunResultCount>> orgEntry : orgResultCounts.entrySet()) {
 
             // Filter out rows without tests
@@ -109,139 +149,165 @@ public class MetricsHtmlHelper {
 
             final T t = orgEntry.getKey();
             final TreeMap<InstantRange, RunResultCount> rangeResultCount = orgEntry.getValue();
-            
+
             // Get periods in descending order (most recent first)
             List<Map.Entry<InstantRange, RunResultCount>> periods = new ArrayList<>(rangeResultCount.entrySet());
-            // Sort by start date descending (most recent first)
             periods.sort((a, b) -> b.getKey().getStart().compareTo(a.getKey().getStart()));
 
             RunResultCount currentResult = periods.size() > 0 ? periods.get(0).getValue() : null;
             RunResultCount previousResult = periods.size() > 1 ? periods.get(1).getValue() : null;
-            InstantRange currentRange = periods.size() > 0 ? periods.get(0).getKey() : null;
-            InstantRange previousRange = periods.size() > 1 ? periods.get(1).getKey() : null;
-
-            int entityColCount = getEntityColCount(t);
-            
-            // Each entity group in its own tbody for styling
-            sb.append("<tbody class='metrics-group'>").append(ls);
-            
-            // Current row
-            sb.append("<tr class='row-current'>").append(ls);
-            sb.append(renderDtoWithRowspan(t, 3)); // Span 3 rows
-            sb.append("<td class='period-current'>").append(formatPeriodLabel("Current", currentRange)).append("</td>").append(ls);
-            sb.append(renderMetricCells(currentResult));
+            sb.append("<tr>").append(ls);
+            sb.append(renderDtoSingleRow(t));
+            sb.append(renderInlineDeltaCells(currentResult, previousResult, showJobTime));
             sb.append("</tr>").append(ls);
-            
-            // Previous row
-            sb.append("<tr class='row-previous'>").append(ls);
-            sb.append("<td class='period-previous'>").append(formatPeriodLabel("Previous", previousRange)).append("</td>").append(ls);
-            sb.append(renderMetricCells(previousResult));
-            sb.append("</tr>").append(ls);
-            
-            // Delta row (no background color - text colors only)
-            sb.append("<tr class='row-delta'>").append(ls);
-            sb.append("<td class='period-delta'>Δ Change %</td>").append(ls);
-            sb.append(renderDeltaCells(currentResult, previousResult));
-            sb.append("</tr>").append(ls);
-            
-            sb.append("</tbody>").append(ls);
         }
+        sb.append("</tbody>").append(ls);
         return sb.toString();
     }
 
-    private static String formatPeriodLabel(String label, InstantRange range) {
-        if (range == null) {
-            return "—";
+    private static <T> String renderDtoSingleRow(T t) {
+        if (t instanceof CompanyOrgDTO dto) {
+            return "<td class='entity-name'>" + dto.getCompany() + "</td>" + ls +
+                   "<td class='entity-name'>" + dto.getOrg() + "</td>" + ls;
         }
-        return NumberStringUtil.friendlyDateRange(range.getStart(), range.getEnd());
+        if (t instanceof CompanyOrgRepoDTO dto) {
+            return "<td class='entity-name'>" + dto.getCompany() + "</td>" + ls +
+                   "<td class='entity-name'>" + dto.getOrg() + "</td>" + ls +
+                   "<td class='entity-name'>" + dto.getRepo() + "</td>" + ls;
+        }
+        if (t instanceof CompanyOrgRepoBranchDTO dto) {
+            return "<td class='entity-name'>" + dto.getCompany() + "</td>" + ls +
+                   "<td class='entity-name'>" + dto.getOrg() + "</td>" + ls +
+                   "<td class='entity-name'>" + dto.getRepo() + "</td>" + ls +
+                   "<td class='entity-name'>" + dto.getBranch() + "</td>" + ls;
+        }
+        if (t instanceof CompanyOrgRepoBranchJobInfoDTO dto) {
+            return "<td class='entity-name'>" + dto.getCompany() + "</td>" + ls +
+                   "<td class='entity-name'>" + dto.getOrg() + "</td>" + ls +
+                   "<td class='entity-name'>" + dto.getRepo() + "</td>" + ls +
+                   "<td class='entity-name'>" + dto.getBranch() + "</td>" + ls +
+                   "<td class='entity-name'>" + StringMapUtil.valuesOnlyColonSeparated(dto.getJobInfo()) + "</td>" + ls;
+        }
+        throw new IllegalArgumentException("Unsupported type: " + t.getClass().getSimpleName());
     }
 
-    private static String renderMetricCells(RunResultCount resultCount) {
+    private static String renderInlineDeltaCells(RunResultCount current, RunResultCount previous, boolean showJobTime) {
         StringBuilder sb = new StringBuilder();
-        if (resultCount == null) {
-            resultCount = RunResultCount.builder().build();
+        if (current == null) {
+            current = RunResultCount.builder().build();
         }
 
-        final BigDecimal testSuccessPercent = resultCount.getResultCount().getTestSuccessPercent().setScale(0, RoundingMode.HALF_UP);
-        final Integer totalTests = resultCount.getResultCount().getTests();
-        final BigDecimal totalTime = resultCount.getResultCount().getTime();
-        final BigDecimal clockDuration = resultCount.getClockDurationSeconds();
-        final Integer runCount = resultCount.getRunCount().getRuns();
-        final BigDecimal testTimeAvg = divide(totalTime, runCount);
-        final BigDecimal jobTimeAvg = divide(clockDuration, runCount);
-        final BigDecimal runSuccessPercent = resultCount.getRunCount().getRunSuccessPercent().setScale(0, RoundingMode.HALF_UP);
-
-        sb.append("<td class='percent'>").append(percentFromBigDecimal(testSuccessPercent)).append("</td>").append(ls);
-        sb.append("<td class='count'>").append(fromIntegerPadded(totalTests)).append("</td>").append(ls);
-        sb.append("<td class='count'>").append(fromSecondBigDecimalPadded(totalTime)).append("</td>").append(ls);
-        sb.append("<td class='count'>").append(fromSecondBigDecimalPadded(testTimeAvg)).append("</td>").append(ls);
-        sb.append("<td class='count'>").append(jobTimeAvg != null ? fromSecondBigDecimalPadded(jobTimeAvg) : "N/A").append("</td>").append(ls);
-        sb.append("<td class='percent'>").append(percentFromBigDecimal(runSuccessPercent)).append("</td>").append(ls);
-        sb.append("<td class='count'>").append(fromIntegerPadded(runCount)).append("</td>").append(ls);
-        return sb.toString();
-    }
-
-    private static String renderDeltaCells(RunResultCount current, RunResultCount previous) {
-        StringBuilder sb = new StringBuilder();
-        
-        BigDecimal currTestPct = current != null ? current.getResultCount().getTestSuccessPercent() : null;
-        BigDecimal prevTestPct = previous != null ? previous.getResultCount().getTestSuccessPercent() : null;
-        Integer currTests = current != null ? current.getResultCount().getTests() : null;
-        Integer prevTests = previous != null ? previous.getResultCount().getTests() : null;
-        BigDecimal currTime = current != null ? current.getResultCount().getTime() : null;
-        BigDecimal prevTime = previous != null ? previous.getResultCount().getTime() : null;
-        BigDecimal currClockDuration = current != null ? current.getClockDurationSeconds() : null;
-        BigDecimal prevClockDuration = previous != null ? previous.getClockDurationSeconds() : null;
-        Integer currRuns = current != null ? current.getRunCount().getRuns() : null;
-        Integer prevRuns = previous != null ? previous.getRunCount().getRuns() : null;
-        BigDecimal currRunPct = current != null ? current.getRunCount().getRunSuccessPercent() : null;
-        BigDecimal prevRunPct = previous != null ? previous.getRunCount().getRunSuccessPercent() : null;
-        
+        Integer currRuns = current.getRunCount().getRuns();
+        boolean noRuns = currRuns == null || currRuns == 0;
+        BigDecimal currTestPct = noRuns ? null : current.getResultCount().getTestSuccessPercent().setScale(0, RoundingMode.HALF_UP);
+        Integer currTests = current.getResultCount().getTests();
+        BigDecimal currTime = current.getResultCount().getTime();
+        BigDecimal currClockDuration = current.getClockDurationSeconds();
         BigDecimal currTestTimeAvg = divide(currTime, currRuns);
-        BigDecimal prevTestTimeAvg = divide(prevTime, prevRuns);
         BigDecimal currJobTimeAvg = divide(currClockDuration, currRuns);
+        BigDecimal currRunPct = noRuns ? null : current.getRunCount().getRunSuccessPercent().setScale(0, RoundingMode.HALF_UP);
+
+        Integer prevRuns = previous != null ? previous.getRunCount().getRuns() : null;
+        boolean prevNoRuns = prevRuns == null || prevRuns == 0;
+        BigDecimal prevTestPct = (!prevNoRuns) ? previous.getResultCount().getTestSuccessPercent().setScale(0, RoundingMode.HALF_UP) : null;
+        Integer prevTests = previous != null ? previous.getResultCount().getTests() : null;
+        BigDecimal prevTime = previous != null ? previous.getResultCount().getTime() : null;
+        BigDecimal prevClockDuration = previous != null ? previous.getClockDurationSeconds() : null;
+        BigDecimal prevTestTimeAvg = divide(prevTime, prevRuns);
         BigDecimal prevJobTimeAvg = divide(prevClockDuration, prevRuns);
+        BigDecimal prevRunPct = (!prevNoRuns) ? previous.getRunCount().getRunSuccessPercent().setScale(0, RoundingMode.HALF_UP) : null;
+
 
         // Test pass % (higher is good)
-        sb.append(renderDeltaCell(currTestPct, prevTestPct, true, true));
-        // Test executions (neutral)
-        sb.append(renderDeltaCellInteger(currTests, prevTests, false));
-        // Test Time Total (lower is better)
-        sb.append(renderDeltaCellDuration(currTime, prevTime));
-        // Test Time Avg (lower is better)
-        sb.append(renderDeltaCellDuration(currTestTimeAvg, prevTestTimeAvg));
-        // Job Time Avg (lower is better)
-        sb.append(renderDeltaCellDuration(currJobTimeAvg, prevJobTimeAvg));
+        String currTestPctStr = currTestPct != null ? percentFromBigDecimal(currTestPct) : "-";
+        sb.append(renderInlineCell(currTestPctStr,
+                sortVal(currTestPct),
+                NumberStringUtil.formatDeltaPercent(currTestPct, prevTestPct),
+                getDeltaCssClass(currTestPct, prevTestPct, true),
+                buildTooltip(prevTestPct != null ? percentFromBigDecimal(prevTestPct) : "—"),
+                "percent"));
+
+        // Test executions (more is better)
+        sb.append(renderInlineCell(fromIntegerPadded(currTests),
+                sortVal(currTests),
+                NumberStringUtil.formatDeltaInteger(currTests, prevTests),
+                getDeltaCssClassInt(currTests, prevTests, true),
+                buildTooltip(prevTests != null ? String.valueOf(prevTests) : "—"),
+                "count"));
+
+        // Duration Avg (lower is better)
+        sb.append(renderInlineCell(fromSecondBigDecimalPadded(currTestTimeAvg),
+                sortVal(currTestTimeAvg),
+                NumberStringUtil.formatDeltaDuration(currTestTimeAvg, prevTestTimeAvg),
+                getDeltaCssClassDuration(currTestTimeAvg, prevTestTimeAvg),
+                buildTooltip(prevTestTimeAvg != null ? fromSecondBigDecimal(prevTestTimeAvg) : "—"),
+                "count"));
+
+        // Job Time Avg (lower is better) — column hidden when no rows have data
+        if (showJobTime) {
+            sb.append(renderInlineCell(
+                    currJobTimeAvg != null ? fromSecondBigDecimalPadded(currJobTimeAvg) : "-",
+                    sortVal(currJobTimeAvg),
+                    currJobTimeAvg != null ? NumberStringUtil.formatDeltaDuration(currJobTimeAvg, prevJobTimeAvg) : "—",
+                    getDeltaCssClassDuration(currJobTimeAvg, prevJobTimeAvg),
+                    buildTooltip(prevJobTimeAvg != null ? fromSecondBigDecimal(prevJobTimeAvg) : "—"),
+                    "count"));
+        }
+
         // Job pass % (higher is good)
-        sb.append(renderDeltaCell(currRunPct, prevRunPct, true, true));
+        String currRunPctStr = currRunPct != null ? percentFromBigDecimal(currRunPct) : "-";
+        sb.append(renderInlineCell(currRunPctStr,
+                sortVal(currRunPct),
+                NumberStringUtil.formatDeltaPercent(currRunPct, prevRunPct),
+                getDeltaCssClass(currRunPct, prevRunPct, true),
+                buildTooltip(prevRunPct != null ? percentFromBigDecimal(prevRunPct) : "—"),
+                "percent"));
+
         // Job runs (neutral)
-        sb.append(renderDeltaCellInteger(currRuns, prevRuns, false));
-        
+        sb.append(renderInlineCell(fromIntegerPadded(currRuns),
+                sortVal(currRuns),
+                NumberStringUtil.formatDeltaInteger(currRuns, prevRuns),
+                getDeltaCssClassInt(currRuns, prevRuns, false),
+                buildTooltip(prevRuns != null ? String.valueOf(prevRuns) : "—"),
+                "count"));
+
         return sb.toString();
     }
 
-    private static String renderDeltaCell(BigDecimal current, BigDecimal previous, boolean isPercent, boolean higherIsGood) {
+    private static String renderInlineCell(String primaryValue, String sortValue, String deltaText, String deltaCssClass,
+                                            String tooltip, String cellClass) {
         StringBuilder sb = new StringBuilder();
-        String value = isPercent ? NumberStringUtil.formatDeltaPercent(current, previous) : "—";
-        String cssClass = getDeltaCssClass(current, previous, higherIsGood);
-        sb.append("<td class='percent ").append(cssClass).append("'>").append(value).append("</td>").append(ls);
+        sb.append("<td class='").append(cellClass).append("' data-sort='").append(sortValue).append("' data-tooltip='").append(tooltip).append("'>");
+        sb.append(primaryValue);
+        sb.append("</td>");
+        sb.append("<td class='delta'>");
+        if (deltaText != null && !deltaText.equals("—")) {
+            sb.append("<span class='metric-delta ").append(deltaCssClass).append("'>(").append(deltaText).append(")</span>");
+        }
+        sb.append("</td>").append(ls);
         return sb.toString();
     }
 
-    private static String renderDeltaCellInteger(Integer current, Integer previous, boolean higherIsGood) {
-        StringBuilder sb = new StringBuilder();
-        String value = NumberStringUtil.formatDeltaInteger(current, previous);
-        String cssClass = getDeltaCssClassInt(current, previous, higherIsGood);
-        sb.append("<td class='count ").append(cssClass).append("'>").append(value).append("</td>").append(ls);
-        return sb.toString();
+    private static String sortVal(BigDecimal val) {
+        return val != null ? val.toPlainString() : "";
     }
 
-    private static String renderDeltaCellDuration(BigDecimal current, BigDecimal previous) {
-        StringBuilder sb = new StringBuilder();
-        String value = NumberStringUtil.formatDeltaDuration(current, previous);
-        String cssClass = getDeltaCssClassDuration(current, previous);
-        sb.append("<td class='count ").append(cssClass).append("'>").append(value).append("</td>").append(ls);
-        return sb.toString();
+    private static String sortVal(Integer val) {
+        return val != null ? val.toString() : "";
+    }
+
+    private static String buildTooltip(String previousValue) {
+        return escapeHtmlAttr("previous: " + stripHtml(previousValue));
+    }
+
+    private static String escapeHtmlAttr(String s) {
+        return s.replace("&", "&amp;").replace("\"", "&quot;").replace("'", "&#39;").replace("<", "&lt;").replace(">", "&gt;");
+    }
+
+    private static String stripHtml(String s) {
+        if (s == null) return "";
+        s = s.replaceAll("<span class='transparent'>[^<]*</span>", "");
+        return s.replaceAll("<[^>]*>", "");
     }
 
     private static String getDeltaCssClassDuration(BigDecimal current, BigDecimal previous) {
@@ -283,82 +349,6 @@ public class MetricsHtmlHelper {
         }
         String direction = NumberStringUtil.deltaDirection(BigDecimal.valueOf(delta), higherIsGood);
         return "delta-" + direction;
-    }
-
-    @SuppressWarnings("unused")
-    private static String getDeltaRowClass(RunResultCount current, RunResultCount previous) {
-        // Check if test pass % or job pass % has significant change
-        BigDecimal threshold = BigDecimal.valueOf(DELTA_SIGNIFICANCE_THRESHOLD_PERCENT);
-        BigDecimal currTestPct = current != null ? current.getResultCount().getTestSuccessPercent() : null;
-        BigDecimal prevTestPct = previous != null ? previous.getResultCount().getTestSuccessPercent() : null;
-        BigDecimal currRunPct = current != null ? current.getRunCount().getRunSuccessPercent() : null;
-        BigDecimal prevRunPct = previous != null ? previous.getRunCount().getRunSuccessPercent() : null;
-        
-        boolean testSignificant = NumberStringUtil.isSignificantChange(currTestPct, prevTestPct, threshold);
-        boolean runSignificant = NumberStringUtil.isSignificantChange(currRunPct, prevRunPct, threshold);
-        
-        if (testSignificant || runSignificant) {
-            // Determine if overall change is good or bad
-            BigDecimal testDelta = currTestPct != null && prevTestPct != null ? currTestPct.subtract(prevTestPct) : BigDecimal.ZERO;
-            BigDecimal runDelta = currRunPct != null && prevRunPct != null ? currRunPct.subtract(prevRunPct) : BigDecimal.ZERO;
-            BigDecimal totalDelta = testDelta.add(runDelta);
-            if (totalDelta.compareTo(BigDecimal.ZERO) > 0) {
-                return "significant-good";
-            } else if (totalDelta.compareTo(BigDecimal.ZERO) < 0) {
-                return "significant-bad";
-            }
-        }
-        return "";
-    }
-
-    private static <T> int getEntityColCount(T t) {
-        if (t instanceof CompanyOrgDTO) return 2;
-        if (t instanceof CompanyOrgRepoDTO) return 3;
-        if (t instanceof CompanyOrgRepoBranchDTO) return 4;
-        if (t instanceof CompanyOrgRepoBranchJobInfoDTO) return 5;
-        return 1;
-    }
-
-    private static <T> String renderDtoWithRowspan(T t, int rowspan) {
-        if (t instanceof CompanyOrgDTO dto) {
-            return renderOrgWithRowspan(dto, rowspan);
-        }
-        if (t instanceof CompanyOrgRepoDTO dto) {
-            return renderRepoWithRowspan(dto, rowspan);
-        }
-        if (t instanceof CompanyOrgRepoBranchDTO dto) {
-            return renderBranchWithRowspan(dto, rowspan);
-        }
-        if (t instanceof CompanyOrgRepoBranchJobInfoDTO dto) {
-            return renderJobWithRowspan(dto, rowspan);
-        }
-        throw new IllegalArgumentException("Unsupported type: " + t.getClass().getSimpleName());
-    }
-
-    private static String renderOrgWithRowspan(CompanyOrgDTO dto, int rowspan) {
-        return "<td class='entity-name' rowspan='" + rowspan + "'>" + dto.getCompany() + "</td>" + ls +
-               "<td class='entity-name' rowspan='" + rowspan + "'>" + dto.getOrg() + "</td>" + ls;
-    }
-
-    private static String renderRepoWithRowspan(CompanyOrgRepoDTO dto, int rowspan) {
-        return "<td class='entity-name' rowspan='" + rowspan + "'>" + dto.getCompany() + "</td>" + ls +
-               "<td class='entity-name' rowspan='" + rowspan + "'>" + dto.getOrg() + "</td>" + ls +
-               "<td class='entity-name' rowspan='" + rowspan + "'>" + dto.getRepo() + "</td>" + ls;
-    }
-
-    private static String renderBranchWithRowspan(CompanyOrgRepoBranchDTO dto, int rowspan) {
-        return "<td class='entity-name' rowspan='" + rowspan + "'>" + dto.getCompany() + "</td>" + ls +
-               "<td class='entity-name' rowspan='" + rowspan + "'>" + dto.getOrg() + "</td>" + ls +
-               "<td class='entity-name' rowspan='" + rowspan + "'>" + dto.getRepo() + "</td>" + ls +
-               "<td class='entity-name' rowspan='" + rowspan + "'>" + dto.getBranch() + "</td>" + ls;
-    }
-
-    private static String renderJobWithRowspan(CompanyOrgRepoBranchJobInfoDTO dto, int rowspan) {
-        return "<td class='entity-name' rowspan='" + rowspan + "'>" + dto.getCompany() + "</td>" + ls +
-               "<td class='entity-name' rowspan='" + rowspan + "'>" + dto.getOrg() + "</td>" + ls +
-               "<td class='entity-name' rowspan='" + rowspan + "'>" + dto.getRepo() + "</td>" + ls +
-               "<td class='entity-name' rowspan='" + rowspan + "'>" + dto.getBranch() + "</td>" + ls +
-               "<td class='entity-name' rowspan='" + rowspan + "'>" + StringMapUtil.valuesOnlyColonSeparated(dto.getJobInfo()) + "</td>" + ls;
     }
 
     private static <T> String renderDtoHeadersStacked(T t) {
@@ -403,75 +393,6 @@ public class MetricsHtmlHelper {
                "<th class='dto-header'>JobInfo</th>" + ls;
     }
 
-    // Keep old methods for backwards compatibility if needed
-    @SuppressWarnings("unused")
-    private static <T> String renderTableBody(TreeMap<T, TreeMap<InstantRange, RunResultCount>> orgResultCounts) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("<tbody>").append(ls);
-        for (Map.Entry<T, TreeMap<InstantRange, RunResultCount>> orgEntry : orgResultCounts.entrySet()) {
-
-            //filter out rows without tests
-            boolean rowHasTests = false;
-            for (Map.Entry<InstantRange, RunResultCount> rangeRunResultCountEntry : orgEntry.getValue().entrySet()) {
-                if (rangeRunResultCountEntry.getValue().getResultCount().getTests() > 0) {
-                    rowHasTests = true;
-                }
-            }
-            if (!rowHasTests) {
-                continue;
-            }
-
-
-            sb.append("<tr>").append(ls);
-            final T t = orgEntry.getKey();
-            sb.append(renderDto(t));
-
-            final TreeMap<InstantRange, RunResultCount> rangeResultCount = orgEntry.getValue();
-            for (Map.Entry<InstantRange, RunResultCount> rangeRunResultCountEntry : rangeResultCount.entrySet()) {
-                RunResultCount resultCount = rangeRunResultCountEntry.getValue();
-                if (resultCount == null) {
-                    resultCount = RunResultCount.builder().build();
-                }
-
-                final BigDecimal testSuccessPercent = resultCount.getResultCount().getTestSuccessPercent().setScale(0, RoundingMode.HALF_UP);
-                final Integer totalTests = resultCount.getResultCount().getTests();
-                final BigDecimal totalTime = resultCount.getResultCount().getTime();
-                final Integer runCount = resultCount.getRunCount().getRuns();
-                final BigDecimal averageTime = divide(totalTime, runCount);
-                final BigDecimal runSuccessPercent = resultCount.getRunCount().getRunSuccessPercent().setScale(0, RoundingMode.HALF_UP);
-
-                sb.append("<td class='percent'>").append(percentFromBigDecimal(testSuccessPercent)).append("</td>").append(ls);
-                sb.append("<td class='count'>").append(fromIntegerPadded(totalTests)).append("</td>").append(ls);
-                sb.append("<td class='count'>").append(fromSecondBigDecimalPadded(totalTime)).append("</td>").append(ls);
-                sb.append("<td class='count'>").append(fromSecondBigDecimalPadded(averageTime)).append("</td>").append(ls);
-                sb.append("<td class='percent'>").append(percentFromBigDecimal(runSuccessPercent)).append("</td>").append(ls);
-                sb.append("<td class='count'>").append(fromIntegerPadded(runCount)).append("</td>").append(ls);
-            }
-        }
-        sb.append("</tbody>").append(ls);
-        return sb.toString();
-    }
-
-    private static String instantRangeHeader(InstantRange instantRange) {
-
-        final String header = "<th class='interval-header' colspan='6'>{start}&nbsp;&nbsp;→&nbsp;&nbsp;{end}</th>";
-        return header
-                .replace("{start}", instantToYmdhs(instantRange.getStart()))
-                .replace("{end}", instantToYmdhs(instantRange.getEnd()));
-    }
-
-    private static String instantToYmdhs(Instant instant) {
-        final String ISO_YHMDHS_FORMAT = "yyyy-MM-dd HH:mm";
-        final DateTimeFormatter isoYmdhsFormatter = DateTimeFormatter.ofPattern(ISO_YHMDHS_FORMAT)
-                .withZone(ZoneOffset.UTC);
-
-        if (instant == null) {
-            return "????-??-??";
-        } else {
-            return isoYmdhsFormatter.format(instant);
-        }
-    }
-
     private static <T> String getDtoName(T t) {
         if (t instanceof CompanyOrgDTO) {
             return "Org";
@@ -488,93 +409,9 @@ public class MetricsHtmlHelper {
         throw new IllegalArgumentException("Unsupported type: " + t.getClass().getSimpleName());
     }
 
-    private static <T> String renderDtoHeaders(T t) {
-        if (t instanceof CompanyOrgDTO) {
-            return renderOrgHeaders();
-        }
-        if (t instanceof CompanyOrgRepoDTO) {
-            return renderRepoHeaders();
-        }
-        if (t instanceof CompanyOrgRepoBranchDTO) {
-            return renderBranchHeaders();
-        }
-        if (t instanceof CompanyOrgRepoBranchJobInfoDTO) {
-            return renderJobHeaders();
-        }
-        throw new IllegalArgumentException("Unsupported type: " + t.getClass().getSimpleName());
-    }
-
-    private static <T> String renderDto(T t) {
-        if (t instanceof CompanyOrgDTO dto) {
-            return renderOrg(dto);
-        }
-        if (t instanceof CompanyOrgRepoDTO dto) {
-            return renderRepo(dto);
-        }
-        if (t instanceof CompanyOrgRepoBranchDTO dto) {
-            return renderBranch(dto);
-        }
-        if (t instanceof CompanyOrgRepoBranchJobInfoDTO dto) {
-            return renderJob(dto);
-        }
-        throw new IllegalArgumentException("Unsupported type: " + t.getClass().getSimpleName());
-    }
-
-    private static String renderOrgHeaders() {
-        return "<th class='dto-header' rowspan='2'>Company</th>" + ls +
-               "<th class='dto-header' rowspan='2'>Org</th>" + ls;
-    }
-
-    private static String renderRepoHeaders() {
-        return "<th class='dto-header' rowspan='2'>Company</th>" + ls +
-               "<th class='dto-header' rowspan='2'>Org</th>" + ls +
-               "<th class='dto-header' rowspan='2'>Repo</th>" + ls;
-    }
-
-    private static String renderBranchHeaders() {
-        return "<th class='dto-header' rowspan='2'>Company</th>" + ls +
-               "<th class='dto-header' rowspan='2'>Org</th>" + ls +
-               "<th class='dto-header' rowspan='2'>Repo</th>" + ls +
-               "<th class='dto-header' rowspan='2'>Branch</th>";
-    }
-
-    private static String renderJobHeaders() {
-        return "<th class='dto-header' rowspan='2'>Company</th>" + ls +
-               "<th class='dto-header' rowspan='2'>Org</th>" + ls +
-               "<th class='dto-header' rowspan='2'>Repo</th>" + ls +
-               "<th class='dto-header' rowspan='2'>Branch</th>" + ls +
-               "<th class='dto-header' rowspan='2'>JobInfo</th>";
-    }
-
-    private static String renderOrg(CompanyOrgDTO dto) {
-        return "<td>" + dto.getCompany() + "</td>" + ls +
-               "<td>" + dto.getOrg() + "</td>" + ls;
-    }
-
-    private static String renderRepo(CompanyOrgRepoDTO dto) {
-        return "<td>" + dto.getCompany() + "</td>" + ls +
-               "<td>" + dto.getOrg() + "</td>" + ls +
-               "<td>" + dto.getRepo() + "</td>" + ls;
-    }
-
-    private static String renderBranch(CompanyOrgRepoBranchDTO dto) {
-        return "<td>" + dto.getCompany() + "</td>" + ls +
-               "<td>" + dto.getOrg() + "</td>" + ls +
-               "<td>" + dto.getRepo() + "</td>" + ls +
-               "<td>" + dto.getBranch() + "</td>" + ls;
-    }
-
-    private static String renderJob(CompanyOrgRepoBranchJobInfoDTO dto) {
-        return "<td>" + dto.getCompany() + "</td>" + ls +
-               "<td>" + dto.getOrg() + "</td>" + ls +
-               "<td>" + dto.getRepo() + "</td>" + ls +
-               "<td>" + dto.getBranch() + "</td>" + ls +
-               "<td>" + StringMapUtil.valuesOnlyColonSeparated(dto.getJobInfo()) + "</td>" + ls;
-    }
-
     final static String shortcuts =
             """
-            <fieldset class="top-fieldset">
+            <fieldset class="top-fieldset" style="vertical-align:top;">
                 <legend>Table of contents</legend>
                 <ul class="shortcuts">
                     <li><a href="#org-fieldset">org</a></li>
@@ -587,37 +424,39 @@ public class MetricsHtmlHelper {
 
     final static String legend =
             """
+            <details style="display:inline-block; vertical-align:top;">
+            <summary>Definitions</summary>
             <fieldset class='top-fieldset'>
-            <legend>Definitions</legend>
             <dl>
-            	<dt>Period</dt>
-            	<dd>Time range for metrics. Current = most recent, Previous = prior period, Δ Change % = percentage difference.</dd>
-            	
-            	<dt>Test Pass %</dt>
+            	<dt>Δ columns</dt>
+            	<dd>Change from previous period. Hover any cell for previous value.</dd>
+
+            	<dt>-</dt>
+            	<dd>No runs in current period.</dd>
+
+            	<dt>Success %</dt>
             	<dd>The % of test executions which passed.</dd>
-                        
-            	<dt>Test Executions</dt>
-            	<dd>The total number of executions of tests</dd>
-                        
-            	<dt>Test Time Total</dt>
-            	<dd>Cumulative test execution time</dd>
-            	
-            	<dt>Test Time Avg</dt>
-            	<dd>Test Time Total / Job Runs</dd>
-            	
+
+            	<dt>Test Runs</dt>
+            	<dd>The total number of test executions.</dd>
+
+            	<dt>Duration Avg</dt>
+            	<dd>Average test execution time per job run.</dd>
+
             	<dt>Job Time Avg</dt>
-            	<dd>Average wall clock job duration (from cucumber JSON start/end times)</dd>
-                        
+            	<dd>Average wall clock job duration.</dd>
+
             	<dt>Job Pass %</dt>
-            	<dd>The percentage of job runs with no failing tests</dd>
-                        
+            	<dd>The percentage of job runs with no failing tests.</dd>
+
             	<dt>Job Runs</dt>
-            	<dd>Total job runs</dd>
-            	
-            	<dt>Row Colors</dt>
-            	<dd>Blue = Current period, Gray = Previous period. Delta rows show green/red only for changes &gt;10%.</dd>
+            	<dd>Total job runs.</dd>
+
+            	<dt>Delta Colors</dt>
+            	<dd>Green = improvement, Red = regression. Only shown for changes &gt;10%.</dd>
             </dl>
             </fieldset>
+            </details>
             """;
 
     public static BigDecimal divide(BigDecimal num, Integer dem) {

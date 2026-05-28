@@ -63,8 +63,7 @@ public class MetricsIntervalRequest {
             TreeSet<String> notBranches,
             TreeSet<String> notJobInfos,
             boolean shouldIncludeDefaultBranches,
-            Integer intervalDays,
-            Integer intervalCount) {
+            Integer intervalDays) {
         MetricsFilter required = MetricsFilter
                 .builder()
                 .companies(companies)
@@ -83,7 +82,7 @@ public class MetricsIntervalRequest {
                 .jobInfos(StringMapUtil.fromColonSeparated((notJobInfos)))
                 .build();
 
-        TreeSet<InstantRange> ranges = MetricsIntervalRequest.ranges(intervalDays, intervalCount);
+        TreeSet<InstantRange> ranges = MetricsIntervalRequest.ranges(intervalDays, 2);
 
         return MetricsIntervalRequest
                 .builder()
