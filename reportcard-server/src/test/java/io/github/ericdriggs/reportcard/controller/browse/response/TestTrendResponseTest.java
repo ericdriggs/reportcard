@@ -75,7 +75,7 @@ public class TestTrendResponseTest {
         assertEquals("testFoo", entry.getTestCaseName());
         assertEquals(new BigDecimal("67.0"), entry.getSuccessPercent());
 
-        // Verify sparse runStates uses build numbers — only non-SUCCESS states included
+        // Verify sparse runStates uses build numbers — only FAIL states included
         Map<String, List<Long>> runStates = entry.getRunStates();
         assertNotNull(runStates);
         assertNull(runStates.get("SUCCESS"));                          // success is inferred from runs
