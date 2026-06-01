@@ -75,10 +75,10 @@ public class TestTrendResponseTest {
         assertEquals("testFoo", entry.getTestCaseName());
         assertEquals(new BigDecimal("67.0"), entry.getSuccessPercent());
 
-        // Verify sparse runStates uses build numbers (jobRunCount)
+        // Verify sparse runStates uses build numbers — only non-SUCCESS states included
         Map<String, List<Long>> runStates = entry.getRunStates();
         assertNotNull(runStates);
-        assertEquals(List.of(160L, 158L), runStates.get("SUCCESS")); // build 160 and 158
+        assertNull(runStates.get("SUCCESS"));                          // success is inferred from runs
         assertEquals(List.of(159L), runStates.get("FAIL"));           // build 159
         assertNull(runStates.get("SKIPPED"));                          // omitted when empty
 
@@ -236,11 +236,9 @@ public class TestTrendResponseTest {
 
         TestTrendResponse response = TestTrendResponse.fromTestTrendTable(table);
 
-        // SKIPPED appears in runStates
+        // Only FAIL appears in runStates — SUCCESS and SKIPPED are excluded
         TestTrendResponse.TestCaseTrendEntry entry = response.getTestCases().get(0);
-        assertNotNull(entry.getRunStates());
-        assertEquals(List.of(10L), entry.getRunStates().get("SKIPPED"));
-        assertNull(entry.getRunStates().get("SUCCESS"));
+        assertNull(entry.getRunStates());  // no failures, so runStates is null
 
         // SKIPPED does not count as passed — run successPercent should be 0
         TestTrendResponse.RunHeaderEntry run = response.getRuns().get(10L);

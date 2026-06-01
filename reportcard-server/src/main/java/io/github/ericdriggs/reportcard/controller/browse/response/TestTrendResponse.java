@@ -118,8 +118,10 @@ public class TestTrendResponse {
                 runPassCount.merge(runId, 1, Integer::sum);
             }
 
-            String stateName = state.getTestCaseRunState().name();
-            runStates.computeIfAbsent(stateName, k -> new ArrayList<>()).add(jobRunCount);
+            if (state.getTestCaseRunState() == TestCaseRunState.FAIL) {
+                String stateName = state.getTestCaseRunState().name();
+                runStates.computeIfAbsent(stateName, k -> new ArrayList<>()).add(jobRunCount);
+            }
 
             if (state.getTestCaseRunState() == TestCaseRunState.FAIL && state.getTestCaseRunStateGroup() != null) {
                 String message = indexToMessage.get(state.getTestCaseRunStateGroup());
