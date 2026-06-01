@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.1] - 2026-06-01 - ISO 8601 dates, trend runStates simplification
+
+### Changed
+
+- All JSON endpoints now serialize `Instant` fields as ISO 8601 (`"2025-05-03T00:00:00Z"`) instead of epoch seconds
+- Trend endpoint `runStates` now contains only FAIL entries — SUCCESS and SKIPPED are excluded since success is inferrable from the runs metadata
+
+### Fixed
+
+- `@EnableWebMvc` was bypassing Spring Boot's Jackson auto-configuration, causing `Instant` fields to serialize as epoch; added `extendMessageConverters` to configure the existing Jackson converter
+- `SharedObjectMappers` lacked `WRITE_DATES_AS_TIMESTAMPS=false` on all 4 mapper instances; added and removed duplicate `registerModule` calls
+
+---
+
 ## [0.2.0] - 2026-05-28 - Dashboard endpoints, trend API, and performance
 
 Major additions to the JSON API surface: org/repo dashboards, flat denormalized endpoints, jobInfo natural-key routing, JSON trend endpoint with chunked fallback, and significant query performance improvements.

@@ -22,29 +22,28 @@ public enum SharedObjectMappers {
     public final static ObjectMapper sortedObjectMapper = new ObjectMapper()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             .configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true)
+            .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
             .setSerializationInclusion(JsonInclude.Include.NON_NULL)
             .registerModule(new JavaTimeModule());
 
     public final static ObjectMapper simpleObjectMapper = new ObjectMapper()
             .registerModule(new JavaTimeModule())
+            .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
             .setSerializationInclusion(JsonInclude.Include.NON_NULL)
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-            .registerModule(new JavaTimeModule())
-            .setSerializationInclusion(JsonInclude.Include.NON_NULL);
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
     public final static ObjectMapper ignoreUnknownObjectMapper = new ObjectMapper()
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true)
-            .setSerializationInclusion(JsonInclude.Include.NON_NULL)
             .registerModule(new JavaTimeModule())
+            .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-            .setSerializationInclusion(JsonInclude.Include.NON_NULL)
-            .registerModule(new JavaTimeModule());
+            .setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
     public static final ObjectMapper permissiveObjectMapper = JsonMapper.builder()
             .addModule(new JavaTimeModule())
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             .configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, false)
             .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
+            .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
             .serializationInclusion(JsonInclude.Include.NON_NULL)
             .visibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
             .build();
