@@ -1,6 +1,8 @@
 package io.github.ericdriggs.reportcard.controller.graph;
 
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.JobPojo;
+import io.github.ericdriggs.reportcard.model.failures.FailuresDashboard;
+import io.github.ericdriggs.reportcard.model.failures.FailuresDashboardRequest;
 import io.github.ericdriggs.reportcard.model.metrics.company.MetricsIntervalRequest;
 import io.github.ericdriggs.reportcard.model.metrics.company.MetricsIntervalResultCount;
 import io.github.ericdriggs.reportcard.model.pipeline.JobDashboardMetrics;
@@ -131,6 +133,53 @@ public class GraphJsonController {
                 .days(days)
                 .build();
         return new ResponseEntity<>(graphService.getPipelineDashboard(request), HttpStatus.OK);
+    }
+
+    @Operation(summary = "Get failures dashboard for company")
+    @GetMapping(path = "company/{company}/failures", produces = "application/json")
+    public ResponseEntity<FailuresDashboard> getFailuresDashboardForCompany(
+            @PathVariable String company,
+            @RequestParam(required = false, defaultValue = "7") Integer days,
+            @RequestParam(required = false, defaultValue = "50") Integer failureThreshold,
+            @RequestParam(required = false) List<String> repos,
+            @RequestParam(required = false) List<String> jobInfo
+    ) {
+        return buildFailuresDashboardResponse(company, null, days, failureThreshold, repos, jobInfo);
+    }
+
+    @Operation(summary = "Get failures dashboard for org")
+    @GetMapping(path = "company/{company}/org/{org}/failures", produces = "application/json")
+    public ResponseEntity<FailuresDashboard> getFailuresDashboardForOrg(
+            @PathVariable String company,
+            @PathVariable String org,
+            @RequestParam(required = false, defaultValue = "7") Integer days,
+            @RequestParam(required = false, defaultValue = "50") Integer failureThreshold,
+            @RequestParam(required = false) List<String> repos,
+            @RequestParam(required = false) List<String> jobInfo
+    ) {
+        return buildFailuresDashboardResponse(company, org, days, failureThreshold, repos, jobInfo);
+    }
+
+    private ResponseEntity<FailuresDashboard> buildFailuresDashboardResponse(
+            String company, String org, Integer days, Integer failureThreshold,
+            List<String> repos, List<String> jobInfo) {
+        FailuresDashboardRequest.FailuresDashboardRequestBuilder builder = FailuresDashboardRequest.builder()
+                .company(company)
+                .org(org)
+                .days(days)
+                .failureThreshold(failureThreshold)
+                .repos(repos);
+
+        if (jobInfo != null && !jobInfo.isEmpty()) {
+            Map<String, String> jobInfoMap = JobInfoParser.parseJobInfoParams(jobInfo);
+            if (!jobInfoMap.isEmpty()) {
+                Map.Entry<String, String> entry = jobInfoMap.entrySet().iterator().next();
+                builder.jobInfoKey(entry.getKey())
+                        .jobInfoValues(List.of(entry.getValue().split(",")));
+            }
+        }
+
+        return new ResponseEntity<>(graphService.getFailuresDashboard(builder.build()), HttpStatus.OK);
     }
 
 }

@@ -6,6 +6,8 @@ import org.jooq.impl.DSL;
 import org.jooq.SQLDialect;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class SqlJsonUtilTest {
@@ -116,5 +118,37 @@ class SqlJsonUtilTest {
         assertTrue(renderedSql.contains(":"), "Wildcard value should render as a named bind parameter");
         assertFalse(renderedSql.contains("'my%value'"), "Wildcard value should not be inlined in rendered SQL");
         assertTrue(renderedSql.toLowerCase().contains("like"));
+    }
+
+    @Test
+    void testJobInfoKeyInValues_InvalidKey() {
+        assertThrows(IllegalArgumentException.class,
+            () -> SqlJsonUtil.jobInfoKeyInValues("app-name", List.of("foo")));
+        assertThrows(IllegalArgumentException.class,
+            () -> SqlJsonUtil.jobInfoKeyInValues("app.name", List.of("foo")));
+        assertThrows(IllegalArgumentException.class,
+            () -> SqlJsonUtil.jobInfoKeyInValues("app name", List.of("foo")));
+    }
+
+    @Test
+    void testJobInfoKeyInValues_EmptyInputs() {
+        assertEquals("(true)", SqlJsonUtil.jobInfoKeyInValues(null, List.of("foo")).toString());
+        assertEquals("(true)", SqlJsonUtil.jobInfoKeyInValues("", List.of("foo")).toString());
+        assertEquals("(true)", SqlJsonUtil.jobInfoKeyInValues("pipeline", null).toString());
+        assertEquals("(true)", SqlJsonUtil.jobInfoKeyInValues("pipeline", List.of()).toString());
+    }
+
+    @Test
+    void testJobInfoKeyInValues() {
+        Condition condition = SqlJsonUtil.jobInfoKeyInValues("pipeline", List.of("bat", "build_acceptance"));
+        DSLContext ctx = DSL.using(SQLDialect.MYSQL);
+        String sql = ctx.renderInlined(condition);
+
+        assertTrue(sql.contains("JSON_EXTRACT"), "Should use JSON_EXTRACT, got: " + sql);
+        assertTrue(sql.contains("pipeline"), "Should reference key 'pipeline', got: " + sql);
+        assertTrue(sql.contains("'bat'") || sql.contains("bat"), "Should contain value 'bat', got: " + sql);
+        assertTrue(sql.contains("'build_acceptance'") || sql.contains("build_acceptance"), "Should contain value 'build_acceptance', got: " + sql);
+        assertTrue(sql.toLowerCase().contains(" in "), "Should use IN clause, got: " + sql);
+        assertFalse(sql.toLowerCase().contains("like"), "Should NOT use LIKE, got: " + sql);
     }
 }

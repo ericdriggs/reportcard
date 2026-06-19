@@ -81,6 +81,20 @@ public enum SqlJsonUtil {
         }
     }
 
+    public static Condition jobInfoKeyInValues(String key, List<String> values) {
+        if (ObjectUtils.isEmpty(key) || CollectionUtils.isEmpty(values)) {
+            return condition("true");
+        }
+        if (!key.matches("^[a-zA-Z0-9_]+$")) {
+            throw new IllegalArgumentException("Invalid key format: " + key);
+        }
+        return condition(
+                "JSON_EXTRACT(job_info, {0}) IN ({1})",
+                inline("$." + key),
+                list(values.stream().map(org.jooq.impl.DSL::val).toList())
+        );
+    }
+
     public static Condition jsonNotEqualsCondition(Field<?> field, String json) {
         return condition(SqlJsonUtil.fieldNotEqualsJson(field.getName(), json));
     }
