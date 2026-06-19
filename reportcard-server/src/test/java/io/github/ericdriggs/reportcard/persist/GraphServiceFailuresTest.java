@@ -82,7 +82,7 @@ public class GraphServiceFailuresTest extends AbstractGraphServiceTest {
     }
 
     @Test
-    void getFailingRunIds_returnsRunsForMatchingJobInfo() {
+    void getMatchingRunIds_returnsRunsForMatchingJobInfo() {
         FailuresDashboardRequest request = FailuresDashboardRequest.builder()
                 .company("company1")
                 .org("org1")
@@ -92,13 +92,13 @@ public class GraphServiceFailuresTest extends AbstractGraphServiceTest {
                 .failureThreshold(50)
                 .build();
 
-        Long[] runIds = graphService.getFailingRunIds(request);
+        Long[] runIds = graphService.getMatchingRunIds(request);
         assertNotNull(runIds);
         assertTrue(runIds.length >= 5, "Should find at least 5 runs, got: " + runIds.length);
     }
 
     @Test
-    void getFailingRunIds_returnsEmptyForNonMatchingJobInfo() {
+    void getMatchingRunIds_returnsEmptyForNonMatchingJobInfo() {
         FailuresDashboardRequest request = FailuresDashboardRequest.builder()
                 .company("company1")
                 .org("org1")
@@ -108,7 +108,7 @@ public class GraphServiceFailuresTest extends AbstractGraphServiceTest {
                 .failureThreshold(50)
                 .build();
 
-        Long[] runIds = graphService.getFailingRunIds(request);
+        Long[] runIds = graphService.getMatchingRunIds(request);
         assertNotNull(runIds);
         assertEquals(0, runIds.length, "Should find no runs for nonexistent pipeline");
     }
@@ -124,16 +124,17 @@ public class GraphServiceFailuresTest extends AbstractGraphServiceTest {
                 .failureThreshold(50)
                 .build();
 
-        Long[] runIds = graphService.getFailingRunIds(request);
+        Long[] runIds = graphService.getMatchingRunIds(request);
         assertTrue(runIds.length > 0, "Precondition: must have run IDs");
 
         List<TestCaseFailureSummary> summaries =
-                graphService.getFailingTestSummaries(runIds, request.getFailureThreshold());
+                graphService.getFailingTestSummaries(runIds, request.getFailureThreshold(), null);
         assertNotNull(summaries);
         assertFalse(summaries.isEmpty(), "Should find alwaysFailing test");
         for (var summary : summaries) {
-            assertTrue(summary.getSuccessPercent().doubleValue() < request.getFailureThreshold(),
-                    "All returned tests should be below threshold: " + summary);
+            double failurePct = 100.0 - summary.getSuccessPercent().doubleValue();
+            assertTrue(failurePct >= request.getFailureThreshold(),
+                    "All returned tests should have failure% >= threshold: " + summary);
         }
         // alwaysFailing has 0% success — should definitely be in the list
         assertTrue(summaries.stream().anyMatch(s -> "alwaysFailing".equals(s.getCaseName())),
@@ -154,7 +155,7 @@ public class GraphServiceFailuresTest extends AbstractGraphServiceTest {
                 .failureThreshold(50)
                 .build();
 
-        Long[] runIds = graphService.getFailingRunIds(request);
+        Long[] runIds = graphService.getMatchingRunIds(request);
         assertTrue(runIds.length > 0, "Precondition: must have run IDs");
 
         List<DailyTestAggregation> daily = graphService.getDailyAggregations(runIds);

@@ -19,4 +19,5 @@ public class FailuresDashboardRequest {
     @Builder.Default
     int failureThreshold = 50;
     List<String> repos;
+    Integer limit;
 }

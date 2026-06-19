@@ -297,9 +297,10 @@ public class GraphUIController {
             @RequestParam(required = false, defaultValue = "7") Integer days,
             @RequestParam(required = false, defaultValue = "50") Integer failureThreshold,
             @RequestParam(required = false) List<String> repos,
-            @RequestParam(required = false) List<String> jobInfo
+            @RequestParam(required = false) List<String> jobInfo,
+            @RequestParam(required = false) Integer limit
     ) {
-        return buildFailuresDashboardResponse(company, null, days, failureThreshold, repos, jobInfo);
+        return buildFailuresDashboardResponse(company, null, days, failureThreshold, repos, jobInfo, limit);
     }
 
     @GetMapping(path = "company/{company}/org/{org}/failures", produces = "text/html;charset=UTF-8")
@@ -309,20 +310,22 @@ public class GraphUIController {
             @RequestParam(required = false, defaultValue = "7") Integer days,
             @RequestParam(required = false, defaultValue = "50") Integer failureThreshold,
             @RequestParam(required = false) List<String> repos,
-            @RequestParam(required = false) List<String> jobInfo
+            @RequestParam(required = false) List<String> jobInfo,
+            @RequestParam(required = false) Integer limit
     ) {
-        return buildFailuresDashboardResponse(company, org, days, failureThreshold, repos, jobInfo);
+        return buildFailuresDashboardResponse(company, org, days, failureThreshold, repos, jobInfo, limit);
     }
 
     private ResponseEntity<String> buildFailuresDashboardResponse(
             String company, String org, Integer days, Integer failureThreshold,
-            List<String> repos, List<String> jobInfo) {
+            List<String> repos, List<String> jobInfo, Integer limit) {
         FailuresDashboardRequest.FailuresDashboardRequestBuilder builder = FailuresDashboardRequest.builder()
                 .company(company)
                 .org(org)
                 .days(days)
                 .failureThreshold(failureThreshold)
-                .repos(repos);
+                .repos(repos)
+                .limit(limit);
 
         if (jobInfo != null && !jobInfo.isEmpty()) {
             String[] parts = jobInfo.get(0).split(":", 2);

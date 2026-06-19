@@ -37,6 +37,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import io.github.ericdriggs.reportcard.gen.db.tables.StageTable;
+import io.github.ericdriggs.reportcard.gen.db.tables.TestResultTable;
+
 import static io.github.ericdriggs.reportcard.gen.db.Tables.*;
 import static org.jooq.impl.DSL.*;
 
@@ -902,7 +905,7 @@ public class GraphService extends AbstractPersistService {
 
     // ==================== Failures Dashboard ====================
 
-    public List<TestCaseFailureSummary> getFailingTestSummaries(Long[] runIds, int failureThreshold) {
+    public List<TestCaseFailureSummary> getFailingTestSummaries(Long[] runIds, int failureThreshold, Integer limit) {
         if (runIds == null || runIds.length == 0) {
             return List.of();
         }
@@ -968,7 +971,8 @@ public class GraphService extends AbstractPersistService {
             BigDecimal successPct = stats.total > 0
                     ? BigDecimal.valueOf(stats.success).multiply(BigDecimal.valueOf(100)).divide(BigDecimal.valueOf(stats.total), 2, RoundingMode.HALF_UP)
                     : BigDecimal.ZERO;
-            if (successPct.doubleValue() >= failureThreshold) continue;
+            BigDecimal failurePct = BigDecimal.valueOf(100).subtract(successPct);
+            if (failurePct.doubleValue() < failureThreshold) continue;
             Instant failSince = stats.lastPass != null ? stats.lastPass : stats.earliest;
             summaries.add(TestCaseFailureSummary.builder()
                     .packageName(key.packageName)
@@ -985,7 +989,10 @@ public class GraphService extends AbstractPersistService {
                     .build());
         }
         summaries.sort(java.util.Comparator.comparing(TestCaseFailureSummary::getSuccessPercent));
-        return summaries.size() > 1000 ? summaries.subList(0, 1000) : summaries;
+        if (limit != null && summaries.size() > limit) {
+            return summaries.subList(0, limit);
+        }
+        return summaries;
     }
 
     public List<DailyTestAggregation> getDailyAggregations(Long[] runIds) {
@@ -1047,7 +1054,7 @@ public class GraphService extends AbstractPersistService {
     }
 
     public FailuresDashboard getFailuresDashboard(FailuresDashboardRequest request) {
-        Long[] runIds = getFailingRunIds(request);
+        Long[] runIds = getMatchingRunIds(request);
         if (runIds.length == 0) {
             return FailuresDashboard.builder()
                     .request(request)
@@ -1056,7 +1063,7 @@ public class GraphService extends AbstractPersistService {
                     .generated(Instant.now())
                     .build();
         }
-        List<TestCaseFailureSummary> failingTests = getFailingTestSummaries(runIds, request.getFailureThreshold());
+        List<TestCaseFailureSummary> failingTests = getFailingTestSummaries(runIds, request.getFailureThreshold(), request.getLimit());
         boolean isCompanyLevel = org.apache.commons.lang3.ObjectUtils.isEmpty(request.getOrg());
         List<DailyTestAggregation> dailyAggregations = isCompanyLevel ? List.of() : getDailyAggregations(runIds);
         Map<String, List<DailyTestAggregation>> dailyByOrg = isCompanyLevel ? getDailyAggregationsByOrg(runIds) : null;
@@ -1139,8 +1146,11 @@ public class GraphService extends AbstractPersistService {
         return result;
     }
 
-    public Long[] getFailingRunIds(FailuresDashboardRequest request) {
+    public Long[] getMatchingRunIds(FailuresDashboardRequest request) {
         Instant cutoff = Instant.now().minus(request.getDays(), ChronoUnit.DAYS);
+
+        StageTable s = STAGE.as("s");
+        TestResultTable tr = TEST_RESULT.as("tr");
 
         var query = dsl.select(RUN.RUN_ID)
                 .from(RUN)
@@ -1150,7 +1160,14 @@ public class GraphService extends AbstractPersistService {
                 .innerJoin(ORG).on(ORG.ORG_ID.eq(REPO.ORG_FK))
                 .innerJoin(COMPANY).on(COMPANY.COMPANY_ID.eq(ORG.COMPANY_FK))
                 .where(COMPANY.COMPANY_NAME.eq(request.getCompany()))
-                .and(RUN.RUN_DATE.ge(cutoff));
+                .and(RUN.RUN_DATE.ge(cutoff))
+                .and(DSL.exists(
+                        dsl.selectOne()
+                                .from(s)
+                                .innerJoin(tr).on(tr.STAGE_FK.eq(s.STAGE_ID))
+                                .where(s.RUN_FK.eq(RUN.RUN_ID))
+                                .and(tr.TESTS.gt(0))
+                ));
 
         if (!org.apache.commons.lang3.ObjectUtils.isEmpty(request.getOrg())) {
             query = query.and(ORG.ORG_NAME.eq(request.getOrg()));
