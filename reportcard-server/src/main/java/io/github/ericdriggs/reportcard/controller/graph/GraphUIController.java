@@ -325,11 +325,10 @@ public class GraphUIController {
                 .repos(repos);
 
         if (jobInfo != null && !jobInfo.isEmpty()) {
-            Map<String, String> jobInfoMap = JobInfoParser.parseJobInfoParams(jobInfo);
-            if (!jobInfoMap.isEmpty()) {
-                Map.Entry<String, String> entry = jobInfoMap.entrySet().iterator().next();
-                builder.jobInfoKey(entry.getKey())
-                        .jobInfoValues(List.of(entry.getValue().split(",")));
+            String[] parts = jobInfo.get(0).split(":", 2);
+            if (parts.length == 2 && !parts[0].isBlank() && !parts[1].isBlank()) {
+                builder.jobInfoKey(parts[0])
+                        .jobInfoValues(List.of(parts[1].split(",")));
             }
         }
 

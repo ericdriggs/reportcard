@@ -105,7 +105,9 @@ public class FailuresDashboardHtmlHelper extends BrowseHtmlHelper {
         List<Pair<String, String>> breadCrumbs = new ArrayList<>();
         breadCrumbs.add(Pair.of("home", "/"));
         breadCrumbs.add(Pair.of(request.getCompany(), "/company/" + request.getCompany()));
-        breadCrumbs.add(Pair.of(request.getOrg(), "/company/" + request.getCompany() + "/org/" + request.getOrg()));
+        if (request.getOrg() != null) {
+            breadCrumbs.add(Pair.of(request.getOrg(), "/company/" + request.getCompany() + "/org/" + request.getOrg()));
+        }
         breadCrumbs.add(Pair.of("failures", "#"));
         return breadCrumbs;
     }
