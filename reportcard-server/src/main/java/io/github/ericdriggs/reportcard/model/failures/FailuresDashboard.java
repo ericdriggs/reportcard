@@ -14,7 +14,6 @@ import java.util.Map;
 public class FailuresDashboard {
     FailuresDashboardRequest request;
     List<TestCaseFailureSummary> failingTests;
-    List<DailyTestAggregation> dailyAggregations;
     Map<String, List<DailyTestAggregation>> dailyAggregationsByOrg;
     Instant generated;
 }

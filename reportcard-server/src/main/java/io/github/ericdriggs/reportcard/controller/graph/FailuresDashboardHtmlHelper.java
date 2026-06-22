@@ -17,6 +17,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class FailuresDashboardHtmlHelper extends BrowseHtmlHelper {
 
@@ -60,7 +61,7 @@ public class FailuresDashboardHtmlHelper extends BrowseHtmlHelper {
                 .replace("<!--jobInfoKey-->", request.getJobInfoKey() != null ? escapeHtml(request.getJobInfoKey()) : "")
                 .replace("<!--jobInfoValues-->", request.getJobInfoValues() != null ? escapeHtml(String.join(",", request.getJobInfoValues())) : "")
                 .replace("<!--days-->", String.valueOf(request.getDays()))
-                .replace("<!--failureThreshold-->", String.valueOf(request.getFailureThreshold()))
+                .replace("<!--failureThreshold-->", String.valueOf(request.getMinFailurePercent()))
                 .replace("<!--repos-->", request.getRepos() != null ? escapeHtml(String.join(",", request.getRepos())) : "")
                 .replace("<!--failingTestRows-->", renderFailingTestRows(dashboard.getFailingTests()))
                 .replace("<!--chartSection-->", chartSection)
@@ -68,32 +69,24 @@ public class FailuresDashboardHtmlHelper extends BrowseHtmlHelper {
     }
 
     static String renderChartSection(FailuresDashboard dashboard) {
-        if (dashboard.getDailyAggregationsByOrg() != null && !dashboard.getDailyAggregationsByOrg().isEmpty()) {
-            StringBuilder sb = new StringBuilder();
-            for (var entry : dashboard.getDailyAggregationsByOrg().entrySet()) {
-                String orgName = entry.getKey();
-                String json;
-                try {
-                    json = objectMapper.writeValueAsString(entry.getValue());
-                } catch (JsonProcessingException e) {
-                    log.error("Failed to serialize daily aggregation for org '{}': {}", orgName, e.getMessage(), e);
-                    json = "[]";
-                }
-                sb.append("<h3>").append(escapeHtml(orgName)).append("</h3>").append(ls);
-                sb.append("<div class=\"chart-container\" data-daily='").append(json).append("'></div>").append(ls);
-            }
-            return sb.toString();
-        } else {
-            String dailyJson;
-            try {
-                dailyJson = objectMapper.writeValueAsString(dashboard.getDailyAggregations());
-            } catch (JsonProcessingException e) {
-                log.error("Failed to serialize daily aggregation data: {}", e.getMessage(), e);
-                dailyJson = "[]";
-            }
-            return "<div id=\"chart-container\" class=\"chart-container\"></div>" + ls
-                    + "<script id=\"daily-data\" type=\"application/json\">" + dailyJson + "</script>" + ls;
+        Map<String, List<DailyTestAggregation>> byOrg = dashboard.getDailyAggregationsByOrg();
+        if (byOrg == null || byOrg.isEmpty()) {
+            return "";
         }
+        StringBuilder sb = new StringBuilder();
+        for (var entry : byOrg.entrySet()) {
+            String orgName = entry.getKey();
+            String json;
+            try {
+                json = objectMapper.writeValueAsString(entry.getValue());
+            } catch (JsonProcessingException e) {
+                log.error("Failed to serialize daily aggregation for org '{}': {}", orgName, e.getMessage(), e);
+                json = "[]";
+            }
+            sb.append("<h3>").append(escapeHtml(orgName)).append("</h3>").append(ls);
+            sb.append("<div class=\"chart-container\" data-daily='").append(json).append("'></div>").append(ls);
+        }
+        return sb.toString();
     }
 
     static String renderFailingTestRows(List<TestCaseFailureSummary> failingTests) {
@@ -107,7 +100,7 @@ public class FailuresDashboardHtmlHelper extends BrowseHtmlHelper {
                     .append("<td>").append(escapeHtml(t.getSuiteName())).append("</td>")
                     .append("<td>").append(escapeHtml(t.getCaseName())).append("</td>")
                     .append("<td class=\"fail-percent\">").append(t.getSuccessPercent().toPlainString()).append("%</td>")
-                    .append("<td>").append(t.getFailSince() != null ? t.getFailSince().truncatedTo(ChronoUnit.SECONDS).toString() : "").append("</td>")
+                    .append("<td>").append(t.getLastPassedAt() != null ? t.getLastPassedAt().truncatedTo(ChronoUnit.SECONDS).toString() : "").append("</td>")
                     .append("<td>").append(t.getTotalRuns()).append("</td>")
                     .append("<td>").append(escapeHtml(t.getRepo())).append("</td>")
                     .append("<td>").append(escapeHtml(t.getBranch())).append("</td>")
@@ -168,7 +161,7 @@ public class FailuresDashboardHtmlHelper extends BrowseHtmlHelper {
                         <th>Suite</th>
                         <th>Test Case</th>
                         <th>Success %</th>
-                        <th>Fail Since</th>
+                        <th>Last Passed</th>
                         <th>Runs</th>
                         <th>Repo</th>
                         <th>Branch</th>

@@ -15,7 +15,7 @@ public class TestCaseFailureSummary {
     String suiteName;
     String caseName;
     BigDecimal successPercent;
-    Instant failSince;
+    Instant lastPassedAt;
     int totalRuns;
     int successCount;
     int failureCount;

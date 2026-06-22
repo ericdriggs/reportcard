@@ -3,6 +3,7 @@ package io.github.ericdriggs.reportcard.persist;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.github.ericdriggs.reportcard.cache.model.BranchStageViewResponse;
 import io.github.ericdriggs.reportcard.model.branch.BranchJobLatestRunMap;
+import io.github.ericdriggs.reportcard.model.TestStatus;
 import io.github.ericdriggs.reportcard.model.failures.*;
 import io.github.ericdriggs.reportcard.model.graph.*;
 import io.github.ericdriggs.reportcard.model.graph.condition.TableConditionMap;
@@ -947,9 +948,9 @@ public class GraphService extends AbstractPersistService {
                 String pkgName = suite.getPackageName();
                 String suiteName = suite.getName();
                 for (var tc : suite.getTestCases()) {
-                    if (tc.getTestStatusFk() != null && tc.getTestStatusFk() == 2) continue; // skip SKIPPED
+                    if (tc.getTestStatusFk() != null && tc.getTestStatusFk() == TestStatus.SKIPPED.getStatusId()) continue;
                     TestCaseKey key = new TestCaseKey(pkgName, suiteName, tc.getName(), repo, branch, jobInfoStr);
-                    boolean isSuccess = tc.getTestStatusFk() != null && tc.getTestStatusFk() == 1;
+                    boolean isSuccess = tc.getTestStatusFk() != null && tc.getTestStatusFk() == TestStatus.SUCCESS.getStatusId();
                     TestCaseStats prev = statsMap.getOrDefault(key, new TestCaseStats(0, 0, 0, null, null));
                     Instant newLastPass = isSuccess ? (prev.lastPass == null || runDate.isAfter(prev.lastPass) ? runDate : prev.lastPass) : prev.lastPass;
                     Instant newEarliest = prev.earliest == null || runDate.isBefore(prev.earliest) ? runDate : prev.earliest;
@@ -973,13 +974,13 @@ public class GraphService extends AbstractPersistService {
                     : BigDecimal.ZERO;
             BigDecimal failurePct = BigDecimal.valueOf(100).subtract(successPct);
             if (failurePct.doubleValue() < failureThreshold) continue;
-            Instant failSince = stats.lastPass != null ? stats.lastPass : stats.earliest;
+            Instant lastPassedAt = stats.lastPass != null ? stats.lastPass : stats.earliest;
             summaries.add(TestCaseFailureSummary.builder()
                     .packageName(key.packageName)
                     .suiteName(key.suiteName)
                     .caseName(key.caseName)
                     .successPercent(successPct)
-                    .failSince(failSince)
+                    .lastPassedAt(lastPassedAt)
                     .totalRuns(stats.total)
                     .successCount(stats.success)
                     .failureCount(stats.failure)
@@ -1012,45 +1013,14 @@ public class GraphService extends AbstractPersistService {
                 .fetch();
 
         Map<LocalDate, int[]> dailyMap = new TreeMap<>();
-
         for (var row : rows) {
             String json = row.get(TEST_RESULT.TEST_SUITES_JSON);
             Instant runDate = row.get(RUN.RUN_DATE);
             if (json == null || json.isBlank() || runDate == null) continue;
-
             LocalDate day = runDate.atZone(java.time.ZoneOffset.UTC).toLocalDate();
-            List<io.github.ericdriggs.reportcard.model.TestSuiteModel> suites =
-                    io.github.ericdriggs.reportcard.model.TestSuiteModel.fromJson(json);
-            for (var suite : suites) {
-                for (var tc : suite.getTestCases()) {
-                    if (tc.getTestStatusFk() != null && tc.getTestStatusFk() == 2) continue;
-                    int[] counts = dailyMap.computeIfAbsent(day, k -> new int[2]); // [pass, fail]
-                    if (tc.getTestStatusFk() != null && tc.getTestStatusFk() == 1) {
-                        counts[0]++;
-                    } else {
-                        counts[1]++;
-                    }
-                }
-            }
+            accumulateDailyCounts(json, day, dailyMap);
         }
-
-        List<DailyTestAggregation> aggregations = new ArrayList<>();
-        for (var entry : dailyMap.entrySet()) {
-            int pass = entry.getValue()[0];
-            int fail = entry.getValue()[1];
-            int total = pass + fail;
-            BigDecimal passPct = total > 0
-                    ? BigDecimal.valueOf(pass).multiply(BigDecimal.valueOf(100)).divide(BigDecimal.valueOf(total), 2, RoundingMode.HALF_UP)
-                    : BigDecimal.ZERO;
-            aggregations.add(DailyTestAggregation.builder()
-                    .date(entry.getKey())
-                    .totalTests(total)
-                    .passCount(pass)
-                    .failCount(fail)
-                    .passPercent(passPct)
-                    .build());
-        }
-        return aggregations;
+        return toDailyAggregations(dailyMap);
     }
 
     public FailuresDashboard getFailuresDashboard(FailuresDashboardRequest request) {
@@ -1059,18 +1029,21 @@ public class GraphService extends AbstractPersistService {
             return FailuresDashboard.builder()
                     .request(request)
                     .failingTests(List.of())
-                    .dailyAggregations(List.of())
+                    .dailyAggregationsByOrg(Map.of())
                     .generated(Instant.now())
                     .build();
         }
-        List<TestCaseFailureSummary> failingTests = getFailingTestSummaries(runIds, request.getFailureThreshold(), request.getLimit());
+        List<TestCaseFailureSummary> failingTests = getFailingTestSummaries(runIds, request.getMinFailurePercent(), request.getLimit());
         boolean isCompanyLevel = org.apache.commons.lang3.ObjectUtils.isEmpty(request.getOrg());
-        List<DailyTestAggregation> dailyAggregations = isCompanyLevel ? List.of() : getDailyAggregations(runIds);
-        Map<String, List<DailyTestAggregation>> dailyByOrg = isCompanyLevel ? getDailyAggregationsByOrg(runIds) : null;
+        Map<String, List<DailyTestAggregation>> dailyByOrg;
+        if (isCompanyLevel) {
+            dailyByOrg = getDailyAggregationsByOrg(runIds);
+        } else {
+            dailyByOrg = Map.of(request.getOrg(), getDailyAggregations(runIds));
+        }
         return FailuresDashboard.builder()
                 .request(request)
                 .failingTests(failingTests)
-                .dailyAggregations(dailyAggregations)
                 .dailyAggregationsByOrg(dailyByOrg)
                 .generated(Instant.now())
                 .build();
@@ -1097,9 +1070,7 @@ public class GraphService extends AbstractPersistService {
                 .and(TEST_RESULT.TESTS.gt(0))
                 .fetch();
 
-        // org -> date -> [pass, fail]
         Map<String, Map<LocalDate, int[]>> orgDailyMap = new TreeMap<>();
-
         for (var row : rows) {
             String json = row.get(TEST_RESULT.TEST_SUITES_JSON);
             Instant runDate = row.get(RUN.RUN_DATE);
@@ -1108,42 +1079,50 @@ public class GraphService extends AbstractPersistService {
 
             LocalDate day = runDate.atZone(java.time.ZoneOffset.UTC).toLocalDate();
             Map<LocalDate, int[]> dailyMap = orgDailyMap.computeIfAbsent(orgName, k -> new TreeMap<>());
-            List<io.github.ericdriggs.reportcard.model.TestSuiteModel> suites =
-                    io.github.ericdriggs.reportcard.model.TestSuiteModel.fromJson(json);
-            for (var suite : suites) {
-                for (var tc : suite.getTestCases()) {
-                    if (tc.getTestStatusFk() != null && tc.getTestStatusFk() == 2) continue;
-                    int[] counts = dailyMap.computeIfAbsent(day, k -> new int[2]);
-                    if (tc.getTestStatusFk() != null && tc.getTestStatusFk() == 1) {
-                        counts[0]++;
-                    } else {
-                        counts[1]++;
-                    }
-                }
-            }
+            accumulateDailyCounts(json, day, dailyMap);
         }
 
         Map<String, List<DailyTestAggregation>> result = new TreeMap<>();
         for (var orgEntry : orgDailyMap.entrySet()) {
-            List<DailyTestAggregation> aggregations = new ArrayList<>();
-            for (var dayEntry : orgEntry.getValue().entrySet()) {
-                int pass = dayEntry.getValue()[0];
-                int fail = dayEntry.getValue()[1];
-                int total = pass + fail;
-                BigDecimal passPct = total > 0
-                        ? BigDecimal.valueOf(pass).multiply(BigDecimal.valueOf(100)).divide(BigDecimal.valueOf(total), 2, RoundingMode.HALF_UP)
-                        : BigDecimal.ZERO;
-                aggregations.add(DailyTestAggregation.builder()
-                        .date(dayEntry.getKey())
-                        .totalTests(total)
-                        .passCount(pass)
-                        .failCount(fail)
-                        .passPercent(passPct)
-                        .build());
-            }
-            result.put(orgEntry.getKey(), aggregations);
+            result.put(orgEntry.getKey(), toDailyAggregations(orgEntry.getValue()));
         }
         return result;
+    }
+
+    private void accumulateDailyCounts(String testSuitesJson, LocalDate day, Map<LocalDate, int[]> dailyMap) {
+        List<io.github.ericdriggs.reportcard.model.TestSuiteModel> suites =
+                io.github.ericdriggs.reportcard.model.TestSuiteModel.fromJson(testSuitesJson);
+        for (var suite : suites) {
+            for (var tc : suite.getTestCases()) {
+                if (tc.getTestStatusFk() != null && tc.getTestStatusFk() == TestStatus.SKIPPED.getStatusId()) continue;
+                int[] counts = dailyMap.computeIfAbsent(day, k -> new int[2]);
+                if (tc.getTestStatusFk() != null && tc.getTestStatusFk() == TestStatus.SUCCESS.getStatusId()) {
+                    counts[0]++;
+                } else {
+                    counts[1]++;
+                }
+            }
+        }
+    }
+
+    private List<DailyTestAggregation> toDailyAggregations(Map<LocalDate, int[]> dailyMap) {
+        List<DailyTestAggregation> aggregations = new ArrayList<>();
+        for (var entry : dailyMap.entrySet()) {
+            int pass = entry.getValue()[0];
+            int fail = entry.getValue()[1];
+            int total = pass + fail;
+            BigDecimal passPct = total > 0
+                    ? BigDecimal.valueOf(pass).multiply(BigDecimal.valueOf(100)).divide(BigDecimal.valueOf(total), 2, RoundingMode.HALF_UP)
+                    : BigDecimal.ZERO;
+            aggregations.add(DailyTestAggregation.builder()
+                    .date(entry.getKey())
+                    .totalTests(total)
+                    .passCount(pass)
+                    .failCount(fail)
+                    .passPercent(passPct)
+                    .build());
+        }
+        return aggregations;
     }
 
     public Long[] getMatchingRunIds(FailuresDashboardRequest request) {

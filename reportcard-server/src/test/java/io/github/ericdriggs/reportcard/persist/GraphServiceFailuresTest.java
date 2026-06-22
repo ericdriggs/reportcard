@@ -89,7 +89,7 @@ public class GraphServiceFailuresTest extends AbstractGraphServiceTest {
                 .jobInfoKey("pipeline")
                 .jobInfoValues(List.of("bat_failures_test"))
                 .days(365)
-                .failureThreshold(50)
+                .minFailurePercent(50)
                 .build();
 
         Long[] runIds = graphService.getMatchingRunIds(request);
@@ -105,7 +105,7 @@ public class GraphServiceFailuresTest extends AbstractGraphServiceTest {
                 .jobInfoKey("pipeline")
                 .jobInfoValues(List.of("nonexistent_pipeline"))
                 .days(365)
-                .failureThreshold(50)
+                .minFailurePercent(50)
                 .build();
 
         Long[] runIds = graphService.getMatchingRunIds(request);
@@ -121,19 +121,19 @@ public class GraphServiceFailuresTest extends AbstractGraphServiceTest {
                 .jobInfoKey("pipeline")
                 .jobInfoValues(List.of("bat_failures_test"))
                 .days(365)
-                .failureThreshold(50)
+                .minFailurePercent(50)
                 .build();
 
         Long[] runIds = graphService.getMatchingRunIds(request);
         assertTrue(runIds.length > 0, "Precondition: must have run IDs");
 
         List<TestCaseFailureSummary> summaries =
-                graphService.getFailingTestSummaries(runIds, request.getFailureThreshold(), null);
+                graphService.getFailingTestSummaries(runIds, request.getMinFailurePercent(), null);
         assertNotNull(summaries);
         assertFalse(summaries.isEmpty(), "Should find alwaysFailing test");
         for (var summary : summaries) {
             double failurePct = 100.0 - summary.getSuccessPercent().doubleValue();
-            assertTrue(failurePct >= request.getFailureThreshold(),
+            assertTrue(failurePct >= request.getMinFailurePercent(),
                     "All returned tests should have failure% >= threshold: " + summary);
         }
         // alwaysFailing has 0% success — should definitely be in the list
@@ -152,7 +152,7 @@ public class GraphServiceFailuresTest extends AbstractGraphServiceTest {
                 .jobInfoKey("pipeline")
                 .jobInfoValues(List.of("bat_failures_test"))
                 .days(365)
-                .failureThreshold(50)
+                .minFailurePercent(50)
                 .build();
 
         Long[] runIds = graphService.getMatchingRunIds(request);
@@ -170,6 +170,45 @@ public class GraphServiceFailuresTest extends AbstractGraphServiceTest {
     }
 
     @Test
+    void getFailuresDashboard_companyLevel_populatesDailyByOrg() {
+        FailuresDashboardRequest request = FailuresDashboardRequest.builder()
+                .company("company1")
+                .jobInfoKey("pipeline")
+                .jobInfoValues(List.of("bat_failures_test"))
+                .days(365)
+                .minFailurePercent(50)
+                .build();
+
+        FailuresDashboard dashboard = graphService.getFailuresDashboard(request);
+        assertNotNull(dashboard);
+        assertNotNull(dashboard.getDailyAggregationsByOrg(), "Company-level should populate dailyAggregationsByOrg");
+        assertFalse(dashboard.getDailyAggregationsByOrg().isEmpty(), "dailyAggregationsByOrg should not be empty");
+        assertTrue(dashboard.getDailyAggregationsByOrg().containsKey("org1"),
+                "Should contain org1 in keys, got: " + dashboard.getDailyAggregationsByOrg().keySet());
+    }
+
+    @Test
+    void getFailuresDashboard_orgLevel_usesDailyByOrgMap() {
+        FailuresDashboardRequest request = FailuresDashboardRequest.builder()
+                .company("company1")
+                .org("org1")
+                .jobInfoKey("pipeline")
+                .jobInfoValues(List.of("bat_failures_test"))
+                .days(365)
+                .minFailurePercent(50)
+                .build();
+
+        FailuresDashboard dashboard = graphService.getFailuresDashboard(request);
+        assertNotNull(dashboard);
+        assertNotNull(dashboard.getDailyAggregationsByOrg(),
+                "Org-level should also use dailyAggregationsByOrg map");
+        assertFalse(dashboard.getDailyAggregationsByOrg().isEmpty(),
+                "dailyAggregationsByOrg should contain data for the org");
+        assertTrue(dashboard.getDailyAggregationsByOrg().containsKey("org1"),
+                "Map should contain key 'org1'");
+    }
+
+    @Test
     void getFailuresDashboard_returnsFullResponse() {
         FailuresDashboardRequest request = FailuresDashboardRequest.builder()
                 .company("company1")
@@ -177,14 +216,14 @@ public class GraphServiceFailuresTest extends AbstractGraphServiceTest {
                 .jobInfoKey("pipeline")
                 .jobInfoValues(List.of("bat_failures_test"))
                 .days(365)
-                .failureThreshold(80)
+                .minFailurePercent(80)
                 .build();
 
         FailuresDashboard dashboard = graphService.getFailuresDashboard(request);
         assertNotNull(dashboard);
         assertNotNull(dashboard.getRequest());
         assertNotNull(dashboard.getFailingTests());
-        assertNotNull(dashboard.getDailyAggregations());
+        assertNotNull(dashboard.getDailyAggregationsByOrg());
         assertNotNull(dashboard.getGenerated());
         assertEquals("company1", dashboard.getRequest().getCompany());
     }

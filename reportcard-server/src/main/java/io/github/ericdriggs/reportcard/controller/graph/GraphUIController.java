@@ -332,26 +332,9 @@ public class GraphUIController {
                     FailuresDashboardHtmlHelper.renderEmptyHtml(company, org), HttpStatus.OK);
         }
 
-        FailuresDashboardRequest.FailuresDashboardRequestBuilder builder = FailuresDashboardRequest.builder()
-                .company(company)
-                .org(org)
-                .days(days)
-                .failureThreshold(failureThreshold)
-                .repos(repos)
-                .limit(limit);
-
-        if (jobInfo != null && !jobInfo.isEmpty()) {
-            String[] parts = jobInfo.get(0).split(":", 2);
-            if (parts.length == 2 && !parts[0].isBlank() && !parts[1].isBlank()) {
-                builder.jobInfoKey(parts[0])
-                        .jobInfoValues(List.of(parts[1].split(",")));
-            } else {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                        "jobInfo must be in format 'key:value1,value2'. Got: " + jobInfo.get(0));
-            }
-        }
-
-        FailuresDashboard dashboard = graphService.getFailuresDashboard(builder.build());
+        FailuresDashboardRequest request = FailuresDashboardRequestHelper.buildRequest(
+                company, org, days, failureThreshold, repos, jobInfo, limit);
+        FailuresDashboard dashboard = graphService.getFailuresDashboard(request);
         return new ResponseEntity<>(FailuresDashboardHtmlHelper.renderHtml(dashboard), HttpStatus.OK);
     }
 

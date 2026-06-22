@@ -5,6 +5,7 @@ import io.github.ericdriggs.reportcard.controller.browse.response.*;
 import io.github.ericdriggs.reportcard.controller.graph.trend.TestTrendTable;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.*;
 import io.github.ericdriggs.reportcard.model.StageTestResultModel;
+import io.github.ericdriggs.reportcard.controller.graph.FailuresDashboardRequestHelper;
 import io.github.ericdriggs.reportcard.model.failures.FailuresDashboard;
 import io.github.ericdriggs.reportcard.model.failures.FailuresDashboardRequest;
 import io.github.ericdriggs.reportcard.model.orgdashboard.OrgDashboard;
@@ -495,26 +496,9 @@ public class BrowseJsonController {
     private ResponseEntity<FailuresDashboard> buildFailuresDashboardResponse(
             String company, String org, Integer days, Integer failureThreshold,
             List<String> repos, List<String> jobInfo, Integer limit) {
-        FailuresDashboardRequest.FailuresDashboardRequestBuilder builder = FailuresDashboardRequest.builder()
-                .company(company)
-                .org(org)
-                .days(days)
-                .failureThreshold(failureThreshold)
-                .repos(repos)
-                .limit(limit);
-
-        if (jobInfo != null && !jobInfo.isEmpty()) {
-            String[] parts = jobInfo.get(0).split(":", 2);
-            if (parts.length == 2 && !parts[0].isBlank() && !parts[1].isBlank()) {
-                builder.jobInfoKey(parts[0])
-                        .jobInfoValues(List.of(parts[1].split(",")));
-            } else {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                        "jobInfo must be in format 'key:value1,value2'. Got: " + jobInfo.get(0));
-            }
-        }
-
-        return new ResponseEntity<>(graphService.getFailuresDashboard(builder.build()), HttpStatus.OK);
+        FailuresDashboardRequest request = FailuresDashboardRequestHelper.buildRequest(
+                company, org, days, failureThreshold, repos, jobInfo, limit);
+        return new ResponseEntity<>(graphService.getFailuresDashboard(request), HttpStatus.OK);
     }
 
     // ==================== Helper Methods ====================

@@ -60,7 +60,7 @@ public class BrowseJsonControllerFailuresTest extends AbstractGraphServiceTest {
         assertEquals("company1", response.getBody().getRequest().getCompany());
         assertEquals("org1", response.getBody().getRequest().getOrg());
         assertNotNull(response.getBody().getFailingTests());
-        assertNotNull(response.getBody().getDailyAggregations());
+        assertNotNull(response.getBody().getDailyAggregationsByOrg());
         assertNotNull(response.getBody().getGenerated());
     }
 }

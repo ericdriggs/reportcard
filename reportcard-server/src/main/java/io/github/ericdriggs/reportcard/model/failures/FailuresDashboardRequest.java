@@ -17,7 +17,7 @@ public class FailuresDashboardRequest {
     @Builder.Default
     int days = 7;
     @Builder.Default
-    int failureThreshold = 50;
+    int minFailurePercent = 50;
     List<String> repos;
     Integer limit;
 }
