@@ -2,32 +2,27 @@ package io.github.ericdriggs.reportcard.controller.browse;
 
 import io.github.ericdriggs.reportcard.cache.model.BranchStageViewResponse;
 import io.github.ericdriggs.reportcard.controller.browse.response.*;
+import io.github.ericdriggs.reportcard.controller.graph.FailuresDashboardRequestHelper;
 import io.github.ericdriggs.reportcard.controller.graph.trend.TestTrendTable;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.*;
 import io.github.ericdriggs.reportcard.model.StageTestResultModel;
+import io.github.ericdriggs.reportcard.model.failures.FailuresDashboard;
+import io.github.ericdriggs.reportcard.model.failures.FailuresDashboardRequest;
 import io.github.ericdriggs.reportcard.model.orgdashboard.OrgDashboard;
 import io.github.ericdriggs.reportcard.model.trend.JobStageTestTrend;
-import io.github.ericdriggs.reportcard.controller.browse.response.OrgDashboardFlattener;
 import io.github.ericdriggs.reportcard.persist.BrowseService;
 import io.github.ericdriggs.reportcard.persist.GraphService;
+import io.github.ericdriggs.reportcard.util.StringMapUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import io.github.ericdriggs.reportcard.util.StringMapUtil;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-
 import java.time.Instant;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 //TODO: add reports endpoint after stages
@@ -458,6 +453,43 @@ public class BrowseJsonController {
         Map<String, String> jobInfoMap = StringMapUtil.stringToMap(jobInfo);
         JobPojo job = browseService.getJob(company, org, repo, branch, jobInfoMap);
         return getJobStageTestTrendJson(company, org, repo, branch, job.getJobId(), stage, start, end, runs, detail, onlyShowFailures);
+    }
+
+    // ==================== Failures Dashboard Endpoints ====================
+
+    @Operation(summary = "Get failures dashboard for company")
+    @GetMapping(path = "company/{company}/failures", produces = "application/json")
+    public ResponseEntity<FailuresDashboard> getFailuresDashboardForCompany(
+            @PathVariable String company,
+            @RequestParam(required = false, defaultValue = "7") Integer days,
+            @RequestParam(required = false, defaultValue = "50") Integer failureThreshold,
+            @RequestParam(required = false) List<String> repos,
+            @RequestParam(required = false) List<String> jobInfo,
+            @RequestParam(required = false) Integer limit
+    ) {
+        return buildFailuresDashboardResponse(company, null, days, failureThreshold, repos, jobInfo, limit);
+    }
+
+    @Operation(summary = "Get failures dashboard for org")
+    @GetMapping(path = "company/{company}/org/{org}/failures", produces = "application/json")
+    public ResponseEntity<FailuresDashboard> getFailuresDashboardForOrg(
+            @PathVariable String company,
+            @PathVariable String org,
+            @RequestParam(required = false, defaultValue = "7") Integer days,
+            @RequestParam(required = false, defaultValue = "50") Integer failureThreshold,
+            @RequestParam(required = false) List<String> repos,
+            @RequestParam(required = false) List<String> jobInfo,
+            @RequestParam(required = false) Integer limit
+    ) {
+        return buildFailuresDashboardResponse(company, org, days, failureThreshold, repos, jobInfo, limit);
+    }
+
+    private ResponseEntity<FailuresDashboard> buildFailuresDashboardResponse(
+            String company, String org, Integer days, Integer failureThreshold,
+            List<String> repos, List<String> jobInfo, Integer limit) {
+        FailuresDashboardRequest request = FailuresDashboardRequestHelper.buildRequest(
+                company, org, days, failureThreshold, repos, jobInfo, limit);
+        return new ResponseEntity<>(graphService.getFailuresDashboard(request), HttpStatus.OK);
     }
 
     // ==================== Helper Methods ====================

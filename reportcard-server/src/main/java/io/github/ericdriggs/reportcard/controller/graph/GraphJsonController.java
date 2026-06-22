@@ -1,6 +1,8 @@
 package io.github.ericdriggs.reportcard.controller.graph;
 
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.JobPojo;
+import io.github.ericdriggs.reportcard.model.failures.FailuresDashboard;
+import io.github.ericdriggs.reportcard.model.failures.FailuresDashboardRequest;
 import io.github.ericdriggs.reportcard.model.metrics.company.MetricsIntervalRequest;
 import io.github.ericdriggs.reportcard.model.metrics.company.MetricsIntervalResultCount;
 import io.github.ericdriggs.reportcard.model.pipeline.JobDashboardMetrics;
@@ -131,6 +133,41 @@ public class GraphJsonController {
                 .days(days)
                 .build();
         return new ResponseEntity<>(graphService.getPipelineDashboard(request), HttpStatus.OK);
+    }
+
+    @Operation(summary = "Get failures dashboard for company")
+    @GetMapping(path = "company/{company}/failures", produces = "application/json")
+    public ResponseEntity<FailuresDashboard> getFailuresDashboardForCompany(
+            @PathVariable String company,
+            @RequestParam(required = false, defaultValue = "7") Integer days,
+            @RequestParam(required = false, defaultValue = "50") Integer failureThreshold,
+            @RequestParam(required = false) List<String> repos,
+            @RequestParam(required = false) List<String> jobInfo,
+            @RequestParam(required = false) Integer limit
+    ) {
+        return buildFailuresDashboardResponse(company, null, days, failureThreshold, repos, jobInfo, limit);
+    }
+
+    @Operation(summary = "Get failures dashboard for org")
+    @GetMapping(path = "company/{company}/org/{org}/failures", produces = "application/json")
+    public ResponseEntity<FailuresDashboard> getFailuresDashboardForOrg(
+            @PathVariable String company,
+            @PathVariable String org,
+            @RequestParam(required = false, defaultValue = "7") Integer days,
+            @RequestParam(required = false, defaultValue = "50") Integer failureThreshold,
+            @RequestParam(required = false) List<String> repos,
+            @RequestParam(required = false) List<String> jobInfo,
+            @RequestParam(required = false) Integer limit
+    ) {
+        return buildFailuresDashboardResponse(company, org, days, failureThreshold, repos, jobInfo, limit);
+    }
+
+    private ResponseEntity<FailuresDashboard> buildFailuresDashboardResponse(
+            String company, String org, Integer days, Integer failureThreshold,
+            List<String> repos, List<String> jobInfo, Integer limit) {
+        FailuresDashboardRequest request = FailuresDashboardRequestHelper.buildRequest(
+                company, org, days, failureThreshold, repos, jobInfo, limit);
+        return new ResponseEntity<>(graphService.getFailuresDashboard(request), HttpStatus.OK);
     }
 
 }

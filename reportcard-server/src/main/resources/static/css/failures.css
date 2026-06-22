@@ -1,0 +1,95 @@
+#failures-dashboard {
+    padding: 20px;
+    font-family: Calibri, sans-serif;
+}
+
+.filter-fieldset {
+    margin: 20px 0;
+    padding: 15px;
+    border: 1px solid #ccc;
+    background: #f9f9f9;
+}
+
+.filter-fieldset legend {
+    font-weight: bold;
+}
+
+.filter-row {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.filter-row label {
+    font-weight: bold;
+    min-width: 50px;
+}
+
+.generated-time {
+    margin-left: auto;
+    font-size: 0.8em;
+    color: #666;
+}
+
+.failures-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+    border-radius: 6px;
+    box-shadow: 3px 3px 4px grey;
+}
+
+.failures-table th,
+.failures-table td {
+    padding: 8px 12px;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 0.9em;
+}
+
+.failures-table th {
+    background: #1f2937;
+    color: white;
+    cursor: pointer;
+    user-select: none;
+}
+
+.failures-table th:hover {
+    background: #374151;
+}
+
+.failures-table tbody tr:hover {
+    background: #f9fafb;
+}
+
+.fail-percent {
+    font-weight: 700;
+    color: #dc2626;
+}
+
+.chart-container {
+    width: 100%;
+    height: 300px;
+    position: relative;
+    margin-top: 10px;
+}
+
+.chart-container svg {
+    width: 100%;
+    height: 100%;
+}
+
+h2 {
+    margin-top: 24px;
+    margin-bottom: 12px;
+    font-size: 1.2em;
+    color: #1f2937;
+}
+
+.filter-hint {
+    margin-top: 32px;
+    font-size: 1.1em;
+    color: #6b7280;
+}

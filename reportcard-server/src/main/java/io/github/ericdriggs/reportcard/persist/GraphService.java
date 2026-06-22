@@ -3,6 +3,8 @@ package io.github.ericdriggs.reportcard.persist;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.github.ericdriggs.reportcard.cache.model.BranchStageViewResponse;
 import io.github.ericdriggs.reportcard.model.branch.BranchJobLatestRunMap;
+import io.github.ericdriggs.reportcard.model.TestStatus;
+import io.github.ericdriggs.reportcard.model.failures.*;
 import io.github.ericdriggs.reportcard.model.graph.*;
 import io.github.ericdriggs.reportcard.model.graph.condition.TableConditionMap;
 import io.github.ericdriggs.reportcard.model.metrics.company.MetricsIntervalRequest;
@@ -24,7 +26,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -32,6 +37,9 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+
+import io.github.ericdriggs.reportcard.gen.db.tables.StageTable;
+import io.github.ericdriggs.reportcard.gen.db.tables.TestResultTable;
 
 import static io.github.ericdriggs.reportcard.gen.db.Tables.*;
 import static org.jooq.impl.DSL.*;
@@ -894,6 +902,266 @@ public class GraphService extends AbstractPersistService {
                         ))).from(TEST_CASE).where(TEST_CASE.TEST_SUITE_FK.eq(TEST_SUITE.TEST_SUITE_ID)))
                 ))).from(TEST_SUITE).where(TEST_SUITE.TEST_RESULT_FK.eq(testResultId))
                 .fetch();
+    }
+
+    // ==================== Failures Dashboard ====================
+
+    public List<TestCaseFailureSummary> getFailingTestSummaries(Long[] runIds, int failureThreshold, Integer limit) {
+        if (runIds == null || runIds.length == 0) {
+            return List.of();
+        }
+
+        var rows = dsl.select(
+                        TEST_RESULT.TEST_SUITES_JSON,
+                        RUN.RUN_DATE,
+                        REPO.REPO_NAME,
+                        BRANCH.BRANCH_NAME,
+                        JOB.JOB_INFO_STR
+                )
+                .from(TEST_RESULT)
+                .innerJoin(STAGE).on(STAGE.STAGE_ID.eq(TEST_RESULT.STAGE_FK))
+                .innerJoin(RUN).on(RUN.RUN_ID.eq(STAGE.RUN_FK))
+                .innerJoin(JOB).on(JOB.JOB_ID.eq(RUN.JOB_FK))
+                .innerJoin(BRANCH).on(BRANCH.BRANCH_ID.eq(JOB.BRANCH_FK))
+                .innerJoin(REPO).on(REPO.REPO_ID.eq(BRANCH.REPO_FK))
+                .where(RUN.RUN_ID.in(runIds))
+                .and(TEST_RESULT.TESTS.gt(0))
+                .fetch();
+
+        record TestCaseKey(String packageName, String suiteName, String caseName, String repo, String branch, String jobInfo) {}
+        record TestCaseStats(int total, int success, int failure, Instant lastPass, Instant earliest) {}
+
+        Map<TestCaseKey, TestCaseStats> statsMap = new LinkedHashMap<>();
+
+        for (var row : rows) {
+            String json = row.get(TEST_RESULT.TEST_SUITES_JSON);
+            Instant runDate = row.get(RUN.RUN_DATE);
+            String repo = row.get(REPO.REPO_NAME);
+            String branch = row.get(BRANCH.BRANCH_NAME);
+            String jobInfoStr = row.get(JOB.JOB_INFO_STR);
+
+            if (json == null || json.isBlank()) continue;
+
+            List<io.github.ericdriggs.reportcard.model.TestSuiteModel> suites =
+                    io.github.ericdriggs.reportcard.model.TestSuiteModel.fromJson(json);
+            for (var suite : suites) {
+                String pkgName = suite.getPackageName();
+                String suiteName = suite.getName();
+                for (var tc : suite.getTestCases()) {
+                    if (tc.getTestStatusFk() != null && tc.getTestStatusFk() == TestStatus.SKIPPED.getStatusId()) continue;
+                    TestCaseKey key = new TestCaseKey(pkgName, suiteName, tc.getName(), repo, branch, jobInfoStr);
+                    boolean isSuccess = tc.getTestStatusFk() != null && tc.getTestStatusFk() == TestStatus.SUCCESS.getStatusId();
+                    TestCaseStats prev = statsMap.getOrDefault(key, new TestCaseStats(0, 0, 0, null, null));
+                    Instant newLastPass = isSuccess ? (prev.lastPass == null || runDate.isAfter(prev.lastPass) ? runDate : prev.lastPass) : prev.lastPass;
+                    Instant newEarliest = prev.earliest == null || runDate.isBefore(prev.earliest) ? runDate : prev.earliest;
+                    statsMap.put(key, new TestCaseStats(
+                            prev.total + 1,
+                            prev.success + (isSuccess ? 1 : 0),
+                            prev.failure + (isSuccess ? 0 : 1),
+                            newLastPass,
+                            newEarliest
+                    ));
+                }
+            }
+        }
+
+        List<TestCaseFailureSummary> summaries = new ArrayList<>();
+        for (var entry : statsMap.entrySet()) {
+            TestCaseKey key = entry.getKey();
+            TestCaseStats stats = entry.getValue();
+            BigDecimal successPct = stats.total > 0
+                    ? BigDecimal.valueOf(stats.success).multiply(BigDecimal.valueOf(100)).divide(BigDecimal.valueOf(stats.total), 2, RoundingMode.HALF_UP)
+                    : BigDecimal.ZERO;
+            BigDecimal failurePct = BigDecimal.valueOf(100).subtract(successPct);
+            if (failurePct.doubleValue() < failureThreshold) continue;
+            Instant lastPassedAt = stats.lastPass != null ? stats.lastPass : stats.earliest;
+            summaries.add(TestCaseFailureSummary.builder()
+                    .packageName(key.packageName)
+                    .suiteName(key.suiteName)
+                    .caseName(key.caseName)
+                    .successPercent(successPct)
+                    .lastPassedAt(lastPassedAt)
+                    .totalRuns(stats.total)
+                    .successCount(stats.success)
+                    .failureCount(stats.failure)
+                    .repo(key.repo)
+                    .branch(key.branch)
+                    .jobInfo(key.jobInfo)
+                    .build());
+        }
+        summaries.sort(java.util.Comparator.comparing(TestCaseFailureSummary::getSuccessPercent));
+        if (limit != null && summaries.size() > limit) {
+            return summaries.subList(0, limit);
+        }
+        return summaries;
+    }
+
+    public List<DailyTestAggregation> getDailyAggregations(Long[] runIds) {
+        if (runIds == null || runIds.length == 0) {
+            return List.of();
+        }
+
+        var rows = dsl.select(
+                        TEST_RESULT.TEST_SUITES_JSON,
+                        RUN.RUN_DATE
+                )
+                .from(TEST_RESULT)
+                .innerJoin(STAGE).on(STAGE.STAGE_ID.eq(TEST_RESULT.STAGE_FK))
+                .innerJoin(RUN).on(RUN.RUN_ID.eq(STAGE.RUN_FK))
+                .where(RUN.RUN_ID.in(runIds))
+                .and(TEST_RESULT.TESTS.gt(0))
+                .fetch();
+
+        Map<LocalDate, int[]> dailyMap = new TreeMap<>();
+        for (var row : rows) {
+            String json = row.get(TEST_RESULT.TEST_SUITES_JSON);
+            Instant runDate = row.get(RUN.RUN_DATE);
+            if (json == null || json.isBlank() || runDate == null) continue;
+            LocalDate day = runDate.atZone(java.time.ZoneOffset.UTC).toLocalDate();
+            accumulateDailyCounts(json, day, dailyMap);
+        }
+        return toDailyAggregations(dailyMap);
+    }
+
+    public FailuresDashboard getFailuresDashboard(FailuresDashboardRequest request) {
+        Long[] runIds = getMatchingRunIds(request);
+        if (runIds.length == 0) {
+            return FailuresDashboard.builder()
+                    .request(request)
+                    .failingTests(List.of())
+                    .dailyAggregationsByOrg(Map.of())
+                    .generated(Instant.now())
+                    .build();
+        }
+        List<TestCaseFailureSummary> failingTests = getFailingTestSummaries(runIds, request.getMinFailurePercent(), request.getLimit());
+        boolean isCompanyLevel = org.apache.commons.lang3.ObjectUtils.isEmpty(request.getOrg());
+        Map<String, List<DailyTestAggregation>> dailyByOrg;
+        if (isCompanyLevel) {
+            dailyByOrg = getDailyAggregationsByOrg(runIds);
+        } else {
+            dailyByOrg = Map.of(request.getOrg(), getDailyAggregations(runIds));
+        }
+        return FailuresDashboard.builder()
+                .request(request)
+                .failingTests(failingTests)
+                .dailyAggregationsByOrg(dailyByOrg)
+                .generated(Instant.now())
+                .build();
+    }
+
+    public Map<String, List<DailyTestAggregation>> getDailyAggregationsByOrg(Long[] runIds) {
+        if (runIds == null || runIds.length == 0) {
+            return Map.of();
+        }
+
+        var rows = dsl.select(
+                        TEST_RESULT.TEST_SUITES_JSON,
+                        RUN.RUN_DATE,
+                        ORG.ORG_NAME
+                )
+                .from(TEST_RESULT)
+                .innerJoin(STAGE).on(STAGE.STAGE_ID.eq(TEST_RESULT.STAGE_FK))
+                .innerJoin(RUN).on(RUN.RUN_ID.eq(STAGE.RUN_FK))
+                .innerJoin(JOB).on(JOB.JOB_ID.eq(RUN.JOB_FK))
+                .innerJoin(BRANCH).on(BRANCH.BRANCH_ID.eq(JOB.BRANCH_FK))
+                .innerJoin(REPO).on(REPO.REPO_ID.eq(BRANCH.REPO_FK))
+                .innerJoin(ORG).on(ORG.ORG_ID.eq(REPO.ORG_FK))
+                .where(RUN.RUN_ID.in(runIds))
+                .and(TEST_RESULT.TESTS.gt(0))
+                .fetch();
+
+        Map<String, Map<LocalDate, int[]>> orgDailyMap = new TreeMap<>();
+        for (var row : rows) {
+            String json = row.get(TEST_RESULT.TEST_SUITES_JSON);
+            Instant runDate = row.get(RUN.RUN_DATE);
+            String orgName = row.get(ORG.ORG_NAME);
+            if (json == null || json.isBlank() || runDate == null || orgName == null) continue;
+
+            LocalDate day = runDate.atZone(java.time.ZoneOffset.UTC).toLocalDate();
+            Map<LocalDate, int[]> dailyMap = orgDailyMap.computeIfAbsent(orgName, k -> new TreeMap<>());
+            accumulateDailyCounts(json, day, dailyMap);
+        }
+
+        Map<String, List<DailyTestAggregation>> result = new TreeMap<>();
+        for (var orgEntry : orgDailyMap.entrySet()) {
+            result.put(orgEntry.getKey(), toDailyAggregations(orgEntry.getValue()));
+        }
+        return result;
+    }
+
+    private void accumulateDailyCounts(String testSuitesJson, LocalDate day, Map<LocalDate, int[]> dailyMap) {
+        List<io.github.ericdriggs.reportcard.model.TestSuiteModel> suites =
+                io.github.ericdriggs.reportcard.model.TestSuiteModel.fromJson(testSuitesJson);
+        for (var suite : suites) {
+            for (var tc : suite.getTestCases()) {
+                if (tc.getTestStatusFk() != null && tc.getTestStatusFk() == TestStatus.SKIPPED.getStatusId()) continue;
+                int[] counts = dailyMap.computeIfAbsent(day, k -> new int[2]);
+                if (tc.getTestStatusFk() != null && tc.getTestStatusFk() == TestStatus.SUCCESS.getStatusId()) {
+                    counts[0]++;
+                } else {
+                    counts[1]++;
+                }
+            }
+        }
+    }
+
+    private List<DailyTestAggregation> toDailyAggregations(Map<LocalDate, int[]> dailyMap) {
+        List<DailyTestAggregation> aggregations = new ArrayList<>();
+        for (var entry : dailyMap.entrySet()) {
+            int pass = entry.getValue()[0];
+            int fail = entry.getValue()[1];
+            int total = pass + fail;
+            BigDecimal passPct = total > 0
+                    ? BigDecimal.valueOf(pass).multiply(BigDecimal.valueOf(100)).divide(BigDecimal.valueOf(total), 2, RoundingMode.HALF_UP)
+                    : BigDecimal.ZERO;
+            aggregations.add(DailyTestAggregation.builder()
+                    .date(entry.getKey())
+                    .totalTests(total)
+                    .passCount(pass)
+                    .failCount(fail)
+                    .passPercent(passPct)
+                    .build());
+        }
+        return aggregations;
+    }
+
+    public Long[] getMatchingRunIds(FailuresDashboardRequest request) {
+        Instant cutoff = Instant.now().minus(request.getDays(), ChronoUnit.DAYS);
+
+        StageTable s = STAGE.as("s");
+        TestResultTable tr = TEST_RESULT.as("tr");
+
+        var query = dsl.select(RUN.RUN_ID)
+                .from(RUN)
+                .innerJoin(JOB).on(JOB.JOB_ID.eq(RUN.JOB_FK))
+                .innerJoin(BRANCH).on(BRANCH.BRANCH_ID.eq(JOB.BRANCH_FK))
+                .innerJoin(REPO).on(REPO.REPO_ID.eq(BRANCH.REPO_FK))
+                .innerJoin(ORG).on(ORG.ORG_ID.eq(REPO.ORG_FK))
+                .innerJoin(COMPANY).on(COMPANY.COMPANY_ID.eq(ORG.COMPANY_FK))
+                .where(COMPANY.COMPANY_NAME.eq(request.getCompany()))
+                .and(RUN.RUN_DATE.ge(cutoff))
+                .and(DSL.exists(
+                        dsl.selectOne()
+                                .from(s)
+                                .innerJoin(tr).on(tr.STAGE_FK.eq(s.STAGE_ID))
+                                .where(s.RUN_FK.eq(RUN.RUN_ID))
+                                .and(tr.TESTS.gt(0))
+                ));
+
+        if (!org.apache.commons.lang3.ObjectUtils.isEmpty(request.getOrg())) {
+            query = query.and(ORG.ORG_NAME.eq(request.getOrg()));
+        }
+
+        if (!org.apache.commons.lang3.ObjectUtils.isEmpty(request.getJobInfoKey())
+                && !CollectionUtils.isEmpty(request.getJobInfoValues())) {
+            query = query.and(SqlJsonUtil.jobInfoKeyInValues(request.getJobInfoKey(), request.getJobInfoValues()));
+        }
+
+        if (!CollectionUtils.isEmpty(request.getRepos())) {
+            query = query.and(REPO.REPO_NAME.in(request.getRepos()));
+        }
+
+        return query.fetchArray(RUN.RUN_ID);
     }
 
 }

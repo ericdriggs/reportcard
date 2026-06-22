@@ -1,6 +1,8 @@
 package io.github.ericdriggs.reportcard.controller.graph;
 
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.JobPojo;
+import io.github.ericdriggs.reportcard.model.failures.FailuresDashboard;
+import io.github.ericdriggs.reportcard.model.failures.FailuresDashboardRequest;
 import io.github.ericdriggs.reportcard.model.metrics.company.MetricsIntervalRequest;
 import io.github.ericdriggs.reportcard.model.metrics.company.MetricsIntervalResultCount;
 import io.github.ericdriggs.reportcard.model.metrics.company.MetricsIntervalResultCountMaps;
@@ -288,6 +290,53 @@ public class GraphUIController {
             HttpStatus.OK
         );
     }
+
+    @GetMapping(path = "company/{company}/failures", produces = "text/html;charset=UTF-8")
+    public ResponseEntity<String> getFailuresDashboardForCompany(
+            @PathVariable String company,
+            @RequestParam(required = false, defaultValue = "7") Integer days,
+            @RequestParam(required = false, defaultValue = "50") Integer failureThreshold,
+            @RequestParam(required = false) List<String> repos,
+            @RequestParam(required = false) List<String> jobInfo,
+            @RequestParam(required = false) Integer limit,
+            HttpServletRequest httpRequest
+    ) {
+        return buildFailuresDashboardResponse(company, null, days, failureThreshold, repos, jobInfo, limit, httpRequest);
+    }
+
+    @GetMapping(path = "company/{company}/org/{org}/failures", produces = "text/html;charset=UTF-8")
+    public ResponseEntity<String> getFailuresDashboardForOrg(
+            @PathVariable String company,
+            @PathVariable String org,
+            @RequestParam(required = false, defaultValue = "7") Integer days,
+            @RequestParam(required = false, defaultValue = "50") Integer failureThreshold,
+            @RequestParam(required = false) List<String> repos,
+            @RequestParam(required = false) List<String> jobInfo,
+            @RequestParam(required = false) Integer limit,
+            HttpServletRequest httpRequest
+    ) {
+        return buildFailuresDashboardResponse(company, org, days, failureThreshold, repos, jobInfo, limit, httpRequest);
+    }
+
+    private ResponseEntity<String> buildFailuresDashboardResponse(
+            String company, String org, Integer days, Integer failureThreshold,
+            List<String> repos, List<String> jobInfo, Integer limit,
+            HttpServletRequest httpRequest) {
+
+        boolean hasFilters = httpRequest.getQueryString() != null
+                && !httpRequest.getQueryString().isBlank();
+
+        if (!hasFilters) {
+            return new ResponseEntity<>(
+                    FailuresDashboardHtmlHelper.renderEmptyHtml(company, org), HttpStatus.OK);
+        }
+
+        FailuresDashboardRequest request = FailuresDashboardRequestHelper.buildRequest(
+                company, org, days, failureThreshold, repos, jobInfo, limit);
+        FailuresDashboard dashboard = graphService.getFailuresDashboard(request);
+        return new ResponseEntity<>(FailuresDashboardHtmlHelper.renderHtml(dashboard), HttpStatus.OK);
+    }
+
 
     @GetMapping(path = "company/{company}/org/{org}/pipelines", produces = "text/html;charset=UTF-8")
     public RedirectView redirectPipelinesToJobs(

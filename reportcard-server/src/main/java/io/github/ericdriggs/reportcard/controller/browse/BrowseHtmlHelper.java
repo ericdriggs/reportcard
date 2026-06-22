@@ -63,12 +63,14 @@ public class BrowseHtmlHelper {
                 <fieldset>
                 <legend>{companyName} links</legend>
                     {jobsLink}<br>
+                    {failuresLink}<br>
                     {metricsLink}<br>
                     {tagSearchLink}
                 </fieldset>
                 """
                         .replace("{companyName}", company)
                         .replace("{jobsLink}", "<a href='/company/" + company + "/jobs?days=90' style='text-decoration: none;'>" + company + " Jobs ⏲</a>")
+                        .replace("{failuresLink}", getLink(company + " Failures 🔴", "/company/" + company + "/failures"))
                         .replace("{metricsLink}", getLink(company + " Metrics 🔢", "/metrics/company/" + company ))
                         .replace("{tagSearchLink}", getLink("Tag Search", "/company/" + company + "/tags/tests"))
                 ;
@@ -127,6 +129,7 @@ public class BrowseHtmlHelper {
                 <legend>{orgName} links</legend>
                     {dashboardLink}<br>
                     {jobDashboardLink}<br>
+                    {failuresLink}<br>
                     {metricsLink}<br>
                     {tagSearchLink}
                 </fieldset>
@@ -134,6 +137,7 @@ public class BrowseHtmlHelper {
                         .replace("{orgName}", org)
                         .replace("{dashboardLink}", getLink(org + " Dashboard 📊", orgPath.toUrlPath() + "/dashboard?days=30"))
                         .replace("{jobDashboardLink}", "<a href='" + orgPath.toUrlPath() + "/jobs?days=90' style='text-decoration: none;'>" + org + " Jobs ⏲</a>" + System.lineSeparator())
+                        .replace("{failuresLink}", getLink(org + " Failures 🔴", orgPath.toUrlPath() + "/failures"))
                         .replace("{metricsLink}", getLink(org + " Metrics 🔢", "/metrics" + orgPath.toUrlPath() ))
                         .replace("{tagSearchLink}", getLink("Tag Search", orgPath.toUrlPath() + "/tags/tests"))
                 ;
@@ -696,11 +700,16 @@ public class BrowseHtmlHelper {
     protected static String getBreadCrumbItems(List<Pair<String, String>> breadCrumbs) {
         StringBuilder sb = new StringBuilder();
         for (Pair<String, String> breadCrumb : breadCrumbs) {
-            sb.append("<li><a href=\"").append(breadCrumb.getValue()).append("\">")
-                    .append(breadCrumb.getKey())
+            sb.append("<li><a href=\"").append(escapeHtml(breadCrumb.getValue())).append("\">")
+                    .append(escapeHtml(breadCrumb.getKey()))
                     .append("</a></li>").append(ls);
         }
         return sb.toString();
+    }
+
+    protected static String escapeHtml(String s) {
+        if (s == null) return "";
+        return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;");
     }
 
     public static Instant mostRecent(Set<Instant> dateTimes) {
@@ -773,7 +782,7 @@ public class BrowseHtmlHelper {
                 &nbsp;&nbsp;&nbsp;
                 <a href="/swagger-ui/index.html">swagger</a>&nbsp;&nbsp;&nbsp;
                 <a href="https://github.com/ericdriggs/reportcard">source</a>&nbsp;&nbsp;&nbsp;
-                <span style="color:white">ver: 0.2.1</span>
+                <span style="color:white">ver: 0.2.2</span>
               </span>
             </header>
             <nav aria-label="breadcrumb">
