@@ -14,10 +14,10 @@ function initFailuresDashboard() {
 
     var jobInfoParam = params.get("jobInfo");
     if (jobInfoParam) {
-        var parts = jobInfoParam.split(":", 2);
-        if (parts.length === 2) {
-            document.getElementById("jobInfoKey").value = parts[0];
-            document.getElementById("jobInfoValue").value = parts[1];
+        var idx = jobInfoParam.indexOf(":");
+        if (idx > 0) {
+            document.getElementById("jobInfoKey").value = jobInfoParam.substring(0, idx);
+            document.getElementById("jobInfoValue").value = jobInfoParam.substring(idx + 1);
         }
     }
 
@@ -59,7 +59,7 @@ function renderCharts() {
     var dataEl = document.getElementById("daily-data");
     if (dataEl) {
         var data;
-        try { data = JSON.parse(dataEl.textContent); } catch (e) { return; }
+        try { data = JSON.parse(dataEl.textContent); } catch (e) { console.error("Failed to parse chart data:", e); return; }
         var container = document.getElementById("chart-container");
         if (container) {
             renderChartInto(container, data);
@@ -73,7 +73,7 @@ function renderCharts() {
         var el = containers[i];
         var json = el.getAttribute("data-daily");
         var data;
-        try { data = JSON.parse(json); } catch (e) { continue; }
+        try { data = JSON.parse(json); } catch (e) { console.error("Failed to parse chart data for container:", e); continue; }
         renderChartInto(el, data);
     }
 }

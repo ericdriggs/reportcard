@@ -10,6 +10,8 @@ import io.github.ericdriggs.reportcard.model.failures.FailuresDashboard;
 import io.github.ericdriggs.reportcard.model.failures.FailuresDashboardRequest;
 import io.github.ericdriggs.reportcard.model.failures.TestCaseFailureSummary;
 import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -17,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FailuresDashboardHtmlHelper extends BrowseHtmlHelper {
+
+    private static final Logger log = LoggerFactory.getLogger(FailuresDashboardHtmlHelper.class);
 
     private static final ObjectMapper objectMapper = new ObjectMapper()
             .registerModule(new JavaTimeModule())
@@ -72,6 +76,7 @@ public class FailuresDashboardHtmlHelper extends BrowseHtmlHelper {
                 try {
                     json = objectMapper.writeValueAsString(entry.getValue());
                 } catch (JsonProcessingException e) {
+                    log.error("Failed to serialize daily aggregation for org '{}': {}", orgName, e.getMessage(), e);
                     json = "[]";
                 }
                 sb.append("<h3>").append(escapeHtml(orgName)).append("</h3>").append(ls);
@@ -83,6 +88,7 @@ public class FailuresDashboardHtmlHelper extends BrowseHtmlHelper {
             try {
                 dailyJson = objectMapper.writeValueAsString(dashboard.getDailyAggregations());
             } catch (JsonProcessingException e) {
+                log.error("Failed to serialize daily aggregation data: {}", e.getMessage(), e);
                 dailyJson = "[]";
             }
             return "<div id=\"chart-container\" class=\"chart-container\"></div>" + ls
@@ -109,11 +115,6 @@ public class FailuresDashboardHtmlHelper extends BrowseHtmlHelper {
                     .append("</tr>").append(ls);
         }
         return sb.toString();
-    }
-
-    static String escapeHtml(String s) {
-        if (s == null) return "";
-        return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;");
     }
 
     static List<Pair<String, String>> getBreadCrumbs(FailuresDashboardRequest request) {

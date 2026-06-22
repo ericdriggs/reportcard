@@ -2,9 +2,11 @@ package io.github.ericdriggs.reportcard.controller.browse;
 
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.StoragePojo;
 import io.github.ericdriggs.reportcard.persist.StorageType;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -206,6 +208,25 @@ class BrowseHtmlHelperTest {
         storage.setIndexFile(indexFile);
         storage.setStorageType(storageType);
         return storage;
+    }
+
+    @Test
+    void getBreadCrumbItems_escapesHtmlInTextAndUrl() {
+        List<Pair<String, String>> breadCrumbs = List.of(
+                Pair.of("<script>alert(1)</script>", "/company/<script>alert(1)</script>")
+        );
+
+        String html = BrowseHtmlHelper.getBreadCrumbItems(breadCrumbs);
+
+        // Text must be escaped
+        assertTrue(html.contains("&lt;script&gt;alert(1)&lt;/script&gt;"),
+                "Breadcrumb text should be HTML-escaped, got: " + html);
+        // URL must be escaped (at minimum, angle brackets)
+        assertTrue(html.contains("&lt;script&gt;"),
+                "Breadcrumb URL should be HTML-escaped");
+        // Must NOT contain raw script tag
+        assertFalse(html.contains("<script>"),
+                "Should not contain raw <script> tag, got: " + html);
     }
 
     // Helper method to count occurrences of a substring

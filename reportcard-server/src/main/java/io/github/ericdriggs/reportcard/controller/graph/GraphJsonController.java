@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
 import java.util.List;
@@ -178,6 +179,9 @@ public class GraphJsonController {
             if (parts.length == 2 && !parts[0].isBlank() && !parts[1].isBlank()) {
                 builder.jobInfoKey(parts[0])
                         .jobInfoValues(List.of(parts[1].split(",")));
+            } else {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "jobInfo must be in format 'key:value1,value2'. Got: " + jobInfo.get(0));
             }
         }
 

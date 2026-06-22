@@ -38,6 +38,17 @@ public class BrowseJsonControllerFailuresTest extends AbstractGraphServiceTest {
     }
 
     @Test
+    void getFailuresDashboardForCompany_malformedJobInfo_returns400() {
+        org.springframework.web.server.ResponseStatusException ex = assertThrows(
+                org.springframework.web.server.ResponseStatusException.class,
+                () -> controller.getFailuresDashboardForCompany(
+                        "company1", 365, 50, null, List.of("nocolon"), null)
+        );
+        assertEquals(HttpStatus.BAD_REQUEST, ex.getStatus());
+        assertTrue(ex.getReason().contains("jobInfo must be in format"));
+    }
+
+    @Test
     void getFailuresDashboardForOrg_returnsOk() {
         ResponseEntity<FailuresDashboard> response = controller.getFailuresDashboardForOrg(
                 "company1", "org1", 365, 50, null, null, null);

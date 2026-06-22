@@ -700,11 +700,16 @@ public class BrowseHtmlHelper {
     protected static String getBreadCrumbItems(List<Pair<String, String>> breadCrumbs) {
         StringBuilder sb = new StringBuilder();
         for (Pair<String, String> breadCrumb : breadCrumbs) {
-            sb.append("<li><a href=\"").append(breadCrumb.getValue()).append("\">")
-                    .append(breadCrumb.getKey())
+            sb.append("<li><a href=\"").append(escapeHtml(breadCrumb.getValue())).append("\">")
+                    .append(escapeHtml(breadCrumb.getKey()))
                     .append("</a></li>").append(ls);
         }
         return sb.toString();
+    }
+
+    protected static String escapeHtml(String s) {
+        if (s == null) return "";
+        return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;");
     }
 
     public static Instant mostRecent(Set<Instant> dateTimes) {
