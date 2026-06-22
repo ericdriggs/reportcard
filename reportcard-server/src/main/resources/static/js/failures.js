@@ -23,6 +23,13 @@ function initFailuresDashboard() {
 
     document.getElementById("failures-form").addEventListener("submit", function(e) {
         e.preventDefault();
+        var btn = e.target.querySelector('button[type="submit"]');
+        btn.disabled = true;
+        btn.textContent = "Generating...";
+        btn.style.background = "#9ca3af";
+        btn.style.cursor = "wait";
+        document.body.style.cursor = "wait";
+
         var key = document.getElementById("jobInfoKey").value.trim();
         var value = document.getElementById("jobInfoValue").value.trim();
         var days = document.getElementById("days-select").value;
@@ -40,7 +47,8 @@ function initFailuresDashboard() {
         if (repos) {
             p.set("repos", repos);
         }
-        window.location.href = window.location.pathname + "?" + p.toString();
+        var url = window.location.pathname + "?" + p.toString();
+        setTimeout(function() { window.location.href = url; }, 50);
     });
 
     renderCharts();

@@ -31,6 +31,21 @@ public class FailuresDashboardHtmlHelper extends BrowseHtmlHelper {
                                 + "<script src=\"/js/failures.js\"></script>" + ls);
     }
 
+    public static String renderEmptyHtml(String company, String org) {
+        FailuresDashboardRequest request = FailuresDashboardRequest.builder()
+                .company(company)
+                .org(org)
+                .build();
+        String main = failuresEmptyDiv
+                .replace("<!--company-->", escapeHtml(company))
+                .replace("<!--org-->", org != null ? escapeHtml(org) : "");
+        return getPage(main, getBreadCrumbs(request), "flex-column")
+                .replace("<body>", "<body onload=\"initFailuresDashboard()\">")
+                .replace("<!--additionalLinks-->",
+                        "<link rel=\"stylesheet\" href=\"/css/failures.css\">" + ls
+                                + "<script src=\"/js/failures.js\"></script>" + ls);
+    }
+
     static String getMainDiv(FailuresDashboard dashboard) {
         FailuresDashboardRequest request = dashboard.getRequest();
         String chartSection = renderChartSection(dashboard);
@@ -137,7 +152,7 @@ public class FailuresDashboardHtmlHelper extends BrowseHtmlHelper {
                         <input type="text" id="repos-input" style="width: 200px; padding: 5px;" value="<!--repos-->" placeholder="all repos (comma-sep)">
                     </div>
                     <div class="filter-row">
-                        <button type="submit" style="padding: 8px 20px; background: #007bff; color: white; border: none; cursor: pointer;">Filter</button>
+                        <button type="submit" style="padding: 8px 20px; background: #007bff; color: white; border: none; cursor: pointer;">Generate</button>
                         <button type="button" onclick="window.location.href=window.location.pathname" style="padding: 8px 20px; margin-left: 10px; background: #6c757d; color: white; border: none; cursor: pointer;">Clear</button>
                         <span class="generated-time">Generated: <!--generated--></span>
                     </div>
@@ -166,6 +181,41 @@ public class FailuresDashboardHtmlHelper extends BrowseHtmlHelper {
 
                 <h2>Daily Test Results</h2>
                 <!--chartSection-->
+            </div>
+            """;
+
+    static String failuresEmptyDiv =
+            """
+            <div id="failures-dashboard">
+                <fieldset class="filter-fieldset">
+                <legend>Failures Filters</legend>
+                <form id="failures-form" method="get">
+                    <div class="filter-row">
+                        <label for="jobInfoKey">Key:</label>
+                        <input type="text" id="jobInfoKey" style="width: 200px; padding: 5px;" placeholder="e.g. application" value="">
+                        <label for="jobInfoValue">Value:</label>
+                        <input type="text" id="jobInfoValue" style="width: 250px; padding: 5px;" placeholder="e.g. my_app,other_app" value="">
+                    </div>
+                    <div class="filter-row">
+                        <label for="days-select">Days:</label>
+                        <select id="days-select" style="padding: 5px;">
+                            <option value="7">7</option>
+                            <option value="30">30</option>
+                            <option value="60">60</option>
+                        </select>
+                        <label for="threshold-input">Failure Threshold %:</label>
+                        <input type="number" id="threshold-input" min="1" max="100" value="50" style="width: 60px; padding: 5px;">
+                        <label for="repos-input">Repos:</label>
+                        <input type="text" id="repos-input" style="width: 200px; padding: 5px;" value="" placeholder="all repos (comma-sep)">
+                    </div>
+                    <div class="filter-row">
+                        <button type="submit" style="padding: 8px 20px; background: #007bff; color: white; border: none; cursor: pointer;">Generate</button>
+                        <button type="button" onclick="window.location.href=window.location.pathname" style="padding: 8px 20px; margin-left: 10px; background: #6c757d; color: white; border: none; cursor: pointer;">Clear</button>
+                    </div>
+                </form>
+                </fieldset>
+
+                <p class="filter-hint"><em>Enter filters above and click Generate to view the failures report.</em></p>
             </div>
             """;
 }

@@ -87,3 +87,9 @@ h2 {
     font-size: 1.2em;
     color: #1f2937;
 }
+
+.filter-hint {
+    margin-top: 32px;
+    font-size: 1.1em;
+    color: #6b7280;
+}

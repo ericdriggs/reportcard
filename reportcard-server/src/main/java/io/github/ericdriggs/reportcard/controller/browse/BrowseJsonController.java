@@ -5,6 +5,8 @@ import io.github.ericdriggs.reportcard.controller.browse.response.*;
 import io.github.ericdriggs.reportcard.controller.graph.trend.TestTrendTable;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.*;
 import io.github.ericdriggs.reportcard.model.StageTestResultModel;
+import io.github.ericdriggs.reportcard.model.failures.FailuresDashboard;
+import io.github.ericdriggs.reportcard.model.failures.FailuresDashboardRequest;
 import io.github.ericdriggs.reportcard.model.orgdashboard.OrgDashboard;
 import io.github.ericdriggs.reportcard.model.trend.JobStageTestTrend;
 import io.github.ericdriggs.reportcard.controller.browse.response.OrgDashboardFlattener;
@@ -458,6 +460,57 @@ public class BrowseJsonController {
         Map<String, String> jobInfoMap = StringMapUtil.stringToMap(jobInfo);
         JobPojo job = browseService.getJob(company, org, repo, branch, jobInfoMap);
         return getJobStageTestTrendJson(company, org, repo, branch, job.getJobId(), stage, start, end, runs, detail, onlyShowFailures);
+    }
+
+    // ==================== Failures Dashboard Endpoints ====================
+
+    @Operation(summary = "Get failures dashboard for company")
+    @GetMapping(path = "company/{company}/failures", produces = "application/json")
+    public ResponseEntity<FailuresDashboard> getFailuresDashboardForCompany(
+            @PathVariable String company,
+            @RequestParam(required = false, defaultValue = "7") Integer days,
+            @RequestParam(required = false, defaultValue = "50") Integer failureThreshold,
+            @RequestParam(required = false) List<String> repos,
+            @RequestParam(required = false) List<String> jobInfo,
+            @RequestParam(required = false) Integer limit
+    ) {
+        return buildFailuresDashboardResponse(company, null, days, failureThreshold, repos, jobInfo, limit);
+    }
+
+    @Operation(summary = "Get failures dashboard for org")
+    @GetMapping(path = "company/{company}/org/{org}/failures", produces = "application/json")
+    public ResponseEntity<FailuresDashboard> getFailuresDashboardForOrg(
+            @PathVariable String company,
+            @PathVariable String org,
+            @RequestParam(required = false, defaultValue = "7") Integer days,
+            @RequestParam(required = false, defaultValue = "50") Integer failureThreshold,
+            @RequestParam(required = false) List<String> repos,
+            @RequestParam(required = false) List<String> jobInfo,
+            @RequestParam(required = false) Integer limit
+    ) {
+        return buildFailuresDashboardResponse(company, org, days, failureThreshold, repos, jobInfo, limit);
+    }
+
+    private ResponseEntity<FailuresDashboard> buildFailuresDashboardResponse(
+            String company, String org, Integer days, Integer failureThreshold,
+            List<String> repos, List<String> jobInfo, Integer limit) {
+        FailuresDashboardRequest.FailuresDashboardRequestBuilder builder = FailuresDashboardRequest.builder()
+                .company(company)
+                .org(org)
+                .days(days)
+                .failureThreshold(failureThreshold)
+                .repos(repos)
+                .limit(limit);
+
+        if (jobInfo != null && !jobInfo.isEmpty()) {
+            String[] parts = jobInfo.get(0).split(":", 2);
+            if (parts.length == 2 && !parts[0].isBlank() && !parts[1].isBlank()) {
+                builder.jobInfoKey(parts[0])
+                        .jobInfoValues(List.of(parts[1].split(",")));
+            }
+        }
+
+        return new ResponseEntity<>(graphService.getFailuresDashboard(builder.build()), HttpStatus.OK);
     }
 
     // ==================== Helper Methods ====================
