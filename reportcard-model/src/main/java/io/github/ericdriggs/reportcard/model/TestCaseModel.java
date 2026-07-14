@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.SuperBuilder;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -23,6 +24,10 @@ public class TestCaseModel extends io.github.ericdriggs.reportcard.dto.TestCase 
     }
 
     private TestStatus testStatus;
+
+    /** Karate scenario start/end epoch, enriched post-parse; junit's {@code time} is never overwritten. */
+    private Instant startTime;
+    private Instant endTime;
 
     @Builder.Default
     private List<TestCaseFaultModel> testCaseFaults = new ArrayList<>();

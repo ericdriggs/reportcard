@@ -23,6 +23,7 @@ public enum KarateTarGzUtil {
     ; //static methods only
 
     private static final String KARATE_SUMMARY_FILENAME = "karate-summary-json.txt";
+    private static final String KARATE_NATIVE_SUFFIX = ".karate-json.txt";
 
     /**
      * Extracts karate-summary-json.txt content from a tar.gz archive.
@@ -30,16 +31,25 @@ public enum KarateTarGzUtil {
      * @param tarGz the tar.gz file containing karate reports
      * @return the content of karate-summary-json.txt, or null if not found or input is null/empty
      */
-    @SneakyThrows(IOException.class)
     public static String extractKarateSummaryJson(MultipartFile tarGz) {
         if (tarGz == null || tarGz.isEmpty()) {
             return null;
         }
+        return extractKarateSummaryJson(getInputStream(tarGz));
+    }
+
+    /**
+     * Extracts karate-summary-json.txt content from a tar.gz input stream.
+     *
+     * @param tarGzInputStream the tar.gz input stream containing karate reports
+     * @return the content of karate-summary-json.txt, or null if not found
+     */
+    @SneakyThrows(IOException.class)
+    public static String extractKarateSummaryJson(InputStream tarGzInputStream) {
         Path tempDir = Files.createTempDirectory("reportcard-karate-");
         try {
-            InputStream inputStream = tarGz.getInputStream();
             TarExtractorCommonsCompress tarExtractor =
-                    new TarExtractorCommonsCompress(inputStream, true, tempDir);
+                    new TarExtractorCommonsCompress(tarGzInputStream, true, tempDir);
             tarExtractor.untar();
 
             // Find karate-summary-json.txt recursively (may be in subdirectory)
@@ -51,6 +61,52 @@ public enum KarateTarGzUtil {
                 org.apache.tomcat.util.http.fileupload.FileUtils.deleteDirectory(tempDir.toFile());
             }
         }
+    }
+
+    /**
+     * Extracts the content of every native Karate report file (*.karate-json.txt) from a tar.gz archive.
+     *
+     * @param tarGz the tar.gz file containing karate reports
+     * @return the content of each *.karate-json.txt file, or an empty list if none/null input
+     */
+    public static List<String> extractKarateNativeJsons(MultipartFile tarGz) {
+        if (tarGz == null || tarGz.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return extractKarateNativeJsons(getInputStream(tarGz));
+    }
+
+    /**
+     * Extracts the content of every native Karate report file (*.karate-json.txt) from a tar.gz input stream.
+     *
+     * @param tarGzInputStream the tar.gz input stream containing karate reports
+     * @return the content of each *.karate-json.txt file, or an empty list if none found
+     */
+    @SneakyThrows(IOException.class)
+    public static List<String> extractKarateNativeJsons(InputStream tarGzInputStream) {
+        Path tempDir = Files.createTempDirectory("reportcard-karate-native-");
+        try {
+            TarExtractorCommonsCompress tarExtractor =
+                    new TarExtractorCommonsCompress(tarGzInputStream, true, tempDir);
+            tarExtractor.untar();
+
+            try (Stream<Path> walk = Files.walk(tempDir)) {
+                return walk
+                        .filter(Files::isRegularFile)
+                        .filter(path -> path.getFileName().toString().endsWith(KARATE_NATIVE_SUFFIX))
+                        .map(KarateTarGzUtil::readFileContent)
+                        .collect(Collectors.toList());
+            }
+        } finally {
+            if (tempDir != null) {
+                org.apache.tomcat.util.http.fileupload.FileUtils.deleteDirectory(tempDir.toFile());
+            }
+        }
+    }
+
+    @SneakyThrows(IOException.class)
+    private static InputStream getInputStream(MultipartFile file) {
+        return file.getInputStream();
     }
 
     /**
@@ -89,17 +145,27 @@ public enum KarateTarGzUtil {
      * @param tarGz the uploaded tar.gz file
      * @return JSON array string of feature results, or null if not found
      */
-    @SneakyThrows(IOException.class)
     public static String extractCucumberJson(MultipartFile tarGz) {
         if (tarGz == null || tarGz.isEmpty()) {
             return null;
         }
+        return extractCucumberJson(getInputStream(tarGz));
+    }
 
+    /**
+     * Extracts Cucumber JSON content from a karate.tar.gz input stream.
+     * Looks for .json files that are NOT karate-summary-json.txt.
+     * Returns combined JSON array of all feature results.
+     *
+     * @param tarGzInputStream the tar.gz input stream
+     * @return JSON array string of feature results, or null if not found
+     */
+    @SneakyThrows(IOException.class)
+    public static String extractCucumberJson(InputStream tarGzInputStream) {
         Path tempDir = Files.createTempDirectory("reportcard-karate-cucumber-");
         try {
-            InputStream inputStream = tarGz.getInputStream();
             TarExtractorCommonsCompress tarExtractor =
-                    new TarExtractorCommonsCompress(inputStream, true, tempDir);
+                    new TarExtractorCommonsCompress(tarGzInputStream, true, tempDir);
             tarExtractor.untar();
 
             // Find all .json files (excluding summary file)
@@ -108,19 +174,13 @@ public enum KarateTarGzUtil {
                 return null;
             }
 
-            // Read and combine JSON contents
-            List<String> jsonContents = new ArrayList<>();
-            for (Path jsonFile : jsonFiles) {
-                jsonContents.add(readFileContent(jsonFile));
-            }
-
             // If single file, return as-is (already an array)
-            if (jsonContents.size() == 1) {
-                return jsonContents.get(0);
+            if (jsonFiles.size() == 1) {
+                return readFileContent(jsonFiles.get(0));
             }
 
-            // Multiple files: merge arrays
-            return mergeJsonArrays(jsonContents);
+            // Multiple files: parse and merge independently, so one malformed file doesn't discard the rest
+            return mergeJsonArrays(jsonFiles);
 
         } finally {
             if (tempDir != null) {
@@ -148,21 +208,28 @@ public enum KarateTarGzUtil {
     /**
      * Merges multiple Cucumber JSON arrays into a single array.
      * Each file is a JSON array of features; combine into one array.
+     * Each file is parsed independently: a malformed file is logged (with its name) and
+     * skipped, so it doesn't discard the data from the other, valid files.
      */
-    private static String mergeJsonArrays(List<String> jsonContents) {
-        try {
-            ArrayNode combined = SharedObjectMappers.ignoreUnknownObjectMapper.createArrayNode();
-            for (String json : jsonContents) {
+    private static String mergeJsonArrays(List<Path> jsonFiles) {
+        ArrayNode combined = SharedObjectMappers.ignoreUnknownObjectMapper.createArrayNode();
+        for (Path jsonFile : jsonFiles) {
+            try {
+                String json = readFileContent(jsonFile);
                 JsonNode node = SharedObjectMappers.ignoreUnknownObjectMapper.readTree(json);
                 if (node.isArray()) {
                     for (JsonNode elem : node) {
                         combined.add(elem);
                     }
                 }
+            } catch (Exception e) {
+                log.warn("Failed to parse Cucumber JSON file {}, skipping", jsonFile.getFileName(), e);
             }
+        }
+        try {
             return SharedObjectMappers.ignoreUnknownObjectMapper.writeValueAsString(combined);
         } catch (Exception e) {
-            log.warn("Failed to merge Cucumber JSON arrays", e);
+            log.warn("Failed to serialize merged Cucumber JSON array", e);
             return null;
         }
     }

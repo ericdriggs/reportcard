@@ -782,7 +782,7 @@ public class BrowseHtmlHelper {
                 &nbsp;&nbsp;&nbsp;
                 <a href="/swagger-ui/index.html">swagger</a>&nbsp;&nbsp;&nbsp;
                 <a href="https://github.com/ericdriggs/reportcard">source</a>&nbsp;&nbsp;&nbsp;
-                <span style="color:white">ver: 0.2.2</span>
+                <span style="color:white">ver: 0.2.3</span>
               </span>
             </header>
             <nav aria-label="breadcrumb">

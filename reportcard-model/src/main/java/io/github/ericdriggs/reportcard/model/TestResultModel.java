@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Instant;
 import java.util.*;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -19,6 +20,32 @@ public class TestResultModel extends io.github.ericdriggs.reportcard.dto.TestRes
 
 
     private List<TestSuiteModel> testSuites = new ArrayList<>();
+
+    /**
+     * Karate-derived min scenario start / max scenario end (test_result.start_time/end_time); junit alone
+     * leaves these null. Set once by KarateEnricher after test suites are finalized — not automatically
+     * recomputed if testSuites is mutated afterward.
+     */
+    private Instant startTime;
+    private Instant endTime;
+
+    public Instant getStartTime() {
+        return startTime;
+    }
+
+    public TestResultModel setStartTime(Instant startTime) {
+        this.startTime = startTime;
+        return this;
+    }
+
+    public Instant getEndTime() {
+        return endTime;
+    }
+
+    public TestResultModel setEndTime(Instant endTime) {
+        this.endTime = endTime;
+        return this;
+    }
 
     /**
      * Flattened tags JSON string for storage in test_result.tags column.
@@ -76,7 +103,9 @@ public class TestResultModel extends io.github.ericdriggs.reportcard.dto.TestRes
                 continue;
             }
             if (tag.length() > MAX_TAG_LENGTH) {
-                truncated.add(tag.substring(0, MAX_TAG_LENGTH));
+                String clipped = tag.substring(0, MAX_TAG_LENGTH);
+                log.warn("tag truncated to {} chars for index constraint: '{}' -> '{}'", MAX_TAG_LENGTH, tag, clipped);
+                truncated.add(clipped);
             } else {
                 truncated.add(tag);
             }
@@ -134,7 +163,11 @@ public class TestResultModel extends io.github.ericdriggs.reportcard.dto.TestRes
 
     @JsonIgnore
     public TestResultModel copy() {
-        return new TestResultModel(this.getTestSuites());
+        TestResultModel copy = new TestResultModel(this.getTestSuites());
+        copy.setStartTime(this.getStartTime());
+        copy.setEndTime(this.getEndTime());
+        copy.setTags(this.getTags());
+        return copy;
     }
 
     @JsonIgnore

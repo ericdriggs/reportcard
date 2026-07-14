@@ -53,6 +53,26 @@ public class PostWebClient {
         return builder.build();
     }
 
+    /**
+     * Builds a karate.tar.gz from the karate report directory, or returns null when
+     * karateJsonFile is unset or no matching files are found (Karate is optional).
+     */
+    protected Path buildKarateTarGz(String karateJsonFile) {
+        if (karateJsonFile == null || karateJsonFile.isEmpty()) {
+            return null;
+        }
+        try {
+            return TarGzUtil.createTarGzFromDirectory(
+                    Path.of(karateJsonFile),
+                    TarGzUtil.KARATE_REPORT_FILE_REGEX
+            );
+        } catch (IllegalArgumentException e) {
+            // Log warning but don't fail - Karate is optional
+            System.err.println("Warning: Failed to create Karate tar.gz: " + e.getMessage());
+            return null;
+        }
+    }
+
     protected Mono<String> postTestReport(PostRequest scannerPostRequest) {
 
         Path junitTarGz = null;
@@ -76,18 +96,7 @@ public class PostWebClient {
             }
 
             // Create Karate tar.gz if karateJsonFile path is provided
-            String karateJsonFile = scannerPostRequest.getReportMetaData().getKarateJsonFile();
-            if (karateJsonFile != null && !karateJsonFile.isEmpty()) {
-                try {
-                    karateTarGz = TarGzUtil.createTarGzFromDirectory(
-                            Path.of(karateJsonFile),
-                            ".*\\.json$"
-                    );
-                } catch (IllegalArgumentException e) {
-                    // Log warning but don't fail - Karate is optional
-                    System.err.println("Warning: Failed to create Karate tar.gz: " + e.getMessage());
-                }
-            }
+            karateTarGz = buildKarateTarGz(scannerPostRequest.getReportMetaData().getKarateJsonFile());
 
             // Build multipart request
             MultipartBodyBuilder multipartBodyBuilder = new MultipartBodyBuilder();

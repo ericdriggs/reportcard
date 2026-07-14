@@ -8,10 +8,10 @@ import io.github.ericdriggs.reportcard.controller.util.TestXmlTarGzUtil;
 import io.github.ericdriggs.reportcard.lock.LockService;
 import io.github.ericdriggs.reportcard.model.*;
 import io.github.ericdriggs.reportcard.model.converter.JunitSurefireXmlParseUtil;
-import io.github.ericdriggs.reportcard.model.converter.karate.KarateConvertersUtil;
 import io.github.ericdriggs.reportcard.model.converter.karate.KarateCucumberConverter;
-import io.github.ericdriggs.reportcard.model.converter.karate.KarateSummary;
-import io.github.ericdriggs.reportcard.persist.StagePathPersistService;
+import io.github.ericdriggs.reportcard.model.converter.karate.KarateEnricher;
+import io.github.ericdriggs.reportcard.model.converter.karate.KarateNativeFeature;
+import io.github.ericdriggs.reportcard.model.converter.karate.KarateNativeReportParser;
 import io.github.ericdriggs.reportcard.persist.StoragePersistService;
 import io.github.ericdriggs.reportcard.persist.StorageType;
 import io.github.ericdriggs.reportcard.persist.TestResultPersistService;
@@ -30,8 +30,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -49,19 +47,16 @@ public class JunitController {
     @Autowired
     public JunitController(StoragePersistService storagePersistService,
                            TestResultPersistService testResultPersistService,
-                           StagePathPersistService stagePathPersistService,
                            S3Service s3Service,
                            LockService lockService) {
         this.storagePersistService = storagePersistService;
         this.testResultPersistService = testResultPersistService;
-        this.stagePathPersistService = stagePathPersistService;
         this.lockService = lockService;
         this.s3Service = s3Service;
     }
 
     private final StoragePersistService storagePersistService;
     private final LockService lockService;
-    private final StagePathPersistService stagePathPersistService;
 
     private final TestResultPersistService testResultPersistService;
     private final S3Service s3Service;
@@ -231,6 +226,14 @@ public class JunitController {
         }
     }
 
+    static void runPhaseNonBlocking(String phaseDescription, Runnable phase) {
+        try {
+            phase.run();
+        } catch (Exception e) {
+            log.warn("Failed to {}", phaseDescription, e);
+        }
+    }
+
     public StagePathStorageResultCountResponse doPostStageJunitStorageTarGZ(JunitHtmlPostRequest req) {
         // Validate at least one test result source
         boolean hasJunit = req.getJunitXmls() != null && !req.getJunitXmls().isEmpty();
@@ -255,27 +258,71 @@ public class JunitController {
             testResultModel.setTestSuites(new ArrayList<>());
         }
 
-        // Merge suites and tags from Karate Cucumber JSON when available (graceful failure)
+        // Merge suites, tags, and timestamps from Karate JSON when available. Cucumber-tag enrichment
+        // and native-timestamp enrichment are independent phases — one throwing must never prevent
+        // the other from running (see hard-400 check below for karate-only).
         if (hasKarate) {
-            try {
+            List<TestSuiteModel> karateSuites = new ArrayList<>();
+            List<String> allTagsResult = new ArrayList<>();
+            allTags = allTagsResult;
+
+            runPhaseNonBlocking("extract/parse Karate cucumber JSON, continuing without cucumber tags", () -> {
                 String cucumberJson = KarateTarGzUtil.extractCucumberJson(req.getKarateTarGz());
                 if (cucumberJson != null && !cucumberJson.isBlank()) {
-                    List<TestSuiteModel> karateSuites = KarateCucumberConverter.fromCucumberJson(cucumberJson);
-                    allTags = KarateCucumberConverter.collectAllTags(karateSuites);
-                    log.info("Extracted {} tags from Karate JSON", allTags.size());
+                    List<TestSuiteModel> karateSuitesResult = KarateEnricher.enrichTags(testResultModel, cucumberJson);
+                    karateSuites.addAll(karateSuitesResult);
+                    allTagsResult.addAll(KarateCucumberConverter.collectAllTags(karateSuites));
+                    log.info("Extracted {} tags from Karate JSON", allTagsResult.size());
 
-                    // Use Karate suites for test_suites_json (they contain embedded tags)
-                    // For Karate-only: use karateSuites directly
-                    // For JUnit+Karate: prefer karateSuites (has tags) over JUnit (no tags)
-                    if (!karateSuites.isEmpty()) {
+                    // JUnit is the source of record for test structure when present.
+                    // Karate suites only become the structure for karate-only uploads.
+                    if (!hasJunit && !karateSuites.isEmpty()) {
                         testResultModel.setTestSuites(karateSuites);
                         testResultModel.updateTotalsFromTestSuites();
                         log.info("Using {} Karate suites for test_suites_json", karateSuites.size());
                     }
                 }
-            } catch (Exception e) {
-                log.warn("Failed to extract tags from Karate JSON, continuing without tags", e);
-            }
+            });
+
+            runPhaseNonBlocking("extract/parse Karate native JSON, continuing without timestamp enrichment", () -> {
+                List<String> nativeJsons = KarateTarGzUtil.extractKarateNativeJsons(req.getKarateTarGz());
+                List<KarateNativeFeature> rawFeatures = new ArrayList<>();
+                for (String nativeJson : nativeJsons) {
+                    KarateNativeFeature feature = KarateNativeReportParser.parse(nativeJson);
+                    if (feature != null) {
+                        rawFeatures.add(feature);
+                    }
+                }
+
+                if (!rawFeatures.isEmpty()) {
+                    List<TestSuiteModel> nativeSuites = KarateEnricher.enrichTimestamps(testResultModel, rawFeatures);
+
+                    // Stage timing derives from ALL parsed native scenarios (via the adapted suites), matched or not.
+                    Instant stageStart = null;
+                    Instant stageEnd = null;
+                    for (TestSuiteModel nativeSuite : nativeSuites) {
+                        for (TestCaseModel nativeCase : nativeSuite.getTestCases()) {
+                            if (nativeCase.getStartTime() != null) {
+                                if (stageStart == null || nativeCase.getStartTime().isBefore(stageStart)) {
+                                    stageStart = nativeCase.getStartTime();
+                                }
+                            }
+                            if (nativeCase.getEndTime() != null) {
+                                if (stageEnd == null || nativeCase.getEndTime().isAfter(stageEnd)) {
+                                    stageEnd = nativeCase.getEndTime();
+                                }
+                            }
+                        }
+                    }
+                    testResultModel.setStartTime(stageStart);
+                    testResultModel.setEndTime(stageEnd);
+                }
+            });
+        }
+
+        if (!hasJunit && testResultModel.getTestSuites().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "karate.tar.gz could not be parsed and no junit.tar.gz was provided");
         }
 
         // Insert test result (tags passed to persistence layer for future storage)
@@ -284,11 +331,6 @@ public class JunitController {
         StagePath stagePath = stagePathTestResult.getStagePath();
         final Long stageId = stagePath.getStage().getStageId();
         final Long testResultId = stagePathTestResult.getTestResult().getTestResultId();
-
-        // Process Karate timing data
-        if (hasKarate) {
-            processKarateTiming(testResultId, req.getKarateTarGz());
-        }
 
         // Store files in S3
         StagePathStorages stagePathStorages;
@@ -390,42 +432,6 @@ public class JunitController {
         }
 
         return stagePathStorages;
-    }
-
-    /**
-     * Processes Karate timing data and updates test_result record.
-     */
-    private void processKarateTiming(Long testResultId, MultipartFile karateTarGz) {
-        if (karateTarGz == null || karateTarGz.isEmpty()) {
-            return;
-        }
-
-        String summaryJson = KarateTarGzUtil.extractKarateSummaryJson(karateTarGz);
-        if (summaryJson == null) {
-            log.warn("karate-summary-json.txt not found in karate.tar.gz for testResultId: {}", testResultId);
-            return;
-        }
-
-        KarateSummary summary = KarateConvertersUtil.parseKarateSummary(summaryJson);
-        if (summary == null) {
-            log.warn("Failed to parse karate-summary-json.txt for testResultId: {}", testResultId);
-            return;
-        }
-
-        LocalDateTime endTime = KarateConvertersUtil.parseResultDate(summary.getResultDate());
-        LocalDateTime startTime = KarateConvertersUtil.calculateStartTime(endTime, summary.getElapsedTime());
-
-        Instant startInstant = toInstant(startTime);
-        Instant endInstant = toInstant(endTime);
-
-        stagePathPersistService.updateTestResultTiming(testResultId, startInstant, endInstant);
-    }
-
-    private Instant toInstant(LocalDateTime localDateTime) {
-        if (localDateTime == null) {
-            return null;
-        }
-        return localDateTime.atZone(ZoneOffset.UTC).toInstant();
     }
 
     /**
