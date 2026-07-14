@@ -20,6 +20,12 @@ import java.util.stream.Collectors;
 public class TarGzUtil {
 
     /**
+     * Matches karate report json artifacts: {@code *.json}, {@code *.karate-json.txt},
+     * {@code karate-summary-json.txt}, {@code karate-progress-json.txt}.
+     */
+    public static final String KARATE_REPORT_FILE_REGEX = ".*\\.json$|.*json\\.txt$";
+
+    /**
      * Creates a tar.gz archive from files in a directory matching a regex pattern.
      * Only processes files in the top level of the directory (does not recurse into subdirectories).
      *

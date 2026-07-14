@@ -72,6 +72,34 @@ public class JunitControllerKarateTest {
         }
         """;
 
+    private static final String CUCUMBER_JSON = """
+        [
+          {
+            "keyword": "Feature",
+            "name": "Karate Feature One",
+            "tags": [{"name": "@feature-tag"}],
+            "elements": [
+              {
+                "type": "scenario",
+                "name": "Scenario One",
+                "tags": [{"name": "@scenario-tag"}],
+                "steps": [{"name": "Given step", "result": {"status": "passed", "duration": 100000000}}]
+              }
+            ]
+          }
+        ]
+        """;
+
+    private static final String NATIVE_KARATE_JSON = """
+        {
+          "packageQualifiedName": "Karate Feature One",
+          "relativePath": "Karate Feature One",
+          "scenarioResults": [
+            {"name": "Scenario One", "line": 3, "startTime": 1773863417611, "endTime": 1773863452232, "failed": false}
+          ]
+        }
+        """;
+
     private StageDetails getStageDetails(String stageName) {
         return StageDetails.builder()
                 .company(TestData.company)
@@ -243,7 +271,14 @@ public class JunitControllerKarateTest {
             Path summaryFile = tempDir.resolve("karate-summary-json.txt");
             Files.writeString(summaryFile, KARATE_SUMMARY_JSON, StandardCharsets.UTF_8);
 
-            Path tarGz = TestXmlTarGzUtil.createTarGzipFilesForTesting(List.of(summaryFile));
+            Path cucumberJsonFile = tempDir.resolve("feature-results.json");
+            Files.writeString(cucumberJsonFile, CUCUMBER_JSON, StandardCharsets.UTF_8);
+
+            Path nativeJsonFile = tempDir.resolve("feature-results.karate-json.txt");
+            Files.writeString(nativeJsonFile, NATIVE_KARATE_JSON, StandardCharsets.UTF_8);
+
+            Path tarGz = TestXmlTarGzUtil.createTarGzipFilesForTesting(
+                    List.of(summaryFile, cucumberJsonFile, nativeJsonFile));
             byte[] bytes = Files.readAllBytes(tarGz);
             Files.delete(tarGz);
 

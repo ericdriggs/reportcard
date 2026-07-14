@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -35,6 +36,14 @@ public class TestSuiteModel extends io.github.ericdriggs.reportcard.dto.TestSuit
     @Builder.Default
     private List<TestCaseModel> testCases = new ArrayList<>();
 
+    /**
+     * Karate scenario start/end epoch rollup (min/max of enriched cases); derived, not stored by junit.
+     * Set once by KarateEnricher after test cases are finalized — not automatically recomputed if
+     * testCases is mutated afterward.
+     */
+    private Instant startTime;
+    private Instant endTime;
+
     @JsonProperty("testCases")
     public List<TestCaseModel> getTestCases() {
         return testCases;
@@ -43,6 +52,24 @@ public class TestSuiteModel extends io.github.ericdriggs.reportcard.dto.TestSuit
     @JsonProperty("testCases")
     public TestSuiteModel setTestCases(List<TestCaseModel> testCases) {
         this.testCases = testCases;
+        return this;
+    }
+
+    public Instant getStartTime() {
+        return startTime;
+    }
+
+    public TestSuiteModel setStartTime(Instant startTime) {
+        this.startTime = startTime;
+        return this;
+    }
+
+    public Instant getEndTime() {
+        return endTime;
+    }
+
+    public TestSuiteModel setEndTime(Instant endTime) {
+        this.endTime = endTime;
         return this;
     }
 

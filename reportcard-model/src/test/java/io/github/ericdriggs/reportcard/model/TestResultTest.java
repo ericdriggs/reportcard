@@ -4,10 +4,12 @@ import io.github.ericdriggs.reportcard.xml.ResultCount;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 
 public class TestResultTest {
 
@@ -115,6 +117,22 @@ public class TestResultTest {
             assertEquals(TEST_TIME.multiply(new BigDecimal(suiteCopies)), resultCout.getTime());
             assertEquals(new BigDecimal("57.14"), resultCout.getTestSuccessPercent());
         }
+    }
+
+    @Test
+    public void copy_carriesStartTimeEndTimeAndTags() {
+        List<TestSuiteModel> testSuites = getTestSuites(1);
+        TestResultModel original = new TestResultModel().setTestSuites(testSuites);
+        original.setStartTime(Instant.ofEpochMilli(1700000000000L));
+        original.setEndTime(Instant.ofEpochMilli(1700000060000L));
+        original.setTagsList(List.of("some-tag"));
+
+        TestResultModel copy = original.copy();
+
+        assertNotSame(original, copy);
+        assertEquals(original.getStartTime(), copy.getStartTime());
+        assertEquals(original.getEndTime(), copy.getEndTime());
+        assertEquals(original.getTags(), copy.getTags());
     }
 
     protected List<TestSuiteModel> getTestSuites(int suiteCopies) {

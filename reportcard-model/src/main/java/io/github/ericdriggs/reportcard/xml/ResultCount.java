@@ -16,6 +16,21 @@ import java.util.Objects;
 
 import static io.github.ericdriggs.reportcard.util.CompareUtil.chainCompare;
 
+/**
+ * Holds error/failure/skipped/success/tests/time counts for a test result, suite, or case.
+ *
+ * <p>Four different equivalence notions exist on this type — pick deliberately:
+ * <ul>
+ *   <li>{@link #equals(Object)} (Lombok-generated) — exact equality over all fields including {@code time}.
+ *       Rarely what you want for test-result comparisons since {@code time} varies run-to-run.</li>
+ *   <li>{@link #compareTo(ResultCount)} — ordering comparison; rounds {@code time} for comparison
+ *       (precision may change after persist/read) but is not a same/different check per se.</li>
+ *   <li>{@link #isSame(ResultCount)} — the duplication-gate comparison: counts equal, {@code time}
+ *       ignored entirely. Use this to decide whether two results represent the same test run.</li>
+ *   <li>{@link #diff(ResultCount, ResultCount)} — human-readable list of which fields differ (time
+ *       rounded like {@code compareTo}); for diagnostics/error messages, not equality checks.</li>
+ * </ul>
+ */
 @Value
 @Builder(toBuilder = true)
 public class ResultCount implements Comparable<ResultCount> {
@@ -183,6 +198,22 @@ public class ResultCount implements Comparable<ResultCount> {
                 //round time for comparison since precision may change after persist/read
                 CompareUtil.compareBigDecimalAsBigInteger(this.time, that.time)
         );
+    }
+
+    /**
+     * Same test results (counts equal, time ignored) — the duplication-gate comparison;
+     * NOT equals/compareTo, which include time.
+     */
+    @JsonIgnore
+    public boolean isSame(ResultCount that) {
+        if (that == null) {
+            return false;
+        }
+        return Objects.equals(this.errors, that.errors)
+                && Objects.equals(this.failures, that.failures)
+                && Objects.equals(this.skipped, that.skipped)
+                && Objects.equals(this.successes, that.successes)
+                && Objects.equals(this.tests, that.tests);
     }
 
     @JsonIgnore

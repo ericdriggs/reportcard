@@ -209,13 +209,13 @@ public class TestResultPersistService extends StagePathPersistService {
         Set<TestResultModel> dbTestResults = getTestResults(testResult.getStageFk());
         if (!dbTestResults.isEmpty()) {
             for (TestResultModel dbTestResult : dbTestResults) {
-                if (dbTestResult.getResultCount().compareTo(testResult.getResultCount()) == 0) {
-                    log.info("testResult matches dbTestResult. Returning dbTestResult");
+                if (dbTestResult.getResultCount().isSame(testResult.getResultCount())) {
+                    log.info("testResult matches dbTestResult (counts equal, time diff ignored: db time={}, request time={}). Returning dbTestResult",
+                            dbTestResult.getResultCount().getTime(), testResult.getResultCount().getTime());
                     return dbTestResult;
                 } else {
                     final String diffs = String.join(", ", ResultCount.diff(testResult.getResultCount(), dbTestResult.getResultCount()));
-                    final String errorString = "Test result already inserted does not match request. diffs: {}" + diffs;
-                    //noinspection LoggingPlaceholderCountMatchesArgumentCount //false positive
+                    final String errorString = "Test result already inserted does not match request. diffs: " + diffs;
                     log.error(errorString);
                     throw new IllegalArgumentException(errorString);
                 }
@@ -232,6 +232,8 @@ public class TestResultPersistService extends StagePathPersistService {
                     .setSkipped(testResult.getSkipped())
                     .setTests(testResult.getTests())
                     .setTime(testResult.getTime())
+                    .setStartTime(testResult.getStartTime())
+                    .setEndTime(testResult.getEndTime())
                     .setExternalLinks(testResult.getExternalLinks())
                     .setTestSuitesJson(TestSuiteModel.asJsonWithTruncatedErrorMessages(testSuites))
                     .setTags(testResult.getTags())
