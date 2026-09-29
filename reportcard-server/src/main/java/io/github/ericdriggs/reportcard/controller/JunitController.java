@@ -247,7 +247,7 @@ public class JunitController {
 
         final StagePath stagePath = testResultPersistService.getUpsertedStagePath(req.getStageDetails());
         final List<PublicationArchive> archives = publicationArchives(req, hasJunit, hasKarate);
-        final List<StoragePojo> storages = upsertStorageIdentities(stagePath, archives);
+        final List<StoragePojo> storages = getOrInsertStorages(stagePath, archives);
         uploadIncompleteArchives(stagePath, archives, storages);
 
         // JUnit is primary source for test structure (reliable per-stage)
@@ -361,12 +361,10 @@ public class JunitController {
         return archives;
     }
 
-    List<StoragePojo> upsertStorageIdentities(StagePath stagePath, List<PublicationArchive> archives) {
-        final Long stageId = stagePath.getStage().getStageId();
+    List<StoragePojo> getOrInsertStorages(StagePath stagePath, List<PublicationArchive> archives) {
         List<StoragePojo> storages = new ArrayList<>();
         for (PublicationArchive archive : archives) {
-            final String prefix = new StoragePath(stagePath, archive.label()).getPrefix();
-            storages.addAll(storagePersistService.upsertStoragePath(archive.indexFile(), archive.label(), prefix, stageId, archive.storageType()).getStorages());
+            storages.add(storagePersistService.getOrInsertStorage(stagePath, archive.indexFile(), archive.label(), archive.storageType()));
         }
         return storages;
     }

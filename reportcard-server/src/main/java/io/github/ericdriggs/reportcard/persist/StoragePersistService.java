@@ -4,6 +4,7 @@ import io.github.ericdriggs.reportcard.gen.db.tables.daos.StorageDao;
 import io.github.ericdriggs.reportcard.gen.db.tables.pojos.StoragePojo;
 import io.github.ericdriggs.reportcard.model.StagePath;
 import io.github.ericdriggs.reportcard.model.StagePathStorages;
+import io.github.ericdriggs.reportcard.model.StoragePath;
 import org.apache.commons.lang3.ObjectUtils;
 import org.jooq.DSLContext;
 import org.slf4j.Logger;
@@ -52,6 +53,22 @@ public class StoragePersistService extends StagePathPersistService {
             }
         }
         return StagePathStorages.builder().stagePath(stagePath).storages(List.of(storagePojo)).build();
+    }
+
+    /**
+     * Reuses the storage row for the stage and label as persisted, including its prefix.
+     * Inserts an incomplete row with the canonical prefix only when none exists.
+     */
+    public StoragePojo getOrInsertStorage(StagePath stagePath, String indexFile, String label, StorageType storageType) {
+        final Long stageId = stagePath.getStage().getStageId();
+        final List<StoragePojo> existing = dsl.select(STORAGE.fields())
+                .from(STORAGE)
+                .where(STORAGE.STAGE_FK.eq(stageId).and(STORAGE.LABEL.eq(label)))
+                .fetchInto(StoragePojo.class);
+        if (!existing.isEmpty()) {
+            return existing.get(0);
+        }
+        return insertStorage(indexFile, label, new StoragePath(stagePath, label).getPrefix(), stageId, storageType);
     }
 
     protected List<StoragePojo> getExistingStoragePojos(String indexFile, String label, String prefix, Long stageFk, StorageType storageType) {
