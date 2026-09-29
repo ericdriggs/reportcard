@@ -248,6 +248,7 @@ public class JunitController {
         final StagePath stagePath = testResultPersistService.getUpsertedStagePath(req.getStageDetails());
         final List<PublicationArchive> archives = publicationArchives(req, hasJunit, hasKarate);
         final List<StoragePojo> storages = upsertStorageIdentities(stagePath, archives);
+        uploadIncompleteArchives(stagePath, archives, storages);
 
         // JUnit is primary source for test structure (reliable per-stage)
         // Karate provides tags when available (merged in)
@@ -333,8 +334,6 @@ public class JunitController {
         // Insert test result (tags passed to persistence layer for future storage)
         StagePathTestResult stagePathTestResult = testResultPersistService.insertTestResult(
                 stagePath, testResultModel, allTags);
-
-        uploadIncompleteArchives(stagePath, archives, storages);
 
         StagePathStorageResultCount stagePathStorageResultCount =
             new StagePathStorageResultCount(stagePath, storages, stagePathTestResult);
