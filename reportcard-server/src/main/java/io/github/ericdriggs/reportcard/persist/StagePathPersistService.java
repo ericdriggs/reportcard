@@ -314,7 +314,7 @@ public class StagePathPersistService extends AbstractPersistService {
                     .setJobFk(stagePath.getJob().getJobId())
                     .setJobRunCount(runCount)
                     .setRunDate(nowUTC)
-                    .setIsSuccess(true);
+                    .setIsSuccess(false);
             runDao.insert(run);
             stagePath.setRun(run);
         }
@@ -350,14 +350,13 @@ public class StagePathPersistService extends AbstractPersistService {
         return nowUTC;
     }
 
-    public void setIsRunSuccess(StagePath stagePath) {
-        if (!isRunSuccess(stagePath)) {
-            dsl.update(RUN)
-               .set(RUN.IS_SUCCESS, false)
-               .where(RUN.RUN_ID.eq(stagePath.getRun().getRunId()))
-               .execute();
-            stagePath.getRun().setIsSuccess(false);
-        }
+    public void updateIsRunSuccess(StagePath stagePath) {
+        final boolean isSuccess = isRunSuccess(stagePath);
+        dsl.update(RUN)
+           .set(RUN.IS_SUCCESS, isSuccess)
+           .where(RUN.RUN_ID.eq(stagePath.getRun().getRunId()))
+           .execute();
+        stagePath.getRun().setIsSuccess(isSuccess);
     }
 
     //TOMAYBE: consolidate into single sql query
