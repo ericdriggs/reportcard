@@ -145,12 +145,11 @@ public class FailedPublicationService extends AbstractPersistService {
                 .orderBy(STORAGE.LABEL)
                 .fetchInto(StoragePojo.class);
         for (StoragePojo storage : storages) {
-            final StorageType storageType = StorageType.fromStorageTypeId(storage.getStorageType());
             storagesByStageId.computeIfAbsent(storage.getStageFk(), k -> new LinkedHashMap<>())
                     .put(storage.getLabel(), FailedPublicationStorage.builder()
                             .storageId(storage.getStorageId())
                             .label(storage.getLabel())
-                            .storageType(storageType == null ? null : storageType.name())
+                            .storageType(storage.getStorageType())
                             .isUploadComplete(storage.getIsUploadComplete())
                             .url(BrowseHtmlHelper.getStorageKey(storage))
                             .build());

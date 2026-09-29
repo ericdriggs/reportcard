@@ -10,7 +10,7 @@ import lombok.extern.jackson.Jacksonized;
 public class FailedPublicationStorage {
     Long storageId;
     String label;
-    String storageType;
+    Integer storageType;
     Boolean isUploadComplete;
     String url;
 }
