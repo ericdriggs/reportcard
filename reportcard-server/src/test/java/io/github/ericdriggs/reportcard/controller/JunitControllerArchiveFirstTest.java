@@ -43,7 +43,11 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @SpringBootTest(classes = {ReportcardApplication.class, LocalStackConfig.class},
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -57,7 +61,7 @@ public class JunitControllerArchiveFirstTest {
     @Autowired
     JunitController junitController;
 
-    @Autowired
+    @SpyBean
     StoragePersistService storagePersistService;
 
     @Autowired
@@ -168,7 +172,6 @@ public class JunitControllerArchiveFirstTest {
      * When the request is posted,
      * Expected the existing structured error response is returned, the junit and html archives are complete
      * and retained in S3, and no test result exists for the stage.
-     * Ticket: reportcard_store-s3-before-test-persistence · Behavior: parse failure retains uploaded archives without a test result
      */
     @Test
     void whenParsingFailsAfterUploads_expectArchivesRetainedAndNoTestResult() throws IOException {
@@ -189,7 +192,6 @@ public class JunitControllerArchiveFirstTest {
      * When test-result persistence fails after parsing,
      * Expected the structured error is returned, the junit and html archives are complete and retained in S3,
      * and no test result exists for the stage.
-     * Ticket: reportcard_store-s3-before-test-persistence · Behavior: persistence failure retains uploaded archives without a test result
      */
     @Test
     void whenPersistenceFails_expectArchivesRetainedAndNoTestResult() throws IOException {
@@ -213,7 +215,6 @@ public class JunitControllerArchiveFirstTest {
      * When the html report upload fails,
      * Expected the response carries the S3 failure (not a parse error, proving parsing never ran), the
      * junit and karate archives stay complete in S3, the html row stays incomplete, and no test result exists.
-     * Ticket: reportcard_store-s3-before-test-persistence · Behavior: S3 upload failure prevents parsing and persistence while retaining completed uploads
      */
     @Test
     void whenReportUploadFails_expectEarlierUploadsRetainedAndParsingSkipped() throws IOException {
@@ -266,7 +267,6 @@ public class JunitControllerArchiveFirstTest {
      * When it is posted,
      * Expected 201, each archive is uploaded while its row is incomplete and before any test result exists,
      * every row ends complete in S3, and exactly one valid test result exists for the stage.
-     * Ticket: reportcard_store-s3-before-test-persistence · Behavior: JUnit-only combined publication uploads every archive before parsing and persisting
      */
     @Test
     void whenJunitOnlyPublicationSucceeds_expectEveryUploadBeforeTestResult() throws IOException {
@@ -278,7 +278,6 @@ public class JunitControllerArchiveFirstTest {
      * Given a combined request with karate.tar.gz and an html report but no junit.tar.gz,
      * When it is posted,
      * Expected 201, archives are uploaded before any test result exists, and exactly one valid test result exists.
-     * Ticket: reportcard_store-s3-before-test-persistence · Behavior: Karate-only combined publication uploads every archive before parsing and persisting
      */
     @Test
     void whenKarateOnlyPublicationSucceeds_expectEveryUploadBeforeTestResult() throws IOException {
@@ -290,11 +289,59 @@ public class JunitControllerArchiveFirstTest {
      * Given a combined request with junit.tar.gz, karate.tar.gz, and an html report,
      * When it is posted,
      * Expected 201, archives are uploaded before any test result exists, and exactly one valid test result exists.
-     * Ticket: reportcard_store-s3-before-test-persistence · Behavior: JUnit and Karate combined publication uploads every archive before parsing and persisting
      */
     @Test
     void whenJunitAndKaratePublicationSucceeds_expectEveryUploadBeforeTestResult() throws IOException {
         assertArchiveFirstSuccess(uniqueStageDetails("archiveFirstJunitAndKarate"),
                 JunitControllerTest.getJunitTarGz(resourceReader), karateTarGz(), Set.of("junit", "karate", "html"));
+    }
+
+    /**
+     * Given a combined request whose test-result persistence fails on the first attempt,
+     * When the same publication is retried after persistence starts succeeding again,
+     * Expected the retry returns 201 without re-uploading either archive, and exactly one test result exists.
+     */
+    @Test
+    void whenPersistenceFails_thenRetried_expectNoReuploadAndOneTestResult() throws IOException {
+        final StageDetails stageDetails = uniqueStageDetails("archiveFirstPersistFailureRetried");
+        doThrow(new IllegalStateException(SIMULATED_PERSIST_FAILURE))
+                .when(testResultPersistService).insertTestResult(any(TestResultModel.class));
+
+        final StagePathStorageResultCountResponse first =
+                postViaEndpoint(stageDetails, JunitControllerTest.getJunitTarGz(resourceReader), null);
+        assertStructuredError(first.getResponseDetails(), SIMULATED_PERSIST_FAILURE);
+
+        doCallRealMethod().when(testResultPersistService).insertTestResult(any(TestResultModel.class));
+        final StagePathStorageResultCountResponse retry =
+                postViaEndpoint(stageDetails, JunitControllerTest.getJunitTarGz(resourceReader), null);
+        assertEquals(201, retry.getResponseDetails().getHttpStatus());
+
+        verify(s3Service, times(2)).uploadTarGz(anyString(), anyBoolean(), any());
+        assertEquals(1, testResultCount(stageId(stageDetails)));
+    }
+
+    /**
+     * Given a combined request with junit.tar.gz, karate.tar.gz, and an html report,
+     * When the storage-identity insert fails for the second archive (karate), before any upload starts,
+     * Expected no upload is attempted, only the first archive's (junit) storage-identity row exists and is
+     * incomplete, and no test result exists.
+     */
+    @Test
+    void whenStorageIdentityInsertFailsForSecondArchive_expectNoUploadsAndFirstIdentityOnly() throws IOException {
+        final StageDetails stageDetails = uniqueStageDetails("archiveFirstIdentityInsertFailure");
+        final String SIMULATED_IDENTITY_FAILURE = "simulated storage identity insert failure";
+        doThrow(new RuntimeException(SIMULATED_IDENTITY_FAILURE))
+                .when(storagePersistService).getOrInsertStorage(any(), any(), eq("karate"), any());
+
+        final StagePathStorageResultCountResponse response =
+                postViaEndpoint(stageDetails, JunitControllerTest.getJunitTarGz(resourceReader), karateTarGz());
+        assertStructuredError(response.getResponseDetails(), SIMULATED_IDENTITY_FAILURE);
+
+        verify(s3Service, never()).uploadTarGz(anyString(), anyBoolean(), any());
+        final Long stageId = stageId(stageDetails);
+        assertEquals(Set.of("junit"), storagesByLabel(stageId).keySet(),
+                "only the archive processed before the failure gets an identity row");
+        assertFalse(storagesByLabel(stageId).get("junit").getIsUploadComplete());
+        assertEquals(0, testResultCount(stageId));
     }
 }

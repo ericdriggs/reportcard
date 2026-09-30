@@ -99,7 +99,6 @@ public class FailedPublicationSelectionTest {
      * When the boundary is computed for dateCutoff,
      * Expected boundaryRunId is the run dated dateCutoff-2d: the first run in descending run_id order whose run_date
      * is strictly earlier than dateCutoff minus one day.
-     * Ticket: reportcard_store-s3-before-test-persistence · Behavior: failed-publication selection derives a synthetic run id boundary from dateCutoff minus one day
      */
     @Test
     void whenOldRunsPrecedeTheWindow_expectBoundaryIsNewestRunEarlierThanDateCutoffMinusOneDay() {
@@ -118,7 +117,6 @@ public class FailedPublicationSelectionTest {
      * When candidates are selected for days=1 and olderThanMinutes=10 at now,
      * Expected only the dateCutoff, graceCutoff, and in-window-with-storage stages are returned, newest stage first,
      * both from findCandidateStageIds and from getFailedPublications, which echoes the derived cutoffs.
-     * Ticket: reportcard_store-s3-before-test-persistence · Behavior: failed-publication candidates satisfy the run id boundary, exact run_date bounds, storage existence, and test-result absence
      */
     @Test
     void whenSelectingCandidates_expectBoundaryExactDateStorageAndTestResultPredicates() {
@@ -155,7 +153,6 @@ public class FailedPublicationSelectionTest {
      * When candidates are selected with limit 1 and limit 2,
      * Expected the limit counts stages (not storage rows): limit 1 returns only the newest stage with all three
      * labels, and limit 2 returns both stages newest first.
-     * Ticket: reportcard_store-s3-before-test-persistence · Behavior: failed-publication stage limit is applied before storage details are fetched
      */
     @Test
     void whenLimitIsSmallerThanCandidates_expectLimitAppliedToStagesBeforeStorageDetails() {
@@ -182,7 +179,6 @@ public class FailedPublicationSelectionTest {
      * When the candidate stage-id query is rendered,
      * Expected it contains direct run_id, run_date lower-bound, and run_date upper-bound predicates, storage
      * existence and test-result absence subqueries, newest-stage ordering, and the limit, with no OR condition.
-     * Ticket: reportcard_store-s3-before-test-persistence · Behavior: failed-publication candidate query uses direct predicates instead of nullable OR conditions
      */
     @Test
     void whenRenderingCandidateQuery_expectDirectPredicatesWithoutNullableOr() {
@@ -197,5 +193,15 @@ public class FailedPublicationSelectionTest {
         assertTrue(sql.matches("(?s).*\\bnot\\s+exists\\s*\\(.*`test_result`.*"), sql);
         assertTrue(sql.matches("(?s).*order by .*`stage_id`\\s+desc.*"), sql);
         assertTrue(sql.matches("(?s).*\\blimit\\s+7\\b.*"), sql);
+    }
+
+    /**
+     * Given an empty stage-id list,
+     * When getFailedPublications(List) is called directly,
+     * Expected an empty list with no query run against the database.
+     */
+    @Test
+    void whenStageIdsIsEmpty_expectEmptyListWithNoQuery() {
+        assertEquals(List.of(), failedPublicationService.getFailedPublications(List.of()));
     }
 }

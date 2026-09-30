@@ -352,8 +352,9 @@ public class JunitController {
         }
         final MultipartFile reports = req.getReports();
         if (reports != null && !reports.isEmpty()) {
-            // Store original tar.gz for cucumber_html before expanding; form field name becomes filename in S3
             if ("cucumber_html".equals(req.getLabel())) {
+                // Store original tar.gz for cucumber_html before expanding.
+                // reports.getName() is the form field name, which becomes the filename in S3.
                 archives.add(new PublicationArchive(StorageType.TAR_GZ.toLabel("cucumber_html"), reports.getName(), StorageType.TAR_GZ, false, reports));
             }
             archives.add(new PublicationArchive(req.getLabel(), req.getIndexFile(), StorageType.HTML, true, reports));

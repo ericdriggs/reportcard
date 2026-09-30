@@ -118,7 +118,6 @@ public class JunitControllerPublicationIdentityTest {
      * Expected the endpoint returns the structured upload error, the complete hierarchy exists, and exactly one
      * incomplete storage row exists per submitted archive label with the canonical prefix calculated from the
      * persisted hierarchy and the archive's storage type.
-     * Ticket: reportcard_store-s3-before-test-persistence · Behavior: combined publication creates the hierarchy and one incomplete storage identity per submitted archive
      */
     @Test
     void whenFirstUploadFails_expectIncompleteIdentityForEverySubmittedArchive() throws IOException {
@@ -162,7 +161,6 @@ public class JunitControllerPublicationIdentityTest {
      * When the same request is submitted again and uploads succeed,
      * Expected the retry returns 201 and reuses the same run, stage, and storage rows (same ids, one row per
      * label), and every storage row becomes complete.
-     * Ticket: reportcard_store-s3-before-test-persistence · Behavior: combined publication reuses the canonical hierarchy and storage identities
      */
     @Test
     void whenRequestIsRetriedAfterUploadFailure_expectHierarchyAndIdentitiesReused() throws IOException {
@@ -198,7 +196,6 @@ public class JunitControllerPublicationIdentityTest {
      * When the first S3 upload fails,
      * Expected exactly the junit and html storage rows exist, both incomplete, with no karate or
      * cucumber_html_tar_gz row.
-     * Ticket: reportcard_store-s3-before-test-persistence · Behavior: combined publication creates identities only for submitted archives
      */
     @Test
     void whenOnlyJunitAndReportAreSubmitted_expectIdentitiesOnlyForSubmittedArchives() {

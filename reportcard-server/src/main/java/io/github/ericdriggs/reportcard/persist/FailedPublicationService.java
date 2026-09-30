@@ -9,6 +9,8 @@ import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.Record1;
 import org.jooq.ResultQuery;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -26,6 +28,8 @@ import static org.jooq.impl.DSL.selectOne;
  */
 @Service
 public class FailedPublicationService extends AbstractPersistService {
+
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     public static final int DEFAULT_DAYS = 1;
     public static final int DEFAULT_OLDER_THAN_MINUTES = 10;
@@ -54,17 +58,24 @@ public class FailedPublicationService extends AbstractPersistService {
 
         final Instant dateCutoff = now.minus(Duration.ofDays(validDays));
         final Instant graceCutoff = now.minus(Duration.ofMinutes(validOlderThanMinutes));
-        final long boundaryRunId = findBoundaryRunId(dateCutoff);
-        final List<Long> stageIds = findCandidateStageIds(boundaryRunId, dateCutoff, graceCutoff, validLimit);
+        try {
+            final long boundaryRunId = findBoundaryRunId(dateCutoff);
+            log.debug("findBoundaryRunId: dateCutoff={}, boundaryRunId={}", dateCutoff, boundaryRunId);
+            final List<Long> stageIds = findCandidateStageIds(boundaryRunId, dateCutoff, graceCutoff, validLimit);
 
-        return FailedPublicationsResponse.builder()
-                .days(validDays)
-                .olderThanMinutes(validOlderThanMinutes)
-                .limit(validLimit)
-                .dateCutoff(dateCutoff)
-                .graceCutoff(graceCutoff)
-                .failedPublications(getFailedPublications(stageIds))
-                .build();
+            return FailedPublicationsResponse.builder()
+                    .days(validDays)
+                    .olderThanMinutes(validOlderThanMinutes)
+                    .limit(validLimit)
+                    .dateCutoff(dateCutoff)
+                    .graceCutoff(graceCutoff)
+                    .failedPublications(getFailedPublications(stageIds))
+                    .build();
+        } catch (Exception ex) {
+            log.error("getFailedPublications failed: days={}, olderThanMinutes={}, limit={}, dateCutoff={}, graceCutoff={}",
+                    validDays, validOlderThanMinutes, validLimit, dateCutoff, graceCutoff, ex);
+            throw ex;
+        }
     }
 
     /**

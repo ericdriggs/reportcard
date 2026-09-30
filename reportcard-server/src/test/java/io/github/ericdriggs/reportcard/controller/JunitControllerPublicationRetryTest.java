@@ -159,7 +159,6 @@ public class JunitControllerPublicationRetryTest {
      * When the same publication is retried,
      * Expected 201, each archive is uploaded once to its persisted prefix, the run, stage, and storage rows are
      * reused, and exactly one test result exists.
-     * Ticket: reportcard_store-s3-before-test-persistence · Behavior: retry reuses run, stage, and storage records and uploads incomplete storage
      */
     @Test
     void whenRetryingAfterAllUploadsFailed_expectPersistedIdentitiesUploadedAndOneTestResult() throws IOException {
@@ -181,7 +180,6 @@ public class JunitControllerPublicationRetryTest {
      * When the same publication is retried,
      * Expected 201, only the html archive is uploaded (to its persisted prefix), complete storage is skipped,
      * and exactly one test result exists.
-     * Ticket: reportcard_store-s3-before-test-persistence · Behavior: retry uploads only incomplete storage and skips complete storage
      */
     @Test
     void whenRetryingWithOnlyReportIncomplete_expectOnlyReportUploaded() throws IOException {
@@ -201,7 +199,6 @@ public class JunitControllerPublicationRetryTest {
      * When the same publication is retried twice,
      * Expected each retry returns 201 without any upload, the first retry parses and persists the test result,
      * and one run, one stage, and one test result exist after both retries.
-     * Ticket: reportcard_store-s3-before-test-persistence · Behavior: retry with complete storage still parses and persists one test result
      */
     @Test
     void whenRetryingWithAllStorageCompleteAndNoTestResult_expectNoUploadsAndOneTestResult() throws IOException {

@@ -112,7 +112,6 @@ public class FailedPublicationControllerTest {
      * When GET /v1/api/failed-publishes is called without parameters,
      * Expected 200 JSON echoing days=1, olderThanMinutes=10, limit=50 and cutoffs one day and ten minutes before
      * the request, including only the 30-minute-old stage.
-     * Ticket: reportcard_store-s3-before-test-persistence · Behavior: failed-publication API applies default days, olderThanMinutes, and limit to run_date bounds
      */
     @Test
     void whenJsonDefaultsAreUsed_expectEchoedDefaultsAndRunDateWindow() throws IOException {
@@ -146,7 +145,6 @@ public class FailedPublicationControllerTest {
      * Given 51 suspected stages dated 30 minutes ago,
      * When GET /v1/api/failed-publishes is called without limit and then with limit=2,
      * Expected the default returns exactly the 50 newest stages newest first, and limit=2 returns the 2 newest.
-     * Ticket: reportcard_store-s3-before-test-persistence · Behavior: failed-publication API defaults limit to 50 and honors an explicit limit
      */
     @Test
     void whenDefaultLimitApplies_expectFiftyNewestStagesAndExplicitLimitHonored() throws IOException {
@@ -167,7 +165,6 @@ public class FailedPublicationControllerTest {
      * When either is called with days 0 or 31, limit 0 or 201, olderThanMinutes 0, or a non-numeric days, limit, or
      * olderThanMinutes value,
      * Expected 400 Bad Request.
-     * Ticket: reportcard_store-s3-before-test-persistence · Behavior: failed-publication views reject invalid days, olderThanMinutes, and limit values
      */
     @Test
     void whenParameterValuesAreInvalid_expectBadRequestOnBothViews() {
@@ -186,7 +183,6 @@ public class FailedPublicationControllerTest {
      * (company, org, and before-run-id),
      * Expected 200 on both views, the JSON view echoes the defaults and returns the same global stage list as the
      * request without those parameters, and the HTML view still renders the fixture stage row.
-     * Ticket: reportcard_store-s3-before-test-persistence · Behavior: failed-publication views ignore unsupported query parameters and stay global
      */
     @Test
     void whenUnknownParametersAreSent_expectThemIgnoredAndResultsGlobal() throws IOException {
@@ -212,7 +208,6 @@ public class FailedPublicationControllerTest {
      * Given the JSON and HTML failed-publication views,
      * When either is called with days 1 or 30, limit 1 or 200, or olderThanMinutes 1,
      * Expected 200 OK, and the JSON view echoes the accepted value.
-     * Ticket: reportcard_store-s3-before-test-persistence · Behavior: failed-publication views accept days 1-30, limit 1-200, and olderThanMinutes of at least 1
      */
     @Test
     void whenParametersAreAtTheirBounds_expectOkOnBothViews() throws IOException {
@@ -236,7 +231,6 @@ public class FailedPublicationControllerTest {
      * Expected both companies appear (global view), newest stage first, one row per stage with its hierarchy fields,
      * storage grouped by label with completion flags and storage-key URLs, the complete link returns 200, and the
      * retained incomplete link returns 404.
-     * Ticket: reportcard_store-s3-before-test-persistence · Behavior: failed-publication API is global, newest first, one row per stage, with grouped storage links
      */
     @Test
     void whenStagesSpanCompanies_expectGlobalNewestFirstRowsWithGroupedStorageLinks() throws IOException {
@@ -290,7 +284,6 @@ public class FailedPublicationControllerTest {
      * When GET /failed-publishes is called,
      * Expected 200 HTML containing the failed-publications table, exactly one row per stage, and a labeled link to
      * every storage URL marked complete or incomplete.
-     * Ticket: reportcard_store-s3-before-test-persistence · Behavior: failed-publication HTML view renders one table row per stage with grouped storage links
      */
     @Test
     void whenHtmlViewIsRequested_expectTableWithOneRowPerStageAndStorageLinks() throws IOException {

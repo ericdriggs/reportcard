@@ -163,7 +163,6 @@ public class PublishedVisibilityTest {
      * Expected only run 1 and its api stage appear (the hierarchy-only run and stage do not consume history
      * positions), the hierarchy-only job is listed with no runs, the retained ui archive is still served by direct
      * storage access, and every hierarchy-only stage is reported by failed-publication selection.
-     * Ticket: reportcard_store-s3-before-test-persistence · Behavior: normal browse history excludes stages without test results while retained artifacts stay reachable
      */
     @Test
     void whenBrowsingHistory_expectOnlyStagesWithTestResults() throws IOException {
@@ -219,7 +218,6 @@ public class PublishedVisibilityTest {
      * When latest-run, latest-run-id, run, and SHA views are read,
      * Expected the latest run per stage is run 1 with only its api stage, the latest run id is run 1, the run view of
      * run 1 omits the ui stage, sha 1 lists only run 1, and sha 2 (hierarchy-only run 2) lists no runs.
-     * Ticket: reportcard_store-s3-before-test-persistence · Behavior: latest-run and SHA views exclude runs and stages without test results
      */
     @Test
     void whenViewingLatestRunAndSha_expectPublishedRunsAndStagesOnly() throws IOException {
@@ -254,7 +252,6 @@ public class PublishedVisibilityTest {
      * Expected dashboards show only run 1 with stages that have test results and omit job 2; the pipeline metrics
      * count one run with 100% pass rate and omit job 2; job 1 last_run is unchanged by hierarchy-only run 2; and
      * job 2 and its branch have no last_run.
-     * Ticket: reportcard_store-s3-before-test-persistence · Behavior: dashboard graphs, recency, and success metrics exclude runs and stages without test results
      */
     @Test
     void whenViewingDashboardsRecencyAndSuccess_expectPublishedRunsOnly() throws IOException {
@@ -285,7 +282,6 @@ public class PublishedVisibilityTest {
      * Given a set that iterates a non-null Instant before a null element (as a NULL branch or job last_run does),
      * When BrowseHtmlHelper.mostRecent is called,
      * Expected the null element is ignored and the latest non-null Instant is returned; a set of only nulls yields null.
-     * Ticket: reportcard_store-s3-before-test-persistence · Behavior: browse date aggregation ignores missing last_run values
      */
     @Test
     void whenMostRecentSeesNullAfterValue_expectLatestNonNullInstant() {
@@ -308,7 +304,6 @@ public class PublishedVisibilityTest {
      * When the company, org, repo, both branch, and the hierarchy-only job HTML browse pages are requested,
      * Expected every page returns 200 (no 5xx), and the published repo, branch, and job appear on their parent pages
      * (the company page lists orgs from a JVM-wide cache that may predate this fixture, so only its status is checked).
-     * Ticket: reportcard_store-s3-before-test-persistence · Behavior: browse pages render when branches and jobs have no published runs or a NULL last_run
      */
     @Test
     void whenBrowsingEntitiesWithoutPublishedRuns_expectPagesRender() throws IOException {
@@ -346,7 +341,6 @@ public class PublishedVisibilityTest {
      * hierarchy-only run in the same job and a hierarchy-only job,
      * When the repo dashboard is read for that repo name,
      * Expected it returns a dashboard for each company, and the only runs shown are the two published runs.
-     * Ticket: reportcard_store-s3-before-test-persistence · Behavior: the repo dashboard shows every company with the repo and only runs with test results
      */
     @Test
     void whenViewingRepoDashboardAcrossCompanies_expectEveryCompanyWithPublishedRunsOnly() throws IOException {

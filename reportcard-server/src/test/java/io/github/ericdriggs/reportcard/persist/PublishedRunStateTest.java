@@ -96,7 +96,6 @@ public class PublishedRunStateTest {
      * Given a new run reference,
      * When the hierarchy is created,
      * Expected the new run row and the returned run have is_success=false.
-     * Ticket: reportcard_store-s3-before-test-persistence · Behavior: a new run starts unsuccessful
      */
     @Test
     void whenRunIsCreated_expectRunUnsuccessful() {
@@ -111,7 +110,6 @@ public class PublishedRunStateTest {
      * When the last-run update fails inside test-result persistence,
      * Expected the failure propagates, no test result is persisted, the run stays unsuccessful, and job and branch
      * last_run are unchanged.
-     * Ticket: reportcard_store-s3-before-test-persistence · Behavior: test-result persistence, run-success recomputation, and last-run updates are atomic
      */
     @Test
     void whenLastRunUpdateFailsDuringPersistence_expectNoTestResultAndUnchangedRunState() {
@@ -141,7 +139,6 @@ public class PublishedRunStateTest {
      * When a passing test result is persisted,
      * Expected the run becomes successful in the database and in the returned stage path, and job and branch
      * last_run are set to the persistence time.
-     * Ticket: reportcard_store-s3-before-test-persistence · Behavior: run success and recency derive from persisted test results
      */
     @Test
     void whenPassingResultIsPersistedForUnsuccessfulRun_expectRunPromotedToSuccessfulAndRecencyUpdated() {
@@ -165,7 +162,6 @@ public class PublishedRunStateTest {
      * Expected the run is unsuccessful with only the hierarchy-only stage, successful after the passing stage
      * (the hierarchy-only stage does not count), unsuccessful after the failing stage, and the hierarchy-only stage
      * is reported by failed-publication selection.
-     * Ticket: reportcard_store-s3-before-test-persistence · Behavior: multi-stage run success uses only stages with persisted test results
      */
     @Test
     void whenRunHasHierarchyOnlyAndPublishedStages_expectSuccessFromPublishedStagesOnly() {
@@ -219,7 +215,6 @@ public class PublishedRunStateTest {
      * Expected the route returns the structured error, no test result exists, and the run is unsuccessful; when the
      * passing result is posted again without the failure, the run is promoted to successful and job and branch
      * last_run are set.
-     * Ticket: reportcard_store-s3-before-test-persistence · Behavior: JUnit-only publication persists test results atomically and derives run success and recency
      */
     @Test
     void whenJunitOnlyPersistenceFailsAfterInsert_expectRollbackThenPromotionOnRetry() throws IOException {
