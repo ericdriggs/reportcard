@@ -24,6 +24,8 @@ import java.util.*;
 import java.util.concurrent.ConcurrentSkipListMap;
 
 import static io.github.ericdriggs.reportcard.gen.db.Tables.*;
+import static io.github.ericdriggs.reportcard.persist.PublishedConditions.runHasTestResult;
+import static io.github.ericdriggs.reportcard.persist.PublishedConditions.stageHasTestResult;
 import static org.jooq.impl.DSL.max;
 
 /**
@@ -277,7 +279,7 @@ public class BrowseService extends AbstractPersistService {
                 .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID)
                         .and(BRANCH.BRANCH_NAME.eq(branchName)))
                 .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
-                .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID))
+                .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID).and(runHasTestResult()))
                 .where(COMPANY.COMPANY_NAME.eq(companyName))
                 .fetch();
 
@@ -340,8 +342,8 @@ public class BrowseService extends AbstractPersistService {
                 .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID)
                         .and(JOB.JOB_ID.eq(jobId))
                 )
-                .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID))
-                .leftJoin(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID))
+                .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID).and(runHasTestResult()))
+                .leftJoin(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID).and(stageHasTestResult()))
                 .where(COMPANY.COMPANY_NAME.eq(companyName))
                 .fetch();
 
@@ -353,11 +355,16 @@ public class BrowseService extends AbstractPersistService {
             }
             RunPojo run = record.into(RunPojo.class);
             StagePojo stage = record.into(StagePojo.class);
+            if (run.getRunId() == null) {
+                continue;
+            }
 
             if (!runStageMap.containsKey(run)) {
                 runStageMap.put(run, new TreeSet<>(PojoComparators.STAGE_CASE_INSENSITIVE_ORDER));
             }
-            runStageMap.get(run).add(stage);
+            if (stage.getStageId() != null) {
+                runStageMap.get(run).add(stage);
+            }
         }
         return Collections.singletonMap(job, runStageMap);
     }
@@ -411,6 +418,7 @@ public class BrowseService extends AbstractPersistService {
                 .join(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
                 .join(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID))
                 .where(COMPANY.COMPANY_NAME.eq(companyName))
+                .and(runHasTestResult())
                 .orderBy(RUN.RUN_ID.desc())
                 .limit(runs)
                 .fetchArray(RUN.RUN_ID, Long.class);
@@ -425,7 +433,7 @@ public class BrowseService extends AbstractPersistService {
                         .and(BRANCH.BRANCH_NAME.eq(branchName)))
                 .join(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
                 .join(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID).and(RUN.RUN_ID.in(topRunIds)))
-                .join(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID))
+                .join(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID).and(stageHasTestResult()))
                 .leftJoin(STORAGE).on(STORAGE.STAGE_FK.eq(STAGE.STAGE_ID))
                 .leftJoin(TEST_RESULT).on(TEST_RESULT.STAGE_FK.eq(STAGE.STAGE_ID))
                 .where(COMPANY.COMPANY_NAME.eq(companyName))
@@ -448,6 +456,7 @@ public class BrowseService extends AbstractPersistService {
                         .and(JOB.JOB_ID.eq(jobId)))
                 .join(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID))
                 .where(COMPANY.COMPANY_NAME.eq(companyName))
+                .and(runHasTestResult())
                 .orderBy(RUN.RUN_ID.desc())
                 .limit(runs)
                 .fetchArray(RUN.RUN_ID, Long.class);
@@ -465,7 +474,7 @@ public class BrowseService extends AbstractPersistService {
                         .and(JOB.JOB_ID.eq(jobId)))
                 .join(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID)
                         .and(RUN.RUN_ID.in(topRunIds)))
-                .join(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID))
+                .join(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID).and(stageHasTestResult()))
                 .leftJoin(STORAGE).on(STORAGE.STAGE_FK.eq(STAGE.STAGE_ID))
                 .leftJoin(TEST_RESULT).on(TEST_RESULT.STAGE_FK.eq(STAGE.STAGE_ID))
                 .where(COMPANY.COMPANY_NAME.eq(companyName))
@@ -489,7 +498,7 @@ public class BrowseService extends AbstractPersistService {
                 .join(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID)
                         .and(SqlJsonUtil.jobInfoEqualsJson(jobInfo)))
                 .join(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID))
-                .join(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID))
+                .join(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID).and(stageHasTestResult()))
                 .leftJoin(STORAGE).on(STORAGE.STAGE_FK.eq(STAGE.STAGE_ID))
                 .leftJoin(TEST_RESULT).on(TEST_RESULT.STAGE_FK.eq(STAGE.STAGE_ID))
                 .where(COMPANY.COMPANY_NAME.eq(companyName))
@@ -620,6 +629,7 @@ public class BrowseService extends AbstractPersistService {
         Long result = dsl.select(max(RUN.RUN_ID))
                 .from(RUN)
                 .where(RUN.JOB_FK.eq(jobId))
+                .and(runHasTestResult())
                 .fetchOne(0, Long.class);
 
         if (result == null) {
@@ -640,7 +650,8 @@ public class BrowseService extends AbstractPersistService {
                         .and(BRANCH.BRANCH_NAME.eq(branchName)))
                 .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
                 .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID)
-                        .and(RUN.SHA.eq(sha)))
+                        .and(RUN.SHA.eq(sha))
+                        .and(runHasTestResult()))
                 .where(COMPANY.COMPANY_NAME.eq(companyName))
                 .fetch();
 
@@ -661,7 +672,9 @@ public class BrowseService extends AbstractPersistService {
                     }
                 }
             }
-            jobRunMap.get(job).add(run);
+            if (run.getRunId() != null) {
+                jobRunMap.get(job).add(run);
+            }
         }
         return Collections.singletonMap(branch, jobRunMap);
     }

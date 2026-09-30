@@ -718,7 +718,7 @@ public class BrowseHtmlHelper {
         }
         Instant lastRun = null;
         for (Instant localDateTime : dateTimes) {
-            if (lastRun == null || localDateTime.isAfter(lastRun)) {
+            if (localDateTime != null && (lastRun == null || localDateTime.isAfter(lastRun))) {
                 lastRun = localDateTime;
             }
         }
