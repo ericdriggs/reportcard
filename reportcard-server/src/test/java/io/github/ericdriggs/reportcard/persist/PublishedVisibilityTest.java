@@ -3,6 +3,7 @@ package io.github.ericdriggs.reportcard.persist;
 import io.github.ericdriggs.reportcard.ReportcardApplication;
 import io.github.ericdriggs.reportcard.cache.model.BranchStageViewResponse;
 import io.github.ericdriggs.reportcard.cache.model.JobRun;
+import io.github.ericdriggs.reportcard.cache.model.StaticBrowseService;
 import io.github.ericdriggs.reportcard.config.LocalStackConfig;
 import io.github.ericdriggs.reportcard.controller.JunitControllerTest;
 import io.github.ericdriggs.reportcard.controller.browse.BrowseHtmlHelper;
@@ -36,6 +37,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -319,12 +321,19 @@ public class PublishedVisibilityTest {
         final String hierarchyBranch = repo + "/branch/" + HIERARCHY_BRANCH;
         final String hierarchyJob = hierarchyBranch + "/job/" + f.job2();
 
-        renderedHtml(company);
-        assertTrue(renderedHtml(org).contains(TestData.repo), "org page lists the repo");
-        assertTrue(renderedHtml(repo).contains(PUBLISHED_BRANCH), "repo page lists the published branch");
-        assertTrue(renderedHtml(publishedBranch).contains("/job/" + f.job1()), "published branch page links job 1");
-        renderedHtml(hierarchyBranch);
-        renderedHtml(hierarchyJob);
+        // HTML caches read through a JVM-wide static that the most recently created Spring context owns
+        final Object previousBrowseService = ReflectionTestUtils.getField(StaticBrowseService.class, "INSTANCE");
+        new StaticBrowseService().setReportCardService(browseService);
+        try {
+            renderedHtml(company);
+            assertTrue(renderedHtml(org).contains(TestData.repo), "org page lists the repo");
+            assertTrue(renderedHtml(repo).contains(PUBLISHED_BRANCH), "repo page lists the published branch");
+            assertTrue(renderedHtml(publishedBranch).contains("/job/" + f.job1()), "published branch page links job 1");
+            renderedHtml(hierarchyBranch);
+            renderedHtml(hierarchyJob);
+        } finally {
+            ReflectionTestUtils.setField(StaticBrowseService.class, "INSTANCE", previousBrowseService);
+        }
     }
 
     String renderedHtml(String path) {
