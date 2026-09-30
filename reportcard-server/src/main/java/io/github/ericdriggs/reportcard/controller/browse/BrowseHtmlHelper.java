@@ -718,7 +718,7 @@ public class BrowseHtmlHelper {
         }
         Instant lastRun = null;
         for (Instant localDateTime : dateTimes) {
-            if (lastRun == null || localDateTime.isAfter(lastRun)) {
+            if (localDateTime != null && (lastRun == null || localDateTime.isAfter(lastRun))) {
                 lastRun = localDateTime;
             }
         }
@@ -782,7 +782,7 @@ public class BrowseHtmlHelper {
                 &nbsp;&nbsp;&nbsp;
                 <a href="/swagger-ui/index.html">swagger</a>&nbsp;&nbsp;&nbsp;
                 <a href="https://github.com/ericdriggs/reportcard">source</a>&nbsp;&nbsp;&nbsp;
-                <span style="color:white">ver: 0.2.3</span>
+                <span style="color:white">ver: 0.2.4</span>
               </span>
             </header>
             <nav aria-label="breadcrumb">

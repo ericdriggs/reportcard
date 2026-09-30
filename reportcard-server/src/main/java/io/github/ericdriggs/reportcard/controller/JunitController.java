@@ -5,6 +5,7 @@ import io.github.ericdriggs.reportcard.controller.model.StagePathStorageResultCo
 import io.github.ericdriggs.reportcard.controller.model.StagePathTestResultResponse;
 import io.github.ericdriggs.reportcard.controller.util.KarateTarGzUtil;
 import io.github.ericdriggs.reportcard.controller.util.TestXmlTarGzUtil;
+import io.github.ericdriggs.reportcard.gen.db.tables.pojos.StoragePojo;
 import io.github.ericdriggs.reportcard.lock.LockService;
 import io.github.ericdriggs.reportcard.model.*;
 import io.github.ericdriggs.reportcard.model.converter.JunitSurefireXmlParseUtil;
@@ -244,6 +245,11 @@ public class JunitController {
                 "At least one of junit.tar.gz or karate.tar.gz must be provided");
         }
 
+        final StagePath stagePath = testResultPersistService.getUpsertedStagePath(req.getStageDetails());
+        final List<PublicationArchive> archives = publicationArchives(req, hasJunit, hasKarate);
+        final List<StoragePojo> storages = getOrInsertStorages(stagePath, archives);
+        uploadIncompleteArchives(stagePath, archives, storages);
+
         // JUnit is primary source for test structure (reliable per-stage)
         // Karate provides tags when available (merged in)
         TestResultModel testResultModel;
@@ -327,131 +333,54 @@ public class JunitController {
 
         // Insert test result (tags passed to persistence layer for future storage)
         StagePathTestResult stagePathTestResult = testResultPersistService.insertTestResult(
-                req.getStageDetails(), testResultModel, allTags);
-        StagePath stagePath = stagePathTestResult.getStagePath();
-        final Long stageId = stagePath.getStage().getStageId();
-        final Long testResultId = stagePathTestResult.getTestResult().getTestResultId();
-
-        // Store files in S3
-        StagePathStorages stagePathStorages;
-        {
-            List<StagePathStorages> storagesList = new ArrayList<>();
-
-            if (hasJunit) {
-                storagesList.add(storeJunit(stageId, req.getJunitXmls()));
-            }
-            if (hasKarate) {
-                storagesList.add(storeKarate(stageId, req.getKarateTarGz()));
-            }
-            if (req.getReports() != null && !req.getReports().isEmpty()) {
-                storagesList.add(storeHtml(stageId, req.getLabel(), req.getReports(), req.getIndexFile()));
-            }
-
-            stagePathStorages = StagePathStorages.merge(storagesList.toArray(new StagePathStorages[0]));
-        }
+                stagePath, testResultModel, allTags);
 
         StagePathStorageResultCount stagePathStorageResultCount =
-            new StagePathStorageResultCount(stagePathStorages.getStagePath(), stagePathStorages.getStorages(), stagePathTestResult);
+            new StagePathStorageResultCount(stagePath, storages, stagePathTestResult);
         return StagePathStorageResultCountResponse.created(stagePathStorageResultCount);
     }
 
-    protected StagePathStorages storeHtml(
-            Long stageId,
-            String label,
-            MultipartFile tarGz,
-            String indexFile) {
+    record PublicationArchive(String label, String indexFile, StorageType storageType, boolean expand, MultipartFile tarGz) {}
 
-        StorageType storageType = StorageType.HTML;
-
-        // Store original tar.gz for cucumber_html before expanding
-        if ("cucumber_html".equals(label)) {
-            StagePathStorages tarGzStorage = storeCucumberTarGzArchive(stageId, tarGz);
-            StagePathStorages htmlStorage = storeHtmlInternal(stageId, label, tarGz, indexFile, storageType);
-            return StagePathStorages.merge(tarGzStorage, htmlStorage);
+    static List<PublicationArchive> publicationArchives(JunitHtmlPostRequest req, boolean hasJunit, boolean hasKarate) {
+        List<PublicationArchive> archives = new ArrayList<>();
+        if (hasJunit) {
+            archives.add(new PublicationArchive("junit", "junit.tar.gz", StorageType.JUNIT, false, req.getJunitXmls()));
         }
-
-        return storeHtmlInternal(stageId, label, tarGz, indexFile, storageType);
+        if (hasKarate) {
+            archives.add(new PublicationArchive("karate", "karate.tar.gz", StorageType.KARATE_JSON, false, req.getKarateTarGz()));
+        }
+        final MultipartFile reports = req.getReports();
+        if (reports != null && !reports.isEmpty()) {
+            if ("cucumber_html".equals(req.getLabel())) {
+                // Store original tar.gz for cucumber_html before expanding.
+                // reports.getName() is the form field name, which becomes the filename in S3.
+                archives.add(new PublicationArchive(StorageType.TAR_GZ.toLabel("cucumber_html"), reports.getName(), StorageType.TAR_GZ, false, reports));
+            }
+            archives.add(new PublicationArchive(req.getLabel(), req.getIndexFile(), StorageType.HTML, true, reports));
+        }
+        return archives;
     }
 
-    private StagePathStorages storeHtmlInternal(
-            Long stageId,
-            String label,
-            MultipartFile tarGz,
-            String indexFile,
-            StorageType storageType) {
-
-        final StagePath stagePath = storagePersistService.getStagePath(stageId);
-        final String prefix = new StoragePath(stagePath, label).getPrefix();
-
-        StagePathStorages stagePathStorages = storagePersistService.upsertStoragePath(indexFile, label, prefix, stageId, storageType);
-        if (!stagePathStorages.isComplete()) {
-            s3Service.uploadTarGz(prefix, true, tarGz);
-            storagePersistService.setUploadCompleted(indexFile, label, prefix, stageId);
-            stagePathStorages.setComplete();
+    List<StoragePojo> getOrInsertStorages(StagePath stagePath, List<PublicationArchive> archives) {
+        List<StoragePojo> storages = new ArrayList<>();
+        for (PublicationArchive archive : archives) {
+            storages.add(storagePersistService.getOrInsertStorage(stagePath, archive.indexFile(), archive.label(), archive.storageType()));
         }
-        return stagePathStorages;
+        return storages;
     }
 
-    protected StagePathStorages storeCucumberTarGzArchive(Long stageId, MultipartFile tarGz) {
-        StorageType storageType = StorageType.TAR_GZ;
-        final String label = storageType.toLabel("cucumber_html");
-        final String indexFile = tarGz.getName(); // form field name becomes filename in S3
-
-        final StagePath stagePath = storagePersistService.getStagePath(stageId);
-        final String prefix = new StoragePath(stagePath, label).getPrefix();
-
-        StagePathStorages stagePathStorages = storagePersistService.upsertStoragePath(
-            indexFile, label, prefix, stageId, storageType
-        );
-
-        if (!stagePathStorages.isComplete()) {
-            s3Service.uploadTarGz(prefix, false, tarGz);
-            storagePersistService.setUploadCompleted(indexFile, label, prefix, stageId);
-            stagePathStorages.setComplete();
+    void uploadIncompleteArchives(StagePath stagePath, List<PublicationArchive> archives, List<StoragePojo> storages) {
+        final Long stageId = stagePath.getStage().getStageId();
+        for (int i = 0; i < archives.size(); i++) {
+            final PublicationArchive archive = archives.get(i);
+            final StoragePojo storage = storages.get(i);
+            if (!storage.getIsUploadComplete()) {
+                s3Service.uploadTarGz(storage.getPrefix(), archive.expand(), archive.tarGz());
+                storagePersistService.setUploadCompleted(storage.getIndexFile(), storage.getLabel(), storage.getPrefix(), stageId);
+                storage.setIsUploadComplete(true);
+            }
         }
-
-        return stagePathStorages;
-    }
-
-    protected StagePathStorages storeJunit(
-            Long stageId,
-            MultipartFile tarGz) {
-
-        final String label = "junit";
-        final String indexFile = "junit.tar.gz";
-        StorageType storageType = StorageType.JUNIT;
-
-        final StagePath stagePath = storagePersistService.getStagePath(stageId);
-        final String prefix = new StoragePath(stagePath, label).getPrefix();
-
-        StagePathStorages stagePathStorages = storagePersistService.upsertStoragePath(indexFile, label, prefix, stageId, storageType);
-        if (!stagePathStorages.isComplete()) {
-            s3Service.uploadTarGz(prefix, false, tarGz);
-            storagePersistService.setUploadCompleted(indexFile, label, prefix, stageId);
-            stagePathStorages.setComplete();
-        }
-
-        return stagePathStorages;
-    }
-
-    /**
-     * Stores Karate tar.gz in S3 with KARATE_JSON storage type.
-     */
-    protected StagePathStorages storeKarate(Long stageId, MultipartFile tarGz) {
-        final String label = "karate";
-        final String indexFile = "karate.tar.gz";
-        StorageType storageType = StorageType.KARATE_JSON;
-
-        final StagePath stagePath = storagePersistService.getStagePath(stageId);
-        final String prefix = new StoragePath(stagePath, label).getPrefix();
-
-        StagePathStorages stagePathStorages = storagePersistService.upsertStoragePath(indexFile, label, prefix, stageId, storageType);
-        if (!stagePathStorages.isComplete()) {
-            s3Service.uploadTarGz(prefix, false, tarGz);  // false = don't expand
-            storagePersistService.setUploadCompleted(indexFile, label, prefix, stageId);
-            stagePathStorages.setComplete();
-        }
-        return stagePathStorages;
     }
 
 }

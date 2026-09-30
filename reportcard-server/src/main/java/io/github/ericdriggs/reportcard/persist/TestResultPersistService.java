@@ -15,6 +15,8 @@ import org.jooq.Record;
 import org.jooq.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -38,10 +40,12 @@ public class TestResultPersistService extends StagePathPersistService {
 
     //protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
-    public TestResultPersistService(DSLContext dsl) {
-        super(dsl);
+    private final TransactionTemplate transactionTemplate;
 
+    @Autowired
+    public TestResultPersistService(DSLContext dsl, PlatformTransactionManager transactionManager) {
+        super(dsl);
+        this.transactionTemplate = new TransactionTemplate(transactionManager);
     }
 
     public StagePathTestResult doPostXml(StageDetails stageDetails, MultipartFile file) {
@@ -123,14 +127,16 @@ public class TestResultPersistService extends StagePathPersistService {
 
     public StagePathTestResult insertTestResult(StagePath stagePath, TestResultModel testResult) {
         testResult.setStageFk(stagePath.getStage().getStageId());
-        TestResultModel inserted = insertTestResult(testResult);
+        return transactionTemplate.execute(status -> {
+            TestResultModel inserted = insertTestResult(testResult);
 
-        //TODO: ensure StagePath job.lastRun is not stale and then refactor to update lastRun from job instead of now
-        //this current approach results in time differences between lastRun in stagePath and stageDetails
-        Instant lastRun = updateLastRunToNow(stagePath);
-        stagePath.updateLastRun(lastRun);
-        setIsRunSuccess(stagePath);
-        return StagePathTestResult.builder().stagePath(stagePath).testResult(inserted).build();
+            //TODO: ensure StagePath job.lastRun is not stale and then refactor to update lastRun from job instead of now
+            //this current approach results in time differences between lastRun in stagePath and stageDetails
+            Instant lastRun = updateLastRunToNow(stagePath);
+            stagePath.updateLastRun(lastRun);
+            updateIsRunSuccess(stagePath);
+            return StagePathTestResult.builder().stagePath(stagePath).testResult(inserted).build();
+        });
     }
 
     public static String fileToString(MultipartFile file) {

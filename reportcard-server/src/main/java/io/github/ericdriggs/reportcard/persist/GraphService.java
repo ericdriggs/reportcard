@@ -18,6 +18,7 @@ import io.github.ericdriggs.reportcard.model.trend.JobStageTestTrend;
 import io.github.ericdriggs.reportcard.util.db.SqlJsonUtil;
 import lombok.SneakyThrows;
 import org.jooq.*;
+import org.jooq.Record;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.slf4j.Logger;
@@ -42,6 +43,8 @@ import io.github.ericdriggs.reportcard.gen.db.tables.StageTable;
 import io.github.ericdriggs.reportcard.gen.db.tables.TestResultTable;
 
 import static io.github.ericdriggs.reportcard.gen.db.Tables.*;
+import static io.github.ericdriggs.reportcard.persist.PublishedConditions.runHasTestResult;
+import static io.github.ericdriggs.reportcard.persist.PublishedConditions.stageHasTestResult;
 import static org.jooq.impl.DSL.*;
 
 /**
@@ -307,6 +310,7 @@ public class GraphService extends AbstractPersistService {
         tableConditionMap.put(BRANCH, BRANCH.BRANCH_NAME.eq(branchName));
         tableConditionMap.put(JOB, trueCondition().and(SqlJsonUtil.jobInfoEqualsJson(jobInfo)));
         tableConditionMap.put(RUN, RUN.JOB_RUN_COUNT.eq(runCount));
+        tableConditionMap.put(STAGE, stageHasTestResult());
         return getCompanyGraphs(tableConditionMap);
     }
 
@@ -324,6 +328,7 @@ public class GraphService extends AbstractPersistService {
         tableConditionMap.put(BRANCH, BRANCH.BRANCH_NAME.eq(branchName));
         tableConditionMap.put(JOB, JOB.JOB_ID.eq(jobId));
         tableConditionMap.put(RUN, RUN.RUN_ID.eq(runId));
+        tableConditionMap.put(STAGE, stageHasTestResult());
         return getCompanyGraphs(tableConditionMap);
     }
 
@@ -367,12 +372,13 @@ public class GraphService extends AbstractPersistService {
                 .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID).and(REPO.REPO_NAME.eq(repoName)))
                 .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID).and(BRANCH.BRANCH_NAME.eq(branchName)))
                 .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
-                .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID))
-                .leftJoin(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID))
+                .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID).and(runHasTestResult()))
+                .leftJoin(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID).and(stageHasTestResult()))
                 .groupBy(JOB.JOB_ID, STAGE.STAGE_NAME)
                 .fetchArray("MAX_RUN_ID", Long.class);
 
         tableConditionMap.put(RUN, RUN.RUN_ID.in(runIds));
+        tableConditionMap.put(STAGE, stageHasTestResult());
         return getCompanyGraphs(tableConditionMap);
 
     }
@@ -417,8 +423,8 @@ public class GraphService extends AbstractPersistService {
                 .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)).and(repoCondition)
                 .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID).and(BRANCH.BRANCH_NAME.in(branchNames)))
                 .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
-                .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID))
-                .leftJoin(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID))
+                .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID).and(runHasTestResult()))
+                .leftJoin(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID).and(stageHasTestResult()))
                 .groupBy(JOB.JOB_ID, STAGE.STAGE_NAME)
                 .union(
                         //latest successful run
@@ -428,12 +434,13 @@ public class GraphService extends AbstractPersistService {
                                 .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)).and(repoCondition)
                                 .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID).and(BRANCH.BRANCH_NAME.in(branchNames)))
                                 .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
-                                .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID).and(RUN.IS_SUCCESS))
-                                .leftJoin(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID))
+                                .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID).and(RUN.IS_SUCCESS).and(runHasTestResult()))
+                                .leftJoin(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID).and(stageHasTestResult()))
                                 .groupBy(JOB.JOB_ID, STAGE.STAGE_NAME)
                 ).fetchArray("MAX_RUN_ID", Long.class);
 
         tableConditionMap.put(RUN, RUN.RUN_ID.in(runIds));
+        tableConditionMap.put(STAGE, stageHasTestResult());
         return getCompanyGraphs(tableConditionMap, false);
 
     }
@@ -482,8 +489,8 @@ public class GraphService extends AbstractPersistService {
                 .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)).and(repoCondition)
                 .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID).and(BRANCH.BRANCH_NAME.in(branchNames)))
                 .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
-                .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID))
-                .leftJoin(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID))
+                .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID).and(runHasTestResult()))
+                .leftJoin(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID).and(stageHasTestResult()))
                 .groupBy(JOB.JOB_ID, STAGE.STAGE_NAME)
                 .union(
                         select(max(RUN.RUN_ID))
@@ -492,12 +499,13 @@ public class GraphService extends AbstractPersistService {
                                 .leftJoin(REPO).on(REPO.ORG_FK.eq(ORG.ORG_ID)).and(repoCondition)
                                 .leftJoin(BRANCH).on(BRANCH.REPO_FK.eq(REPO.REPO_ID).and(BRANCH.BRANCH_NAME.in(branchNames)))
                                 .leftJoin(JOB).on(JOB.BRANCH_FK.eq(BRANCH.BRANCH_ID))
-                                .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID).and(RUN.IS_SUCCESS))
-                                .leftJoin(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID))
+                                .leftJoin(RUN).on(RUN.JOB_FK.eq(JOB.JOB_ID).and(RUN.IS_SUCCESS).and(runHasTestResult()))
+                                .leftJoin(STAGE).on(STAGE.RUN_FK.eq(RUN.RUN_ID).and(stageHasTestResult()))
                                 .groupBy(JOB.JOB_ID, STAGE.STAGE_NAME)
                 ).fetchArray("MAX_RUN_ID", Long.class);
 
         tableConditionMap.put(RUN, RUN.RUN_ID.in(runIds));
+        tableConditionMap.put(STAGE, stageHasTestResult());
         return getCompanyGraphs(tableConditionMap, false);
     }
 
@@ -612,6 +620,7 @@ public class GraphService extends AbstractPersistService {
                 .fetchArray("RUN_IDS", Long.class);
 
         tableConditionMap.put(RUN, RUN.RUN_ID.in(runIds));
+        tableConditionMap.put(STAGE, stageHasTestResult());
         return getCompanyGraphs(tableConditionMap, false);
 
     }
@@ -621,15 +630,15 @@ public class GraphService extends AbstractPersistService {
     }
 
     @SneakyThrows(JsonProcessingException.class)
-    @SuppressWarnings("rawtypes")
     protected List<CompanyGraph> getCompanyGraphs(TableConditionMap tableConditionMap, boolean shouldIncludeTestJson) {
-        Result result = getFullTestGraph(tableConditionMap, shouldIncludeTestJson);
-        if (!result.isEmpty() && result.get(0) instanceof Record1 record1) {
-            String json = record1.formatJSON();
-            log.info("getCompanyGraph json: " + json);
-            return Arrays.asList(mapper.readValue(json, CompanyGraph[].class));
+        Result<?> result = getFullTestGraph(tableConditionMap, shouldIncludeTestJson);
+        List<CompanyGraph> companyGraphs = new ArrayList<>();
+        for (Record record : result) {
+            // the row's single column: one company's graph as JSON, cast from Object
+            JSON json = (JSON) record.get(0);
+            companyGraphs.add(mapper.readValue(json.data(), CompanyGraph.class));
         }
-        return Collections.emptyList();
+        return companyGraphs;
     }
 
     @SuppressWarnings("rawtypes")
@@ -846,7 +855,7 @@ public class GraphService extends AbstractPersistService {
                 .innerJoin(REPO).on(REPO.REPO_ID.eq(BRANCH.REPO_FK))
                 .innerJoin(ORG).on(ORG.ORG_ID.eq(REPO.ORG_FK))
                 .innerJoin(COMPANY).on(COMPANY.COMPANY_ID.eq(ORG.COMPANY_FK))
-                .where(companyCondition.and(orgCondition).and(jobCondition).and(runCondition))
+                .where(companyCondition.and(orgCondition).and(jobCondition).and(runCondition).and(runHasTestResult()))
                 .orderBy(RUN.RUN_ID.desc())
                 .limit(10000)  // Safety limit to prevent excessive memory usage
                 .fetchArray("RUN_IDS", Long.class);
@@ -858,6 +867,7 @@ public class GraphService extends AbstractPersistService {
         
         // Include test data - but exclude testSuitesJson (only need aggregate counts)
         tableConditionMap.put(TEST_RESULT, TEST_RESULT.TEST_RESULT_ID.isNotNull());
+        tableConditionMap.put(STAGE, stageHasTestResult());
         
         // Pass false to exclude testSuitesJson - massive performance improvement
         return getCompanyGraphs(tableConditionMap, false);

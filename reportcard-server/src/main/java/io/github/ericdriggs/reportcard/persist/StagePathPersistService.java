@@ -275,11 +275,10 @@ public class StagePathPersistService extends AbstractPersistService {
         }
 
         if (stagePath.getBranch() == null) {
-            BranchPojo branch = new BranchPojo()
-                    .setBranchName(request.getBranch())
-                    .setRepoFk(stagePath.getRepo().getRepoId())
-                    .setLastRun(nowUTC);
-            branchDao.insert(branch);
+            BranchPojo branch = dsl.insertInto(BRANCH, BRANCH.BRANCH_NAME, BRANCH.REPO_FK, BRANCH.LAST_RUN)
+                    .values(request.getBranch(), stagePath.getRepo().getRepoId(), (Instant) null)
+                    .returningResult(BRANCH.fields())
+                    .fetchOne().into(BranchPojo.class);
             stagePath.setBranch(branch);
         } else {
             BranchPojo branch = stagePath.getBranch();
@@ -289,13 +288,9 @@ public class StagePathPersistService extends AbstractPersistService {
         }
 
         if (stagePath.getJob() == null) {
-            JobPojo job = new JobPojo()
-                    .setJobInfo(request.getJobInfoJson())
-                    .setBranchFk(stagePath.getBranch().getBranchId())
-                    .setLastRun(nowUTC);
             // insert since DAO/POJO would incorrectly attempt to insert generated column job_info_str
             JobPojo insertedJob = dsl.insertInto(JOB, JOB.BRANCH_FK, JOB.JOB_INFO, JOB.LAST_RUN)
-                    .values(stagePath.getBranch().getBranchId(), request.getJobInfoJson(), nowUTC)
+                    .values(stagePath.getBranch().getBranchId(), request.getJobInfoJson(), (Instant) null)
                     .returningResult(JOB.JOB_ID, JOB.JOB_INFO, JOB.BRANCH_FK, JOB.JOB_INFO_STR, JOB.LAST_RUN)
                     .fetchOne().into(JobPojo.class);
 
@@ -314,7 +309,7 @@ public class StagePathPersistService extends AbstractPersistService {
                     .setJobFk(stagePath.getJob().getJobId())
                     .setJobRunCount(runCount)
                     .setRunDate(nowUTC)
-                    .setIsSuccess(true);
+                    .setIsSuccess(false);
             runDao.insert(run);
             stagePath.setRun(run);
         }
@@ -350,14 +345,13 @@ public class StagePathPersistService extends AbstractPersistService {
         return nowUTC;
     }
 
-    public void setIsRunSuccess(StagePath stagePath) {
-        if (!isRunSuccess(stagePath)) {
-            dsl.update(RUN)
-               .set(RUN.IS_SUCCESS, false)
-               .where(RUN.RUN_ID.eq(stagePath.getRun().getRunId()))
-               .execute();
-            stagePath.getRun().setIsSuccess(false);
-        }
+    public void updateIsRunSuccess(StagePath stagePath) {
+        final boolean isSuccess = isRunSuccess(stagePath);
+        dsl.update(RUN)
+           .set(RUN.IS_SUCCESS, isSuccess)
+           .where(RUN.RUN_ID.eq(stagePath.getRun().getRunId()))
+           .execute();
+        stagePath.getRun().setIsSuccess(isSuccess);
     }
 
     //TOMAYBE: consolidate into single sql query
