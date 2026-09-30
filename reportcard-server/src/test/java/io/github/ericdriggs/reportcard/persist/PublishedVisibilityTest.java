@@ -161,8 +161,8 @@ public class PublishedVisibilityTest {
      * Given a published run with a hierarchy-only stage, a newer hierarchy-only run, and a hierarchy-only job,
      * When branch, job, job-info, and job-run browse history is read,
      * Expected only run 1 and its api stage appear (the hierarchy-only run and stage do not consume history
-     * positions), the retained ui archive is still served by direct storage access, and every hierarchy-only stage
-     * is reported by failed-publication selection.
+     * positions), the hierarchy-only job is listed with no runs, the retained ui archive is still served by direct
+     * storage access, and every hierarchy-only stage is reported by failed-publication selection.
      * Ticket: reportcard_store-s3-before-test-persistence · Behavior: normal browse history excludes stages without test results while retained artifacts stay reachable
      */
     @Test
@@ -196,7 +196,12 @@ public class PublishedVisibilityTest {
         final Map<JobPojo, Set<RunPojo>> branchJobsRuns = browseService.getBranchJobsRuns(c, TestData.org, TestData.repo, PUBLISHED_BRANCH, Collections.emptyMap())
                 .values().iterator().next();
         assertEquals(Set.of(f.run1()), branchJobsRuns.values().stream().flatMap(Set::stream).map(RunPojo::getRunId)
-                .filter(Objects::nonNull).collect(Collectors.toSet()));
+                .collect(Collectors.toSet()));
+
+        final Map<JobPojo, Set<RunPojo>> hierarchyJobsRuns = browseService.getBranchJobsRuns(c, TestData.org, TestData.repo, HIERARCHY_BRANCH, Collections.emptyMap())
+                .values().iterator().next();
+        assertEquals(Set.of(f.job2()), hierarchyJobsRuns.keySet().stream().map(JobPojo::getJobId).collect(Collectors.toSet()));
+        assertEquals(List.of(Set.of()), new ArrayList<>(hierarchyJobsRuns.values()), "hierarchy-only job is listed with no runs");
 
         assertEquals(200, restTemplate.getForEntity(BrowseHtmlHelper.getStorageKey(f.run1UiJunit()), byte[].class).getStatusCodeValue(),
                 "retained archive of a hierarchy-only stage remains directly accessible");

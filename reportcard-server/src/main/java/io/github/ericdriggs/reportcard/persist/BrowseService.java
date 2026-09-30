@@ -299,7 +299,9 @@ public class BrowseService extends AbstractPersistService {
             if (!jobRunMap.containsKey(job)) {
                 jobRunMap.put(job, new TreeSet<>(PojoComparators.RUN_CASE_INSENSITIVE_ORDER));
             }
-            jobRunMap.get(job).add(run);
+            if (run.getRunId() != null) {
+                jobRunMap.get(job).add(run);
+            }
         }
         return Collections.singletonMap(branch, jobRunMap);
     }
