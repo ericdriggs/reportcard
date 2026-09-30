@@ -61,14 +61,10 @@ public class StoragePersistService extends StagePathPersistService {
      */
     public StoragePojo getOrInsertStorage(StagePath stagePath, String indexFile, String label, StorageType storageType) {
         final Long stageId = stagePath.getStage().getStageId();
-        final List<StoragePojo> existing = dsl.select(STORAGE.fields())
-                .from(STORAGE)
+        return dsl.selectFrom(STORAGE)
                 .where(STORAGE.STAGE_FK.eq(stageId).and(STORAGE.LABEL.eq(label)))
-                .fetchInto(StoragePojo.class);
-        if (!existing.isEmpty()) {
-            return existing.get(0);
-        }
-        return insertStorage(indexFile, label, new StoragePath(stagePath, label).getPrefix(), stageId, storageType);
+                .fetchOptionalInto(StoragePojo.class)
+                .orElseGet(() -> insertStorage(indexFile, label, new StoragePath(stagePath, label).getPrefix(), stageId, storageType));
     }
 
     protected List<StoragePojo> getExistingStoragePojos(String indexFile, String label, String prefix, Long stageFk, StorageType storageType) {
