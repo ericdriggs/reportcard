@@ -18,6 +18,7 @@ import io.github.ericdriggs.reportcard.model.trend.JobStageTestTrend;
 import io.github.ericdriggs.reportcard.util.db.SqlJsonUtil;
 import lombok.SneakyThrows;
 import org.jooq.*;
+import org.jooq.Record;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.slf4j.Logger;
@@ -629,15 +630,15 @@ public class GraphService extends AbstractPersistService {
     }
 
     @SneakyThrows(JsonProcessingException.class)
-    @SuppressWarnings("rawtypes")
     protected List<CompanyGraph> getCompanyGraphs(TableConditionMap tableConditionMap, boolean shouldIncludeTestJson) {
-        Result result = getFullTestGraph(tableConditionMap, shouldIncludeTestJson);
-        if (!result.isEmpty() && result.get(0) instanceof Record1 record1) {
-            String json = record1.formatJSON();
-            log.info("getCompanyGraph json: " + json);
-            return Arrays.asList(mapper.readValue(json, CompanyGraph[].class));
+        Result<?> result = getFullTestGraph(tableConditionMap, shouldIncludeTestJson);
+        List<CompanyGraph> companyGraphs = new ArrayList<>();
+        for (Record record : result) {
+            // the row's single column: one company's graph as JSON, cast from Object
+            JSON json = (JSON) record.get(0);
+            companyGraphs.add(mapper.readValue(json.data(), CompanyGraph.class));
         }
-        return Collections.emptyList();
+        return companyGraphs;
     }
 
     @SuppressWarnings("rawtypes")

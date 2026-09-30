@@ -341,6 +341,52 @@ public class PublishedVisibilityTest {
         }
     }
 
+    /**
+     * Given one repo name in two companies, each with a published run, where company A also has a newer
+     * hierarchy-only run in the same job and a hierarchy-only job,
+     * When the repo dashboard is read for that repo name,
+     * Expected it returns a dashboard for each company, and the only runs shown are the two published runs.
+     * Ticket: reportcard_store-s3-before-test-persistence · Behavior: the repo dashboard shows every company with the repo and only runs with test results
+     */
+    @Test
+    void whenViewingRepoDashboardAcrossCompanies_expectEveryCompanyWithPublishedRunsOnly() throws IOException {
+        final String suffix = UUID.randomUUID().toString().substring(0, 8);
+        final String repo = "multico-" + suffix;
+        final String companyA = "visibility-a-" + suffix;
+        final String companyB = "visibility-b-" + suffix;
+        final TreeMap<String, String> hierarchyJobInfo = new TreeMap<>(Map.of("application", "hierarchyonlyapp", "pipeline", "hierarchyonly"));
+
+        final StageDetails publishedA = repoDetails(companyA, repo, PUBLISHED_BRANCH, TestData.jobInfo, "api");
+        testResultPersistService.doPostXmlString(publishedA, FailedPublicationSelectionTest.PASSING_XML);
+        final StageDetails publishedB = repoDetails(companyB, repo, PUBLISHED_BRANCH, TestData.jobInfo, "api");
+        testResultPersistService.doPostXmlString(publishedB, FailedPublicationSelectionTest.PASSING_XML);
+        final Long runA = storagePersistService.getStagePath(publishedA).getRun().getRunId();
+        final Long runB = storagePersistService.getStagePath(publishedB).getRun().getRunId();
+        final Long hierarchyOnlyRunA = hierarchyOnlyStage(repoDetails(companyA, repo, PUBLISHED_BRANCH, TestData.jobInfo, "api")).getRun().getRunId();
+        final Long hierarchyOnlyJobRunA = hierarchyOnlyStage(repoDetails(companyA, repo, HIERARCHY_BRANCH, hierarchyJobInfo, "api")).getRun().getRunId();
+
+        final List<OrgDashboard> dashboards = graphService.getRepoDashboard(repo, List.of(PUBLISHED_BRANCH, HIERARCHY_BRANCH), false, null);
+
+        assertEquals(Set.of(companyA, companyB), dashboards.stream().map(d -> d.getCompanyPojo().getCompanyName()).collect(Collectors.toSet()));
+        final Set<Long> shownRuns = dashboards.stream()
+                .flatMap(d -> d.getRepoGraphs().stream())
+                .flatMap(r -> r.branches().stream())
+                .filter(b -> b.jobs() != null)
+                .flatMap(b -> b.jobs().stream())
+                .filter(j -> j.runs() != null)
+                .flatMap(j -> j.runs().stream())
+                .map(RunGraph::runId)
+                .collect(Collectors.toSet());
+        assertEquals(Set.of(runA, runB), shownRuns, "hierarchy-only runs " + hierarchyOnlyRunA + ", " + hierarchyOnlyJobRunA + " are not shown");
+    }
+
+    static StageDetails repoDetails(String company, String repo, String branch, TreeMap<String, String> jobInfo, String stage) {
+        return StageDetails.builder()
+                .company(company).org(TestData.org).repo(repo).branch(branch)
+                .jobInfo(jobInfo).runReference(UUID.randomUUID()).sha(UUID.randomUUID().toString().substring(0, 12)).stage(stage)
+                .build();
+    }
+
     String renderedHtml(String path) {
         final ResponseEntity<String> response = restTemplate.getForEntity(path, String.class);
         assertEquals(200, response.getStatusCodeValue(), path + " -> " + response.getBody());
